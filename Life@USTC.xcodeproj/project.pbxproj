@@ -162,9 +162,9 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
-				56558802294D75100010E060 /* Assets */,
 				56AC72FA294A012700A60F47 /* ContentView.swift */,
 				565587E2294B0CCB0010E060 /* Constants.swift */,
+				56558802294D75100010E060 /* Assets */,
 				565587F4294D632D0010E060 /* Views */,
 				565587F5294D635E0010E060 /* Models */,
 				56AC7301294A012F00A60F47 /* Products */,
@@ -441,6 +441,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -472,6 +473,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

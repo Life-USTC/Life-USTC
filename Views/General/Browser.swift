@@ -36,7 +36,7 @@ struct SwiftUIWebView: UIViewRepresentable {
 
 struct Browser: View {
     var url: URL
-    var title: String = "Detail"
+    var title: LocalizedStringKey
     
     var body: some View {
         SwiftUIWebView(url: url)
@@ -50,5 +50,19 @@ struct Browser: View {
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    init(url: URL, title: LocalizedStringKey? = nil) {
+        self.url = url
+        if let title {
+            self.title = title
+        } else {
+            self.title = LocalizedStringKey("Detail")
+        }
+    }
+    
+    init(url: URL, title: String) {
+        self.url = url
+        self.title = LocalizedStringKey(title)
     }
 }

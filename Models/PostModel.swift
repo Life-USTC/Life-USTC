@@ -5,7 +5,7 @@
 //  Created by TiankaiMa on 2022/12/18.
 //
 
-import Foundation
+import SwiftUI
 
 enum TimeIntervalEnum: Int, CaseIterable {
     case day = 1
@@ -14,7 +14,7 @@ enum TimeIntervalEnum: Int, CaseIterable {
     case year = 365
     case longerThanAYear = 400
     
-    var descriptionString: String {
+    var descriptionString: LocalizedStringKey {
         switch self {
         case .day:
             return "Today"
@@ -45,7 +45,7 @@ enum TimeIntervalEnum: Int, CaseIterable {
         }
     }
     
-    var showDate: String {
+    var showDate: LocalizedStringKey {
         let currentDate = Date().stripTime()
         var startDate: Date?
         var endDate: Date
@@ -70,9 +70,9 @@ enum TimeIntervalEnum: Int, CaseIterable {
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         if let startDate {
-            return dateFormatter.string(from: startDate) + " - " + dateFormatter.string(from: endDate)
+            return LocalizedStringKey(dateFormatter.string(from: startDate) + " - " + dateFormatter.string(from: endDate))
         } else {
-            return "Before \(dateFormatter.string(from: endDate))"
+            return LocalizedStringKey("Before \(dateFormatter.string(from: endDate))")
         }
     }
 }

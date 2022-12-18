@@ -57,7 +57,7 @@ struct LoginSheet: View {
                     loginSheet = false
                 }
             } label: {
-                Text("Skip for Now")
+                Text("Skip for now")
             }
         }
         .scrollContentBackground(.hidden)
@@ -68,16 +68,8 @@ struct LoginSheet: View {
         NavigationStack {
             VStack {
                 TitleAndSubTitle(title: "Input USTC CAS username & password",
-                                 subTitle: "",
+                                 subTitle: "casHint",
                                  style: .caption)
-                
-                Text("""
-                        This service is brought to you by USTC CAS server, not this app.
-                        For more information, see Settings > Legal > Disclaimer
-                        """)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .bold()
                 Spacer()
                 inputForm
                 Spacer()
@@ -86,7 +78,7 @@ struct LoginSheet: View {
                 Text("Double check your username and password")
             })
             .padding()
-            .navigationTitle("One more Step")
+            .navigationTitle("One more step...")
         }
     }
     
@@ -109,7 +101,7 @@ extension ContentView {
         mainUstcCasClient = UstcCasClient(username: passportUsername, password: passportPassword)
         DispatchQueue.main.async {
             let result = mainUstcCasClient.loginToCAS()
-            if result {
+            if !result {
                 loginSheet = true
             }
         }

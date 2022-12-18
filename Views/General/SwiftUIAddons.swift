@@ -29,8 +29,8 @@ enum TitleAndSubTitleStyle {
 }
 
 struct TitleAndSubTitle: View {
-    var title: String
-    var subTitle: String
+    var title: LocalizedStringKey
+    var subTitle: LocalizedStringKey
     var style: TitleAndSubTitleStyle
     
     var body: some View {
@@ -60,6 +60,18 @@ struct TitleAndSubTitle: View {
             }
         }
         .hStackLeading()
+    }
+    
+    init(title: LocalizedStringKey, subTitle: LocalizedStringKey, style: TitleAndSubTitleStyle) {
+        self.title = title
+        self.subTitle = subTitle
+        self.style = style
+    }
+    
+    init(title: String, subTitle: String, style: TitleAndSubTitleStyle) {
+        self.title = LocalizedStringKey(title)
+        self.subTitle = LocalizedStringKey(subTitle)
+        self.style = style
     }
 }
 

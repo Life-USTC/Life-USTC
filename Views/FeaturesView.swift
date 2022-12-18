@@ -66,7 +66,7 @@ struct FeaturesView: View {
     
     func featureListView(_ featureList: [any Feature]) -> some View {
         ForEach(featureList, id:\.id) { feature in
-            NavigationLink(destination: Browser(url: feature.url,title: feature.name)) {
+            NavigationLink(destination: Browser(url: feature.url, title: feature.name)) {
                 HStack {
                     Image(systemName: feature.image!)
                         .frame(width: 30)

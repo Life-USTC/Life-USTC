@@ -41,14 +41,19 @@ struct PostStack: View {
     @Binding var posts: [Post]
     @State var showSharePage = false
     var body: some View {
-        ForEach(posts, id:\.id) { post in
-            PostCard(post: post)
+        if posts.isEmpty {
+            ProgressView()
+                .frame(width: 50, height: 50)
+        } else {
+            ForEach(posts, id:\.id) { post in
+                PostCard(post: post)
+            }
         }
     }
 }
 
 struct PostListPage: View {
-    let name: String
+    let name: LocalizedStringKey
     @Binding var posts: [Post] {
         willSet {
             updatePosts()
@@ -92,6 +97,17 @@ struct PostListPage: View {
             }
         }
     }
+    
+    init(_ inPosts: Binding<[Post]>, name: String) {
+        self._posts = inPosts
+        self.name = LocalizedStringKey(name)
+    }
+    
+    init(_ inPosts: Binding<[Post]>, name: LocalizedStringKey) {
+        self._posts = inPosts
+        self.name = name
+    }
+    
 }
 
 struct FeedSourcePage: View {
@@ -121,7 +137,7 @@ struct FeedSourcePage: View {
                 if posts.count == 0 {
                     ProgressView()
                 } else {
-                    PostListPage(name: feedSource?.name ?? "All", posts: $posts)
+                    PostListPage($posts, name: feedSource?.name ?? "All")
                 }
             }
             .navigationTitle(feedSource?.name ?? "All")

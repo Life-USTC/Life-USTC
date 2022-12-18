@@ -21,16 +21,8 @@ struct CASSettingsView: View {
         NavigationStack {
             VStack {
                 TitleAndSubTitle(title: "Input USTC CAS username & password",
-                                 subTitle: "",
+                                 subTitle: "casHint",
                                  style: .caption)
-                
-                Text("""
-                        This service is brought to you by USTC CAS server, not this app.
-                        For more information, see Settings > Legal > Disclaimer
-                        """)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .bold()
                 
                 Spacer()
                 
@@ -148,6 +140,12 @@ struct AboutLifeAtUSTCView: View {
                         .font(.title2)
                         .padding([.top,.bottom],2)
                     Text("https://twitter.com/tiankaima")
+                    
+                    Text("Discord")
+                        .fontWeight(.semibold)
+                        .font(.title2)
+                        .padding([.top,.bottom],2)
+                    Text("https://discord.gg/BxdsySpkYP")
                 }
             }
             .padding()
@@ -169,6 +167,7 @@ struct EmptyView: View {
                 .font(.title2)
                 .bold()
         }
+//        .border(.red)
     }
 }
 
@@ -193,16 +192,10 @@ struct LegalInfoView: View {
                     }
                     VStack(alignment: .leading) {
                         Text("USTC CAS DISCLAIMER:")
-                        Text("""
-This service is brought to you by USTC CAS server, not this app.
-For more information and license agreement, checkout https://passport.ustc.edu.cn/
-When dealing with your username and password, we only store it on your device and follow industry standards.
-We use your username & password to skip the verification process on webpage/API services by validating the token in the background in a 15-minute cycle(if actively used). That means we simulate user's behaviour and send out requests as if they were sent by users. This doesn't viloate USTC CAS's License Agreement, but they are subject to change without pre-notice.
-This process could potentially trigger warnings of USTC, and could potentially fail. In turn, We do NOT take any responsiblity and/or make any commitment about this feature's usability, USE THIS FEATURE AT YOUR OWN RISK.
-""")
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.secondary)
+                        Text("casFullHint")
+                            .font(.caption)
+                            .bold()
+                            .foregroundColor(.secondary)
                     }
                 }
             }

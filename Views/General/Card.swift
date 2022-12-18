@@ -13,12 +13,20 @@ private func randomBackgroundColor(title: String? = nil) -> Color {
     // MARK: make different module in white mode / dark mode
     
     if let title {
-        let hash = title.hashValue
+        let hash = abs(title.hashValue)
         // Genrate the color from hash value
-        
+        // hue: .random(in: 0...1)
+        // saturation: .random(in: 0.25...0.75)
+        // brightness: .random(in: 0.45...0.55)
+
+        let hue = Double(hash % 360) / 360
+        let saturation = Double(hash % 50 + 25) / 100
+        let brightness = Double(hash % 10 + 45) / 100
+
+        return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
     }
     
-    return Color(uiColor: UIColor(hue: .random(in: 0...1), saturation: .random(in: 0.25...0.75), brightness: .random(in: 0.25...0.50), alpha: 1))
+    return Color(uiColor: UIColor(hue: .random(in: 0...1), saturation: .random(in: 0.25...0.75), brightness: .random(in: 0.45...0.55), alpha: 1))
 }
 
 struct Card: View {
@@ -38,7 +46,7 @@ struct Card: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .foregroundColor(randomBackgroundColor())
+                .foregroundColor(randomBackgroundColor(title: cardTitle))
             if let imageURL {
                 AsyncImage(url: imageURL) { image in
                     image

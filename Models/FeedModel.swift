@@ -175,6 +175,16 @@ func showUserFeedPost(number: Int?) -> [Post] {
         return []
     }
     
+    // TODO: re-write this part to make sure that result have uniqure id, for now, here's a tmp solve for that issue:
+
+    var tmp: [Post] = []
+    for post in result {
+        if !tmp.contains(where: {$0.id == post.id}) {
+            tmp.append(post)
+        }
+    }
+    result = tmp
+    
     if let number {
         return Array(result.prefix(number))
     } else {

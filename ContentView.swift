@@ -21,8 +21,8 @@ struct Life_USTCApp: App {
 
 struct ContentView: View {
 #if DEBUG
-    @State var loginSheet: Bool = false
-    @State var firstLogin: Bool = false
+    @State var loginSheet: Bool = true
+    @State var firstLogin: Bool = true
 #else
     @State var loginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
