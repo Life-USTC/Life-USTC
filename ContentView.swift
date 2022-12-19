@@ -20,15 +20,15 @@ struct Life_USTCApp: App {
 }
 
 struct ContentView: View {
+    // these four variables are used to deterime which sheet is required tp prompot to the user.
 #if DEBUG
-    @State var loginSheet: Bool = true
+    @State var casLoginSheet: Bool = true
     @State var firstLogin: Bool = true
 #else
-    @State var loginSheet: Bool = false
+    @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
 #endif
     
-    @AppStorage("userType") var userType: UserType?
     @AppStorage("passportUsername") var passportUsername: String = ""
     @AppStorage("passportPassword") var passportPassword: String = ""
     
@@ -51,9 +51,13 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gearshape")
                 }
         }
-        .sheet(isPresented: $firstLogin, content: newUserSheet)
-        .sheet(isPresented: $loginSheet) {
-            LoginSheet($loginSheet)
+        .sheet(isPresented: $firstLogin) {
+            UserTypeView(userTypeSheet: $firstLogin)
+                .interactiveDismissDisabled(true)
+        }
+        .sheet(isPresented: $casLoginSheet) {
+            CASLoginView(casLoginSheet: $casLoginSheet, title: "One more step...", displayMode: .large, isInSheet: true)
+                .interactiveDismissDisabled(true)
         }
         .onAppear(perform: onLoadFunction)
     }

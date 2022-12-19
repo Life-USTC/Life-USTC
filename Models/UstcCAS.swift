@@ -13,6 +13,7 @@ protocol CasClient {
     
     mutating func loginToCAS() -> Bool
     mutating func vaildCookie() -> [HTTPCookie]
+    mutating func update(username: String, password: String)
     
     func checkLogined() -> Bool
 }
@@ -51,6 +52,11 @@ struct UstcCasClient: CasClient {
         } else {
             return []
         }
+    }
+    
+    mutating func update(username: String, password: String) {
+        self.username = username
+        self.password = password
     }
     
     

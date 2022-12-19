@@ -17,9 +17,8 @@
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
 		565587EA294B46900010E060 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 565587EC294B46900010E060 /* Localizable.strings */; };
 		565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* UstcUgAAS.swift */; };
-		565587F3294D52590010E060 /* NewUserSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F2294D52580010E060 /* NewUserSheet.swift */; };
 		565587FE294D67D80010E060 /* SwiftUIAddons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIAddons.swift */; };
-		56558801294D74BB0010E060 /* LoginSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* LoginSheet.swift */; };
+		56558801294D74BB0010E060 /* CASLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* CASLogin.swift */; };
 		56558804294D93810010E060 /* FeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558803294D93810010E060 /* FeaturesView.swift */; };
 		56558809294DC9D40010E060 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558808294DC9D40010E060 /* SettingsView.swift */; };
 		5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
@@ -27,6 +26,7 @@
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56D175B3294EAC5D0070778F /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B2294EAC5D0070778F /* PostModel.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
+		56D175BA294FFE270070778F /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B9294FFE270070778F /* UserType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,10 +64,9 @@
 		565587EB294B46900010E060 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		565587EF294B46BB0010E060 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		565587F0294C4E5D0010E060 /* UstcUgAAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgAAS.swift; sourceTree = "<group>"; };
-		565587F2294D52580010E060 /* NewUserSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserSheet.swift; sourceTree = "<group>"; };
 		565587F6294D63C00010E060 /* FeedKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FeedKit.xcodeproj; path = "../../Desktop/FeedKit-master/FeedKit.xcodeproj"; sourceTree = "<group>"; };
 		565587FD294D67D80010E060 /* SwiftUIAddons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAddons.swift; sourceTree = "<group>"; };
-		56558800294D74BB0010E060 /* LoginSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheet.swift; sourceTree = "<group>"; };
+		56558800294D74BB0010E060 /* CASLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CASLogin.swift; sourceTree = "<group>"; };
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
@@ -75,6 +74,7 @@
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56D175B2294EAC5D0070778F /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
+		56D175B9294FFE270070778F /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +100,7 @@
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				565587FF294D749C0010E060 /* Extension */,
+				565587FF294D749C0010E060 /* Shared */,
 				565587FC294D65E30010E060 /* General */,
 				565587E0294B0CA60010E060 /* FeedView.swift */,
 				56558808294DC9D40010E060 /* SettingsView.swift */,
@@ -141,13 +141,13 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		565587FF294D749C0010E060 /* Extension */ = {
+		565587FF294D749C0010E060 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				565587F2294D52580010E060 /* NewUserSheet.swift */,
-				56558800294D74BB0010E060 /* LoginSheet.swift */,
+				56D175B9294FFE270070778F /* UserType.swift */,
+				56558800294D74BB0010E060 /* CASLogin.swift */,
 			);
-			path = Extension;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		56558802294D75100010E060 /* Assets */ = {
@@ -276,10 +276,9 @@
 			files = (
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
 				565587E1294B0CA60010E060 /* FeedView.swift in Sources */,
-				565587F3294D52590010E060 /* NewUserSheet.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				56D175B3294EAC5D0070778F /* PostModel.swift in Sources */,
-				56558801294D74BB0010E060 /* LoginSheet.swift in Sources */,
+				56558801294D74BB0010E060 /* CASLogin.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIAddons.swift in Sources */,
 				565587E5294B339F0010E060 /* StudentModel.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
@@ -288,6 +287,7 @@
 				56AC730B294A012F00A60F47 /* ContentView.swift in Sources */,
 				565587B8294AE7910010E060 /* FeedModel.swift in Sources */,
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
+				56D175BA294FFE270070778F /* UserType.swift in Sources */,
 				565587B3294ABE7C0010E060 /* Card.swift in Sources */,
 				5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */,
 				565587E3294B0CCB0010E060 /* Constants.swift in Sources */,
@@ -441,7 +441,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -473,7 +473,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

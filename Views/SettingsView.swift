@@ -7,79 +7,6 @@
 
 import SwiftUI
 
-struct CASSettingsView: View {
-    @AppStorage("passportUsername") var passportUsername: String = ""
-    @AppStorage("passportPassword") var passportPassword: String = ""
-    @State var showFailedAlert = false
-    @State var showSuccessAlert = false
-    enum Field: Int, Hashable {
-        case username
-        case password
-    }
-    @FocusState var foucusField: Field?
-    var body: some View {
-        NavigationStack {
-            VStack {
-                TitleAndSubTitle(title: "Input USTC CAS username & password",
-                                 subTitle: "casHint",
-                                 style: .caption)
-                
-                Spacer()
-                
-                Form {
-                    HStack {
-                        Text("Username:")
-                        Spacer()
-                        TextField("Username", text: $passportUsername)
-                            .focused($foucusField, equals: .username)
-                            .onSubmit {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    foucusField = .password
-                                }
-                            }
-                            .submitLabel(.next)
-                            .keyboardType(.asciiCapable)
-                        Spacer()
-                    }
-                    HStack {
-                        Text("Password:")
-                        Spacer()
-                        SecureField("Password", text: $passportPassword)
-                            .focused($foucusField, equals: .password)
-                            .submitLabel(.done)
-                            .onSubmit {
-                                checkAndLogin()
-                            }
-                        Spacer()
-                    }
-                    Button(action: checkAndLogin, label: {Text("Check & Login")})
-                }
-                .scrollContentBackground(.hidden)
-                .scrollDisabled(true)
-                Spacer()
-            }
-            .alert("Login Failed", isPresented: $showFailedAlert, actions: {}, message: {
-                Text("Double check your username and password")
-            })
-            .alert("Login Success", isPresented: $showSuccessAlert, actions: {}, message: {
-                Text("You're good to go")
-            })
-            .padding()
-            .navigationTitle("CAS Settings")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-    
-    func checkAndLogin() {
-        mainUstcCasClient = UstcCasClient(username: passportUsername, password: passportPassword)
-        if mainUstcCasClient.checkLogined() {
-            showSuccessAlert = true
-        } else {
-            showFailedAlert = true
-        }
-    }
-}
-
 extension Bundle {
     var releaseNumber: String? {
         return infoDictionary?["CFBundleShortVersionString"] as? String
@@ -212,8 +139,8 @@ struct SettingsView: View {
             List {
                 Section {
                     NavigationLink("Feed Source Settings", destination: EmptyView())
-                    NavigationLink("CAS Settings", destination: CASSettingsView())
-                    NavigationLink("Change User Type", destination: EmptyView())
+                    NavigationLink("CAS Settings", destination: CASLoginView())
+                    NavigationLink("Change User Type", destination: UserTypeView()) // TODO: refactor UserType and add more info to end user... this looks extremely odd.
                     NavigationLink("Notification Settings", destination: EmptyView())
                 }
                 

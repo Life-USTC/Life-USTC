@@ -13,7 +13,7 @@ struct HomeView: View {
     var feedPostIDList: [UUID] {
         feedPosts.map({$0.id})
     }
-    let semaphore = DispatchSemaphore(value: 0)
+    let semaphore = DispatchSemaphore(value: 2)
     let feedPostNumber = 4
     
     var featureList: some View {

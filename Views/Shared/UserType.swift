@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-extension ContentView {
-    func newUserSheet() -> some View {
+struct UserTypeView: View {
+    @AppStorage("userType") var userType: UserType?
+    @Binding var userTypeSheet: Bool
+    var body: some View {
         NavigationStack {
-            // Here a navigationLink is perferred over seprate window for annimation and more control.
             VStack {
                 TitleAndSubTitle(title: "Choose an identity",
                                  subTitle: "You could modify this later in app settings",
@@ -19,7 +20,7 @@ extension ContentView {
                     ForEach(userTypeDescription.sorted(by: {$0.key.hashValue < $1.key.hashValue}), id:\.key.hashValue) { userType, description in
                         Button {
                             withAnimation {
-                                firstLogin = false
+                                userTypeSheet = false
                                 self.userType = userType
                             }
                         } label: {
@@ -38,7 +39,7 @@ extension ContentView {
                 Spacer()
                 
                 Button {
-                    firstLogin = false
+                    userTypeSheet = false
                 } label: {
                     Text("Skip for now")
                 }
@@ -46,6 +47,14 @@ extension ContentView {
             }
             .padding()
             .navigationTitle("Before we continue...")
+        }
+    }
+    
+    init(userTypeSheet: Binding<Bool>? = nil) {
+        if let userTypeSheet {
+            self._userTypeSheet = userTypeSheet
+        } else {
+            self._userTypeSheet = .constant(false)
         }
     }
 }

@@ -9,11 +9,19 @@ import SwiftUI
 
 var mainUstcCasClient: any CasClient = UstcCasClient(username: "", password: "")
 
-struct LoginSheet: View {
+struct CASLoginView: View {
+    // abstract from LoginSheet, some variables are subject to change though
     @AppStorage("passportUsername") var passportUsername: String = ""
     @AppStorage("passportPassword") var passportPassword: String = ""
-    @Binding var loginSheet: Bool
+    
+    @Binding var casLoginSheet: Bool // used to signal the sheet to close
+    var isInSheet = false
+    
+    var title: LocalizedStringKey = "CAS Settings"
+    var displayMode: NavigationBarItem.TitleDisplayMode = .inline
+    
     @State var showFailedAlert = false
+    @State var showSuccessAlert = false
     
     enum Field: Int, Hashable {
         case username
@@ -54,7 +62,7 @@ struct LoginSheet: View {
                 passportUsername = ""
                 passportPassword = ""
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    loginSheet = false
+                    casLoginSheet = false
                 }
             } label: {
                 Text("Skip for now")
@@ -77,24 +85,56 @@ struct LoginSheet: View {
             .alert("Login Failed", isPresented: $showFailedAlert, actions: {}, message: {
                 Text("Double check your username and password")
             })
+            .alert("Login Success", isPresented: $showSuccessAlert, actions: {}, message: {
+                Text("You're good to go")
+            })
             .padding()
-            .navigationTitle("One more step...")
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(displayMode)
         }
     }
     
     private func checkAndLogin() {
-        mainUstcCasClient = UstcCasClient(username: passportUsername, password: passportPassword)
-        if mainUstcCasClient.checkLogined() {
-            loginSheet = false
-        } else {
-            showFailedAlert = true
+        mainUstcCasClient.update(username: passportUsername, password: passportPassword)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let result = mainUstcCasClient.loginToCAS()
+            if result {
+                if isInSheet {
+                    showSuccessAlert = true
+                    // autoclose... dispatch within another dispatch
+                    // real fun...
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                        showSuccessAlert = false
+                        casLoginSheet = false
+                    }
+                } else {
+                    showSuccessAlert = true
+                }
+            } else {
+                showFailedAlert = true
+            }
         }
     }
     
-    init(_ binding: Binding<Bool>) {
-        self._loginSheet = binding
+    init(casLoginSheet: Binding<Bool>? = nil, title: LocalizedStringKey? = nil, displayMode: NavigationBarItem.TitleDisplayMode? = nil, isInSheet: Bool? = nil) {
+        if let casLoginSheet {
+            self._casLoginSheet = casLoginSheet
+        } else {
+            self._casLoginSheet = .constant(false)
+        }
+        if let title {
+            self.title = title
+        }
+        if let displayMode {
+            self.displayMode = displayMode
+        }
+        if let isInSheet {
+            self.isInSheet = isInSheet
+        }
     }
+    
 }
+
 
 extension ContentView {
     func loadMainUser() {
@@ -102,11 +142,11 @@ extension ContentView {
         DispatchQueue.main.async {
             let result = mainUstcCasClient.loginToCAS()
             if !result {
-                loginSheet = true
+                casLoginSheet = true
             }
         }
         if passportUsername == "" && passportPassword == "" {
-            loginSheet = true
+            casLoginSheet = true
         }
     }
 }
