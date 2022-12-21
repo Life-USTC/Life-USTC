@@ -75,10 +75,8 @@ struct UstcCasClient: CasClient {
                 ltToken = String(match!.0)
                 let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
                 cookies = HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!)
-                semaphore.signal()
-            } else {
-                return
             }
+            semaphore.signal()
         }
         task.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)

@@ -7,13 +7,9 @@
 
 import SwiftUI
 
-private func randomBackgroundColor(title: String? = nil) -> Color {
-    // Notice this function is marked as private since the function is not really as marked random color, just random BackgroundColor.
-    // This is because the color has a brightness no less than 0.25 to prevent less readbility with white text.
-    // MARK: make different module in white mode / dark mode
-    
-    if let title {
-        let hash = abs(title.hashValue)
+extension String {
+    func makeColor() -> Color {
+        let hash = abs(self.hashValue)
         // Genrate the color from hash value
         // hue: .random(in: 0...1)
         // saturation: .random(in: 0.25...0.75)
@@ -25,8 +21,6 @@ private func randomBackgroundColor(title: String? = nil) -> Color {
 
         return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
     }
-    
-    return Color(uiColor: UIColor(hue: .random(in: 0...1), saturation: .random(in: 0.25...0.75), brightness: .random(in: 0.45...0.55), alpha: 1))
 }
 
 struct Card: View {
@@ -46,7 +40,7 @@ struct Card: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .foregroundColor(randomBackgroundColor(title: cardTitle))
+                .foregroundColor(cardTitle.makeColor())
             if let imageURL {
                 AsyncImage(url: imageURL) { image in
                     image

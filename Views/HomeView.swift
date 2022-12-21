@@ -21,6 +21,7 @@ struct HomeView: View {
             EmptyView()
         }
     }
+    @State var runOnce = false
     
     func scrollTo(proxy: ScrollViewProxy, id: UUID) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
@@ -47,9 +48,12 @@ struct HomeView: View {
             }
             .scrollDisabled(true)
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                    _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-                    scrollTo(proxy: proxy, id: feedPostIDList.first!)
+                if !runOnce {
+                    runOnce = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+                        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+                        scrollTo(proxy: proxy, id: feedPostIDList.first!)
+                    }
                 }
             }
         }
@@ -57,10 +61,11 @@ struct HomeView: View {
     
     var mainView: some View {
         VStack {
+            TitleAndSubTitle(title: "Feed", subTitle: currentDateString,style: .reverse)
             Group {
                 if feedPosts.isEmpty {
                     ProgressView()
-                        .frame(width: UIScreen.main.bounds.width, height: 200)
+                        .frame(width: UIScreen.main.bounds.width - 30, height: 200)
                 } else {
                     feedHStack
                 }

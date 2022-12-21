@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftyJSON
 
 
 // main entry point, edit this when we need documentGroup or something like that...
@@ -14,7 +15,11 @@ import SwiftUI
 struct Life_USTCApp: App {
     var body: some Scene {
         WindowGroup {
+#if DEBUG1
+            UstcUgTableView()
+#else
             ContentView()
+#endif
         }
     }
 }
@@ -66,14 +71,17 @@ struct ContentView: View {
         loadPostCache()
         loadMainUser()
 #if DEBUG
-//        DispatchQueue.main.async {
-//            testFunction()
-//        }
+        let task = Task {
+            //        DispatchQueue.main.async {
+            await testFunction()
+            //        }
+        }
 #endif
     }
     
 #if DEBUG
-    func testFunction() {
+// DO NOT PACK THESE FUNCTION INTO FINAL PRODUCT.
+     func testFunction() async {
         var a = UstcCasClient(username: passportUsername, password: passportPassword)
         let result = a.loginToCAS()
         
@@ -84,30 +92,34 @@ struct ContentView: View {
             if let cookies = a.casCookie {
                 session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
             }
+            // jw.ustc.edu.cn login.
             let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
-            
-            var cookies: [HTTPCookie]? = []
-            let semaphore = DispatchSemaphore(value: 0)
-            let task = session.dataTask(with: request) { data, response, error in
-                print(data,response,error)
-                cookies = session.configuration.httpCookieStorage?.cookies
-                semaphore.signal()
-            }
-            task.resume()
-            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-//            print(cookies)
-            
-            let newURL = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
-            let newSemaphore = DispatchSemaphore(value: 1)
-            let newTask = session.dataTask(with: URLRequest(url: newURL)) { data, response, error in
-                print(data,response,error)
-                if let data = data, let dataStirng = String(data: data, encoding: .utf8) {
-                    print(dataStirng)
+            let newRequest = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
+            do {
+                let (_, _) = try await session.data(for: request)
+                let (_, response) = try await session.data(for: newRequest)
+                
+                let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))
+                var tableID: String = "0"
+                if let match {
+                    if !match.isEmpty {
+                        tableID = String(match.first!.0)
+                    }
                 }
-                newSemaphore.signal()
+                
+                let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/281/print-data/\(tableID)?weekIndex=")!))
+                
+//                if let dataString = String(data: data, encoding: .utf8) {
+//                    print(dataString)
+//                }
+                
+                let json = try JSON(data: data)
+                let id = json["studentTableVm"]["activities"][0]["lessonId"].stringValue
+                print(id)
+                
+            } catch {
+                print(error)
             }
-            newTask.resume()
-            _ = newSemaphore.wait(timeout: .distantFuture)
         }
     }
 #endif

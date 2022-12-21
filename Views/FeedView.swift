@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
+var currentDateString: String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .none
+    return dateFormatter.string(from: Date())
+}
 
 struct FeedView: View {
-    var date: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-        return dateFormatter.string(from: Date())
-    }
     
     @Environment(\.defaultMinListRowHeight) var minRowHeight
     @State var showFeedSettingsPage: Bool = false
@@ -27,7 +27,7 @@ struct FeedView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack {
-                    TitleAndSubTitle(title: "Recent", subTitle: date, style: .reverse)
+                    TitleAndSubTitle(title: "Recent", subTitle: currentDateString, style: .reverse)
                     PostStack(posts: $feedPosts)
                     NavigationLink("See More") {
                         FeedSourcePage(nil, loadAllFeedSource: true)

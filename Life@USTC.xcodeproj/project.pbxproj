@@ -27,17 +27,9 @@
 		56D175B3294EAC5D0070778F /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B2294EAC5D0070778F /* PostModel.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BA294FFE270070778F /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B9294FFE270070778F /* UserType.swift */; };
+		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
+		56D175C0295048A10070778F /* UstcUgTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* UstcUgTable.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		565587FA294D63C00010E060 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 565587F6294D63C00010E060 /* FeedKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A0EF4E0C1CE86D1E00C52142;
-			remoteInfo = "FeedKit iOS";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		565587DF294AF61E0010E060 /* Embed Frameworks */ = {
@@ -64,7 +56,6 @@
 		565587EB294B46900010E060 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		565587EF294B46BB0010E060 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		565587F0294C4E5D0010E060 /* UstcUgAAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgAAS.swift; sourceTree = "<group>"; };
-		565587F6294D63C00010E060 /* FeedKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FeedKit.xcodeproj; path = "../../Desktop/FeedKit-master/FeedKit.xcodeproj"; sourceTree = "<group>"; };
 		565587FD294D67D80010E060 /* SwiftUIAddons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAddons.swift; sourceTree = "<group>"; };
 		56558800294D74BB0010E060 /* CASLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CASLogin.swift; sourceTree = "<group>"; };
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
@@ -75,6 +66,7 @@
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56D175B2294EAC5D0070778F /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
 		56D175B9294FFE270070778F /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
+		56D175BF295048A10070778F /* UstcUgTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,23 +82,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		565587DC294AF61E0010E060 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				565587F6294D63C00010E060 /* FeedKit.xcodeproj */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				56558803294D93810010E060 /* FeaturesView.swift */,
+				565587E0294B0CA60010E060 /* FeedView.swift */,
+				565587E6294B43BD0010E060 /* HomeView.swift */,
+				56558808294DC9D40010E060 /* SettingsView.swift */,
 				565587FF294D749C0010E060 /* Shared */,
 				565587FC294D65E30010E060 /* General */,
-				565587E0294B0CA60010E060 /* FeedView.swift */,
-				56558808294DC9D40010E060 /* SettingsView.swift */,
-				565587E6294B43BD0010E060 /* HomeView.swift */,
-				56558803294D93810010E060 /* FeaturesView.swift */,
+				56D175BE295048340070778F /* Features */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -122,20 +108,12 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		565587F7294D63C00010E060 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				565587FB294D63C00010E060 /* FeedKit.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				565587B5294ACEFD0010E060 /* Browser.swift */,
 				565587B2294ABE7B0010E060 /* Card.swift */,
 				565587B9294AE7980010E060 /* Post.swift */,
-				565587B5294ACEFD0010E060 /* Browser.swift */,
 				565587FD294D67D80010E060 /* SwiftUIAddons.swift */,
 			);
 			path = General;
@@ -144,8 +122,8 @@
 		565587FF294D749C0010E060 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				56D175B9294FFE270070778F /* UserType.swift */,
 				56558800294D74BB0010E060 /* CASLogin.swift */,
+				56D175B9294FFE270070778F /* UserType.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -162,13 +140,12 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
-				56AC72FA294A012700A60F47 /* ContentView.swift */,
 				565587E2294B0CCB0010E060 /* Constants.swift */,
+				56AC72FA294A012700A60F47 /* ContentView.swift */,
 				56558802294D75100010E060 /* Assets */,
-				565587F4294D632D0010E060 /* Views */,
 				565587F5294D635E0010E060 /* Models */,
 				56AC7301294A012F00A60F47 /* Products */,
-				565587DC294AF61E0010E060 /* Frameworks */,
+				565587F4294D632D0010E060 /* Views */,
 			);
 			sourceTree = "<group>";
 		};
@@ -178,6 +155,14 @@
 				56AC7300294A012F00A60F47 /* Life@USTC.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		56D175BE295048340070778F /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				56D175BF295048A10070778F /* UstcUgTable.swift */,
+			);
+			path = Features;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,6 +184,7 @@
 			name = "Life@USTC (iOS)";
 			packageProductDependencies = (
 				56D175B7294F01EA0070778F /* FeedKit */,
+				56D175BC295044FF0070778F /* SwiftyJSON */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
@@ -231,31 +217,16 @@
 			mainGroup = 56AC72F3294A012600A60F47;
 			packageReferences = (
 				56D175B6294F01EA0070778F /* XCRemoteSwiftPackageReference "FeedKit" */,
+				56D175BB295044FF0070778F /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 565587F7294D63C00010E060 /* Products */;
-					ProjectRef = 565587F6294D63C00010E060 /* FeedKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				56AC72FF294A012F00A60F47 /* Life@USTC (iOS) */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		565587FB294D63C00010E060 /* FeedKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = FeedKit.framework;
-			remoteRef = 565587FA294D63C00010E060 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		56AC72FE294A012F00A60F47 /* Resources */ = {
@@ -275,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
+				56D175C0295048A10070778F /* UstcUgTable.swift in Sources */,
 				565587E1294B0CA60010E060 /* FeedView.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				56D175B3294EAC5D0070778F /* PostModel.swift in Sources */,
@@ -527,6 +499,14 @@
 				minimumVersion = 9.0.0;
 			};
 		};
+		56D175BB295044FF0070778F /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -534,6 +514,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56D175B6294F01EA0070778F /* XCRemoteSwiftPackageReference "FeedKit" */;
 			productName = FeedKit;
+		};
+		56D175BC295044FF0070778F /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 56D175BB295044FF0070778F /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
