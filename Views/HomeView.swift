@@ -9,20 +9,21 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @State var feedPosts: [Post] = []
+    @State var feedPosts: [FeedPost] = []
+    @State var runOnce = false
+    @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
+    @State var status: AsyncViewStatus = .inProgress
     var feedPostIDList: [UUID] {
         feedPosts.map({$0.id})
     }
-    let semaphore = DispatchSemaphore(value: 2)
-    let feedPostNumber = 4
     
     var featureList: some View {
         VStack{
             EmptyView()
         }
     }
-    @State var runOnce = false
     
+    // exract a function to make infinite loop
     func scrollTo(proxy: ScrollViewProxy, id: UUID) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             withAnimation {
@@ -40,7 +41,7 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack {
                     ForEach(feedPosts, id:\.id) { post in
-                        PostCard(post: post)
+                        FeedPostView(post: post)
                             .id(post.id)
                     }
                 }
@@ -48,11 +49,17 @@ struct HomeView: View {
             }
             .scrollDisabled(true)
             .onAppear {
+                // the onAppear function would be called whenever the view 'disappear' and 're-appeared' from end-user's view,
+                // which means even the user switched under tabview, the function would be called once again.
+                // using runOnce to make sure the scroll loop is created only once...
+                // Not sure if SwiftUI have a seprate modifier for that...
                 if !runOnce {
                     runOnce = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-                        scrollTo(proxy: proxy, id: feedPostIDList.first!)
+                    _ = Task {
+                        while (status != .success) {}
+                        if let id = feedPostIDList.first {
+                            scrollTo(proxy: proxy, id: id)
+                        }
                     }
                 }
             }
@@ -63,7 +70,7 @@ struct HomeView: View {
         VStack {
             TitleAndSubTitle(title: "Feed", subTitle: currentDateString,style: .reverse)
             Group {
-                if feedPosts.isEmpty {
+                if status == .inProgress {
                     ProgressView()
                         .frame(width: UIScreen.main.bounds.width - 30, height: 200)
                 } else {
@@ -71,15 +78,7 @@ struct HomeView: View {
                 }
             }
             .onAppear {
-                DispatchQueue.main.async {
-                    while self.feedPosts.count == 0 {
-                        self.feedPosts = showUserFeedPost(number: feedPostNumber)
-                        // this is too violent of a solution...
-                        // TODO: change this to a notification listener and listen to network permission change.
-                        //
-                    }
-                    semaphore.signal()
-                }
+                showUserFeedPost(number: feedPostNumber, posts: $feedPosts, status: $status)
             }
             
             // rest of the body, use .padding here to avoid framing problem.

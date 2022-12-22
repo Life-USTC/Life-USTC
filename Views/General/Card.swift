@@ -55,6 +55,7 @@ struct Card: View {
         }
         .scaledToFill()
         .frame(height:200)
+        .frame(maxWidth: UIScreen.main.bounds.width - 30)
         .overlay(alignment: .bottomLeading) {
             // title and subtitle
             VStack(alignment: .leading) {

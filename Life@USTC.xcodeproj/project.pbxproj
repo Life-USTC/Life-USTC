@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		565587B3294ABE7C0010E060 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B2294ABE7B0010E060 /* Card.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
-		565587B8294AE7910010E060 /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* FeedModel.swift */; };
-		565587BA294AE7980010E060 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B9294AE7980010E060 /* Post.swift */; };
+		565587B8294AE7910010E060 /* FeedPostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* FeedPostModel.swift */; };
 		565587E1294B0CA60010E060 /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E0294B0CA60010E060 /* FeedView.swift */; };
 		565587E3294B0CCB0010E060 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E2294B0CCB0010E060 /* Constants.swift */; };
 		565587E5294B339F0010E060 /* StudentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E4294B339F0010E060 /* StudentModel.swift */; };
@@ -24,11 +23,16 @@
 		5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
 		56AC730B294A012F00A60F47 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AC72FA294A012700A60F47 /* ContentView.swift */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
-		56D175B3294EAC5D0070778F /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B2294EAC5D0070778F /* PostModel.swift */; };
+		56D175B3294EAC5D0070778F /* PostStackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B2294EAC5D0070778F /* PostStackModel.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BA294FFE270070778F /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175B9294FFE270070778F /* UserType.swift */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* UstcUgTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* UstcUgTable.swift */; };
+		56D175C6295438870070778F /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175C5295438870070778F /* FeedModel.swift */; };
+		56D175C8295438E20070778F /* FeedSourceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175C7295438E20070778F /* FeedSourceModel.swift */; };
+		56D175CC295457100070778F /* FeedSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CB295457100070778F /* FeedSourceView.swift */; };
+		56D175CE295457810070778F /* FeedPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CD295457810070778F /* FeedPostView.swift */; };
+		56D175D02954589D0070778F /* FeedPostAddon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedPostAddon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,8 +51,7 @@
 /* Begin PBXFileReference section */
 		565587B2294ABE7B0010E060 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
-		565587B7294AE7910010E060 /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
-		565587B9294AE7980010E060 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		565587B7294AE7910010E060 /* FeedPostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostModel.swift; sourceTree = "<group>"; };
 		565587E0294B0CA60010E060 /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		565587E2294B0CCB0010E060 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		565587E4294B339F0010E060 /* StudentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudentModel.swift; sourceTree = "<group>"; };
@@ -64,9 +67,14 @@
 		56AC72FA294A012700A60F47 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		56D175B2294EAC5D0070778F /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
+		56D175B2294EAC5D0070778F /* PostStackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostStackModel.swift; sourceTree = "<group>"; };
 		56D175B9294FFE270070778F /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* UstcUgTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgTable.swift; sourceTree = "<group>"; };
+		56D175C5295438870070778F /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
+		56D175C7295438E20070778F /* FeedSourceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceModel.swift; sourceTree = "<group>"; };
+		56D175CB295457100070778F /* FeedSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceView.swift; sourceTree = "<group>"; };
+		56D175CD295457810070778F /* FeedPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostView.swift; sourceTree = "<group>"; };
+		56D175CF2954589D0070778F /* FeedPostAddon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostAddon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,11 +107,10 @@
 		565587F5294D635E0010E060 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				565587F0294C4E5D0010E060 /* UstcUgAAS.swift */,
+				56D175C9295438E80070778F /* Feed */,
+				56D175C4295411DA0070778F /* USTC */,
 				565587E4294B339F0010E060 /* StudentModel.swift */,
-				565587B7294AE7910010E060 /* FeedModel.swift */,
-				5655880A294DEA6B0010E060 /* UstcCAS.swift */,
-				56D175B2294EAC5D0070778F /* PostModel.swift */,
+				56D175B2294EAC5D0070778F /* PostStackModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -111,9 +118,9 @@
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				56D175CA295456F10070778F /* Feed */,
 				565587B5294ACEFD0010E060 /* Browser.swift */,
 				565587B2294ABE7B0010E060 /* Card.swift */,
-				565587B9294AE7980010E060 /* Post.swift */,
 				565587FD294D67D80010E060 /* SwiftUIAddons.swift */,
 			);
 			path = General;
@@ -163,6 +170,35 @@
 				56D175BF295048A10070778F /* UstcUgTable.swift */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		56D175C4295411DA0070778F /* USTC */ = {
+			isa = PBXGroup;
+			children = (
+				565587F0294C4E5D0010E060 /* UstcUgAAS.swift */,
+				5655880A294DEA6B0010E060 /* UstcCAS.swift */,
+			);
+			path = USTC;
+			sourceTree = "<group>";
+		};
+		56D175C9295438E80070778F /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				565587B7294AE7910010E060 /* FeedPostModel.swift */,
+				56D175C5295438870070778F /* FeedModel.swift */,
+				56D175C7295438E20070778F /* FeedSourceModel.swift */,
+			);
+			path = Feed;
+			sourceTree = "<group>";
+		};
+		56D175CA295456F10070778F /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				56D175CB295457100070778F /* FeedSourceView.swift */,
+				56D175CD295457810070778F /* FeedPostView.swift */,
+				56D175CF2954589D0070778F /* FeedPostAddon.swift */,
+			);
+			path = Feed;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -249,18 +285,22 @@
 				56D175C0295048A10070778F /* UstcUgTable.swift in Sources */,
 				565587E1294B0CA60010E060 /* FeedView.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
-				56D175B3294EAC5D0070778F /* PostModel.swift in Sources */,
+				56D175B3294EAC5D0070778F /* PostStackModel.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLogin.swift in Sources */,
+				56D175C6295438870070778F /* FeedModel.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIAddons.swift in Sources */,
 				565587E5294B339F0010E060 /* StudentModel.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
-				565587BA294AE7980010E060 /* Post.swift in Sources */,
+				56D175D02954589D0070778F /* FeedPostAddon.swift in Sources */,
+				56D175CE295457810070778F /* FeedPostView.swift in Sources */,
 				56AC730B294A012F00A60F47 /* ContentView.swift in Sources */,
-				565587B8294AE7910010E060 /* FeedModel.swift in Sources */,
+				565587B8294AE7910010E060 /* FeedPostModel.swift in Sources */,
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
 				56D175BA294FFE270070778F /* UserType.swift in Sources */,
 				565587B3294ABE7C0010E060 /* Card.swift in Sources */,
+				56D175C8295438E20070778F /* FeedSourceModel.swift in Sources */,
+				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */,
 				565587E3294B0CCB0010E060 /* Constants.swift in Sources */,
 			);

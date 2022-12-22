@@ -22,7 +22,7 @@ struct FeedView: View {
     
     // Maintain a copy of list in @State from constants:
     
-    @State var feedPosts: [Post] = []
+    @State var feedPosts: [FeedPost] = []
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
@@ -30,7 +30,7 @@ struct FeedView: View {
                     TitleAndSubTitle(title: "Recent", subTitle: currentDateString, style: .reverse)
                     PostStack(posts: $feedPosts)
                     NavigationLink("See More") {
-                        FeedSourcePage(nil, loadAllFeedSource: true)
+                        AllSourceView()
                     }
                     
                     Divider()
@@ -43,8 +43,7 @@ struct FeedView: View {
                     List {
                         ForEach(defaultFeedSources, id:\.id) { feedSource in
                             NavigationLink(feedSource.name) {
-//                                PostsPage(posts: feedSource.fetchRecentPost(), name: feedSource.name)
-                                FeedSourcePage(feedSource)
+                                FeedSourceView(feedSource: feedSource)
                             }
                         }
                     }
@@ -56,7 +55,7 @@ struct FeedView: View {
                 .padding([.leading,.trailing])
             }
             .onChange(of: showPostNumbers) { _ in
-                self.feedPosts = showUserFeedPost(number: showPostNumbers)
+                showUserFeedPost(number: showPostNumbers, posts: $feedPosts)
             }
             .navigationTitle("Feed")
             .toolbar {
@@ -82,14 +81,7 @@ struct FeedView: View {
                 }
             }
             .onAppear {
-                DispatchQueue.main.async {
-                    while self.feedPosts.count == 0 {
-                        self.feedPosts = showUserFeedPost(number: showPostNumbers)
-                        // this is too violent of a solution...
-                        // TODO: change this to a notification listener and listen to network permission change.
-                        // 
-                    }
-                }
+                showUserFeedPost(number: showPostNumbers, posts: $feedPosts)
             }
         }
     }

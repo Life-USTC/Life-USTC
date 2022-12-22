@@ -68,8 +68,12 @@ struct ContentView: View {
     }
     
     func onLoadFunction() {
-        loadPostCache()
-        loadMainUser()
+        do {
+            try loadPostCache()
+            loadMainUser()
+        } catch {
+            print(error)
+        }
 #if DEBUG
         let task = Task {
             //        DispatchQueue.main.async {
