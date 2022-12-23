@@ -23,6 +23,8 @@ protocol FeedSource {
     var type: FeedSourceType { get }
     var name: String { get }
     var id: UUID { get }
+    var description: String? { get }
+    var image: String? { get }
     
     func fetchRecentPost() async throws -> [FeedPost] // this could be loaded from local storage
     func forceUpdatePost() async throws -> [FeedPost] // this requires a network request
@@ -40,6 +42,9 @@ struct RSSFeedSource: FeedSource {
     var url: URL
     var name: String
     var id = UUID()
+    
+    var description: String?
+    var image: String?
     
     var cache: FeedPostCache? {
         postCacheList.first(where: {$0.id == self.id})
@@ -116,11 +121,13 @@ struct RSSFeedSource: FeedSource {
         }
     }
     
-    init(url: URL, name: String, id: UUID, flag: Bool = false) {
+    init(url: URL, name: String, id: UUID = UUID(), description: String? = nil, image: String? = nil, flag: Bool = false) {
         self.url = url
         self.name = name
         self.id = id
         
+        self.description = description
+        self.image = image
         self.parser = FeedParser(URL: self.url)
         
         // add to the feedSourceList

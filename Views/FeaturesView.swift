@@ -7,37 +7,16 @@
 
 import SwiftUI
 
-protocol Feature: Identifiable {
-    var id: UUID { get }
-    var name: String { get }
-    var image: String? { get }
-    var description: String { get }
-    
-    var url: URL { get }
-}
-
-struct USTCFeatures: Feature, Identifiable {
+struct USTCWebFeatures: Identifiable {
     var id = UUID()
     var name: String
-    var image: String?
+    var image: String
     var description: String
     var url: URL
 }
 
-extension URL {
-    func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "service", value: components.url!.absoluteString)]
-        return URL(string: "\(casServer)/login?service=\(components.url!.absoluteString)")!
-    }
-
-    func ustcCASLoginMarkup() -> URL {
-        return CASLoginMarkup(casServer: URL(string: "https://passport.ustc.edu.cn")!)
-    }
-}
-
-let listOfUSTCFeatures: [USTCFeatures] =
-[.init(name: "教务系统",
+let listOfUSTCWebFeatures: [USTCWebFeatures] =
+[.init(name: "教务系统(本科)",
        image: "person.2",
        description: "本科生教务系统",
        url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup()),
@@ -58,47 +37,63 @@ let listOfUSTCFeatures: [USTCFeatures] =
        description: "本科教育提升计划-网络课程平台",
        url: URL(string: "http://course.ustc.edu.cn/sso/ustc")!.ustcCASLoginMarkup())]
 
-let allFeatures: [String:[any Feature]] =
-["ustc.edu.cn": listOfUSTCFeatures]
+struct ListLabelView: View {
+    var image: String
+    var title: String
+    var subTitle: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: image)
+                .frame(width: 30)
+                .foregroundColor(.accentColor)
+                .symbolRenderingMode(.hierarchical)
+            if subTitle.isEmpty {
+                Text(NSLocalizedString(title, comment: ""))
+                    .bold()
+            } else {
+                TitleAndSubTitle(title: title, subTitle: subTitle, style: .substring)
+            }
+            Spacer()
+        }
+    }
+}
 
 struct FeaturesView: View {
     @State var searchText = ""
     
-    func featureListView(_ featureList: [any Feature]) -> some View {
+    func featureListView(_ featureList: [USTCWebFeatures]) -> some View {
         ForEach(featureList, id:\.id) { feature in
             NavigationLink(destination: Browser(url: feature.url, title: feature.name)) {
-                HStack {
-                    Image(systemName: feature.image!)
-                        .frame(width: 30)
-                        .foregroundColor(.accentColor)
-                        .symbolRenderingMode(.hierarchical)
-                    TitleAndSubTitle(title: feature.name, subTitle: feature.description, style: .substring)
-                    Spacer()
-                }
+                ListLabelView(image: feature.image, title: feature.name, subTitle: feature.description)
             }
         }
     }
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(allFeatures.sorted(by: {$0.key.hashValue < $1.key.hashValue}), id: \.key) { key, featureList in
-                    Section {
-                        featureListView(featureList)
-                    } header: {
-                        Text(key)
+                Section {
+                    NavigationLink(destination: AllSourceView()) {
+                        ListLabelView(image: "doc.richtext", title: "Feed", subTitle: "")
                     }
+                    
+                    ForEach(defaultFeedSources, id:\.id) { feedSource in
+                        NavigationLink(destination: FeedSourceView(feedSource: feedSource)) {
+                            ListLabelView(image: feedSource.image ?? "doc.richtext", title: feedSource.name, subTitle: feedSource.description ?? "")
+                        }
+                    }
+                } header: {
+                    Text("Feed")
+                }
+                
+                Section {
+                    featureListView(listOfUSTCWebFeatures)
+                } header: {
+                    Text("Web")
                 }
             }
             .navigationTitle("Features")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-
-                    } label: {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-                }
-            }
 //            .searchable(text: $searchText,placement: .navigationBarDrawer(displayMode: .always))
         }
     }

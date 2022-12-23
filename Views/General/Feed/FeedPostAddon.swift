@@ -18,7 +18,7 @@ struct PostStack: View {
 }
 
 struct PostListPage: View {
-    let name: LocalizedStringKey
+    let name: String
     @Binding var posts: [FeedPost]
     @Binding var status: AsyncViewStatus
     var postsSorted: [HistoryEnum: [FeedPost]] {
@@ -47,11 +47,13 @@ struct PostListPage: View {
                 } else {
                     VStack {
                         ForEach(postsSorted.sorted(by: {$0.key.rawValue < $1.key.rawValue}), id:\.key.hashValue) { key, value in
-                            VStack {
-                                showTitle(key: key)
-                                PostStack(posts: Binding.constant(value))
+                            if !value.isEmpty {
+                                VStack {
+                                    showTitle(key: key)
+                                    PostStack(posts: Binding.constant(value))
+                                }
+                                .padding(.bottom, 40)
                             }
-                            .padding(.bottom, 40)
                         }
                     }
                     .padding([.leading,.trailing])
@@ -60,6 +62,12 @@ struct PostListPage: View {
             .navigationTitle(name)
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+    
+    init(name: String, posts: Binding<[FeedPost]>, status: Binding<AsyncViewStatus>) {
+        self.name = NSLocalizedString(name, comment: "")
+        self._posts = posts
+        self._status = status
     }
 }
 

@@ -14,7 +14,7 @@ enum HistoryEnum: Int, CaseIterable {
     case year = 365
     case longerThanAYear = 400
     
-    var text: LocalizedStringKey {
+    var text: String {
         switch self {
         case .day:
             return "Today"
@@ -45,7 +45,7 @@ enum HistoryEnum: Int, CaseIterable {
         }
     }
     
-    var dateText: LocalizedStringKey {
+    var dateText: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
@@ -69,9 +69,9 @@ enum HistoryEnum: Int, CaseIterable {
             to = base + DateComponents(month: -1, day: -1)
         case .longerThanAYear:
             to = base + DateComponents(year: -1, day: -1)
-            return LocalizedStringKey("Before \(dateFormatter.string(from: to))")
+            return "Before \(dateFormatter.string(from: to))"
         }
-        return LocalizedStringKey(dateFormatter.string(from: from) + " - " + dateFormatter.string(from: to))
+        return dateFormatter.string(from: from) + " - " + dateFormatter.string(from: to)
     }
 }
 

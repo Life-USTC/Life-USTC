@@ -29,8 +29,8 @@ enum TitleAndSubTitleStyle {
 }
 
 struct TitleAndSubTitle: View {
-    var title: LocalizedStringKey
-    var subTitle: LocalizedStringKey
+    var title: String
+    var subTitle: String
     var style: TitleAndSubTitleStyle
     
     var body: some View {
@@ -38,8 +38,9 @@ struct TitleAndSubTitle: View {
             switch style {
             case .substring:
                 Text(title)
-                    .font(.title3)
+                    .font(.body)
                     .bold()
+                    .padding(.bottom, 1)
                 Text(subTitle)
                     .font(.caption)
             case .reverse:
@@ -62,15 +63,9 @@ struct TitleAndSubTitle: View {
         .hStackLeading()
     }
     
-    init(title: LocalizedStringKey, subTitle: LocalizedStringKey, style: TitleAndSubTitleStyle) {
-        self.title = title
-        self.subTitle = subTitle
-        self.style = style
-    }
-    
     init(title: String, subTitle: String, style: TitleAndSubTitleStyle) {
-        self.title = LocalizedStringKey(title)
-        self.subTitle = LocalizedStringKey(subTitle)
+        self.title = NSLocalizedString(title, comment: "")
+        self.subTitle = NSLocalizedString(subTitle, comment: "")
         self.style = style
     }
 }

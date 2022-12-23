@@ -14,9 +14,7 @@ struct FeedSourceView: View {
     
     var body: some View {
         NavigationStack {
-            PostListPage(name: LocalizedStringKey(feedSource.name), posts: $posts, status: $status)
-                .navigationTitle(feedSource.name)
-                .navigationBarTitleDisplayMode(.inline)
+            PostListPage(name: feedSource.name, posts: $posts, status: $status)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
@@ -40,9 +38,7 @@ struct AllSourceView: View {
     
     var body: some View {
         NavigationStack {
-            PostListPage(name: "All", posts: $posts, status: $status)
-                .navigationTitle("All")
-                .navigationBarTitleDisplayMode(.inline)
+            PostListPage(name: "Feed", posts: $posts, status: $status)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {

@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+var currentDateString: String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .none
+    return dateFormatter.string(from: Date())
+}
+
 struct HomeView: View {
     
     @State var feedPosts: [FeedPost] = []
@@ -80,9 +87,6 @@ struct HomeView: View {
             .onAppear {
                 showUserFeedPost(number: feedPostNumber, posts: $feedPosts, status: $status)
             }
-            
-            // rest of the body, use .padding here to avoid framing problem.
-            // TODO: find a better way to control the size of each post, and avoid adding new struct-view to the proj and try add modifier to PostStack()
         }
     }
     
