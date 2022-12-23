@@ -7,19 +7,22 @@
 
 import Foundation
 
-protocol CasClient {
-    var casCookie: [HTTPCookie]? { get }
-    var lastLogined: Date? { get }
-    
-    mutating func loginToCAS() -> Bool
-    mutating func vaildCookie() -> [HTTPCookie]
-    mutating func update(username: String, password: String)
-    
-    func checkLogined() -> Bool
+let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
+let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
+
+extension URL {
+    func CASLoginMarkup(casServer: URL) -> URL {
+        var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "service", value: components.url!.absoluteString)]
+        return URL(string: "\(casServer)/login?service=\(components.url!.absoluteString)")!
+    }
+
+    func ustcCASLoginMarkup() -> URL {
+        return CASLoginMarkup(casServer: URL(string: "https://passport.ustc.edu.cn")!)
+    }
 }
 
-let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
-struct UstcCasClient: CasClient {
+struct UstcCasClient {
     var username: String
     var password: String
     
@@ -47,8 +50,8 @@ struct UstcCasClient: CasClient {
     mutating func vaildCookie() -> [HTTPCookie] {
         if verified {
             return casCookie!
-        } else if self.loginToCAS() {
-            return casCookie!
+//        } else if self.loginToCAS() {
+//            return casCookie!
         } else {
             return []
         }
@@ -60,58 +63,53 @@ struct UstcCasClient: CasClient {
     }
     
     
-    mutating func getLtTokenFromCAS() -> String {
-        let session = URLSession(configuration: .default)
-        let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
-        var ltToken = ""
-        let semaphore = DispatchSemaphore(value: 0)
-        var cookies: [HTTPCookie] = []
-        let task = session.dataTask(with: ustcLoginUrl) { data, response, error in
-            if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                let match = dataString.firstMatch(of: findLtStringRegex)
-                if match == nil {
-                    return
-                }
-                ltToken = String(match!.0)
-                let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
-                cookies = HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!)
+    mutating func getLtTokenFromCAS() async throws -> String {
+        let session = URLSession(configuration: .ephemeral)
+        let (data, response) = try await session.data(from: ustcLoginUrl)
+        if let dataString = String(data: data, encoding: .utf8) {
+            let match = dataString.firstMatch(of: findLtStringRegex)
+            if match == nil {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
             }
-            semaphore.signal()
+            
+            let ltToken = String(match!.0)
+            let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
+            let cookies = HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!)
+            print(cookies)
+            self.casCookie = cookies
+            return ltToken
         }
-        task.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        self.casCookie = cookies
-        return ltToken
+        throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
     }
     
     /// Call this function before using casCookie
-    mutating func loginToCAS() -> Bool {
+    mutating func loginToCAS() async -> Bool {
         if verified {
             // already verified, returns before double checking.
             // if we do need double checking (try the Cookie somewhere else, call `verifyToken()`)
             return true
         }
-        let session = URLSession(configuration: .default)
-        let semaphore = DispatchSemaphore(value: 0)
-        let ltToken = getLtTokenFromCAS()
-        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(self.username)&password=\(self.password)&LT=&button="
-        var request = URLRequest(url: ustcLoginUrl)
-        request.httpMethod = "POST"
-        request.httpBody = dataString.data(using: .utf8)
-        request.httpShouldHandleCookies = true
-        if let casCookie {
-            session.configuration.httpCookieStorage?.setCookies(casCookie, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
-        }
-        var cookies: [HTTPCookie]? = []
-        let task = session.dataTask(with: request) { data, response, error in
+        do {
+            let session = URLSession(configuration: .default)
+            let ltToken = try await getLtTokenFromCAS()
+            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(self.username)&password=\(self.password)&LT=&button="
+            var request = URLRequest(url: ustcLoginUrl)
+            request.httpMethod = "POST"
+            request.httpBody = dataString.data(using: .utf8)
+            request.httpShouldHandleCookies = true
+            if let casCookie {
+                session.configuration.httpCookieStorage?.setCookies(casCookie, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
+            }
+            var cookies: [HTTPCookie]? = []
+            _ = try await session.data(for: request)
             cookies = session.configuration.httpCookieStorage?.cookies
-            semaphore.signal()
+            self.casCookie = cookies
+            lastLogined = .now
+            return self.casCookie?.contains(where: {$0.name == "logins"}) ?? false
+        } catch {
+            print(error)
+            return false
         }
-        task.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        self.casCookie = cookies
-        lastLogined = .now
-        return self.casCookie?.contains(where: {$0.name == "logins"}) ?? false
     }
         
     func checkLogined() -> Bool {
@@ -124,3 +122,4 @@ struct UstcCasClient: CasClient {
         return true
     }
 }
+

@@ -140,7 +140,7 @@ struct SettingsView: View {
                 Section {
                     NavigationLink("Feed Source Settings", destination: EmptyView())
                     NavigationLink("CAS Settings", destination: CASLoginView())
-                    NavigationLink("Change User Type", destination: UserTypeView()) // TODO: refactor UserType and add more info to end user... this looks extremely odd.
+                    NavigationLink("Change User Type", destination: UserTypeView())
                     NavigationLink("Notification Settings", destination: EmptyView())
                 }
                 

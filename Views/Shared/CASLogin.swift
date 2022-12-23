@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-var mainUstcCasClient: any CasClient = UstcCasClient(username: "", password: "")
+var mainUstcCasClient = UstcCasClient(username: "", password: "")
 
 struct CASLoginView: View {
     // abstract from LoginSheet, some variables are subject to change though
@@ -17,7 +17,7 @@ struct CASLoginView: View {
     @Binding var casLoginSheet: Bool // used to signal the sheet to close
     var isInSheet = false
     
-    var title: LocalizedStringKey = "CAS Settings"
+    var title: String = "CAS Settings"
     var displayMode: NavigationBarItem.TitleDisplayMode = .inline
     
     @State var showFailedAlert = false
@@ -96,8 +96,8 @@ struct CASLoginView: View {
     
     private func checkAndLogin() {
         mainUstcCasClient.update(username: passportUsername, password: passportPassword)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let result = mainUstcCasClient.loginToCAS()
+        _ = Task {
+            let result = await mainUstcCasClient.loginToCAS()
             if result {
                 if isInSheet {
                     showSuccessAlert = true
@@ -116,14 +116,14 @@ struct CASLoginView: View {
         }
     }
     
-    init(casLoginSheet: Binding<Bool>? = nil, title: LocalizedStringKey? = nil, displayMode: NavigationBarItem.TitleDisplayMode? = nil, isInSheet: Bool? = nil) {
+    init(casLoginSheet: Binding<Bool>? = nil, title: String? = nil, displayMode: NavigationBarItem.TitleDisplayMode? = nil, isInSheet: Bool? = nil) {
         if let casLoginSheet {
             self._casLoginSheet = casLoginSheet
         } else {
             self._casLoginSheet = .constant(false)
         }
         if let title {
-            self.title = title
+            self.title = NSLocalizedString(title, comment: "")
         }
         if let displayMode {
             self.displayMode = displayMode
@@ -139,8 +139,8 @@ struct CASLoginView: View {
 extension ContentView {
     func loadMainUser() {
         mainUstcCasClient = UstcCasClient(username: passportUsername, password: passportPassword)
-        DispatchQueue.main.async {
-            let result = mainUstcCasClient.loginToCAS()
+         _ = Task {
+            let result = await mainUstcCasClient.loginToCAS()
             if !result {
                 casLoginSheet = true
             }
