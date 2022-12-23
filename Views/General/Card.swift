@@ -17,7 +17,7 @@ extension String {
 
         let hue = Double(hash % 360) / 360
         let saturation = Double(hash % 50 + 25) / 100
-        let brightness = Double(hash % 10 + 45) / 100
+        let brightness = Double(hash % 10 + 15) / 100
 
         return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
     }

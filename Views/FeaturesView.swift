@@ -88,6 +88,14 @@ struct FeaturesView: View {
                 }
                 
                 Section {
+                    NavigationLink(destination: UstcUgTableView()) {
+                        ListLabelView(image: "book", title: "Time Table", subTitle: "")
+                    }
+                } header: {
+                    Text("UG AAS")
+                }
+                
+                Section {
                     featureListView(listOfUSTCWebFeatures)
                 } header: {
                     Text("Web")

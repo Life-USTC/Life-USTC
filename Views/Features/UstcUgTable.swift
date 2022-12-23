@@ -8,7 +8,8 @@
 import SwiftUI
 import Charts
 
-struct TableClass {
+struct TableClass: Identifiable {
+    var id = UUID()
     var dayOfWeek: Int
     var startTime: Int
     var endTime: Int
@@ -18,29 +19,93 @@ struct TableClass {
     var classTeacherName: String
 }
 
-struct TableClassCardView: View {
-    let tableclass: TableClass
-    
-    var body: some View {
-        VStack {
-            Text(tableclass.name)
-            Text(tableclass.classIDString)
-            Text(tableclass.classTeacherName)
-            Text(tableclass.classPositionString)
-        }
-        .lineLimit(1)
-        .font(.caption)
-        .foregroundColor(.white)
-        .padding()
-        .frame(height: 100 * Double(tableclass.endTime - tableclass.startTime))
-        .background {
-            RoundedRectangle(cornerRadius: 8)
-                .foregroundColor(.accentColor)
-        }
+let heightPerClass = 55.0
+
+// lazy version...
+let classStartTimes: [DateComponents] =
+[.init(hour: 7, minute: 50),
+ .init(hour: 8, minute: 40),
+ .init(hour: 9, minute: 45),
+ .init(hour: 10, minute: 35),
+ .init(hour: 11, minute: 25),
+ .init(hour: 14, minute: 0),
+ .init(hour: 14, minute: 50),
+ .init(hour: 15, minute: 55),
+ .init(hour: 16, minute: 45),
+ .init(hour: 17, minute: 35),
+ .init(hour: 19, minute: 30),
+ .init(hour: 20, minute: 20),
+ .init(hour: 21, minute: 10)]
+
+let classEndTimes: [DateComponents] =
+[.init(hour: 8, minute: 35),
+ .init(hour: 9, minute: 25),
+ .init(hour: 10, minute: 30),
+ .init(hour: 11, minute: 20),
+ .init(hour: 12, minute: 10),
+ .init(hour: 14, minute: 45),
+ .init(hour: 15, minute: 35),
+ .init(hour: 16, minute: 40),
+ .init(hour: 17, minute: 30),
+ .init(hour: 18, minute: 20),
+ .init(hour: 20, minute: 15),
+ .init(hour: 21, minute: 5),
+ .init(hour: 21, minute: 55)]
+
+extension DateComponents {
+    var clockTime: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .none
+        return dateFormatter.string(from: Date().stripTime() + self)
     }
 }
 
-
+struct TableClassCardView: View {
+    var tableClass: TableClass
+    @State var showPopUp = false
+    
+    var body: some View {
+        VStack {
+            Text(classEndTimes[tableClass.startTime - 1].clockTime)
+                .font(.caption)
+            Spacer()
+            
+            Text(tableClass.name)
+                .font(.system(size: 14))
+            Text(tableClass.classPositionString)
+                .font(.system(size: 14))
+            if tableClass.startTime != tableClass.endTime  {
+                Divider()
+                Text(tableClass.classIDString)
+                    .font(.system(size: 8))
+                Text(tableClass.classTeacherName)
+                    .font(.system(size: 8))
+                
+                Spacer()
+                Text(classEndTimes[tableClass.endTime - 1].clockTime)
+                    .font(.caption)
+            }
+        }
+        .lineLimit(1)
+        .padding(4)
+        .frame(height: heightPerClass * Double(tableClass.endTime - tableClass.startTime + 1))
+        .background {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(.gray, lineWidth: 1)
+        }
+        .onLongPressGesture {
+            showPopUp = true
+        }
+        .sheet(isPresented: $showPopUp) {
+            EmptyView()
+        }
+    }
+    
+    init(tableClass: TableClass) {
+        self.tableClass = tableClass
+    }
+}
 
 struct UstcUgTableView: View {
     // Better preview here..?
@@ -52,7 +117,7 @@ struct UstcUgTableView: View {
     var body: some View {
         NavigationStack {
             mainView
-                .padding()
+                .padding(1)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
@@ -61,33 +126,56 @@ struct UstcUgTableView: View {
                             }
                         } label: {
                             Text("Sat&Sun")
-//                            Label("Show Saturday and Sunday", systemImage: "square.stack.3d.down.right")
+                        }
+                        
+                        Button {
+                            withAnimation {
+                                showSatAndSun.toggle()
+                            }
+                        } label: {
+                            Text("Sat&Sun")
                         }
                     }
                 }
                 .navigationTitle("Time Table")
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     func makeVStack(index: Int) -> some View {
         VStack {
-            Text(String(index + 1))
             Text(daysOfWeek[index])
-            ZStack {
-//                ForEach
-                TableClassCardView(tableclass: TableClass(dayOfWeek: 1, startTime: 1, endTime: 3, name: "数学分析", classIDString: "MATH1001", classPositionString: "5204", classTeacherName: "testName"))
+            ZStack(alignment: .top) {
+                Color.clear
+                
+                ForEach(classes) { eachClass in
+                    if eachClass.dayOfWeek == (index + 1) {
+                        TableClassCardView(tableClass: eachClass)
+                            .offset(y: Double(eachClass.startTime - 1) * heightPerClass)
+                    }
+                }
+                
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.accentColor)
+                    .offset(y: 5 * heightPerClass)
+                    .opacity(0.5)
+                
+                
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(.accentColor)
+                    .offset(y: 9 * heightPerClass)
+                    .opacity(0.5)
             }
-            .frame(height: 100 * 9)
         }
-//        .border(.blue)
-        .padding([.leading, .trailing], 1)
-        .frame(width: (UIScreen.main.bounds.width - 80) / 3)
+        .frame(width: UIScreen.main.bounds.width / 5, height: heightPerClass * 13)
     }
     
     var mainView: some View {
         ScrollView(.vertical, showsIndicators: false) {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
+                HStack(spacing: 0) {
                     ForEach(0..<5) { index in
                         makeVStack(index: index)
                     }
@@ -98,7 +186,7 @@ struct UstcUgTableView: View {
                     }
                 }
             }
+            .scrollDisabled(!showSatAndSun)
         }
-//        .scrollDisabled(!showSatAndSun)
     }
 }

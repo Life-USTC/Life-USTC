@@ -15,11 +15,7 @@ import SwiftyJSON
 struct Life_USTCApp: App {
     var body: some Scene {
         WindowGroup {
-#if DEBUG1
-            UstcUgTableView()
-#else
             ContentView()
-#endif
         }
     }
 }
