@@ -22,7 +22,7 @@ extension URL {
     }
 }
 
-struct UstcCasClient {
+class UstcCasClient {
     var username: String
     var password: String
     
@@ -47,7 +47,7 @@ struct UstcCasClient {
         return false
     }
     
-    mutating func vaildCookie() -> [HTTPCookie] {
+    func vaildCookie() -> [HTTPCookie] {
         if verified {
             return casCookie!
 //        } else if self.loginToCAS() {
@@ -57,13 +57,13 @@ struct UstcCasClient {
         }
     }
     
-    mutating func update(username: String, password: String) {
+    func update(username: String, password: String) {
         self.username = username
         self.password = password
     }
     
     
-    mutating func getLtTokenFromCAS() async throws -> String {
+    func getLtTokenFromCAS() async throws -> String {
         let session = URLSession(configuration: .ephemeral)
         let (data, response) = try await session.data(from: ustcLoginUrl)
         if let dataString = String(data: data, encoding: .utf8) {
@@ -83,7 +83,7 @@ struct UstcCasClient {
     }
     
     /// Call this function before using casCookie
-    mutating func loginToCAS() async -> Bool {
+    func loginToCAS() async -> Bool {
         if verified {
             // already verified, returns before double checking.
             // if we do need double checking (try the Cookie somewhere else, call `verifyToken()`)

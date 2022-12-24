@@ -14,87 +14,39 @@ var currentDateString: String {
     return dateFormatter.string(from: Date())
 }
 
+let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+var currentWeekDayString: String {
+    let calendar = Calendar.current
+    let weekday = calendar.component(.weekday, from: Date())
+    debugPrint(weekday)
+    return daysOfWeek[(weekday - 2)%7]
+}
+
 struct HomeView: View {
-    
-    @State var feedPosts: [FeedPost] = []
-    @State var runOnce = false
-    @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
-    @State var status: AsyncViewStatus = .inProgress
-    var feedPostIDList: [UUID] {
-        feedPosts.map({$0.id})
-    }
-    
-    var featureList: some View {
-        VStack{
-            EmptyView()
-        }
-    }
-    
-    // exract a function to make infinite loop
-    func scrollTo(proxy: ScrollViewProxy, id: UUID) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-            withAnimation {
-                proxy.scrollTo(id)
-            }
-            let index = feedPostIDList.firstIndex(of: id) ?? -1
-            var nextIndex = index + 1
-            nextIndex = feedPostIDList.indices.contains(nextIndex) ? nextIndex : 0
-            scrollTo(proxy: proxy, id: feedPostIDList[nextIndex])
-        }
-    }
-    
-    var feedHStack: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: true) {
-                HStack {
-                    ForEach(feedPosts, id:\.id) { post in
-                        FeedPostView(post: post)
-                            .id(post.id)
-                    }
-                }
-                .frame(width: (UIScreen.main.bounds.width - 30) * Double(feedPostNumber))
-            }
-            .scrollDisabled(true)
-            .onAppear {
-                // the onAppear function would be called whenever the view 'disappear' and 're-appeared' from end-user's view,
-                // which means even the user switched under tabview, the function would be called once again.
-                // using runOnce to make sure the scroll loop is created only once...
-                // Not sure if SwiftUI have a seprate modifier for that...
-                if !runOnce {
-                    runOnce = true
-                    _ = Task {
-                        while (status != .success) {}
-                        if let id = feedPostIDList.first {
-                            scrollTo(proxy: proxy, id: id)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    var mainView: some View {
-        VStack {
-            TitleAndSubTitle(title: "Feed", subTitle: currentDateString,style: .reverse)
-            Group {
-                if status == .inProgress {
-                    ProgressView()
-                        .frame(width: UIScreen.main.bounds.width - 30, height: 200)
-                } else {
-                    feedHStack
-                }
-            }
-            .onAppear {
-                showUserFeedPost(number: feedPostNumber, posts: $feedPosts, status: $status)
-            }
-        }
-    }
-    
     var body: some View {
         NavigationStack {
             ScrollView {
-                mainView
-                featureList
+                HStack {
+                    TitleAndSubTitle(title: "Feed", subTitle: currentDateString,style: .reverse)
+                    NavigationLink(destination: AllSourceView()) {
+                        Label("More", systemImage: "chevron.right.2")
+                            .labelStyle(.iconOnly)
+                    }
+                }
+                FeedHScrollView()
+                Divider()
+            
+                HStack {
+                    TitleAndSubTitle(title: "Curriculum", subTitle: currentWeekDayString, style: .reverse)
+                    NavigationLink(destination: CurriculumView()) {
+                        Label("More", systemImage: "chevron.right.2")
+                            .labelStyle(.iconOnly)
+                    }
+                }
+                CurriculumPreview()
+                    .frame(width: cardWidth, height: cardHeight)
+                Divider()
             }
             .padding()
             .navigationTitle("Life@USTC")

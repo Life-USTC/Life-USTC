@@ -12,6 +12,7 @@
 		562169202955BED100DF46BE /* FeedDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691F2955BED100DF46BE /* FeedDefaults.swift */; };
 		562169222955BEDE00DF46BE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169212955BEDE00DF46BE /* ContentView.swift */; };
 		562169242955BEF900DF46BE /* UserTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169232955BEF900DF46BE /* UserTypeView.swift */; };
+		562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169252956D49E00DF46BE /* FeedHScrollView.swift */; };
 		565587B3294ABE7C0010E060 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B2294ABE7B0010E060 /* Card.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* FeedPostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* FeedPostModel.swift */; };
@@ -26,7 +27,7 @@
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
-		56D175C0295048A10070778F /* UstcUgTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* UstcUgTable.swift */; };
+		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
 		56D175C6295438870070778F /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175C5295438870070778F /* FeedModel.swift */; };
 		56D175C8295438E20070778F /* FeedSourceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175C7295438E20070778F /* FeedSourceModel.swift */; };
 		56D175CC295457100070778F /* FeedSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CB295457100070778F /* FeedSourceView.swift */; };
@@ -53,6 +54,7 @@
 		5621691F2955BED100DF46BE /* FeedDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedDefaults.swift; sourceTree = "<group>"; };
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		562169232955BEF900DF46BE /* UserTypeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeView.swift; sourceTree = "<group>"; };
+		562169252956D49E00DF46BE /* FeedHScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHScrollView.swift; sourceTree = "<group>"; };
 		565587B2294ABE7B0010E060 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		565587B7294AE7910010E060 /* FeedPostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostModel.swift; sourceTree = "<group>"; };
@@ -67,7 +69,7 @@
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		56D175BF295048A10070778F /* UstcUgTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgTable.swift; sourceTree = "<group>"; };
+		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSourceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceModel.swift; sourceTree = "<group>"; };
 		56D175CB295457100070778F /* FeedSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceView.swift; sourceTree = "<group>"; };
@@ -163,7 +165,7 @@
 		56D175BE295048340070778F /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				56D175BF295048A10070778F /* UstcUgTable.swift */,
+				56D175BF295048A10070778F /* CurriculumView.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -194,6 +196,7 @@
 				56D175CB295457100070778F /* FeedSourceView.swift */,
 				56D175CD295457810070778F /* FeedPostView.swift */,
 				56D175CF2954589D0070778F /* FeedPostAddon.swift */,
+				562169252956D49E00DF46BE /* FeedHScrollView.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -278,9 +281,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* PostListModel.swift in Sources */,
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
-				56D175C0295048A10070778F /* UstcUgTable.swift in Sources */,
+				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
 				562169202955BED100DF46BE /* FeedDefaults.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLogin.swift in Sources */,
@@ -460,7 +464,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -492,7 +496,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;

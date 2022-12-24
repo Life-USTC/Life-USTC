@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+let cardWidth = UIScreen.main.bounds.width - 30
+let cardHeight = 200.0
+
 extension String {
     func makeColor() -> Color {
         let hash = abs(self.hashValue)
@@ -54,8 +57,7 @@ struct Card: View {
             }
         }
         .scaledToFill()
-        .frame(height:200)
-        .frame(maxWidth: UIScreen.main.bounds.width - 30)
+        .frame(width: cardWidth, height: cardHeight)
         .overlay(alignment: .bottomLeading) {
             // title and subtitle
             VStack(alignment: .leading) {

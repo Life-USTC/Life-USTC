@@ -8,6 +8,7 @@
 import SwiftUI
 
 var mainUstcCasClient = UstcCasClient(username: "", password: "")
+var mainUstcUgAASClient = UstcUgAASClient(ustcCasClient: mainUstcCasClient)
 
 struct CASLoginView: View {
     // abstract from LoginSheet, some variables are subject to change though
@@ -89,7 +90,7 @@ struct CASLoginView: View {
                 Text("You're good to go")
             })
             .padding()
-            .navigationTitle(title)
+            .navigationTitle(Text(title))
             .navigationBarTitleDisplayMode(displayMode)
         }
     }
@@ -115,24 +116,6 @@ struct CASLoginView: View {
             }
         }
     }
-    
-    init(casLoginSheet: Binding<Bool>? = nil, title: String? = nil, displayMode: NavigationBarItem.TitleDisplayMode? = nil, isInSheet: Bool? = nil) {
-        if let casLoginSheet {
-            self._casLoginSheet = casLoginSheet
-        } else {
-            self._casLoginSheet = .constant(false)
-        }
-        if let title {
-            self.title = NSLocalizedString(title, comment: "")
-        }
-        if let displayMode {
-            self.displayMode = displayMode
-        }
-        if let isInSheet {
-            self.isInSheet = isInSheet
-        }
-    }
-    
 }
 
 

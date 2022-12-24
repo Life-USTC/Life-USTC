@@ -59,15 +59,9 @@ struct PostListPage: View {
                     .padding([.leading,.trailing])
                 }
             }
-            .navigationTitle(name)
+            .navigationTitle(Text(name))
             .navigationBarTitleDisplayMode(.inline)
         }
-    }
-    
-    init(name: String, posts: Binding<[FeedPost]>, status: Binding<AsyncViewStatus>) {
-        self.name = NSLocalizedString(name, comment: "")
-        self._posts = posts
-        self._status = status
     }
 }
 

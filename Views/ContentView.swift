@@ -53,7 +53,7 @@ struct ContentView: View {
                 .interactiveDismissDisabled(true)
         }
         .sheet(isPresented: $casLoginSheet) {
-            CASLoginView(casLoginSheet: $casLoginSheet, title: "One more step...", displayMode: .large, isInSheet: true)
+            CASLoginView(casLoginSheet: $casLoginSheet, isInSheet: true, title: "One more step...", displayMode: .large)
                 .interactiveDismissDisabled(true)
         }
         .onAppear(perform: onLoadFunction)
@@ -66,50 +66,5 @@ struct ContentView: View {
         } catch {
             print(error)
         }
-#if DEBUG
-        _ = Task {
-            do {
-                try await testFunction()
-            } catch {
-                print(error)
-            }
-        }
-#endif
     }
-    
-#if DEBUG
-// DO NOT PACK THESE FUNCTION INTO FINAL PRODUCT.
-     func testFunction() async throws {
-         var a = UstcCasClient(username: passportUsername, password: passportPassword)
-         let result = await a.loginToCAS()
-         if !result {
-             return
-         }
-         print("Logged In")
-         
-         let session = URLSession(configuration: .default)
-         if let cookies = a.casCookie {
-             session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
-         }
-         // jw.ustc.edu.cn login.
-         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
-         let newRequest = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
-         let (_, _) = try await session.data(for: request)
-         let (_, response) = try await session.data(for: newRequest)
-         
-         let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))
-         var tableID: String = "0"
-         if let match {
-             if !match.isEmpty {
-                 tableID = String(match.first!.0)
-             }
-         }
-         
-         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/281/print-data/\(tableID)?weekIndex=")!))
-         
-         let json = try JSON(data: data)
-         let id = json["studentTableVm"]["activities"][0]["lessonId"].stringValue
-         print(id)
-    }
-#endif
 }

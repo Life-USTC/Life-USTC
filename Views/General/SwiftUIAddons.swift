@@ -83,3 +83,7 @@ struct BigButtonStyle: ButtonStyle {
             .padding()
     }
 }
+
+func Text(_ input: String) -> Text {
+    Text(LocalizedStringKey(input))
+}

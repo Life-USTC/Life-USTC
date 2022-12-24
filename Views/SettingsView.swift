@@ -139,7 +139,7 @@ struct SettingsView: View {
             List {
                 Section {
                     NavigationLink("Feed Source Settings", destination: EmptyView())
-                    NavigationLink("CAS Settings", destination: CASLoginView())
+                    NavigationLink("CAS Settings", destination: CASLoginView(casLoginSheet: .constant(false)))
                     NavigationLink("Change User Type", destination: UserTypeView())
                     NavigationLink("Notification Settings", destination: EmptyView())
                 }

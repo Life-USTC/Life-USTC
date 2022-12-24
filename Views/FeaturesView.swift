@@ -24,6 +24,18 @@ let listOfUSTCWebFeatures: [USTCWebFeatures] =
        image: "doc.text.magnifyingglass",
        description: "查询教室使用情况",
        url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!),
+ .init(name: "网络通服务",
+       image: "globe.asia.australia",
+       description: "申请/修改网络通、重置密码",
+       url: URL(string: "https://zczx.ustc.edu.cn/caslogin")!.ustcCASLoginMarkup()),
+ .init(name: "大物预约选课平台",
+       image: "chart.xyaxis.line",
+       description: "预约/查看物理实验课程",
+       url: URL(string: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html")!.ustcCASLoginMarkup()),
+ .init(name: "中区教室预约",
+       image: "clock.badge.checkmark",
+       description: "预约中区研讨室/青年之家会议室",
+       url: URL(string: "http://roombooking.cmet.ustc.edu.cn/api/cas/index")!.ustcCASLoginMarkup()),
  .init(name: "一卡通",
        image: "creditcard",
        description: "遗失、查询记录、门禁权限等",
@@ -49,7 +61,7 @@ struct ListLabelView: View {
                 .foregroundColor(.accentColor)
                 .symbolRenderingMode(.hierarchical)
             if subTitle.isEmpty {
-                Text(NSLocalizedString(title, comment: ""))
+                Text(title)
                     .bold()
             } else {
                 TitleAndSubTitle(title: title, subTitle: subTitle, style: .substring)
@@ -88,8 +100,8 @@ struct FeaturesView: View {
                 }
                 
                 Section {
-                    NavigationLink(destination: UstcUgTableView()) {
-                        ListLabelView(image: "book", title: "Time Table", subTitle: "")
+                    NavigationLink(destination: CurriculumView()) {
+                        ListLabelView(image: "book", title: "Curriculum", subTitle: "")
                     }
                 } header: {
                     Text("UG AAS")

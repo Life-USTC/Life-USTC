@@ -48,7 +48,7 @@ struct Browser: View {
                     }
                 }
             }
-            .navigationTitle(title)
+            .navigationTitle(Text(title))
             .navigationBarTitleDisplayMode(.inline)
     }
     
