@@ -19,8 +19,7 @@ let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 var currentWeekDayString: String {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
-    debugPrint(weekday)
-    return daysOfWeek[(weekday - 2)%7]
+    return daysOfWeek[(weekday + 5)%7]
 }
 
 struct HomeView: View {

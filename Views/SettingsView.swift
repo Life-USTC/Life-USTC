@@ -21,7 +21,7 @@ struct AboutLifeAtUSTCView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
+                Image("Icon")
                     .resizable()
                     .frame(width: 200, height: 200)
                     .clipShape(RoundedRectangle(cornerRadius: 15))
