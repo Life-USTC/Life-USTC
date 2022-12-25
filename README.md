@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project was based on the idea to provide accurate information to end-users. As a matter of fact, all information inside this project is collected from the official website of USTC, users are just not able to find the information they want in a short time. So we decided to build this app to help them.(especially push those information to users' phones)
+This project was based on the idea to provide accurate information to end-users. As a matter of fact, all information inside this project is collected from the official website of USTC, users are just not able to find the information they want in a short time. So we decided to build this app to help them(especially push those information to users' phones).
 
 The project is made completely in Swift. Backend server still in development (to push APNs to users' phones).
 
@@ -34,10 +34,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Links
 
 Discord: https://discord.gg/BxdsySpkYP
+
 GitHub: https://github.com/tiankaima/Life-USTC
 
 ## Acknowledgments
 
 Icon Source: https://pixiv.net/artworks/97582506
+
 FeedKit: https://github.com/nmdias/FeedKit
+
 USTC CAS: https://passport.ustc.edu.cn/
