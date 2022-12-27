@@ -83,7 +83,7 @@ struct Card: View {
                 ForEach(leadingPropertyList, id: \.name) { property in
                     ZStack(alignment: .center) {
                         RoundedRectangle(cornerRadius: 8)
-                            .foregroundColor(property.color)
+                            .foregroundColor(property.color ?? .accentColor)
                         Text(property.name)
                             .font(.caption)
                             .foregroundColor(.white)

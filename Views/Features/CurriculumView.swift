@@ -222,7 +222,7 @@ struct CurriculumPreview: View {
     @State var status: AsyncViewStatus = .inProgress
     var todayCourse: [Course] {
         courses.filter({ course in
-            return course.dayOfWeek == Calendar.current.component(.weekday, from: Date())
+            return course.dayOfWeek == currentWeekDay
         })
     }
     

@@ -15,22 +15,26 @@ struct FeedPostView: View {
         dateFormatter.timeStyle = .short
         return dateFormatter.string(from: post.timePosted)
     }
+    @State var showPostDetail = false
     var body: some View {
-        NavigationLink {
-            Browser(url: post.url, title: post.title)
-        } label: {
-            Card(cardTitle: post.title,
-                 cardDescription: post.description ,
-                 leadingPropertyList: post.keywords.map{($0, nil)},
-                 trailingPropertyList: [date, post.source],
-                 imageURL: post.imageURL)
-            .contextMenu {
-                if let url = post.url {
-                    ShareLink(item: url) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
+        Card(cardTitle: post.title,
+             cardDescription: post.description ,
+             leadingPropertyList: post.keywords.map{($0, nil)},
+             trailingPropertyList: [date, post.source],
+             imageURL: post.imageURL)
+        .contextMenu {
+            if let url = post.url {
+                ShareLink(item: url) {
+                    Label("Share", systemImage: "square.and.arrow.up")
                 }
             }
+        }
+        .onTapGesture {
+            showPostDetail = true
+        }
+        .navigationDestination(isPresented: $showPostDetail) {
+            // somehow this is the suggested way to push new view to navigationStack instead of using another seprate empty navigationlink
+            Browser(url: post.url, title: post.title)
         }
     }
 }

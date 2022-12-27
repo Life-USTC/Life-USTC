@@ -16,10 +16,10 @@ var currentDateString: String {
 
 let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-var currentWeekDayString: String {
+var currentWeekDay: Int {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
-    return daysOfWeek[(weekday + 5)%7]
+    return (weekday + 6)%7
 }
 
 struct HomeView: View {
@@ -37,7 +37,7 @@ struct HomeView: View {
                 Divider()
             
                 HStack {
-                    TitleAndSubTitle(title: "Curriculum", subTitle: currentWeekDayString, style: .reverse)
+                    TitleAndSubTitle(title: "Curriculum", subTitle: daysOfWeek[currentWeekDay - 1], style: .reverse)
                     NavigationLink(destination: CurriculumView()) {
                         Label("More", systemImage: "chevron.right.2")
                             .labelStyle(.iconOnly)
