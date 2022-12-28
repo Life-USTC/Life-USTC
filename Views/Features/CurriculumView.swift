@@ -123,37 +123,77 @@ struct CourseCardView: View {
 }
 
 struct CurriculumView: View {
-    @State var showSatAndSun = false
+    @AppStorage("curriculmShowSatAndSun") var showSatAndSun = false
+    @AppStorage("semesterID") var semesterID = "281"
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
+    @State var showSettingSheet = false
+    
+    var settingSheet: some View {
+        NavigationStack {
+            List {
+                Toggle("Sat&Sun", isOn: $showSatAndSun)
+                
+                HStack {
+                    Text("Select time")
+                    Spacer()
+                    Menu {
+                        ForEach(semesterIDList.sorted(by: {$0.value < $1.value}), id:\.key) { key, id in
+                            Button {
+                                semesterID = id
+                                mainUstcUgAASClient.semesterID = semesterID
+                                mainUstcUgAASClient.getCurriculum(courses: $courses, status: $status, forceUpdate: true)
+                            } label: {
+                                if semesterID == id {
+                                    HStack {
+                                        Text(key)
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.accentColor)
+                                    }
+                                }
+                                Text(key)
+                            }
+                        }
+                    } label: {
+                        Text(semesterIDList.first(where: {$0.value == semesterID})?.key ?? "")
+                    }
+                }
+            }
+            .listStyle(.plain)
+            .scrollDisabled(true)
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .presentationDetents([.fraction(0.4)])
+    }
     
     var body: some View {
         NavigationStack {
             mainView
                 .padding(paddingWidth)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            withAnimation {
-                                showSatAndSun.toggle()
-                            }
-                        } label: {
-                            Text("Sat&Sun")
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        if status == .inProgress {
+                            ProgressView()
                         }
-                        
                         Button {
                             withAnimation {
-                                showSatAndSun.toggle()
+                                showSettingSheet.toggle()
                             }
                         } label: {
-                            Text("Sat&Sun")
+                            Label("Show settings", systemImage: "gearshape")
                         }
                     }
                 }
                 .navigationTitle("Curriculum")
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
+                    mainUstcUgAASClient.semesterID = semesterID
                     mainUstcUgAASClient.getCurriculum(courses: $courses, status: $status)
+                }
+                .sheet(isPresented: $showSettingSheet) {
+                    settingSheet
                 }
         }
     }

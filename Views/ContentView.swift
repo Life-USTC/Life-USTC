@@ -22,14 +22,9 @@ struct Life_USTCApp: App {
 
 struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
-#if DEBUG
-    @State var casLoginSheet: Bool = false
-    @State var firstLogin: Bool = false
-#else
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-#endif
-    
+    @AppStorage("semesterID") var semesterID = "281"
     @AppStorage("passportUsername") var passportUsername: String = ""
     @AppStorage("passportPassword") var passportPassword: String = ""
     
@@ -63,6 +58,8 @@ struct ContentView: View {
         do {
             try loadPostCache()
             loadMainUser()
+            
+            mainUstcUgAASClient.semesterID = semesterID // connect to source of truth
         } catch {
             print(error)
         }

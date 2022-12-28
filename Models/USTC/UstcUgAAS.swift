@@ -9,11 +9,14 @@ import Foundation
 import SwiftyJSON
 import SwiftUI
 
+let semesterIDList: [String : String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
+
 // USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
     var ustcCasClient: UstcCasClient
     var session = URLSession(configuration: .default)
     var jsonCache = JSON() // save&load as /document/ugaas_cache.json
+    var semesterID: String = "281"
     
     func loadCache() {
         let fileManager = FileManager.default
@@ -65,7 +68,7 @@ class UstcUgAASClient {
         let (_, _) = try await session.data(for: request)
     }
     
-    func getCurriculum(semesterID: String = "281") async throws -> [Course] {
+    func getCurriculum() async throws -> [Course] {
         var result: [Course] = []
         for (_, subJson): (String, JSON) in self.jsonCache["studentTableVm"]["activities"] {
             var classPositionString = subJson["room"].stringValue
@@ -80,7 +83,7 @@ class UstcUgAASClient {
         return result
     }
     
-    func forceUpdate(semesterID: String = "281") async throws {
+    func forceUpdate() async throws {
         try await self.login()
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
         let (_, response) = try await session.data(for: request)
@@ -98,10 +101,13 @@ class UstcUgAASClient {
         self.saveCache()
     }
     
-    func getCurriculum(semesterID: String = "281", courses: Binding<[Course]>, status: Binding<AsyncViewStatus>) {
+    func getCurriculum(courses: Binding<[Course]>, status: Binding<AsyncViewStatus>, forceUpdate: Bool = false) {
         _ = Task {
             do {
-                courses.wrappedValue = try await getCurriculum(semesterID: semesterID)
+                if forceUpdate {
+                    try await self.forceUpdate()
+                }
+                courses.wrappedValue = try await getCurriculum()
                 status.wrappedValue = .success
             } catch {
                 status.wrappedValue = .failure
