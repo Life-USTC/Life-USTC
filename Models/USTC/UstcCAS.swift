@@ -25,15 +25,15 @@ extension URL {
 class UstcCasClient {
     var username: String
     var password: String
-    
+
     init(username: String, password: String) {
         self.username = username
         self.password = password
     }
-    
-    var casCookie: [HTTPCookie]? = nil
-    var lastLogined: Date? = nil
-    
+
+    var casCookie: [HTTPCookie]?
+    var lastLogined: Date?
+
     var verified: Bool {
         if casCookie == nil {
             return false
@@ -41,12 +41,12 @@ class UstcCasClient {
         if lastLogined == nil {
             return false
         }
-        if (lastLogined! + DateComponents(minute: 15) > Date()) {
+        if lastLogined! + DateComponents(minute: 15) > Date() {
             return true
         }
         return false
     }
-    
+
     func vaildCookie() -> [HTTPCookie] {
         if verified {
             return casCookie!
@@ -56,13 +56,12 @@ class UstcCasClient {
             return []
         }
     }
-    
+
     func update(username: String, password: String) {
         self.username = username
         self.password = password
     }
-    
-    
+
     func getLtTokenFromCAS() async throws -> String {
         let session = URLSession(configuration: .ephemeral)
         let (data, response) = try await session.data(from: ustcLoginUrl)
@@ -71,17 +70,16 @@ class UstcCasClient {
             if match == nil {
                 throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
             }
-            
+
             let ltToken = String(match!.0)
             let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
             let cookies = HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!)
-            print(cookies)
-            self.casCookie = cookies
+            casCookie = cookies
             return ltToken
         }
         throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
     }
-    
+
     /// Call this function before using casCookie
     func loginToCAS() async -> Bool {
         if verified {
@@ -92,7 +90,7 @@ class UstcCasClient {
         do {
             let session = URLSession(configuration: .default)
             let ltToken = try await getLtTokenFromCAS()
-            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(self.username)&password=\(self.password)&LT=&button="
+            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
             var request = URLRequest(url: ustcLoginUrl)
             request.httpMethod = "POST"
             request.httpBody = dataString.data(using: .utf8)
@@ -103,23 +101,22 @@ class UstcCasClient {
             var cookies: [HTTPCookie]? = []
             _ = try await session.data(for: request)
             cookies = session.configuration.httpCookieStorage?.cookies
-            self.casCookie = cookies
+            casCookie = cookies
             lastLogined = .now
-            return self.casCookie?.contains(where: {$0.name == "logins"}) ?? false
+            return casCookie?.contains(where: { $0.name == "logins" }) ?? false
         } catch {
             print(error)
             return false
         }
     }
-        
+
     func checkLogined() -> Bool {
 //        if !verified {
 //            return false
 //        }
-        
+
         // TODO: communicate with CAS server to check if cookie is valid, return true for now
 //        return false
         return true
     }
 }
-

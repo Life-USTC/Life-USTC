@@ -25,34 +25,34 @@ private let stackWidth = (UIScreen.main.bounds.width - paddingWidth * 2) / 5
 
 // lazy version...
 let classStartTimes: [DateComponents] =
-[.init(hour: 7, minute: 50),
- .init(hour: 8, minute: 40),
- .init(hour: 9, minute: 45),
- .init(hour: 10, minute: 35),
- .init(hour: 11, minute: 25),
- .init(hour: 14, minute: 0),
- .init(hour: 14, minute: 50),
- .init(hour: 15, minute: 55),
- .init(hour: 16, minute: 45),
- .init(hour: 17, minute: 35),
- .init(hour: 19, minute: 30),
- .init(hour: 20, minute: 20),
- .init(hour: 21, minute: 10)]
+    [.init(hour: 7, minute: 50),
+     .init(hour: 8, minute: 40),
+     .init(hour: 9, minute: 45),
+     .init(hour: 10, minute: 35),
+     .init(hour: 11, minute: 25),
+     .init(hour: 14, minute: 0),
+     .init(hour: 14, minute: 50),
+     .init(hour: 15, minute: 55),
+     .init(hour: 16, minute: 45),
+     .init(hour: 17, minute: 35),
+     .init(hour: 19, minute: 30),
+     .init(hour: 20, minute: 20),
+     .init(hour: 21, minute: 10)]
 
 let classEndTimes: [DateComponents] =
-[.init(hour: 8, minute: 35),
- .init(hour: 9, minute: 25),
- .init(hour: 10, minute: 30),
- .init(hour: 11, minute: 20),
- .init(hour: 12, minute: 10),
- .init(hour: 14, minute: 45),
- .init(hour: 15, minute: 35),
- .init(hour: 16, minute: 40),
- .init(hour: 17, minute: 30),
- .init(hour: 18, minute: 20),
- .init(hour: 20, minute: 15),
- .init(hour: 21, minute: 5),
- .init(hour: 21, minute: 55)]
+    [.init(hour: 8, minute: 35),
+     .init(hour: 9, minute: 25),
+     .init(hour: 10, minute: 30),
+     .init(hour: 11, minute: 20),
+     .init(hour: 12, minute: 10),
+     .init(hour: 14, minute: 45),
+     .init(hour: 15, minute: 35),
+     .init(hour: 16, minute: 40),
+     .init(hour: 17, minute: 30),
+     .init(hour: 18, minute: 20),
+     .init(hour: 20, minute: 15),
+     .init(hour: 21, minute: 5),
+     .init(hour: 21, minute: 55)]
 
 extension DateComponents {
     var clockTime: String {
@@ -66,20 +66,20 @@ extension DateComponents {
 struct CourseCardView: View {
     var course: Course
     @State var showPopUp = false
-    
+
     var body: some View {
         VStack {
             Text(classStartTimes[course.startTime - 1].clockTime)
             Spacer()
-            
+
             Text(course.name)
                 .lineLimit(nil)
             Text(course.classPositionString)
-            if course.startTime != course.endTime  {
+            if course.startTime != course.endTime {
                 Divider()
                 Text(course.classIDString)
                 Text(course.classTeacherName)
-                
+
                 Spacer()
                 Text(classEndTimes[course.endTime - 1].clockTime)
             }
@@ -104,7 +104,7 @@ struct CourseCardView: View {
                         .font(.title)
                     Text(classStartTimes[course.startTime - 1].clockTime + " - " + classEndTimes[course.endTime - 1].clockTime)
                         .bold()
-                    
+
                     List {
                         Text("Location: \(course.classPositionString)")
                         Text("Teacher: \(course.classTeacherName)")
@@ -128,21 +128,24 @@ struct CurriculumView: View {
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var showSettingSheet = false
-    
+
     var settingSheet: some View {
         NavigationStack {
             List {
                 Toggle("Sat&Sun", isOn: $showSatAndSun)
-                
+
                 HStack {
                     Text("Select time")
                     Spacer()
                     Menu {
-                        ForEach(semesterIDList.sorted(by: {$0.value < $1.value}), id:\.key) { key, id in
+                        ForEach(semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
                             Button {
                                 semesterID = id
                                 mainUstcUgAASClient.semesterID = semesterID
-                                mainUstcUgAASClient.getCurriculum(courses: $courses, status: $status, forceUpdate: true)
+                                asyncBind($courses, status: $status) {
+                                    try await mainUstcUgAASClient.forceUpdate()
+                                    return try await mainUstcUgAASClient.getCurriculum()
+                                }
                             } label: {
                                 if semesterID == id {
                                     HStack {
@@ -156,7 +159,7 @@ struct CurriculumView: View {
                             }
                         }
                     } label: {
-                        Text(semesterIDList.first(where: {$0.value == semesterID})?.key ?? "")
+                        Text(semesterIDList.first(where: { $0.value == semesterID })?.key ?? "")
                     }
                 }
             }
@@ -167,7 +170,7 @@ struct CurriculumView: View {
         }
         .presentationDetents([.fraction(0.4)])
     }
-    
+
     var body: some View {
         NavigationStack {
             mainView
@@ -190,34 +193,36 @@ struct CurriculumView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
                     mainUstcUgAASClient.semesterID = semesterID
-                    mainUstcUgAASClient.getCurriculum(courses: $courses, status: $status)
+                    asyncBind($courses, status: $status) {
+                        try await mainUstcUgAASClient.forceUpdate()
+                        return try await mainUstcUgAASClient.getCurriculum()
+                    }
                 }
                 .sheet(isPresented: $showSettingSheet) {
                     settingSheet
                 }
         }
     }
-    
+
     func makeVStack(index: Int) -> some View {
         VStack {
             Text(daysOfWeek[index])
             ZStack(alignment: .top) {
                 Color.clear
-                
+
                 ForEach(courses) { course in
                     if course.dayOfWeek == (index + 1) {
                         CourseCardView(course: course)
                             .offset(y: Double(course.startTime - 1) * heightPerClass)
                     }
                 }
-                
+
                 Rectangle()
                     .frame(height: 1)
                     .foregroundColor(.accentColor)
                     .offset(y: 5 * heightPerClass)
                     .opacity(0.5)
-                
-                
+
                 Rectangle()
                     .frame(height: 1)
                     .foregroundColor(.accentColor)
@@ -227,16 +232,16 @@ struct CurriculumView: View {
         }
         .frame(width: stackWidth, height: heightPerClass * 13)
     }
-    
+
     var loadedView: some View {
         ScrollView(.vertical, showsIndicators: false) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 0) {
-                    ForEach(0..<5) { index in
+                    ForEach(0 ..< 5) { index in
                         makeVStack(index: index)
                     }
                     if showSatAndSun {
-                        ForEach(5..<7) { index in
+                        ForEach(5 ..< 7) { index in
                             makeVStack(index: index)
                         }
                     }
@@ -245,7 +250,7 @@ struct CurriculumView: View {
             .scrollDisabled(!showSatAndSun)
         }
     }
-    
+
     var mainView: some View {
         Group {
             if status == .inProgress {
@@ -261,11 +266,11 @@ struct CurriculumPreview: View {
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     var todayCourse: [Course] {
-        courses.filter({ course in
-            return course.dayOfWeek == currentWeekDay
-        })
+        courses.filter { course in
+            course.dayOfWeek == currentWeekDay
+        }
     }
-    
+
     var body: some View {
         Group {
             if status == .inProgress {
@@ -278,10 +283,13 @@ struct CurriculumPreview: View {
                 }
             }
         }.onAppear {
-            mainUstcUgAASClient.getCurriculum(courses: $courses, status: $status)
+            asyncBind($courses, status: $status) {
+                try await mainUstcUgAASClient.forceUpdate()
+                return try await mainUstcUgAASClient.getCurriculum()
+            }
         }
     }
-    
+
     var mainView: some View {
         List {
             ForEach(todayCourse) { course in
@@ -294,15 +302,14 @@ struct CurriculumPreview: View {
         }
         .listStyle(.plain)
     }
-    
+
     var happyView: some View {
         VStack {
             Image(systemName: "signature")
                 .foregroundColor(.accentColor)
                 .font(.system(size: 40))
-            
+
             Text("Free today!")
         }
     }
 }
-

@@ -19,7 +19,7 @@ let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 var currentWeekDay: Int {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
-    return (weekday + 6)%7
+    return (weekday + 6) % 7
 }
 
 struct HomeView: View {
@@ -27,7 +27,7 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 HStack {
-                    TitleAndSubTitle(title: "Feed", subTitle: currentDateString,style: .reverse)
+                    TitleAndSubTitle(title: "Feed", subTitle: currentDateString, style: .reverse)
                     NavigationLink(destination: AllSourceView()) {
                         Label("More", systemImage: "chevron.right.2")
                             .labelStyle(.iconOnly)
@@ -35,7 +35,7 @@ struct HomeView: View {
                 }
                 FeedHScrollView()
                 Divider()
-            
+
                 HStack {
                     TitleAndSubTitle(title: "Curriculum", subTitle: daysOfWeek[currentWeekDay - 1], style: .reverse)
                     NavigationLink(destination: CurriculumView()) {

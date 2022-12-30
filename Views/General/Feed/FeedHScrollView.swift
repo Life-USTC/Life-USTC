@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct FeedHScrollView: View {
-    @State var feedPosts: [FeedPost] = []
+    @State var posts: [FeedPost] = []
     @State var runOnce = false
     @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
     @State var status: AsyncViewStatus = .inProgress
     var feedPostIDList: [UUID] {
-        feedPosts.map({$0.id})
+        posts.map { $0.id }
     }
-    
+
     var featureList: some View {
-        VStack{
+        VStack {
             EmptyView()
         }
     }
-    
+
     // exract a function to make infinite loop
     func scrollTo(proxy: ScrollViewProxy, id: UUID) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
@@ -34,12 +34,12 @@ struct FeedHScrollView: View {
             scrollTo(proxy: proxy, id: feedPostIDList[nextIndex])
         }
     }
-    
+
     var mainView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack(spacing: 0) {
-                    ForEach(feedPosts, id:\.id) { post in
+                    ForEach(posts, id: \.id) { post in
                         FeedPostView(post: post)
                             .id(post.id)
                     }
@@ -55,7 +55,7 @@ struct FeedHScrollView: View {
                 if !runOnce {
                     runOnce = true
                     _ = Task {
-                        while (status != .success) {}
+                        while status != .success {}
                         if let id = feedPostIDList.first {
                             scrollTo(proxy: proxy, id: id)
                         }
@@ -64,7 +64,7 @@ struct FeedHScrollView: View {
             }
         }
     }
-    
+
     var body: some View {
         Group {
             if status == .inProgress {
@@ -75,7 +75,9 @@ struct FeedHScrollView: View {
             }
         }
         .onAppear {
-            showUserFeedPost(number: feedPostNumber, posts: $feedPosts, status: $status)
+            asyncBind($posts, status: $status) {
+                try await showUserFeedPost(number: feedPostNumber)
+            }
         }
     }
 }

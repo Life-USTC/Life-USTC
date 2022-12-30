@@ -7,12 +7,15 @@
 
 import SwiftUI
 
-let cardWidth = UIScreen.main.bounds.width - 30
+var cardWidth: CGFloat {
+    (UIApplication.shared.connectedScenes.first as? UIWindowScene)!.screen.bounds.width - 30
+}
+
 let cardHeight = 200.0
 
 extension String {
     func makeColor() -> Color {
-        let hash = abs(self.hashValue)
+        let hash = abs(hashValue)
         // Genrate the color from hash value
         // hue: .random(in: 0...1)
         // saturation: .random(in: 0.25...0.75)
@@ -39,6 +42,7 @@ struct Card: View {
         }
         return 2
     }
+
     var subtitleLength = 4
     var body: some View {
         ZStack {
@@ -93,12 +97,12 @@ struct Card: View {
                 }
             }
             .padding(.top, 10)
-            .padding(.leading,20)
+            .padding(.leading, 20)
         }
         .overlay(alignment: .topTrailing) {
             // time and author info
             VStack(alignment: .trailing) {
-                ForEach(trailingPropertyList, id:\.self) { info in
+                ForEach(trailingPropertyList, id: \.self) { info in
                     Text(info)
                         .foregroundColor(.white)
                         .padding(4)
@@ -109,7 +113,7 @@ struct Card: View {
                         .font(.caption)
                 }
             }
-            .padding([.top,.trailing],10)
+            .padding([.top, .trailing], 10)
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))

@@ -1,5 +1,5 @@
 //
-//  PostModel.swift
+//  HistoryEnum.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/18.
@@ -7,14 +7,21 @@
 
 import SwiftUI
 
+/// Used to represent a certain peroid of time
+///
+/// The concept is generally related to today, say 2000/10/1 for example,
+/// When shown to user, we usually take these five segments: (both sides included)
+/// Today: 2000/9/30 - 2000/10/1
+/// This week: 2000/9/XX - 2020/9/19
+/// ...
 enum HistoryEnum: Int, CaseIterable {
     case day = 1
     case week = 7
     case month = 30
     case year = 365
     case longerThanAYear = 400
-    
-    var text: String {
+
+    var representingString: String {
         switch self {
         case .day:
             return "Today"
@@ -28,8 +35,8 @@ enum HistoryEnum: Int, CaseIterable {
             return "Longer than a year"
         }
     }
-    
-    var coverDate: any RangeExpression<Date> {
+
+    var coveringDate: any RangeExpression<Date> {
         let base = Date().stripTime()
         switch self {
         case .day:
@@ -44,16 +51,16 @@ enum HistoryEnum: Int, CaseIterable {
             return Date(timeIntervalSince1970: 0) ..< base + DateComponents(year: -1)
         }
     }
-    
-    var dateText: String {
+
+    var coveringDateString: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
-        
+
         let base = Date().stripTime()
         var from: Date
         var to: Date
-        
+
         switch self {
         case .day:
             from = base + DateComponents(day: -1)
@@ -80,8 +87,9 @@ func + (lhs: Date, rhs: DateComponents) -> Date {
 }
 
 extension Date {
+    /// Remove hour&minute&second components from a given Date
     func stripTime() -> Date {
-        let components = Calendar.current.dateComponents([.year,.month,.day], from: self)
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
         return Calendar.current.date(from: components)!
     }
 }

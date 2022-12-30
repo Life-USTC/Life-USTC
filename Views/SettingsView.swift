@@ -11,7 +11,7 @@ extension Bundle {
     var releaseNumber: String? {
         return infoDictionary?["CFBundleShortVersionString"] as? String
     }
-    
+
     var buildNumber: String? {
         return infoDictionary?["CFBundleVersion"] as? String
     }
@@ -38,40 +38,40 @@ struct AboutLifeAtUSTCView: View {
                             Label("Visit Icon original post", systemImage: "network")
                         }
                     }
-                
+
                 Text("Life@USTC")
                     .font(.title)
                     .bold()
-                
+
                 Text("Brought to you by @tiankaima")
                     .font(.caption)
                     .bold()
                     .foregroundColor(.secondary)
-                
+
                 Text("Ver: \(Bundle.main.releaseNumber ?? "") build\(Bundle.main.buildNumber ?? "")")
                     .font(.caption)
                     .bold()
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .leading) {
                     Text("Github")
                         .fontWeight(.semibold)
                         .font(.title2)
-                        .padding([.top,.bottom],2)
+                        .padding([.top, .bottom], 2)
                     Text("https://github.com/tiankaima/Life-USTC")
-                    
+
                     Text("Twitter")
                         .fontWeight(.semibold)
                         .font(.title2)
-                        .padding([.top,.bottom],2)
+                        .padding([.top, .bottom], 2)
                     Text("https://twitter.com/tiankaima")
-                    
+
                     Text("Discord")
                         .fontWeight(.semibold)
                         .font(.title2)
-                        .padding([.top,.bottom],2)
+                        .padding([.top, .bottom], 2)
                     Text("https://discord.gg/BxdsySpkYP")
                 }
             }
@@ -143,7 +143,7 @@ struct SettingsView: View {
                     NavigationLink("Change User Type", destination: UserTypeView())
                     NavigationLink("Notification Settings", destination: EmptyView())
                 }
-                
+
                 Section {
                     NavigationLink("About Life@USTC", destination: AboutLifeAtUSTCView())
                     NavigationLink("Legal Info", destination: LegalInfoView())

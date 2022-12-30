@@ -32,7 +32,7 @@ struct TitleAndSubTitle: View {
     var title: String
     var subTitle: String
     var style: TitleAndSubTitleStyle
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             switch style {
@@ -62,7 +62,7 @@ struct TitleAndSubTitle: View {
         }
         .hStackLeading()
     }
-    
+
     init(title: String, subTitle: String, style: TitleAndSubTitleStyle) {
         self.title = NSLocalizedString(title, comment: "")
         self.subTitle = NSLocalizedString(subTitle, comment: "")

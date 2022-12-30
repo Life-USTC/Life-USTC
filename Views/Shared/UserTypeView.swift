@@ -12,13 +12,12 @@ enum UserTypeViewShowType {
     case newPage
 }
 
-
 struct UserTypeView: View {
     @AppStorage("userType") var userType: UserType?
     @Binding var userTypeSheet: Bool
-    
+
     var showType: UserTypeViewShowType
-    
+
     var mainView: some View {
         List {
             ForEach(UserType.allCases, id: \.rawValue) { userType in
@@ -32,7 +31,7 @@ struct UserTypeView: View {
                 } label: {
                     HStack {
                         TitleAndSubTitle(title: String(describing: userType).capitalized,
-                                         subTitle: userType.description,
+                                         subTitle: userType.representingString,
                                          style: .substring)
                         Spacer()
                         if showType == .sheet {
@@ -47,6 +46,7 @@ struct UserTypeView: View {
             .foregroundColor(.primary)
         }
     }
+
     var body: some View {
         if showType == .sheet {
             NavigationStack {
@@ -76,14 +76,14 @@ struct UserTypeView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-    
+
     init(userTypeSheet: Binding<Bool>? = nil) {
         if let userTypeSheet {
-            self._userTypeSheet = userTypeSheet
-            self.showType = .sheet
+            _userTypeSheet = userTypeSheet
+            showType = .sheet
         } else {
-            self._userTypeSheet = .constant(false)
-            self.showType = .newPage
+            _userTypeSheet = .constant(false)
+            showType = .newPage
         }
     }
 }

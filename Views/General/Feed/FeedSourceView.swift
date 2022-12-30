@@ -11,15 +11,16 @@ struct FeedSourceView: View {
     let feedSource: any FeedSource
     @State var posts: [FeedPost] = []
     @State var status: AsyncViewStatus = .inProgress
-    
+
     var body: some View {
         NavigationStack {
             PostListPage(name: feedSource.name, posts: $posts, status: $status)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
-                            status = .inProgress
-                            feedSource.forceUpdatePost(posts: $posts, status: $status)
+                            asyncBind($posts, status: $status) {
+                                try await feedSource.fetchRecentPost()
+                            }
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
@@ -27,7 +28,9 @@ struct FeedSourceView: View {
                 }
         }
         .onAppear {
-            feedSource.fetchRecentPost(posts: $posts, status: $status)
+            asyncBind($posts, status: $status) {
+                try await feedSource.fetchRecentPost()
+            }
         }
     }
 }
@@ -35,7 +38,7 @@ struct FeedSourceView: View {
 struct AllSourceView: View {
     @State var posts: [FeedPost] = []
     @State var status: AsyncViewStatus = .inProgress
-    
+
     var body: some View {
         NavigationStack {
             PostListPage(name: "Feed", posts: $posts, status: $status)
@@ -43,7 +46,9 @@ struct AllSourceView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             status = .inProgress
-                            showUserFeedPost(number: nil, posts: $posts, status: $status)
+                            asyncBind($posts, status: $status) {
+                                try await showUserFeedPost(number: nil)
+                            }
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
@@ -51,7 +56,9 @@ struct AllSourceView: View {
                 }
         }
         .onAppear {
-            showUserFeedPost(number: nil, posts: $posts, status: $status)
+            asyncBind($posts, status: $status) {
+                try await showUserFeedPost(number: nil)
+            }
         }
     }
 }

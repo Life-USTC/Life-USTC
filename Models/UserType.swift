@@ -7,14 +7,15 @@
 
 import Foundation
 
+/// Used to identify a user in the app, and construct the type accrodingly.
 enum UserType: String, CaseIterable {
     case undergraduate
     case graduate
     case teacher
     case parent
     case managment
-    
-    var description: String {
+
+    var representingString: String {
         switch self {
         case .undergraduate:
             return "Notice; Undergraduate AAS"
