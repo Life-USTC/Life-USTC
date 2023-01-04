@@ -192,9 +192,7 @@ struct CurriculumView: View {
                 .navigationTitle("Curriculum")
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
-                    UstcUgAASClient.main.semesterID = semesterID
                     asyncBind($courses, status: $status) {
-                        try await UstcUgAASClient.main.forceUpdate()
                         return try await UstcUgAASClient.main.getCurriculum()
                     }
                 }
@@ -284,7 +282,6 @@ struct CurriculumPreview: View {
             }
         }.onAppear {
             asyncBind($courses, status: $status) {
-                try await UstcUgAASClient.main.forceUpdate()
                 return try await UstcUgAASClient.main.getCurriculum()
             }
         }

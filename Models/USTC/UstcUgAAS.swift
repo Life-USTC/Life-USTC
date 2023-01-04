@@ -16,11 +16,17 @@ class UstcUgAASClient {
     static let semesterIDList: [String: String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
     
     var jsonCache = JSON() // save&load as /document/ugaas_cache.json
-    var semesterID: String = "281"
+    var semesterID: String = "301"
+    var lastLogined: Date?
     var courses: [Course] = []
 
     /// Load /Document/ugaas_cache.json to self.jsonCache
     func loadCache() throws {
+        let decoder = JSONDecoder()
+        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastLogined") {
+            lastLogined = try decoder.decode(Date.self, from: data)
+        }
+        
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
@@ -28,7 +34,7 @@ class UstcUgAASClient {
                 let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
                 jsonCache = try JSON(data: data)
         } else {
-            _ = Task {
+            Task {
                 try await forceUpdate()
             }
         }
@@ -36,6 +42,10 @@ class UstcUgAASClient {
 
     /// Save /Document/ugaas_cache.json to self.jsonCache
     func saveCache() throws {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(lastLogined)
+        UserDefaults.standard.set(data, forKey: "UstcUgAASLastLogined")
+        
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
@@ -60,6 +70,9 @@ class UstcUgAASClient {
     }
 
     func getCurriculum() async throws -> [Course] {
+        if self.lastLogined == nil {
+            try await forceUpdate()
+        }
         var result: [Course] = []
         for (_, subJson): (String, JSON) in jsonCache["studentTableVm"]["activities"] {
             var classPositionString = subJson["room"].stringValue
@@ -90,6 +103,7 @@ class UstcUgAASClient {
 
         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(semesterID)/print-data/\(tableID)?weekIndex=")!))
         jsonCache = try JSON(data: data)
+        lastLogined = Date()
         try saveCache()
     }
 
@@ -120,7 +134,7 @@ class UstcUgAASClient {
 }
 
 extension ContentView {
-    func loadMainUstcUgAASClient() {
+    func loadMainUstcUgAASClient() throws {
         UstcUgAASClient.main.semesterID = semesterID
     }
 }

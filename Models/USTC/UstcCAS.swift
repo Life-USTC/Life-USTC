@@ -39,13 +39,6 @@ class UstcCasClient {
     private var precheckFails: Bool {
         return (username.isEmpty || password.isEmpty)
     }
-
-//    var verified: Bool {
-//        if precheckFails || lastLogined == nil || !checkLogined() {
-//            return false
-//        }
-//        return lastLogined! + DateComponents(minute: 15) > Date()
-//    }
     
     func update(username: String, password: String) {
         self.username = username
@@ -91,6 +84,9 @@ class UstcCasClient {
     }
 
     func checkLogined() async throws -> Bool {
+        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15)  {
+            return false
+        }
         let session = URLSession.shared
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
     }

@@ -54,7 +54,7 @@ struct ContentView: View {
     func onLoadFunction() {
         exceptionCall {
             loadMainUstcCasClient()
-            loadMainUstcUgAASClient()
+            try loadMainUstcUgAASClient()
             try loadFeedCache()
         }
     }

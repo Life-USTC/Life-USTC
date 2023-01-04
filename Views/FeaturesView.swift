@@ -58,7 +58,7 @@ struct FeaturesView: View {
     var body: some View {
         NavigationStack {
             List {
-                if !searchText.isEmpty {
+                if searchText.isEmpty {
                     feedSourceSection
                     ugAASSection
                 }

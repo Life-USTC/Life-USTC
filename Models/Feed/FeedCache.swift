@@ -21,7 +21,10 @@ class FeedCache {
     
     static var feedSourceCaches: [FeedSourceCache] = [] {
         didSet {
-            exceptionCall(save)
+            // avoid calling the save when loading
+            if !oldValue.isEmpty {
+                exceptionCall(save)
+            }
         }
     }
 
@@ -34,7 +37,6 @@ class FeedCache {
     }
     
     static func save() throws {
-        print("Save called")
         let encoder = JSONEncoder()
         let feedSourceCacheData = try encoder.encode(feedSourceCaches)
         defaults.set(feedSourceCacheData, forKey: "feedSourceCache")
