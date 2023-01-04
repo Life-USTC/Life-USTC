@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct FeedSourceView: View {
-    let feedSource: any FeedSource
-    @State var posts: [FeedPost] = []
+    let feedSource: FeedSource
+    @State var feeds: [Feed] = []
     @State var status: AsyncViewStatus = .inProgress
 
     var body: some View {
         NavigationStack {
-            PostListPage(name: feedSource.name, posts: $posts, status: $status)
+            FeedVStackView(name: feedSource.name, feeds: $feeds, status: $status)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
-                            asyncBind($posts, status: $status) {
+                            asyncBind($feeds, status: $status) {
                                 try await feedSource.fetchRecentPost()
                             }
                         } label: {
@@ -28,7 +28,7 @@ struct FeedSourceView: View {
                 }
         }
         .onAppear {
-            asyncBind($posts, status: $status) {
+            asyncBind($feeds, status: $status) {
                 try await feedSource.fetchRecentPost()
             }
         }
@@ -36,18 +36,18 @@ struct FeedSourceView: View {
 }
 
 struct AllSourceView: View {
-    @State var posts: [FeedPost] = []
+    @State var feeds: [Feed] = []
     @State var status: AsyncViewStatus = .inProgress
 
     var body: some View {
         NavigationStack {
-            PostListPage(name: "Feed", posts: $posts, status: $status)
+            FeedVStackView(name: "Feed", feeds: $feeds, status: $status)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             status = .inProgress
-                            asyncBind($posts, status: $status) {
-                                try await showUserFeedPost(number: nil)
+                            asyncBind($feeds, status: $status) {
+                                try await FeedCache.recentFeeds(number: nil)
                             }
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
@@ -56,8 +56,8 @@ struct AllSourceView: View {
                 }
         }
         .onAppear {
-            asyncBind($posts, status: $status) {
-                try await showUserFeedPost(number: nil)
+            asyncBind($feeds, status: $status) {
+                try await FeedCache.recentFeeds(number: nil)
             }
         }
     }

@@ -94,7 +94,6 @@ struct EmptyView: View {
                 .font(.title2)
                 .bold()
         }
-//        .border(.red)
     }
 }
 

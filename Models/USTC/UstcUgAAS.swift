@@ -10,27 +10,23 @@ import Foundation
 import SwiftUI
 import SwiftyJSON
 
-let semesterIDList: [String: String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
-
-// USTC Undergraduate Academic Affairs System
+/// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
-    var ustcCasClient: UstcCasClient
-    var session = URLSession(configuration: .default)
+    static var main = UstcUgAASClient()
+    static let semesterIDList: [String: String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
+    
     var jsonCache = JSON() // save&load as /document/ugaas_cache.json
     var semesterID: String = "281"
     var courses: [Course] = []
 
-    func loadCache() {
+    /// Load /Document/ugaas_cache.json to self.jsonCache
+    func loadCache() throws {
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
         if fileManager.fileExists(atPath: filePath) {
-            do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
                 jsonCache = try JSON(data: data)
-            } catch {
-                print(error)
-            }
         } else {
             _ = Task {
                 try await forceUpdate()
@@ -38,33 +34,26 @@ class UstcUgAASClient {
         }
     }
 
-    func saveCache() {
+    /// Save /Document/ugaas_cache.json to self.jsonCache
+    func saveCache() throws {
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
         if fileManager.fileExists(atPath: filePath) {
-            do {
-                try fileManager.removeItem(atPath: filePath)
-            } catch {
-                print(error)
-            }
+            try fileManager.removeItem(atPath: filePath)
         }
-        do {
-            try jsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
-        } catch {
-            print(error)
-        }
+        try jsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
     }
 
     func login() async throws {
-        let result = await ustcCasClient.loginToCAS()
-        if !result {
-            return
+        if try await !UstcCasClient.main.checkLogined() {
+            if try await !UstcCasClient.main.loginToCAS() {
+//                throw URLError()
+                return
+            }
         }
-        print("Logged In")
-        if let cookies = ustcCasClient.casCookie {
-            session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
-        }
+        
+        let session = URLSession.shared
         // jw.ustc.edu.cn login.
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
         let _ = try await session.data(for: request)
@@ -87,6 +76,7 @@ class UstcUgAASClient {
 
     func forceUpdate() async throws {
         try await login()
+        let session = URLSession.shared
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
         let (_, response) = try await session.data(for: request)
 
@@ -100,11 +90,11 @@ class UstcUgAASClient {
 
         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(semesterID)/print-data/\(tableID)?weekIndex=")!))
         jsonCache = try JSON(data: data)
-        saveCache()
+        try saveCache()
     }
 
     func cleanUp() {
-        courses.sorted(by: { a, b in
+        courses.sort(by: { a, b in
             if a.dayOfWeek == b.dayOfWeek {
                 if a.startTime == b.startTime {
                     return a.endTime < b.endTime
@@ -119,11 +109,18 @@ class UstcUgAASClient {
         var store = EKEventStore()
         store.requestAccess(to: .event) { _, _ in
         }
-        for course in courses {}
+        for course in courses {
+
+        }
     }
 
-    init(ustcCasClient: UstcCasClient) {
-        self.ustcCasClient = ustcCasClient
-        loadCache()
+    init() {
+        exceptionCall(loadCache)
+    }
+}
+
+extension ContentView {
+    func loadMainUstcUgAASClient() {
+        UstcUgAASClient.main.semesterID = semesterID
     }
 }

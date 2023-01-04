@@ -1,14 +1,11 @@
 //
-//  LoginSheet.swift
+//  CASLoginView.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/17.
 //
 
 import SwiftUI
-
-var mainUstcCasClient = UstcCasClient(username: "", password: "")
-var mainUstcUgAASClient = UstcUgAASClient(ustcCasClient: mainUstcCasClient)
 
 struct CASLoginView: View {
     // abstract from LoginSheet, some variables are subject to change though
@@ -97,9 +94,9 @@ struct CASLoginView: View {
     }
 
     private func checkAndLogin() {
-        mainUstcCasClient.update(username: passportUsername, password: passportPassword)
+        UstcCasClient.main.update(username: passportUsername, password: passportPassword)
         _ = Task {
-            let result = await mainUstcCasClient.loginToCAS()
+            let result = try await UstcCasClient.main.loginToCAS()
             if result {
                 if isInSheet {
                     showSuccessAlert = true
@@ -115,21 +112,6 @@ struct CASLoginView: View {
             } else {
                 showFailedAlert = true
             }
-        }
-    }
-}
-
-extension ContentView {
-    func loadMainUser() {
-        mainUstcCasClient = UstcCasClient(username: passportUsername, password: passportPassword)
-        _ = Task {
-            let result = await mainUstcCasClient.loginToCAS()
-            if !result {
-                casLoginSheet = true
-            }
-        }
-        if passportUsername == "", passportPassword == "" {
-            casLoginSheet = true
         }
     }
 }

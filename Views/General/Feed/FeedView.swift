@@ -1,5 +1,5 @@
 //
-//  FeedPostView.swift
+//  FeedView.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/22.
@@ -7,24 +7,24 @@
 
 import SwiftUI
 
-struct FeedPostView: View {
-    let post: FeedPost
+struct FeedView: View {
+    let feed: Feed
     var date: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
-        return dateFormatter.string(from: post.datePosted)
+        return dateFormatter.string(from: feed.datePosted)
     }
 
     @State var showPostDetail = false
     var body: some View {
-        Card(cardTitle: post.title,
-             cardDescription: post.description,
-             leadingPropertyList: post.keywords.map { ($0, nil) },
-             trailingPropertyList: [date, post.source],
-             imageURL: post.imageURL)
+        Card(cardTitle: feed.title,
+             cardDescription: feed.description,
+             leadingPropertyList: feed.keywords.map { ($0, nil) },
+             trailingPropertyList: [date, feed.source],
+             imageURL: feed.imageURL)
             .contextMenu {
-                if let url = post.url {
+                if let url = feed.url {
                     ShareLink(item: url) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
@@ -35,7 +35,7 @@ struct FeedPostView: View {
             }
             .navigationDestination(isPresented: $showPostDetail) {
                 // somehow this is the suggested way to push new view to navigationStack instead of using another seprate empty navigationlink
-                Browser(url: post.url, title: post.title)
+                Browser(url: feed.url, title: feed.title)
             }
     }
 }

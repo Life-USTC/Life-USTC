@@ -8,8 +8,6 @@
 import SwiftUI
 import SwiftyJSON
 
-// main entry point, edit this when we need documentGroup or something like that...
-// keep it unchanged before an iPad version is planned, which I have no idea how to implment that, especially UI
 @main
 struct Life_USTCApp: App {
     var body: some Scene {
@@ -24,8 +22,8 @@ struct ContentView: View {
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
     @AppStorage("semesterID") var semesterID = "281"
-    @AppStorage("passportUsername") var passportUsername: String = ""
-    @AppStorage("passportPassword") var passportPassword: String = ""
+    @AppStorage("passportUsername") var ustcCasUsername: String = ""
+    @AppStorage("passportPassword") var ustcCasPassword: String = ""
 
     var body: some View {
         TabView {
@@ -54,13 +52,10 @@ struct ContentView: View {
     }
 
     func onLoadFunction() {
-        do {
-            try loadPostCache()
-            loadMainUser()
-
-            mainUstcUgAASClient.semesterID = semesterID // connect to source of truth
-        } catch {
-            print(error)
+        exceptionCall {
+            loadMainUstcCasClient()
+            loadMainUstcUgAASClient()
+            try loadFeedCache()
         }
     }
 }

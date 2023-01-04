@@ -1,5 +1,5 @@
 //
-//  NewUser.swift
+//  UserTypeView.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/17.
@@ -31,7 +31,7 @@ struct UserTypeView: View {
                 } label: {
                     HStack {
                         TitleAndSubTitle(title: String(describing: userType).capitalized,
-                                         subTitle: userType.representingString,
+                                         subTitle: userType.caption,
                                          style: .substring)
                         Spacer()
                         if showType == .sheet {

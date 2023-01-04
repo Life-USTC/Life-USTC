@@ -1,5 +1,5 @@
 //
-//  SwiftUIAddons.swift
+//  SwiftUIExtension.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/17.
@@ -67,6 +67,28 @@ struct TitleAndSubTitle: View {
         self.title = NSLocalizedString(title, comment: "")
         self.subTitle = NSLocalizedString(subTitle, comment: "")
         self.style = style
+    }
+}
+
+struct ListLabelView: View {
+    var image: String
+    var title: String
+    var subTitle: String
+
+    var body: some View {
+        HStack {
+            Image(systemName: image)
+                .frame(width: 30)
+                .foregroundColor(.accentColor)
+                .symbolRenderingMode(.hierarchical)
+            if subTitle.isEmpty {
+                Text(title)
+                    .bold()
+            } else {
+                TitleAndSubTitle(title: title, subTitle: subTitle, style: .substring)
+            }
+            Spacer()
+        }
     }
 }
 

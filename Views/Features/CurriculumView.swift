@@ -1,5 +1,5 @@
 //
-//  UstcUgTable.swift
+//  CurriculumView.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/19.
@@ -138,13 +138,13 @@ struct CurriculumView: View {
                     Text("Select time")
                     Spacer()
                     Menu {
-                        ForEach(semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
+                        ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
                             Button {
                                 semesterID = id
-                                mainUstcUgAASClient.semesterID = semesterID
+                                UstcUgAASClient.main.semesterID = semesterID
                                 asyncBind($courses, status: $status) {
-                                    try await mainUstcUgAASClient.forceUpdate()
-                                    return try await mainUstcUgAASClient.getCurriculum()
+                                    try await UstcUgAASClient.main.forceUpdate()
+                                    return try await UstcUgAASClient.main.getCurriculum()
                                 }
                             } label: {
                                 if semesterID == id {
@@ -159,7 +159,7 @@ struct CurriculumView: View {
                             }
                         }
                     } label: {
-                        Text(semesterIDList.first(where: { $0.value == semesterID })?.key ?? "")
+                        Text(UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })?.key ?? "")
                     }
                 }
             }
@@ -192,10 +192,10 @@ struct CurriculumView: View {
                 .navigationTitle("Curriculum")
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
-                    mainUstcUgAASClient.semesterID = semesterID
+                    UstcUgAASClient.main.semesterID = semesterID
                     asyncBind($courses, status: $status) {
-                        try await mainUstcUgAASClient.forceUpdate()
-                        return try await mainUstcUgAASClient.getCurriculum()
+                        try await UstcUgAASClient.main.forceUpdate()
+                        return try await UstcUgAASClient.main.getCurriculum()
                     }
                 }
                 .sheet(isPresented: $showSettingSheet) {
@@ -284,8 +284,8 @@ struct CurriculumPreview: View {
             }
         }.onAppear {
             asyncBind($courses, status: $status) {
-                try await mainUstcUgAASClient.forceUpdate()
-                return try await mainUstcUgAASClient.getCurriculum()
+                try await UstcUgAASClient.main.forceUpdate()
+                return try await UstcUgAASClient.main.getCurriculum()
             }
         }
     }

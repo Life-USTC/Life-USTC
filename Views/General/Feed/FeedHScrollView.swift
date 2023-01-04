@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedHScrollView: View {
-    @State var posts: [FeedPost] = []
+    @State var posts: [Feed] = []
     @State var runOnce = false
     @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
     @State var status: AsyncViewStatus = .inProgress
@@ -40,7 +40,7 @@ struct FeedHScrollView: View {
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack(spacing: 0) {
                     ForEach(posts, id: \.id) { post in
-                        FeedPostView(post: post)
+                        FeedView(feed: post)
                             .id(post.id)
                     }
                 }
@@ -76,7 +76,7 @@ struct FeedHScrollView: View {
         }
         .onAppear {
             asyncBind($posts, status: $status) {
-                try await showUserFeedPost(number: feedPostNumber)
+                try await FeedCache.recentFeeds(number: feedPostNumber)
             }
         }
     }

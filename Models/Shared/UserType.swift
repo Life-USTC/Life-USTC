@@ -1,21 +1,23 @@
 //
-//  StudentModel.swift
+//  UserType.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2022/12/15.
 //
 
-import Foundation
+import SwiftUI
 
-/// Used to identify a user in the app, and construct the type accrodingly.
+/// Identify user's role in the app, mainly used to construct View accrodingly.
 enum UserType: String, CaseIterable {
     case undergraduate
     case graduate
     case teacher
     case parent
     case managment
+    
+    static var main = UserType.undergraduate
 
-    var representingString: String {
+    var caption: String {
         switch self {
         case .undergraduate:
             return "Notice; Undergraduate AAS"
@@ -28,5 +30,9 @@ enum UserType: String, CaseIterable {
         case .managment:
             return "Notice; Create Notice"
         }
+    }
+    
+    func makeView() -> some View {
+        TitleAndSubTitle(title: String(describing: self).capitalized, subTitle: self.caption, style: .substring)
     }
 }

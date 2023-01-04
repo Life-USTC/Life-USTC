@@ -8,9 +8,14 @@
 import Foundation
 
 let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
+let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
 let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
 
 extension URL {
+    /// Mark self for the CAS service to identify as a service
+    ///
+    ///  - Parameters:
+    ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
     func CASLoginMarkup(casServer: URL) -> URL {
         var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
         components.queryItems = [URLQueryItem(name: "service", value: components.url!.absoluteString)]
@@ -18,105 +23,90 @@ extension URL {
     }
 
     func ustcCASLoginMarkup() -> URL {
-        return CASLoginMarkup(casServer: URL(string: "https://passport.ustc.edu.cn")!)
+        return CASLoginMarkup(casServer: ustcCasUrl)
     }
 }
 
+/// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient {
-    var username: String
-    var password: String
+    static var main = UstcCasClient()
+    
+    var username: String = ""
+    var password: String = ""
 
-    init(username: String, password: String) {
-        self.username = username
-        self.password = password
+    private var lastLogined: Date? = nil
+    
+    private var precheckFails: Bool {
+        return (username.isEmpty || password.isEmpty)
     }
 
-    var casCookie: [HTTPCookie]?
-    var lastLogined: Date?
-
-    var verified: Bool {
-        if casCookie == nil {
-            return false
-        }
-        if lastLogined == nil {
-            return false
-        }
-        if lastLogined! + DateComponents(minute: 15) > Date() {
-            return true
-        }
-        return false
-    }
-
-    func vaildCookie() -> [HTTPCookie] {
-        if verified {
-            return casCookie!
-//        } else if self.loginToCAS() {
-//            return casCookie!
-        } else {
-            return []
-        }
-    }
-
+//    var verified: Bool {
+//        if precheckFails || lastLogined == nil || !checkLogined() {
+//            return false
+//        }
+//        return lastLogined! + DateComponents(minute: 15) > Date()
+//    }
+    
     func update(username: String, password: String) {
         self.username = username
         self.password = password
     }
 
-    func getLtTokenFromCAS() async throws -> String {
+    func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+        // loading the LT-Token requires a non-logined status, which shared Session could have not provide
+        // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
         let (data, response) = try await session.data(from: ustcLoginUrl)
-        if let dataString = String(data: data, encoding: .utf8) {
-            let match = dataString.firstMatch(of: findLtStringRegex)
-            if match == nil {
-                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
-            }
-
-            let ltToken = String(match!.0)
-            let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
-            let cookies = HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!)
-            casCookie = cookies
-            return ltToken
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
-        throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+        
+        guard let match = dataString.firstMatch(of: findLtStringRegex) else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+        }
+        
+        let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
+        return (String(match.0), HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!))
     }
 
     /// Call this function before using casCookie
-    func loginToCAS() async -> Bool {
-        if verified {
-            // already verified, returns before double checking.
-            // if we do need double checking (try the Cookie somewhere else, call `verifyToken()`)
-            return true
-        }
-        do {
-            let session = URLSession(configuration: .default)
-            let ltToken = try await getLtTokenFromCAS()
-            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
-            var request = URLRequest(url: ustcLoginUrl)
-            request.httpMethod = "POST"
-            request.httpBody = dataString.data(using: .utf8)
-            request.httpShouldHandleCookies = true
-            if let casCookie {
-                session.configuration.httpCookieStorage?.setCookies(casCookie, for: ustcLoginUrl, mainDocumentURL: ustcLoginUrl)
-            }
-            var cookies: [HTTPCookie]? = []
-            _ = try await session.data(for: request)
-            cookies = session.configuration.httpCookieStorage?.cookies
-            casCookie = cookies
-            lastLogined = .now
-            return casCookie?.contains(where: { $0.name == "logins" }) ?? false
-        } catch {
-            print(error)
+    func loginToCAS() async throws -> Bool {
+        if precheckFails {
             return false
         }
+        let session = URLSession.shared
+        let (ltToken, cookies) = try await getLtTokenFromCAS()
+        
+        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
+        var request = URLRequest(url: ustcLoginUrl)
+        request.httpMethod = "POST"
+        request.httpBody = dataString.data(using: .utf8)
+        request.httpShouldHandleCookies = true
+        session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
+        
+        _ = try await session.data(for: request)
+        lastLogined = .now
+        
+        return try await checkLogined()
     }
 
-    func checkLogined() -> Bool {
-//        if !verified {
-//            return false
-//        }
+    func checkLogined() async throws -> Bool {
+        let session = URLSession.shared
+        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
+    }
+}
 
-        // TODO: communicate with CAS server to check if cookie is valid, return true for now
-//        return false
-        return true
+extension ContentView {
+    func loadMainUstcCasClient() {
+        if ustcCasUsername.isEmpty, ustcCasPassword.isEmpty {
+            // if either of them is empty, no need to pass them to build the client
+            casLoginSheet = true
+            return
+        }
+        UstcCasClient.main.update(username: ustcCasUsername, password: ustcCasPassword)
+        _ = Task {
+            // if the login result fails, present the user with the sheet.
+            casLoginSheet = try await !UstcCasClient.main.loginToCAS()
+        }
     }
 }
