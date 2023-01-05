@@ -9,39 +9,60 @@ import SwiftUI
 
 struct FeaturesView: View {
     @State var searchText = ""
-    var ustcFeatures: [FeatureWithView] {
-        var results: [FeatureWithView] = []
-        results.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AnyView(AllSourceView())))
+    var ustcFeatures: [String: [FeatureWithView]] {
+        var results: [String: [FeatureWithView]] = [:]
+        
+        var tmp: [FeatureWithView] = []
+        tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AnyView(AllSourceView())))
         for feedSource in FeedSource.all {
-            results.append(.init(feedSource))
+            tmp.append(.init(feedSource))
         }
+        results["Feed"] = tmp
 
-        results.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
-
+        tmp = []
+        tmp.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
+        results["UG AAS"] = tmp
+        
+        tmp = []
         for ustcWebFeature in FeaturesView.ustcWebFeatures {
-            results.append(.init(ustcWebFeature))
+            tmp.append(.init(ustcWebFeature))
         }
+        results["Web"] = tmp
+        
         return results
     }
 
-    var ustcWebFeaturesSearched: [FeatureWithView] {
+    var ustcWebFeaturesSearched: [String: [FeatureWithView]] {
         if searchText.isEmpty {
             return ustcFeatures
         } else {
-            return ustcFeatures.filter {
-                $0.title.contains(searchText) ||
-                    $0.subTitle.contains(searchText) ||
-                    NSLocalizedString($0.title, comment: "").contains(searchText) ||
-                    NSLocalizedString($0.subTitle, comment: "").contains(searchText)
+            var result: [String: [FeatureWithView]] = [:]
+            for (key, value) in ustcFeatures {
+                let tmp = value.filter {
+                    $0.title.contains(searchText) ||
+                        $0.subTitle.contains(searchText) ||
+                        NSLocalizedString($0.title, comment: "").contains(searchText) ||
+                        NSLocalizedString($0.subTitle, comment: "").contains(searchText)
+                }
+                if !tmp.isEmpty {
+                    result[key] = tmp
+                }
             }
+            return result
         }
     }
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(ustcWebFeaturesSearched) { feature in
-                    feature.makeView()
+                ForEach(ustcWebFeaturesSearched.sorted(by: { return $0.value.count < $1.value.count }), id:\.key) { key, features in
+                    Section {
+                        ForEach(features) { feature in
+                            feature.makeView()
+                        }
+                    } header: {
+                        Text(key)
+                    }
                 }
             }
             .navigationTitle("Features")

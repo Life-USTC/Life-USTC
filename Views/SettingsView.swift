@@ -102,6 +102,13 @@ struct LegalInfoView: View {
                             .foregroundColor(.secondary)
                     }
                     VStack(alignment: .leading) {
+                        Text("SwiftyJSON source")
+                        Text("Visit https://github.com/SwiftyJSON/SwiftyJSON (MIT License) for origin repo, much thanks to repo contributors.🥳")
+                            .font(.caption)
+                            .bold()
+                            .foregroundColor(.secondary)
+                    }
+                    VStack(alignment: .leading) {
                         Text("USTC CAS DISCLAIMER:")
                         Text("casFullHint")
                             .font(.caption)

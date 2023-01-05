@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct FeedHScrollView: View {
-    @State var posts: [Feed] = []
+    @State var feeds: [Feed] = []
     @State var runOnce = false
     @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
     @State var status: AsyncViewStatus = .inProgress
     var feedPostIDList: [UUID] {
-        posts.map { $0.id }
+        feeds.map { $0.id }
     }
 
     var featureList: some View {
@@ -24,7 +24,8 @@ struct FeedHScrollView: View {
 
     // exract a function to make infinite loop
     func scrollTo(proxy: ScrollViewProxy, id: UUID) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+        Task {
+            try await Task.sleep(for: .seconds(3))
             withAnimation {
                 proxy.scrollTo(id)
             }
@@ -39,7 +40,7 @@ struct FeedHScrollView: View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack(spacing: 0) {
-                    ForEach(posts, id: \.id) { post in
+                    ForEach(feeds, id: \.id) { post in
                         FeedView(feed: post)
                             .id(post.id)
                     }
@@ -47,19 +48,10 @@ struct FeedHScrollView: View {
                 .frame(width: cardWidth * Double(feedPostNumber))
             }
             .scrollDisabled(true)
-            .onAppear {
-                // the onAppear function would be called whenever the view 'disappear' and 're-appeared' from end-user's view,
-                // which means even the user switched under tabview, the function would be called once again.
-                // using runOnce to make sure the scroll loop is created only once...
-                // Not sure if SwiftUI have a seprate modifier for that...
-                if !runOnce {
-                    runOnce = true
-                    _ = Task {
-                        while status != .success {}
-                        if let id = feedPostIDList.first {
-                            scrollTo(proxy: proxy, id: id)
-                        }
-                    }
+            .task {
+                while status != .success {}
+                if let id = feedPostIDList.first {
+                    scrollTo(proxy: proxy, id: id)
                 }
             }
         }
@@ -75,7 +67,7 @@ struct FeedHScrollView: View {
             }
         }
         .onAppear {
-            asyncBind($posts, status: $status) {
+            asyncBind($feeds, status: $status) {
                 try await FeedCache.recentFeeds(number: feedPostNumber)
             }
         }
