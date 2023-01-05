@@ -9,60 +9,40 @@ import SwiftUI
 
 struct FeaturesView: View {
     @State var searchText = ""
-    var ustcWebFeaturesSearched: [USTCWebFeature] {
+    var ustcFeatures: [FeatureWithView] {
+        var results: [FeatureWithView] = []
+        results.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AnyView(AllSourceView())))
+        for feedSource in FeedSource.all {
+            results.append(.init(feedSource))
+        }
+
+        results.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
+
+        for ustcWebFeature in FeaturesView.ustcWebFeatures {
+            results.append(.init(ustcWebFeature))
+        }
+        return results
+    }
+
+    var ustcWebFeaturesSearched: [FeatureWithView] {
         if searchText.isEmpty {
-            return FeaturesView.ustcWebFeatures
+            return ustcFeatures
         } else {
-            return FeaturesView.ustcWebFeatures.filter { $0.name.contains(searchText) || $0.description.contains(searchText) }
-        }
-    }
-
-    var feedSourceSection: some View {
-        Section {
-            NavigationLink(destination: AllSourceView()) {
-                ListLabelView(image: "doc.richtext", title: "Feed", subTitle: "")
+            return ustcFeatures.filter {
+                $0.title.contains(searchText) ||
+                    $0.subTitle.contains(searchText) ||
+                    NSLocalizedString($0.title, comment: "").contains(searchText) ||
+                    NSLocalizedString($0.subTitle, comment: "").contains(searchText)
             }
-
-            ForEach(defaultFeedSources, id: \.id) { feedSource in
-                NavigationLink(destination: FeedSourceView(feedSource: feedSource)) {
-                    ListLabelView(image: feedSource.image ?? "doc.richtext", title: feedSource.name, subTitle: feedSource.description ?? "")
-                }
-            }
-        } header: {
-            Text("Feed")
-        }
-    }
-
-    var ugAASSection: some View {
-        Section {
-            NavigationLink(destination: CurriculumView()) {
-                ListLabelView(image: "book", title: "Curriculum", subTitle: "")
-            }
-        } header: {
-            Text("UG AAS")
-        }
-    }
-
-    var featureListSection: some View {
-        Section {
-            ForEach(ustcWebFeaturesSearched, id: \.id) { feature in
-                NavigationLink(destination: Browser(url: feature.url, title: feature.name)) {
-                    feature.makeView()
-                }
-            }
-        } header: {
-            Text("Web")
         }
     }
 
     var body: some View {
         NavigationStack {
             List {
-                if searchText.isEmpty {
-                    feedSourceSection
-                    ugAASSection
+                ForEach(ustcWebFeaturesSearched) { feature in
+                    feature.makeView()
                 }
-                featureListSection
             }
             .navigationTitle("Features")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
@@ -71,6 +51,41 @@ struct FeaturesView: View {
 }
 
 extension FeaturesView {
+    struct FeatureWithView: Identifiable {
+        var id = UUID()
+        var image: String
+        var title: String
+        var subTitle: String
+        var destinationView: AnyView
+
+        func makeView() -> some View {
+            NavigationLink(destination: destinationView) {
+                ListLabelView(image: image, title: title, subTitle: subTitle)
+            }
+        }
+
+        init(image: String, title: String, subTitle: String, destinationView: AnyView) {
+            self.image = image
+            self.title = title
+            self.subTitle = subTitle
+            self.destinationView = destinationView
+        }
+
+        init(_ feedSource: FeedSource) {
+            image = feedSource.image ?? "doc.richtext"
+            title = feedSource.name
+            subTitle = feedSource.description ?? ""
+            destinationView = AnyView(FeedSourceView(feedSource: feedSource))
+        }
+
+        init(_ ustcWebFeature: USTCWebFeature) {
+            image = ustcWebFeature.image
+            title = ustcWebFeature.name
+            subTitle = ustcWebFeature.description
+            destinationView = AnyView(Browser(url: ustcWebFeature.url, title: ustcWebFeature.name))
+        }
+    }
+
     struct USTCWebFeature: Identifiable {
         var id = UUID()
         var name: String
@@ -78,8 +93,24 @@ extension FeaturesView {
         var description: String
         var url: URL
 
-        func makeView() -> some View {
-            ListLabelView(image: image, title: name, subTitle: description)
+        init(id: UUID = UUID(), name: String, image: String, description: String, url: URL) {
+            self.id = id
+            self.name = name
+            self.image = image
+            self.description = description
+            self.url = url
+        }
+
+        init(id: UUID = UUID(), name: String, image: String, description: String, url: String, markUp: Bool = false) {
+            self.id = id
+            self.name = name
+            self.image = image
+            self.description = description
+            if markUp {
+                self.url = URL(string: url)!.ustcCASLoginMarkup()
+            } else {
+                self.url = URL(string: url)!
+            }
         }
     }
 
@@ -87,33 +118,40 @@ extension FeaturesView {
         [.init(name: "教务系统(本科)",
                image: "person.2",
                description: "本科生教务系统",
-               url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup()),
+               url: "https://jw.ustc.edu.cn/ucas-sso/login",
+               markUp: true),
          .init(name: "公共查询",
                image: "doc.text.magnifyingglass",
                description: "查询教室使用情况",
-               url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!),
+               url: "https://catalog.ustc.edu.cn/query/classroom"),
          .init(name: "网络通服务",
                image: "globe.asia.australia",
                description: "申请/修改网络通、重置密码",
-               url: URL(string: "https://zczx.ustc.edu.cn/caslogin")!.ustcCASLoginMarkup()),
+               url: "https://zczx.ustc.edu.cn/caslogin",
+               markUp: true),
          .init(name: "大物预约选课平台",
                image: "chart.xyaxis.line",
                description: "预约/查看物理实验课程",
-               url: URL(string: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html")!.ustcCASLoginMarkup()),
+               url: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html",
+               markUp: true),
          .init(name: "中区教室预约",
                image: "clock.badge.checkmark",
                description: "预约中区研讨室/青年之家会议室",
-               url: URL(string: "http://roombooking.cmet.ustc.edu.cn/api/cas/index")!.ustcCASLoginMarkup()),
+               url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
+               markUp: true),
          .init(name: "一卡通",
                image: "creditcard",
                description: "遗失、查询记录、门禁权限等",
-               url: URL(string: "https://ecard.ustc.edu.cn/caslogin")!.ustcCASLoginMarkup()),
+               url: "https://ecard.ustc.edu.cn/caslogin",
+               markUp: true),
          .init(name: "学工一体化",
                image: "desktopcomputer",
                description: "奖学金、助学金、勤工助学等",
-               url: URL(string: "https://xgyth.ustc.edu.cn/usp/index.aspx")!.ustcCASLoginMarkup()),
+               url: "https://xgyth.ustc.edu.cn/usp/index.aspx",
+               markUp: true),
          .init(name: "瀚海教学网",
                image: "books.vertical",
                description: "本科教育提升计划-网络课程平台",
-               url: URL(string: "http://course.ustc.edu.cn/sso/ustc")!.ustcCASLoginMarkup())]
+               url: "http://course.ustc.edu.cn/sso/ustc",
+               markUp: true)]
 }

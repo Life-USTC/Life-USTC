@@ -31,6 +31,7 @@ func combine(_ lhs: String, _ rhs: String) -> String {
     }
 }
 
+/// Parse given weekStr, for example: "1-18", "1-7, 9-16" to EKRecurrenceRule List, just no any ideas on how to achieve that goal.
 func parseWeekStr(_: String) -> [EKRecurrenceRule] {
     return []
 }
@@ -44,6 +45,7 @@ extension Course {
             }
         }
         var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: { $0.title == name })
+        // try remove everything with that name in it
         if calendar == nil {
             calendar = EKCalendar(for: .event, eventStore: eventStore)
             calendar!.title = name

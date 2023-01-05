@@ -28,7 +28,6 @@
 		5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
 		568A959B295D75D2004272E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 568A959A295D75D2004272E2 /* LaunchScreen.storyboard */; };
 		5694D91829668191009CFCDF /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91729668191009CFCDF /* Course.swift */; };
-		5694D91A29668217009CFCDF /* EventKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91929668217009CFCDF /* EventKitExtension.swift */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
@@ -82,7 +81,6 @@
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5694D91729668191009CFCDF /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
-		5694D91929668217009CFCDF /* EventKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitExtension.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
@@ -195,7 +193,6 @@
 				56BE91F62963EF1600822C98 /* ExceptionCalls.swift */,
 				56BE91FA296677A300822C98 /* SwiftExtension.swift */,
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
-				5694D91929668217009CFCDF /* EventKitExtension.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -343,7 +340,6 @@
 			files = (
 				562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */,
 				56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */,
-				5694D91A29668217009CFCDF /* EventKitExtension.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
@@ -522,7 +518,7 @@
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -558,7 +554,7 @@
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Life-USTC--iOS--Info.plist";
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

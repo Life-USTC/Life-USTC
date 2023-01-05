@@ -82,21 +82,6 @@ struct AboutLifeAtUSTCView: View {
     }
 }
 
-struct EmptyView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "bolt.slash.fill")
-                .font(.system(size: 60))
-                .frame(width: 100, height: 100)
-                .foregroundColor(.yellow)
-                .symbolRenderingMode(.hierarchical)
-            Text("Comming Soon~")
-                .font(.title2)
-                .bold()
-        }
-    }
-}
-
 struct LegalInfoView: View {
     var body: some View {
         NavigationStack {

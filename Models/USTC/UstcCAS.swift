@@ -7,8 +7,6 @@
 
 import Foundation
 
-let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
-let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
 let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
 
 extension URL {

@@ -8,8 +8,9 @@
 import FeedKit
 import SwiftUI
 
-struct FeedSource {
-    static var all: [FeedSource] = []
+class FeedSource {
+    static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL, name: "教务处", image: "person.crop.square.fill.and.at.rectangle"),
+                                    FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill")]
 
     var url: URL
     var name: String
@@ -54,12 +55,14 @@ struct FeedSource {
         asyncCall(forceUpdatePost)
     }
 
-    init(url: URL, name: String, description: String? = nil, image: String? = nil) {
+    init(url: URL, name: String, description: String? = nil, image: String? = nil, flag: Bool = false) {
         self.url = url
         self.name = name
         id = UUID(name: name, nameSpace: .oid)
         self.description = description
         self.image = image
-        FeedSource.all.append(self)
+        if flag {
+            FeedSource.all.append(self)
+        }
     }
 }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftyJSON
 
 @main
 struct Life_USTCApp: App {
