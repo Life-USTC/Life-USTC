@@ -12,7 +12,7 @@ let paddingWidth = 2.0
 let stackWidth = (UIScreen.main.bounds.width - paddingWidth * 2) / 5
 
 struct CurriculumView: View {
-    @AppStorage("curriculmShowSatAndSun") var showSatAndSun = false
+    @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
     @AppStorage("semesterID") var semesterID = "281"
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
@@ -21,10 +21,13 @@ struct CurriculumView: View {
     var settingSheet: some View {
         NavigationStack {
             List {
-                Toggle("Sat&Sun", isOn: $showSatAndSun)
+                Toggle(isOn: $showSatAndSun) {
+                    Label("Sat&Sun", systemImage: "lines.measurement.horizontal")
+                }
 
+                // Notice that this is only achieving a Picker's functionality, but perhaps writing the code this way is much more simpler
                 HStack {
-                    Text("Select time")
+                    Label("Select time", systemImage: "square.3.stack.3d")
                     Spacer()
                     Menu {
                         ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
@@ -50,6 +53,12 @@ struct CurriculumView: View {
                     } label: {
                         Text(UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })?.key ?? "")
                     }
+                }
+
+                Button {
+                    UstcUgAASClient.main.saveToCalendar()
+                } label: {
+                    Label("Save to Calendar", systemImage: "square.and.arrow.down")
                 }
             }
             .listStyle(.plain)

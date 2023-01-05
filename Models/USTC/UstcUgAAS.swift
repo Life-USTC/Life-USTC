@@ -5,33 +5,35 @@
 //  Created by TiankaiMa on 2022/12/16.
 //
 
-import EventKit
-import Foundation
 import SwiftUI
 import SwiftyJSON
-
-struct Course: Identifiable, Equatable {
-    var id: UUID {
-        UUID(name: "\(dayOfWeek):\(startTime)-\(endTime)[\(name)//\(classIDString)]@\(classPositionString);\(classTeacherName),\(weekString)", nameSpace: .oid)
-    }
-
-    var dayOfWeek: Int
-    var startTime: Int
-    var endTime: Int
-    var name: String
-    var classIDString: String
-    var classPositionString: String
-    var classTeacherName: String
-    var weekString: String
-}
 
 /// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
     static var main = UstcUgAASClient()
-    static let semesterIDList: [String: String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
+    static let semesterIDList: [String: String] =
+        ["2021年秋季学期": "221",
+         "2022年春季学期": "241",
+         "2022年夏季学期": "261",
+         "2022年秋季学期": "281",
+         "2023年春季学期": "301"]
+    static let semesterDateList: [String: Date] =
+        ["2021年秋季学期": .init(timeIntervalSince1970: 1_630_771_200),
+         "2022年春季学期": .init(timeIntervalSince1970: 1_642_608_000),
+         "2022年夏季学期": .init(timeIntervalSince1970: 1_656_172_800),
+         "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
+         "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
 
     var jsonCache = JSON() // save&load as /document/ugaas_cache.json
     var semesterID: String = "301"
+    var semesterName: String {
+        UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
+    }
+
+    var semesterDate: Date {
+        UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterName })!.value
+    }
+
     var lastLogined: Date?
     var courses: [Course] = []
 
@@ -53,6 +55,10 @@ class UstcUgAASClient {
                 try await forceUpdate()
             }
         }
+    }
+
+    func saveToCalendar() {
+        Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate)
     }
 
     /// Save /Document/ugaas_cache.json to self.jsonCache
@@ -129,23 +135,8 @@ class UstcUgAASClient {
         try saveCache()
     }
 
-    func saveToCalendar() {
-        var store = EKEventStore()
-        store.requestAccess(to: .event) { _, _ in
-        }
-        for course in courses {}
-    }
-
     init() {
         exceptionCall(loadCache)
-    }
-}
-
-func combine(_ lhs: String, _ rhs: String) -> String {
-    if lhs == rhs {
-        return lhs
-    } else {
-        return "\(lhs) & \(rhs)"
     }
 }
 
@@ -153,83 +144,4 @@ extension ContentView {
     func loadMainUstcUgAASClient() throws {
         UstcUgAASClient.main.semesterID = semesterID
     }
-}
-
-extension Course {
-    static func clean(_ courses: [Course]) -> [Course] {
-        var cleaneCourse = courses
-        doubleForEach(courses) { course, secondCourse in
-            if course.dayOfWeek == secondCourse.dayOfWeek {
-                if course.classIDString == secondCourse.classIDString {
-                    if course.startTime == secondCourse.endTime + 1 {
-                        cleaneCourse.removeAll(where: { $0 == course })
-                        cleaneCourse.removeAll(where: { $0 == secondCourse })
-                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                                   startTime: secondCourse.startTime,
-                                                   endTime: course.endTime,
-                                                   name: course.name,
-                                                   classIDString: course.classIDString,
-                                                   classPositionString: course.classPositionString,
-                                                   classTeacherName: course.classTeacherName,
-                                                   weekString: course.weekString))
-                    }
-                    if secondCourse.startTime == course.endTime + 1 {
-                        cleaneCourse.removeAll(where: { $0 == course })
-                        cleaneCourse.removeAll(where: { $0 == secondCourse })
-                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                                   startTime: course.startTime,
-                                                   endTime: secondCourse.endTime,
-                                                   name: course.name,
-                                                   classIDString: course.classIDString,
-                                                   classPositionString: course.classPositionString,
-                                                   classTeacherName: course.classTeacherName,
-                                                   weekString: course.weekString))
-                    }
-                }
-                if course.startTime == secondCourse.startTime, course.endTime == secondCourse.endTime {
-                    cleaneCourse.removeAll(where: { $0 == course })
-                    cleaneCourse.removeAll(where: { $0 == secondCourse })
-                    cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                               startTime: course.startTime,
-                                               endTime: course.endTime,
-                                               name: combine(course.name, secondCourse.name),
-                                               classIDString: combine(course.classIDString, secondCourse.classIDString),
-                                               classPositionString: combine(course.classPositionString, secondCourse.classPositionString),
-                                               classTeacherName: combine(course.classTeacherName, secondCourse.classTeacherName),
-                                               weekString: combine(course.weekString, secondCourse.weekString)))
-                }
-            }
-        }
-        return cleaneCourse
-    }
-
-    static let startTimes: [DateComponents] =
-        [.init(hour: 7, minute: 50),
-         .init(hour: 8, minute: 40),
-         .init(hour: 9, minute: 45),
-         .init(hour: 10, minute: 35),
-         .init(hour: 11, minute: 25),
-         .init(hour: 14, minute: 0),
-         .init(hour: 14, minute: 50),
-         .init(hour: 15, minute: 55),
-         .init(hour: 16, minute: 45),
-         .init(hour: 17, minute: 35),
-         .init(hour: 19, minute: 30),
-         .init(hour: 20, minute: 20),
-         .init(hour: 21, minute: 10)]
-
-    static let endTimes: [DateComponents] =
-        [.init(hour: 8, minute: 35),
-         .init(hour: 9, minute: 25),
-         .init(hour: 10, minute: 30),
-         .init(hour: 11, minute: 20),
-         .init(hour: 12, minute: 10),
-         .init(hour: 14, minute: 45),
-         .init(hour: 15, minute: 35),
-         .init(hour: 16, minute: 40),
-         .init(hour: 17, minute: 30),
-         .init(hour: 18, minute: 20),
-         .init(hour: 20, minute: 15),
-         .init(hour: 21, minute: 5),
-         .init(hour: 21, minute: 55)]
 }

@@ -37,6 +37,7 @@ struct CourseCardView: View {
                 .stroke(showPopUp ? Color.accentColor : Color.gray, lineWidth: 1)
                 .frame(width: stackWidth)
         }
+        .onTapGesture {}
         .onLongPressGesture(minimumDuration: 0.6) {
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
             showPopUp = true
