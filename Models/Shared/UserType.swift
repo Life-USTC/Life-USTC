@@ -14,7 +14,7 @@ enum UserType: String, CaseIterable {
     case teacher
     case parent
     case managment
-    
+
     static var main = UserType.undergraduate
 
     var caption: String {
@@ -31,8 +31,8 @@ enum UserType: String, CaseIterable {
             return "Notice; Create Notice"
         }
     }
-    
+
     func makeView() -> some View {
-        TitleAndSubTitle(title: String(describing: self).capitalized, subTitle: self.caption, style: .substring)
+        TitleAndSubTitle(title: String(describing: self).capitalized, subTitle: caption, style: .substring)
     }
 }

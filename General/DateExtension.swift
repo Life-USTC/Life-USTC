@@ -88,13 +88,13 @@ extension Date {
     static var zero: Date {
         return Date(timeIntervalSince1970: 0)
     }
-    
+
     /// Keep year month and day components only
     func stripTime() -> Date {
         let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
         return Calendar.current.date(from: components)!
     }
-    
+
     /// Shorthand for adding DateComponents
     func add(year: Int = 0, month: Int = 0, day: Int = 0) -> Date {
         return self + DateComponents(year: year, month: month, day: day)
@@ -110,7 +110,7 @@ extension String {
 
 extension TimePeroid {
     func makeView() -> some View {
-        TitleAndSubTitle(title: self.caption, subTitle: self.dateRangeCaption, style: .reverse)
+        TitleAndSubTitle(title: caption, subTitle: dateRangeCaption, style: .reverse)
     }
 }
 

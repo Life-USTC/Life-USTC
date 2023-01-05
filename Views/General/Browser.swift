@@ -18,7 +18,7 @@ struct SwiftUIWebView: UIViewRepresentable {
         let wkWebConfig = WKWebViewConfiguration()
         wkWebConfig.defaultWebpagePreferences.preferredContentMode = .mobile
         wkWebConfig.upgradeKnownHostsToHTTPS = true
-        
+
         // Load cookies from shared Session
         let session = URLSession.shared
         if let cookies = session.configuration.httpCookieStorage?.cookies {
@@ -26,7 +26,7 @@ struct SwiftUIWebView: UIViewRepresentable {
                 wkWebConfig.websiteDataStore.httpCookieStore.setCookie(cookie)
             }
         }
-        
+
         webView = WKWebView(frame: .zero, configuration: wkWebConfig)
         // identify self as mobile client, so that the website will render the mobile version
         webView.customUserAgent = #"Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari/602.1.50"#

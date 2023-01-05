@@ -30,16 +30,16 @@ extension URL {
 /// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient {
     static var main = UstcCasClient()
-    
+
     var username: String = ""
     var password: String = ""
 
-    private var lastLogined: Date? = nil
-    
+    private var lastLogined: Date?
+
     private var precheckFails: Bool {
         return (username.isEmpty || password.isEmpty)
     }
-    
+
     func update(username: String, password: String) {
         self.username = username
         self.password = password
@@ -53,11 +53,11 @@ class UstcCasClient {
         guard let dataString = String(data: data, encoding: .utf8) else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
-        
+
         guard let match = dataString.firstMatch(of: findLtStringRegex) else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
-        
+
         let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
         return (String(match.0), HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!))
     }
@@ -69,22 +69,22 @@ class UstcCasClient {
         }
         let session = URLSession.shared
         let (ltToken, cookies) = try await getLtTokenFromCAS()
-        
+
         let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
         var request = URLRequest(url: ustcLoginUrl)
         request.httpMethod = "POST"
         request.httpBody = dataString.data(using: .utf8)
         request.httpShouldHandleCookies = true
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
-        
+
         _ = try await session.data(for: request)
         lastLogined = .now
-        
+
         return try await checkLogined()
     }
 
     func checkLogined() async throws -> Bool {
-        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15)  {
+        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
             return false
         }
         let session = URLSession.shared

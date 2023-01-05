@@ -1,0 +1,68 @@
+//
+//  CourseCardView.swift
+//  Life@USTC (iOS)
+//
+//  Created by TiankaiMa on 2023/1/5.
+//
+
+import SwiftUI
+
+struct CourseCardView: View {
+    var course: Course
+    @State var showPopUp = false
+
+    var body: some View {
+        VStack {
+            Text(Course.startTimes[course.startTime - 1].clockTime)
+            Spacer()
+
+            Text(course.name)
+                .lineLimit(nil)
+            Text(course.classPositionString)
+            if course.startTime != course.endTime {
+                Divider()
+                Text(course.classIDString)
+                Text(course.classTeacherName)
+
+                Spacer()
+                Text(Course.endTimes[course.endTime - 1].clockTime)
+            }
+        }
+        .lineLimit(1)
+        .font(.system(size: 12))
+        .padding(4)
+        .frame(height: heightPerClass * Double(course.endTime - course.startTime + 1))
+        .background {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(showPopUp ? Color.accentColor : Color.gray, lineWidth: 1)
+                .frame(width: stackWidth)
+        }
+        .onLongPressGesture(minimumDuration: 0.6) {
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+            showPopUp = true
+        }
+        .sheet(isPresented: $showPopUp) {
+            NavigationStack {
+                VStack(alignment: .leading) {
+                    Text(course.name)
+                        .font(.title)
+                    Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
+                        .bold()
+
+                    List {
+                        Text("Location: \(course.classPositionString)")
+                        Text("Teacher: \(course.classTeacherName)")
+                        Text("ID: \(course.classIDString)")
+                        Text("Week: \(course.weekString)")
+                        Text("Time: \(course.startTime) - \(course.endTime)")
+                    }
+                    .listStyle(.plain)
+                    .scrollDisabled(true)
+                }
+                .hStackLeading()
+                .padding()
+            }
+            .presentationDetents([.fraction(0.5)])
+        }
+    }
+}

@@ -10,25 +10,26 @@ import SwiftUI
 
 struct FeedSource {
     static var all: [FeedSource] = []
-    
+
     var url: URL
     var name: String
     var id: UUID
     var description: String?
     var image: String?
-    
+
     var cache: FeedCache.FeedSourceCache? {
         FeedCache.feedSourceCaches.first(where: { $0.id == self.id })
     }
+
     var parser: FeedParser {
-        return FeedParser(URL: self.url)
+        return FeedParser(URL: url)
     }
 
     func fetchRecentPost() async throws -> [Feed] {
         if cache != nil, !cache!.feeds.isEmpty, cache!.lastUpdated.addingTimeInterval(7200) > Date() {
             return cache!.feeds
         }
-        
+
         let data = try await forceUpdatePost()
         return data
     }
@@ -56,7 +57,7 @@ struct FeedSource {
     init(url: URL, name: String, description: String? = nil, image: String? = nil) {
         self.url = url
         self.name = name
-        self.id = UUID(name: name, nameSpace: .oid)
+        id = UUID(name: name, nameSpace: .oid)
         self.description = description
         self.image = image
         FeedSource.all.append(self)

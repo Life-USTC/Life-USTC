@@ -13,7 +13,7 @@ struct FeaturesView: View {
         if searchText.isEmpty {
             return FeaturesView.ustcWebFeatures
         } else {
-            return FeaturesView.ustcWebFeatures.filter { $0.name.contains(searchText) || $0.description.contains(searchText)}
+            return FeaturesView.ustcWebFeatures.filter { $0.name.contains(searchText) || $0.description.contains(searchText) }
         }
     }
 
@@ -32,7 +32,7 @@ struct FeaturesView: View {
             Text("Feed")
         }
     }
-    
+
     var ugAASSection: some View {
         Section {
             NavigationLink(destination: CurriculumView()) {
@@ -42,7 +42,7 @@ struct FeaturesView: View {
             Text("UG AAS")
         }
     }
-    
+
     var featureListSection: some View {
         Section {
             ForEach(ustcWebFeaturesSearched, id: \.id) { feature in
@@ -65,7 +65,7 @@ struct FeaturesView: View {
                 featureListSection
             }
             .navigationTitle("Features")
-            .searchable(text: $searchText,placement: .navigationBarDrawer(displayMode: .always))
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         }
     }
 }
@@ -77,9 +77,9 @@ extension FeaturesView {
         var image: String
         var description: String
         var url: URL
-        
+
         func makeView() -> some View {
-            ListLabelView(image: self.image, title: self.name, subTitle: self.description)
+            ListLabelView(image: image, title: name, subTitle: description)
         }
     }
 

@@ -14,6 +14,7 @@ struct Course: Identifiable, Equatable {
     var id: UUID {
         UUID(name: "\(dayOfWeek):\(startTime)-\(endTime)[\(name)//\(classIDString)]@\(classPositionString);\(classTeacherName),\(weekString)", nameSpace: .oid)
     }
+
     var dayOfWeek: Int
     var startTime: Int
     var endTime: Int
@@ -28,7 +29,7 @@ struct Course: Identifiable, Equatable {
 class UstcUgAASClient {
     static var main = UstcUgAASClient()
     static let semesterIDList: [String: String] = ["2021年秋季学期": "221", "2022年春季学期": "241", "2022年夏季学期": "261", "2022年秋季学期": "281", "2023年春季学期": "301"]
-    
+
     var jsonCache = JSON() // save&load as /document/ugaas_cache.json
     var semesterID: String = "301"
     var lastLogined: Date?
@@ -40,13 +41,13 @@ class UstcUgAASClient {
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastLogined") {
             lastLogined = try decoder.decode(Date.self, from: data)
         }
-        
+
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
         if fileManager.fileExists(atPath: filePath) {
-                let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
-                jsonCache = try JSON(data: data)
+            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+            jsonCache = try JSON(data: data)
         } else {
             Task {
                 try await forceUpdate()
@@ -59,7 +60,7 @@ class UstcUgAASClient {
         let encoder = JSONEncoder()
         let data = try encoder.encode(lastLogined)
         UserDefaults.standard.set(data, forKey: "UstcUgAASLastLogined")
-        
+
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         let filePath = path + "/ugaas_cache.json"
@@ -76,7 +77,7 @@ class UstcUgAASClient {
                 return
             }
         }
-        
+
         let session = URLSession.shared
         // jw.ustc.edu.cn login.
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
@@ -84,7 +85,7 @@ class UstcUgAASClient {
     }
 
     func getCurriculum() async throws -> [Course] {
-        if self.lastLogined == nil {
+        if lastLogined == nil {
             try await forceUpdate()
         }
         var result: [Course] = []
@@ -104,8 +105,7 @@ class UstcUgAASClient {
 
             result.append(tmp)
         }
-        courses = result
-        cleanUp()
+        courses = Course.clean(result)
         return courses
     }
 
@@ -126,67 +126,14 @@ class UstcUgAASClient {
         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(semesterID)/print-data/\(tableID)?weekIndex=")!))
         jsonCache = try JSON(data: data)
         lastLogined = Date()
-        try saveCache()    }
-
-    func cleanUp() {
-        var cleaneCourse = courses
-        for course in courses {
-            for secondCourse in courses {
-                if course == secondCourse {
-                    break
-                }
-                if course.dayOfWeek == secondCourse.dayOfWeek {
-                    if course.classIDString == secondCourse.classIDString {
-                        if course.startTime == secondCourse.endTime + 1 {
-                            cleaneCourse.removeAll(where: { $0 == course })
-                            cleaneCourse.removeAll(where: { $0 == secondCourse })
-                            cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                                       startTime: secondCourse.startTime,
-                                                       endTime: course.endTime,
-                                                       name: course.name,
-                                                       classIDString: course.classIDString,
-                                                       classPositionString: course.classPositionString,
-                                                       classTeacherName: course.classTeacherName,
-                                                       weekString: course.weekString))
-                        }
-                        if secondCourse.startTime == course.endTime + 1 {
-                            cleaneCourse.removeAll(where: { $0 == course })
-                            cleaneCourse.removeAll(where: { $0 == secondCourse })
-                            cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                                       startTime: course.startTime,
-                                                       endTime: secondCourse.endTime,
-                                                       name: course.name,
-                                                       classIDString: course.classIDString,
-                                                       classPositionString: course.classPositionString,
-                                                       classTeacherName: course.classTeacherName,
-                                                       weekString: course.weekString))
-                        }
-                    }
-                    if course.startTime == secondCourse.startTime && course.endTime == secondCourse.endTime {
-                        cleaneCourse.removeAll(where: { $0 == course })
-                        cleaneCourse.removeAll(where: { $0 == secondCourse })
-                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
-                                                   startTime: course.startTime,
-                                                   endTime: course.endTime,
-                                                   name: combine(course.name, secondCourse.name),
-                                                   classIDString: combine(course.classIDString, secondCourse.classIDString),
-                                                   classPositionString: combine(course.classPositionString, secondCourse.classPositionString),
-                                                   classTeacherName: combine(course.classTeacherName, secondCourse.classTeacherName),
-                                                   weekString: combine(course.weekString, secondCourse.weekString)))
-                    }
-                }
-            }
-        }
-        courses = cleaneCourse
+        try saveCache()
     }
 
     func saveToCalendar() {
         var store = EKEventStore()
         store.requestAccess(to: .event) { _, _ in
         }
-        for course in courses {
-
-        }
+        for course in courses {}
     }
 
     init() {
@@ -208,33 +155,81 @@ extension ContentView {
     }
 }
 
-// lazy version...
-let classStartTimes: [DateComponents] =
-    [.init(hour: 7, minute: 50),
-     .init(hour: 8, minute: 40),
-     .init(hour: 9, minute: 45),
-     .init(hour: 10, minute: 35),
-     .init(hour: 11, minute: 25),
-     .init(hour: 14, minute: 0),
-     .init(hour: 14, minute: 50),
-     .init(hour: 15, minute: 55),
-     .init(hour: 16, minute: 45),
-     .init(hour: 17, minute: 35),
-     .init(hour: 19, minute: 30),
-     .init(hour: 20, minute: 20),
-     .init(hour: 21, minute: 10)]
+extension Course {
+    static func clean(_ courses: [Course]) -> [Course] {
+        var cleaneCourse = courses
+        doubleForEach(courses) { course, secondCourse in
+            if course.dayOfWeek == secondCourse.dayOfWeek {
+                if course.classIDString == secondCourse.classIDString {
+                    if course.startTime == secondCourse.endTime + 1 {
+                        cleaneCourse.removeAll(where: { $0 == course })
+                        cleaneCourse.removeAll(where: { $0 == secondCourse })
+                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                                   startTime: secondCourse.startTime,
+                                                   endTime: course.endTime,
+                                                   name: course.name,
+                                                   classIDString: course.classIDString,
+                                                   classPositionString: course.classPositionString,
+                                                   classTeacherName: course.classTeacherName,
+                                                   weekString: course.weekString))
+                    }
+                    if secondCourse.startTime == course.endTime + 1 {
+                        cleaneCourse.removeAll(where: { $0 == course })
+                        cleaneCourse.removeAll(where: { $0 == secondCourse })
+                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                                   startTime: course.startTime,
+                                                   endTime: secondCourse.endTime,
+                                                   name: course.name,
+                                                   classIDString: course.classIDString,
+                                                   classPositionString: course.classPositionString,
+                                                   classTeacherName: course.classTeacherName,
+                                                   weekString: course.weekString))
+                    }
+                }
+                if course.startTime == secondCourse.startTime, course.endTime == secondCourse.endTime {
+                    cleaneCourse.removeAll(where: { $0 == course })
+                    cleaneCourse.removeAll(where: { $0 == secondCourse })
+                    cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                               startTime: course.startTime,
+                                               endTime: course.endTime,
+                                               name: combine(course.name, secondCourse.name),
+                                               classIDString: combine(course.classIDString, secondCourse.classIDString),
+                                               classPositionString: combine(course.classPositionString, secondCourse.classPositionString),
+                                               classTeacherName: combine(course.classTeacherName, secondCourse.classTeacherName),
+                                               weekString: combine(course.weekString, secondCourse.weekString)))
+                }
+            }
+        }
+        return cleaneCourse
+    }
 
-let classEndTimes: [DateComponents] =
-    [.init(hour: 8, minute: 35),
-     .init(hour: 9, minute: 25),
-     .init(hour: 10, minute: 30),
-     .init(hour: 11, minute: 20),
-     .init(hour: 12, minute: 10),
-     .init(hour: 14, minute: 45),
-     .init(hour: 15, minute: 35),
-     .init(hour: 16, minute: 40),
-     .init(hour: 17, minute: 30),
-     .init(hour: 18, minute: 20),
-     .init(hour: 20, minute: 15),
-     .init(hour: 21, minute: 5),
-     .init(hour: 21, minute: 55)]
+    static let startTimes: [DateComponents] =
+        [.init(hour: 7, minute: 50),
+         .init(hour: 8, minute: 40),
+         .init(hour: 9, minute: 45),
+         .init(hour: 10, minute: 35),
+         .init(hour: 11, minute: 25),
+         .init(hour: 14, minute: 0),
+         .init(hour: 14, minute: 50),
+         .init(hour: 15, minute: 55),
+         .init(hour: 16, minute: 45),
+         .init(hour: 17, minute: 35),
+         .init(hour: 19, minute: 30),
+         .init(hour: 20, minute: 20),
+         .init(hour: 21, minute: 10)]
+
+    static let endTimes: [DateComponents] =
+        [.init(hour: 8, minute: 35),
+         .init(hour: 9, minute: 25),
+         .init(hour: 10, minute: 30),
+         .init(hour: 11, minute: 20),
+         .init(hour: 12, minute: 10),
+         .init(hour: 14, minute: 45),
+         .init(hour: 15, minute: 35),
+         .init(hour: 16, minute: 40),
+         .init(hour: 17, minute: 30),
+         .init(hour: 18, minute: 20),
+         .init(hour: 20, minute: 15),
+         .init(hour: 21, minute: 5),
+         .init(hour: 21, minute: 55)]
+}

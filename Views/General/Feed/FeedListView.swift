@@ -32,7 +32,7 @@ struct FeedVStackView: View {
         }
         return result
     }
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {

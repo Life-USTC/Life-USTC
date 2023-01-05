@@ -29,21 +29,21 @@ struct Feed: Codable {
     var imageURL: URL?
 
     init(item: RSSFeedItem, source: String) {
-        self.title = item.title ?? "!!No title found for this Feed"
+        title = item.title ?? "!!No title found for this Feed"
         self.source = source
-        self.keywords = Set(item.categories?.map { $0.value ?? "" } ?? [])
-        self.description = item.description
-        
-        self.datePosted = item.pubDate ?? Date()
-        self.url = URL(string: item.link!)!
+        keywords = Set(item.categories?.map { $0.value ?? "" } ?? [])
+        description = item.description
+
+        datePosted = item.pubDate ?? Date()
+        url = URL(string: item.link!)!
 
         // Try find an image-URL inside content, if found, set it as the image preview
         let match = item.content?.contentEncoded?.firstMatch(of: imageURLRegex)
         if let match {
             imageURL = URL(string: String(match.0))
         }
-        
-        self.id = UUID(name: self.url.absoluteString, nameSpace: .url)
+
+        id = UUID(name: url.absoluteString, nameSpace: .url)
         Feed.all.append(self)
     }
 }

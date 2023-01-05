@@ -11,5 +11,6 @@ let ustcHomePageFeedURL = URL(string: "https://www.ustc.edu.cn/system/resource/c
 let ustcOAAFeedURL = URL(string: "https://www.teach.ustc.edu.cn/category/notice/feed")!
 
 // MARK: This shall NOT be used, use FeedSource.all to list all feedSource.
+
 let defaultFeedSources = [FeedSource(url: ustcOAAFeedURL, name: "教务处", image: "person.crop.square.fill.and.at.rectangle"),
                           FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill")]

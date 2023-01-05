@@ -31,6 +31,9 @@
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
 		56BE91F92965D05A00822C98 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 56BE91F82965D05A00822C98 /* README.md */; };
+		56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* SwiftExtension.swift */; };
+		56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FC2966799200822C98 /* CourseCardView.swift */; };
+		56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
@@ -81,6 +84,9 @@
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
 		56BE91F62963EF1600822C98 /* ExceptionCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionCalls.swift; sourceTree = "<group>"; };
 		56BE91F82965D05A00822C98 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		56BE91FA296677A300822C98 /* SwiftExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftExtension.swift; sourceTree = "<group>"; };
+		56BE91FC2966799200822C98 /* CourseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCardView.swift; sourceTree = "<group>"; };
+		56BE91FE296679BC00822C98 /* CurriculumPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreview.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
@@ -129,9 +135,9 @@
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				56BE9200296679DB00822C98 /* Curriculum */,
 				56D175CA295456F10070778F /* Feed */,
 				565587B5294ACEFD0010E060 /* Browser.swift */,
-				565587B2294ABE7B0010E060 /* Card.swift */,
 				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
 			);
 			path = General;
@@ -184,6 +190,7 @@
 				5621691B2955BEC500DF46BE /* DateExtension.swift */,
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
 				56BE91F62963EF1600822C98 /* ExceptionCalls.swift */,
+				56BE91FA296677A300822C98 /* SwiftExtension.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -196,10 +203,19 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		56BE9200296679DB00822C98 /* Curriculum */ = {
+			isa = PBXGroup;
+			children = (
+				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
+				56BE91FC2966799200822C98 /* CourseCardView.swift */,
+				56D175BF295048A10070778F /* CurriculumView.swift */,
+			);
+			path = Curriculum;
+			sourceTree = "<group>";
+		};
 		56D175BE295048340070778F /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				56D175BF295048A10070778F /* CurriculumView.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -227,6 +243,7 @@
 		56D175CA295456F10070778F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				565587B2294ABE7B0010E060 /* Card.swift */,
 				56D175CB295457100070778F /* FeedSourceView.swift */,
 				56D175CD295457810070778F /* FeedView.swift */,
 				56D175CF2954589D0070778F /* FeedListView.swift */,
@@ -319,6 +336,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */,
+				56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
@@ -329,9 +347,11 @@
 				562169222955BEDE00DF46BE /* ContentView.swift in Sources */,
 				56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */,
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
+				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
+				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedListView.swift in Sources */,

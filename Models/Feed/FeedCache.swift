@@ -11,14 +11,14 @@ import SwiftUI
 class FeedCache {
     static var defaults = UserDefaults.standard
     static let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
-    
+
     /// Maintain an array of Feed, id linked with single FeedSource
     struct FeedSourceCache: Codable {
         var id: UUID
         var feeds: [Feed]
         var lastUpdated: Date
     }
-    
+
     static var feedSourceCaches: [FeedSourceCache] = [] {
         didSet {
             // avoid calling the save when loading
@@ -35,15 +35,15 @@ class FeedCache {
             feedSourceCaches = try decoder.decode([FeedSourceCache].self, from: feedSourceCacheData)
         }
     }
-    
+
     static func save() throws {
         let encoder = JSONEncoder()
         let feedSourceCacheData = try encoder.encode(feedSourceCaches)
         defaults.set(feedSourceCacheData, forKey: "feedSourceCache")
     }
-    
+
     static func update(id: UUID, with: [Feed]) {
-        feedSourceCaches.removeAll(where: {$0.id == id})
+        feedSourceCaches.removeAll(where: { $0.id == id })
         feedSourceCaches.append(FeedSourceCache(id: id, feeds: with, lastUpdated: Date()))
     }
 
@@ -60,7 +60,7 @@ class FeedCache {
                 }
             }
         }
-        
+
         result.sort(by: { $0.datePosted > $1.datePosted })
         important.sort(by: { $0.datePosted > $1.datePosted })
         result.insert(contentsOf: important, at: 0)
@@ -81,7 +81,6 @@ class FeedCache {
             return result
         }
     }
-
 }
 
 extension ContentView {

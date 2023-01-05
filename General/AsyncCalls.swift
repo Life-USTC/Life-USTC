@@ -28,9 +28,8 @@ func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>, _ functi
     }
 }
 
-
 /// Create an async task with given function
-func asyncCall<T>( _ function: @escaping () async throws -> T) {
+func asyncCall<T>(_ function: @escaping () async throws -> T) {
     Task {
         do {
             _ = try await function()
