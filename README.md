@@ -10,7 +10,7 @@ The project is made completely in Swift. Backend server still in development (to
 
 - [x] Login To USTC CAS server
 - [x] Integrate with USTC official website(open them directly in the app)
-- [ ] Undergraduate course schedule
+- [x] Undergraduate course schedule
 - [ ] Undergraduate score info
 - [ ] Undergraduate exam info
 - [ ] Graduate course schedule

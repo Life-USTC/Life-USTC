@@ -44,7 +44,6 @@ struct HomeView: View {
                     }
                 }
                 CurriculumPreview()
-                    .frame(width: cardWidth, height: cardHeight)
                 Divider()
             }
             .padding()

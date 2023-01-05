@@ -10,6 +10,20 @@ import Foundation
 import SwiftUI
 import SwiftyJSON
 
+struct Course: Identifiable, Equatable {
+    var id: UUID {
+        UUID(name: "\(dayOfWeek):\(startTime)-\(endTime)[\(name)//\(classIDString)]@\(classPositionString);\(classTeacherName),\(weekString)", nameSpace: .oid)
+    }
+    var dayOfWeek: Int
+    var startTime: Int
+    var endTime: Int
+    var name: String
+    var classIDString: String
+    var classPositionString: String
+    var classTeacherName: String
+    var weekString: String
+}
+
 /// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
     static var main = UstcUgAASClient()
@@ -79,12 +93,20 @@ class UstcUgAASClient {
             if classPositionString == "" {
                 classPositionString = subJson["customPlace"].stringValue
             }
-            let tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!, startTime: Int(subJson["startUnit"].stringValue)!, endTime: Int(subJson["endUnit"].stringValue)!, name: subJson["courseName"].stringValue, classIDString: subJson["courseCode"].stringValue, classPositionString: classPositionString, classTeacherName: subJson["teachers"][0].stringValue, weekString: subJson["weeksStr"].stringValue)
+            let tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!,
+                             startTime: Int(subJson["startUnit"].stringValue)!,
+                             endTime: Int(subJson["endUnit"].stringValue)!,
+                             name: subJson["courseName"].stringValue,
+                             classIDString: subJson["courseCode"].stringValue,
+                             classPositionString: classPositionString,
+                             classTeacherName: subJson["teachers"][0].stringValue,
+                             weekString: subJson["weeksStr"].stringValue)
 
             result.append(tmp)
         }
         courses = result
-        return result
+        cleanUp()
+        return courses
     }
 
     func forceUpdate() async throws {
@@ -104,19 +126,58 @@ class UstcUgAASClient {
         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(semesterID)/print-data/\(tableID)?weekIndex=")!))
         jsonCache = try JSON(data: data)
         lastLogined = Date()
-        try saveCache()
-    }
+        try saveCache()    }
 
     func cleanUp() {
-        courses.sort(by: { a, b in
-            if a.dayOfWeek == b.dayOfWeek {
-                if a.startTime == b.startTime {
-                    return a.endTime < b.endTime
+        var cleaneCourse = courses
+        for course in courses {
+            for secondCourse in courses {
+                if course == secondCourse {
+                    break
                 }
-                return a.startTime < b.startTime
+                if course.dayOfWeek == secondCourse.dayOfWeek {
+                    if course.classIDString == secondCourse.classIDString {
+                        if course.startTime == secondCourse.endTime + 1 {
+                            cleaneCourse.removeAll(where: { $0 == course })
+                            cleaneCourse.removeAll(where: { $0 == secondCourse })
+                            cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                                       startTime: secondCourse.startTime,
+                                                       endTime: course.endTime,
+                                                       name: course.name,
+                                                       classIDString: course.classIDString,
+                                                       classPositionString: course.classPositionString,
+                                                       classTeacherName: course.classTeacherName,
+                                                       weekString: course.weekString))
+                        }
+                        if secondCourse.startTime == course.endTime + 1 {
+                            cleaneCourse.removeAll(where: { $0 == course })
+                            cleaneCourse.removeAll(where: { $0 == secondCourse })
+                            cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                                       startTime: course.startTime,
+                                                       endTime: secondCourse.endTime,
+                                                       name: course.name,
+                                                       classIDString: course.classIDString,
+                                                       classPositionString: course.classPositionString,
+                                                       classTeacherName: course.classTeacherName,
+                                                       weekString: course.weekString))
+                        }
+                    }
+                    if course.startTime == secondCourse.startTime && course.endTime == secondCourse.endTime {
+                        cleaneCourse.removeAll(where: { $0 == course })
+                        cleaneCourse.removeAll(where: { $0 == secondCourse })
+                        cleaneCourse.append(Course(dayOfWeek: course.dayOfWeek,
+                                                   startTime: course.startTime,
+                                                   endTime: course.endTime,
+                                                   name: combine(course.name, secondCourse.name),
+                                                   classIDString: combine(course.classIDString, secondCourse.classIDString),
+                                                   classPositionString: combine(course.classPositionString, secondCourse.classPositionString),
+                                                   classTeacherName: combine(course.classTeacherName, secondCourse.classTeacherName),
+                                                   weekString: combine(course.weekString, secondCourse.weekString)))
+                    }
+                }
             }
-            return a.dayOfWeek < b.dayOfWeek
-        })
+        }
+        courses = cleaneCourse
     }
 
     func saveToCalendar() {
@@ -133,8 +194,47 @@ class UstcUgAASClient {
     }
 }
 
+func combine(_ lhs: String, _ rhs: String) -> String {
+    if lhs == rhs {
+        return lhs
+    } else {
+        return "\(lhs) & \(rhs)"
+    }
+}
+
 extension ContentView {
     func loadMainUstcUgAASClient() throws {
         UstcUgAASClient.main.semesterID = semesterID
     }
 }
+
+// lazy version...
+let classStartTimes: [DateComponents] =
+    [.init(hour: 7, minute: 50),
+     .init(hour: 8, minute: 40),
+     .init(hour: 9, minute: 45),
+     .init(hour: 10, minute: 35),
+     .init(hour: 11, minute: 25),
+     .init(hour: 14, minute: 0),
+     .init(hour: 14, minute: 50),
+     .init(hour: 15, minute: 55),
+     .init(hour: 16, minute: 45),
+     .init(hour: 17, minute: 35),
+     .init(hour: 19, minute: 30),
+     .init(hour: 20, minute: 20),
+     .init(hour: 21, minute: 10)]
+
+let classEndTimes: [DateComponents] =
+    [.init(hour: 8, minute: 35),
+     .init(hour: 9, minute: 25),
+     .init(hour: 10, minute: 30),
+     .init(hour: 11, minute: 20),
+     .init(hour: 12, minute: 10),
+     .init(hour: 14, minute: 45),
+     .init(hour: 15, minute: 35),
+     .init(hour: 16, minute: 40),
+     .init(hour: 17, minute: 30),
+     .init(hour: 18, minute: 20),
+     .init(hour: 20, minute: 15),
+     .init(hour: 21, minute: 5),
+     .init(hour: 21, minute: 55)]

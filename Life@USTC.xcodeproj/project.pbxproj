@@ -30,6 +30,7 @@
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
+		56BE91F92965D05A00822C98 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 56BE91F82965D05A00822C98 /* README.md */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
@@ -79,6 +80,7 @@
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
 		56BE91F62963EF1600822C98 /* ExceptionCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionCalls.swift; sourceTree = "<group>"; };
+		56BE91F82965D05A00822C98 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
+				56BE91F82965D05A00822C98 /* README.md */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
 				56558802294D75100010E060 /* Assets */,
 				56BE91F42962FDF000822C98 /* General */,
@@ -303,6 +306,7 @@
 			files = (
 				568A959B295D75D2004272E2 /* LaunchScreen.storyboard in Resources */,
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
+				56BE91F92965D05A00822C98 /* README.md in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

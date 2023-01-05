@@ -113,3 +113,12 @@ extension TimePeroid {
         TitleAndSubTitle(title: self.caption, subTitle: self.dateRangeCaption, style: .reverse)
     }
 }
+
+extension DateComponents {
+    var clockTime: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .none
+        return dateFormatter.string(from: Date().stripTime() + self)
+    }
+}

@@ -7,61 +7,9 @@
 
 import SwiftUI
 
-struct Course: Identifiable {
-    var id = UUID()
-    var dayOfWeek: Int
-    var startTime: Int
-    var endTime: Int
-    var name: String
-    var classIDString: String
-    var classPositionString: String
-    var classTeacherName: String
-    var weekString: String
-}
-
 private let heightPerClass = 60.0
 private let paddingWidth = 2.0
 private let stackWidth = (UIScreen.main.bounds.width - paddingWidth * 2) / 5
-
-// lazy version...
-let classStartTimes: [DateComponents] =
-    [.init(hour: 7, minute: 50),
-     .init(hour: 8, minute: 40),
-     .init(hour: 9, minute: 45),
-     .init(hour: 10, minute: 35),
-     .init(hour: 11, minute: 25),
-     .init(hour: 14, minute: 0),
-     .init(hour: 14, minute: 50),
-     .init(hour: 15, minute: 55),
-     .init(hour: 16, minute: 45),
-     .init(hour: 17, minute: 35),
-     .init(hour: 19, minute: 30),
-     .init(hour: 20, minute: 20),
-     .init(hour: 21, minute: 10)]
-
-let classEndTimes: [DateComponents] =
-    [.init(hour: 8, minute: 35),
-     .init(hour: 9, minute: 25),
-     .init(hour: 10, minute: 30),
-     .init(hour: 11, minute: 20),
-     .init(hour: 12, minute: 10),
-     .init(hour: 14, minute: 45),
-     .init(hour: 15, minute: 35),
-     .init(hour: 16, minute: 40),
-     .init(hour: 17, minute: 30),
-     .init(hour: 18, minute: 20),
-     .init(hour: 20, minute: 15),
-     .init(hour: 21, minute: 5),
-     .init(hour: 21, minute: 55)]
-
-extension DateComponents {
-    var clockTime: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .none
-        return dateFormatter.string(from: Date().stripTime() + self)
-    }
-}
 
 struct CourseCardView: View {
     var course: Course
@@ -280,7 +228,9 @@ struct CurriculumPreview: View {
                     mainView
                 }
             }
-        }.onAppear {
+        }
+        .frame(width: cardWidth)
+        .onAppear {
             asyncBind($courses, status: $status) {
                 return try await UstcUgAASClient.main.getCurriculum()
             }
@@ -298,14 +248,15 @@ struct CurriculumPreview: View {
             }
         }
         .listStyle(.plain)
+        .frame(height: cardHeight / 3 * Double(todayCourse.count))
     }
 
+    /// If no class are shown...
     var happyView: some View {
         VStack {
             Image(systemName: "signature")
                 .foregroundColor(.accentColor)
                 .font(.system(size: 40))
-
             Text("Free today!")
         }
     }
