@@ -37,7 +37,7 @@ struct HomeView: View {
                 Divider()
 
                 HStack {
-                    TitleAndSubTitle(title: "Curriculum", subTitle: daysOfWeek[currentWeekDay - 1], style: .reverse)
+                    TitleAndSubTitle(title: "Curriculum", subTitle: daysOfWeek[(currentWeekDay + 6) % 7], style: .reverse)
                     NavigationLink(destination: CurriculumView()) {
                         Label("More", systemImage: "chevron.right.2")
                             .labelStyle(.iconOnly)

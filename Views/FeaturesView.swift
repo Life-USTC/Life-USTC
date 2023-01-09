@@ -11,7 +11,7 @@ struct FeaturesView: View {
     @State var searchText = ""
     var ustcFeatures: [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
-        
+
         var tmp: [FeatureWithView] = []
         tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AnyView(AllSourceView())))
         for feedSource in FeedSource.all {
@@ -22,13 +22,13 @@ struct FeaturesView: View {
         tmp = []
         tmp.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
         results["UG AAS"] = tmp
-        
+
         tmp = []
         for ustcWebFeature in FeaturesView.ustcWebFeatures {
             tmp.append(.init(ustcWebFeature))
         }
         results["Web"] = tmp
-        
+
         return results
     }
 
@@ -55,7 +55,7 @@ struct FeaturesView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(ustcWebFeaturesSearched.sorted(by: { return $0.value.count < $1.value.count }), id:\.key) { key, features in
+                ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Section {
                         ForEach(features) { feature in
                             feature.makeView()
