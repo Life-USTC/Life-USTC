@@ -55,14 +55,11 @@ class FeedSource {
         asyncCall(forceUpdatePost)
     }
 
-    init(url: URL, name: String, description: String? = nil, image: String? = nil, flag: Bool = false) {
+    init(url: URL, name: String, description: String? = nil, image: String? = nil) {
         self.url = url
         self.name = name
         id = UUID(name: name, nameSpace: .oid)
         self.description = description
         self.image = image
-        if flag {
-            FeedSource.all.append(self)
-        }
     }
 }

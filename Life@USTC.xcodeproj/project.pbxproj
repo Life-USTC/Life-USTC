@@ -11,7 +11,6 @@
 		56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6C295EE47A008CE454 /* AsyncCalls.swift */; };
 		5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
 		5621691E2955BECA00DF46BE /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691D2955BECA00DF46BE /* UserType.swift */; };
-		562169202955BED100DF46BE /* FeedConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691F2955BED100DF46BE /* FeedConstants.swift */; };
 		562169222955BEDE00DF46BE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169212955BEDE00DF46BE /* ContentView.swift */; };
 		562169242955BEF900DF46BE /* UserTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169232955BEF900DF46BE /* UserTypeView.swift */; };
 		562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169252956D49E00DF46BE /* FeedHScrollView.swift */; };
@@ -43,6 +42,9 @@
 		56D175CC295457100070778F /* FeedSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CB295457100070778F /* FeedSourceView.swift */; };
 		56D175CE295457810070778F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CD295457810070778F /* FeedView.swift */; };
 		56D175D02954589D0070778F /* FeedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedListView.swift */; };
+		56DD03A3296C1B8E004C358C /* PrivateConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A2296C1B8E004C358C /* PrivateConstant.swift */; };
+		56DD03A6296C1D5F004C358C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A5296C1D5F004C358C /* Notification.swift */; };
+		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,7 +65,6 @@
 		56143F6C295EE47A008CE454 /* AsyncCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCalls.swift; sourceTree = "<group>"; };
 		5621691B2955BEC500DF46BE /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		5621691D2955BECA00DF46BE /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
-		5621691F2955BED100DF46BE /* FeedConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedConstants.swift; sourceTree = "<group>"; };
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		562169232955BEF900DF46BE /* UserTypeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeView.swift; sourceTree = "<group>"; };
 		562169252956D49E00DF46BE /* FeedHScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHScrollView.swift; sourceTree = "<group>"; };
@@ -95,6 +96,10 @@
 		56D175CB295457100070778F /* FeedSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceView.swift; sourceTree = "<group>"; };
 		56D175CD295457810070778F /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		56D175CF2954589D0070778F /* FeedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListView.swift; sourceTree = "<group>"; };
+		56DD03A2296C1B8E004C358C /* PrivateConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateConstant.swift; sourceTree = "<group>"; };
+		56DD03A5296C1D5F004C358C /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC (iOS).entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +135,7 @@
 				56D175C9295438E80070778F /* Feed */,
 				56BE91F52962FEA900822C98 /* Shared */,
 				56D175C4295411DA0070778F /* USTC */,
+				56DD03A7296D0924004C358C /* AppDelegate.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -166,6 +172,8 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
+				56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */,
+				56DD03A1296C1B73004C358C /* Private */,
 				56BE91F82965D05A00822C98 /* README.md */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
 				56558802294D75100010E060 /* Assets */,
@@ -201,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				5621691D2955BECA00DF46BE /* UserType.swift */,
+				56DD03A5296C1D5F004C358C /* Notification.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -236,7 +245,6 @@
 			isa = PBXGroup;
 			children = (
 				56D175C5295438870070778F /* FeedCache.swift */,
-				5621691F2955BED100DF46BE /* FeedConstants.swift */,
 				565587B7294AE7910010E060 /* Feed.swift */,
 				56D175C7295438E20070778F /* FeedSource.swift */,
 			);
@@ -253,6 +261,14 @@
 				562169252956D49E00DF46BE /* FeedHScrollView.swift */,
 			);
 			path = Feed;
+			sourceTree = "<group>";
+		};
+		56DD03A1296C1B73004C358C /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				56DD03A2296C1B8E004C358C /* PrivateConstant.swift */,
+			);
+			path = Private;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -344,9 +360,9 @@
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
 				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
-				562169202955BED100DF46BE /* FeedConstants.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLoginView.swift in Sources */,
+				56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */,
 				562169222955BEDE00DF46BE /* ContentView.swift in Sources */,
 				56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */,
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
@@ -356,6 +372,7 @@
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
+				56DD03A3296C1B8E004C358C /* PrivateConstant.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedListView.swift in Sources */,
@@ -367,6 +384,7 @@
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */,
+				56DD03A6296C1D5F004C358C /* Notification.swift in Sources */,
 				56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -513,6 +531,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "Life@USTC (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
@@ -523,7 +542,6 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -550,6 +568,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "Life@USTC (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
@@ -560,7 +579,6 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (

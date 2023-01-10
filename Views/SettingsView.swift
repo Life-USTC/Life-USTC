@@ -17,6 +17,38 @@ extension Bundle {
     }
 }
 
+struct NotificationSettingView: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                Button {
+                    tryRequestAuthorization()
+                    UIApplication.shared.registerForRemoteNotifications()
+                } label: {
+                    Label("Upload Token", systemImage: "square.and.arrow.up")
+                }
+
+                Button {
+                    tryRequestAuthorization()
+//                    UIApplication.shared.applicationIconBadgeNumber += 1
+
+                    let uuidString = UUID().uuidString
+                    let content = UNMutableNotificationContent()
+                    content.title = "TestTitle"
+                    content.body = "What the fuck is this"
+
+                    // set trigger to nil to instantly trigger a update
+                    let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
+                    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+                } label: {
+                    Label("Test Message", systemImage: "plus.square.dashed")
+                }
+            }
+            .navigationTitle("Notification Settings")
+        }
+    }
+}
+
 struct AboutLifeAtUSTCView: View {
     var body: some View {
         NavigationStack {
@@ -132,7 +164,7 @@ struct SettingsView: View {
                     NavigationLink("Feed Source Settings", destination: EmptyView())
                     NavigationLink("CAS Settings", destination: CASLoginView(casLoginSheet: .constant(false)))
                     NavigationLink("Change User Type", destination: UserTypeView())
-                    NavigationLink("Notification Settings", destination: EmptyView())
+                    NavigationLink("Notification Settings", destination: NotificationSettingView())
                 }
 
                 Section {
