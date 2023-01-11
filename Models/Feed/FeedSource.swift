@@ -16,17 +16,10 @@ class FeedSource {
     var name: String
     var id: UUID
     var description: String?
-    var image: String?
-
-    var cache: FeedCache.FeedSourceCache? {
-        FeedCache.feedSourceCaches.first(where: { $0.id == self.id })
-    }
-
-    var parser: FeedParser {
-        return FeedParser(URL: url)
-    }
+    var image: String? // system image
 
     func fetchRecentPost() async throws -> [Feed] {
+        let cache = FeedCache.feedSourceCache(using: id)
         if cache != nil, !cache!.feeds.isEmpty, cache!.lastUpdated.addingTimeInterval(7200) > Date() {
             return cache!.feeds
         }
@@ -36,12 +29,12 @@ class FeedSource {
     }
 
     func forceUpdatePost() async throws -> [Feed] {
-        debugPrint("!!! Refresh \(name) RSSFeedPost")
-        let result = parser.parse()
+        print("!!! Refresh \(name) RSSFeedPost")
+        let result = FeedParser(URL: url).parse()
         switch result {
         case let .success(fetch):
             if let feeds = fetch.rssFeed?.items?.map({ Feed(item: $0, source: self.name) }) {
-                FeedCache.update(id: id, with: feeds)
+                FeedCache.update(using: id, with: feeds)
                 return feeds
             } else {
                 throw EncodingError.invalidValue(fetch, .init(codingPath: [], debugDescription: ""))
@@ -51,14 +44,14 @@ class FeedSource {
         }
     }
 
-    func updateRequest() {
-        asyncCall(forceUpdatePost)
-    }
-
-    init(url: URL, name: String, description: String? = nil, image: String? = nil) {
+    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil) {
         self.url = url
         self.name = name
-        id = UUID(name: name, nameSpace: .oid)
+        if let id {
+            self.id = id
+        } else {
+            self.id = UUID(name: name, nameSpace: .oid)
+        }
         self.description = description
         self.image = image
     }

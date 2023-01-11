@@ -8,26 +8,17 @@
 import SwiftUI
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions _:
-                     [UIApplication.LaunchOptionsKey: Any]?) -> Bool
-    {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().delegate = self
-
         application.registerForRemoteNotifications()
         return true
     }
 
-    func application(_: UIApplication,
-                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data)
-    {
-        print(deviceToken)
-        //   self.sendDeviceTokenToServer(data: deviceToken)
+    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        deviceTokenString = deviceToken.hexString
     }
 
-    func application(_: UIApplication,
-                     didFailToRegisterForRemoteNotificationsWithError error: Error)
-    {
+    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print(error)
         // Try again later.
     }
@@ -36,11 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         print(userInfo)
     }
 
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent _: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
+    func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Update the app interface directly.
 
         // Show a banner

@@ -17,7 +17,7 @@ struct CurriculumView: View {
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var showSettingSheet = false
-
+    @State var saveCalendarStatus: AsyncViewStatus = .inProgress
     var settingSheet: some View {
         NavigationStack {
             List {
@@ -56,9 +56,35 @@ struct CurriculumView: View {
                 }
 
                 Button {
-                    UstcUgAASClient.main.saveToCalendar()
+                    withAnimation {
+                        UstcUgAASClient.main.saveToCalendar(status: $saveCalendarStatus)
+                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                        Task {
+                            try await Task.sleep(for: .seconds(2))
+                            saveCalendarStatus = .inProgress
+                        }
+                    }
                 } label: {
-                    Label("Save to Calendar", systemImage: "square.and.arrow.down")
+                    HStack {
+                        Label("Save to Calendar", systemImage: "square.and.arrow.down")
+                        Spacer()
+                        switch saveCalendarStatus {
+                        case .success:
+                            HStack {
+                                Text("Saved")
+                                Image(systemName: "checkmark.seal")
+                            }
+                            .foregroundColor(.accentColor)
+                        case .inProgress:
+                            EmptyView()
+                        case .failure:
+                            HStack {
+                                Text("Something Went Wrong")
+                                Image(systemName: "questionmark.diamond.fill")
+                            }
+                            .foregroundColor(.red)
+                        }
+                    }
                 }
             }
             .listStyle(.plain)

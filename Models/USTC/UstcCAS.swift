@@ -88,6 +88,14 @@ class UstcCasClient {
         let session = URLSession.shared
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
     }
+
+    func requireLogin() async throws -> Bool {
+        if try await checkLogined() {
+            return true
+        } else {
+            return try await loginToCAS()
+        }
+    }
 }
 
 extension ContentView {

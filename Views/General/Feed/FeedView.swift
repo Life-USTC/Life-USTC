@@ -36,6 +36,13 @@ struct FeedView: View {
                     Browser(url: feed.url, title: feed.title)
                         .frame(width: cardWidth)
                 }
+            #if DEBUG
+                .overlay(alignment: .topLeading) {
+                    Text(feed.id.uuidString)
+                        .foregroundColor(.white)
+                        .font(.caption)
+                }
+            #endif
         }
     }
 }

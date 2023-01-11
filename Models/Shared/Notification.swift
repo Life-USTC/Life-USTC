@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+var deviceTokenString: String?
+
 func tryRequestAuthorization() {
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in

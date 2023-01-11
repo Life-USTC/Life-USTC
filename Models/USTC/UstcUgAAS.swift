@@ -57,8 +57,8 @@ class UstcUgAASClient {
         }
     }
 
-    func saveToCalendar() {
-        Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate)
+    func saveToCalendar(status: Binding<AsyncViewStatus>) {
+        Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate, status: status)
     }
 
     /// Save /Document/ugaas_cache.json to self.jsonCache
@@ -77,11 +77,8 @@ class UstcUgAASClient {
     }
 
     func login() async throws {
-        if try await !UstcCasClient.main.checkLogined() {
-            if try await !UstcCasClient.main.loginToCAS() {
-//                throw URLError()
-                return
-            }
+        if try await !UstcCasClient.main.requireLogin() {
+            return
         }
 
         let session = URLSession.shared

@@ -13,23 +13,29 @@ var cardWidth: CGFloat {
 
 let cardHeight = 200.0
 
-extension String {
-    func makeColor() -> Color {
-        let hash = abs(hashValue)
-        // Genrate the color from hash value
-        // hue: .random(in: 0...1)
-        // saturation: .random(in: 0.25...0.75)
-        // brightness: .random(in: 0.45...0.55)
-
+extension Color {
+    /// Generate the color from hash value
+    ///
+    /// - Note: Output color matches following range:
+    ///   hue: .random(in: 0...1)
+    ///   saturation: .random(in: 0.25...0.55)
+    ///   brightness: .random(in: 0.25...0.35, 0.75...0.85)
+    init(with string: String, mode: ColorScheme) {
+        let hash = Int(string.md5HexString.prefix(6), radix: 16)!
         let hue = Double(hash % 360) / 360
-        let saturation = Double(hash % 50 + 25) / 100
-        let brightness = Double(hash % 10 + 15) / 100
-
-        return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
+        let saturation = Double(hash % 30 + 25) / 100
+        var brightness = 0.0
+        if mode == .dark {
+            brightness = Double(hash % 10 + 25) / 100
+        } else {
+            brightness = Double(hash % 10 + 75) / 100
+        }
+        self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
     }
 }
 
 struct Card: View {
+    @Environment(\.colorScheme) var colorScheme
     var cardTitle: String
     var cardDescription: String?
     var leadingPropertyList: [(name: String, color: Color?)] = []
@@ -47,7 +53,7 @@ struct Card: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .foregroundColor(cardTitle.makeColor())
+                .foregroundColor(.init(with: cardTitle, mode: colorScheme))
             if let imageURL {
                 AsyncImage(url: imageURL) { image in
                     image
@@ -63,7 +69,6 @@ struct Card: View {
         .scaledToFill()
         .frame(width: cardWidth, height: cardHeight)
         .overlay(alignment: .bottomLeading) {
-            // title and subtitle
             VStack(alignment: .leading) {
                 Text(cardTitle)
                     .font(.title2)
@@ -82,7 +87,6 @@ struct Card: View {
             .padding()
         }
         .overlay(alignment: .topLeading) {
-            // labels
             HStack {
                 ForEach(leadingPropertyList, id: \.name) { property in
                     ZStack(alignment: .center) {
@@ -100,7 +104,6 @@ struct Card: View {
             .padding(.leading, 20)
         }
         .overlay(alignment: .topTrailing) {
-            // time and author info
             VStack(alignment: .trailing) {
                 ForEach(trailingPropertyList, id: \.self) { info in
                     Text(info)

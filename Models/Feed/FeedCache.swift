@@ -19,14 +19,7 @@ class FeedCache {
         var lastUpdated: Date
     }
 
-    static var feedSourceCaches: [FeedSourceCache] = [] {
-        didSet {
-            // avoid calling the save when loading
-            if !oldValue.isEmpty {
-                exceptionCall(save)
-            }
-        }
-    }
+    private static var feedSourceCaches: [FeedSourceCache] = []
 
     /// Load everything from disk
     static func load() throws {
@@ -42,21 +35,27 @@ class FeedCache {
         defaults.set(feedSourceCacheData, forKey: "feedSourceCache")
     }
 
-    static func update(id: UUID, with: [Feed]) {
+    static func update(using id: UUID, with: [Feed]) {
         feedSourceCaches.removeAll(where: { $0.id == id })
         feedSourceCaches.append(FeedSourceCache(id: id, feeds: with, lastUpdated: Date()))
+        exceptionCall(save)
+    }
+
+    static func feedSourceCache(using id: UUID) -> FeedSourceCache? {
+        return feedSourceCaches.first(where: { $0.id == id })
     }
 
     /// Return a given amount of Feed from cache, which should contain all posts
     static func recentFeeds(number: Int?) async throws -> [Feed] {
         var result: [Feed] = []
         var important: [Feed] = []
-        for cache in feedSourceCaches {
-            for cache in cache.feeds {
-                if cache.keywords.isDisjoint(with: importantLabels) {
-                    result.append(cache)
+        for source in FeedSource.all {
+            let feeds = try await source.fetchRecentPost()
+            for feed in feeds {
+                if feed.keywords.isDisjoint(with: importantLabels) {
+                    result.append(feed)
                 } else {
-                    important.append(cache)
+                    important.append(feed)
                 }
             }
         }
@@ -64,16 +63,6 @@ class FeedCache {
         result.sort(by: { $0.datePosted > $1.datePosted })
         important.sort(by: { $0.datePosted > $1.datePosted })
         result.insert(contentsOf: important, at: 0)
-
-        if result.count < 10 {
-            for source in FeedSource.all {
-                // signal every source to reload
-                try _ = await source.forceUpdatePost()
-            }
-            // sleep for 1 second before continues; for future versions, try balancing the number for max performance
-            try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
-            return try await recentFeeds(number: number)
-        }
 
         if let number {
             return Array(result.prefix(number))

@@ -30,7 +30,6 @@ struct NotificationSettingView: View {
 
                 Button {
                     tryRequestAuthorization()
-//                    UIApplication.shared.applicationIconBadgeNumber += 1
 
                     let uuidString = UUID().uuidString
                     let content = UNMutableNotificationContent()
