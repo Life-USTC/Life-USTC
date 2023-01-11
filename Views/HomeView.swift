@@ -22,6 +22,10 @@ var currentWeekDay: Int {
     return (weekday + 6) % 7
 }
 
+var currentWeekDayString: String {
+    daysOfWeek[(currentWeekDay + 6) % 7]
+}
+
 struct HomeView: View {
     var body: some View {
         NavigationStack {
@@ -37,13 +41,23 @@ struct HomeView: View {
                 Divider()
 
                 HStack {
-                    TitleAndSubTitle(title: "Curriculum", subTitle: daysOfWeek[(currentWeekDay + 6) % 7], style: .reverse)
+                    TitleAndSubTitle(title: "Curriculum", subTitle: currentWeekDayString, style: .reverse)
                     NavigationLink(destination: CurriculumView()) {
                         Label("More", systemImage: "chevron.right.2")
                             .labelStyle(.iconOnly)
                     }
                 }
                 CurriculumPreview()
+                Divider()
+
+                HStack {
+                    TitleAndSubTitle(title: "Exam", subTitle: "", style: .reverse)
+                    NavigationLink(destination: ExamView()) {
+                        Label("More", systemImage: "chevron.right.2")
+                            .labelStyle(.iconOnly)
+                    }
+                }
+                ExamPreview()
                 Divider()
             }
             .padding()

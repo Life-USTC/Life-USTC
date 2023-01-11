@@ -21,6 +21,7 @@ struct FeaturesView: View {
 
         tmp = []
         tmp.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
+        tmp.append(.init(image: "calendar.badge.clock", title: "Exam", subTitle: "", destinationView: AnyView(ExamView())))
         results["UG AAS"] = tmp
 
         tmp = []

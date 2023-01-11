@@ -35,7 +35,7 @@ struct CurriculumView: View {
                                 semesterID = id
                                 UstcUgAASClient.main.semesterID = semesterID
                                 asyncBind($courses, status: $status) {
-                                    try await UstcUgAASClient.main.forceUpdate()
+                                    try await UstcUgAASClient.main.forceUpdateCurriculum()
                                     return try await UstcUgAASClient.main.getCurriculum()
                                 }
                             } label: {

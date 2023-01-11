@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/16.
 //
 
+import SwiftSoup
 import SwiftUI
 import SwiftyJSON
 
@@ -24,7 +25,6 @@ class UstcUgAASClient {
          "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
          "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
 
-    var jsonCache = JSON() // save&load as /document/ugaas_cache.json
     var semesterID: String = "301"
     var semesterName: String {
         UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
@@ -34,25 +34,42 @@ class UstcUgAASClient {
         UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterName })!.value
     }
 
-    var lastLogined: Date?
+    var lastUpdatedCurriculum: Date?
     var courses: [Course] = []
+    var curriculumJsonCache = JSON() // save&load as /document/ugaas_cache.json
 
-    /// Load /Document/ugaas_cache.json to self.jsonCache
+    var exams: [Exam] = []
+    var lastUpdatedExams: Date?
+
+    /// Load /Document/ugaas_cache.json to self.curriculumJsonCache
     func loadCache() throws {
         let decoder = JSONDecoder()
-        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastLogined") {
-            lastLogined = try decoder.decode(Date.self, from: data)
+        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdatedCurriculum") {
+            lastUpdatedCurriculum = try decoder.decode(Date.self, from: data)
+        }
+        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateExams") {
+            lastUpdatedExams = try decoder.decode(Date.self, from: data)
         }
 
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        let filePath = path + "/ugaas_cache.json"
+        var filePath = path + "/ugaas_cache.json"
         if fileManager.fileExists(atPath: filePath) {
             let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
-            jsonCache = try JSON(data: data)
+            curriculumJsonCache = try JSON(data: data)
         } else {
             Task {
-                try await forceUpdate()
+                try await forceUpdateCurriculum()
+            }
+        }
+
+        filePath = path + "/ugaas_exams.json"
+        if fileManager.fileExists(atPath: filePath) {
+            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+            exams = try JSONDecoder().decode([Exam].self, from: data)
+        } else {
+            Task {
+                try await forceUpdateExamInfo()
             }
         }
     }
@@ -61,19 +78,27 @@ class UstcUgAASClient {
         Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate, status: status)
     }
 
-    /// Save /Document/ugaas_cache.json to self.jsonCache
+    /// Save  self.curriculumJsonCache to /Document/ugaas_cache.json
     func saveCache() throws {
         let encoder = JSONEncoder()
-        let data = try encoder.encode(lastLogined)
-        UserDefaults.standard.set(data, forKey: "UstcUgAASLastLogined")
+        var data = try encoder.encode(lastUpdatedCurriculum)
+        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdatedCurriculum")
+        data = try encoder.encode(lastUpdatedExams)
+        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdateExams")
 
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        let filePath = path + "/ugaas_cache.json"
+        var filePath = path + "/ugaas_cache.json"
         if fileManager.fileExists(atPath: filePath) {
             try fileManager.removeItem(atPath: filePath)
         }
-        try jsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
+        try curriculumJsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
+
+        filePath = path + "/ugaas_exams.json"
+        if fileManager.fileExists(atPath: filePath) {
+            try fileManager.removeItem(atPath: filePath)
+        }
+        try JSONEncoder().encode(exams).write(to: URL(fileURLWithPath: filePath))
     }
 
     func login() async throws {
@@ -88,11 +113,11 @@ class UstcUgAASClient {
     }
 
     func getCurriculum() async throws -> [Course] {
-        if lastLogined == nil {
-            try await forceUpdate()
+        if lastUpdatedCurriculum == nil {
+            try await forceUpdateCurriculum()
         }
         var result: [Course] = []
-        for (_, subJson): (String, JSON) in jsonCache["studentTableVm"]["activities"] {
+        for (_, subJson): (String, JSON) in curriculumJsonCache["studentTableVm"]["activities"] {
             var classPositionString = subJson["room"].stringValue
             if classPositionString == "" {
                 classPositionString = subJson["customPlace"].stringValue
@@ -112,7 +137,8 @@ class UstcUgAASClient {
         return courses
     }
 
-    func forceUpdate() async throws {
+    func forceUpdateCurriculum() async throws {
+        print("!!! Refresh UgAAS Curriculum")
         try await login()
         let session = URLSession.shared
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
@@ -127,8 +153,36 @@ class UstcUgAASClient {
         }
 
         let (data, _) = try await session.data(for: URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(semesterID)/print-data/\(tableID)?weekIndex=")!))
-        jsonCache = try JSON(data: data)
-        lastLogined = Date()
+        curriculumJsonCache = try JSON(data: data)
+        lastUpdatedCurriculum = Date()
+        try saveCache()
+    }
+
+    func getExamInfo() async throws -> [Exam] {
+        if !(lastUpdatedExams != nil && lastUpdatedExams!.addingTimeInterval(7200) > Date()) {
+            try await forceUpdateExamInfo()
+        }
+        return exams
+    }
+
+    func forceUpdateExamInfo() async throws {
+        print("!!! Refresh UgAAS Exam Info")
+        try await login()
+        let session = URLSession.shared
+        let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!)
+        let (data, _) = try await session.data(for: request)
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+        }
+
+        let document: Document = try SwiftSoup.parse(dataString)
+        let examsParsed: Elements = try document.select("#exams > tbody > tr")
+        exams = []
+        for examParsed: Element in examsParsed.array() {
+            let textList: [String] = examParsed.children().array().map { $0.ownText() }
+            exams.append(Exam(classIDString: textList[0], typeName: textList[1], className: textList[2], time: textList[3], classRoomName: textList[4], classRoomBuildingName: textList[5], classRoomDistrict: textList[6], description: textList[7]))
+        }
+        lastUpdatedExams = Date()
         try saveCache()
     }
 

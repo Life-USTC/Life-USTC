@@ -68,3 +68,15 @@
 "Sat&Sun" = "显示周六&周日";
 "Select time" = "选择课表";
 "Save to Calendar" = "保存到日历";
+
+"Exam" = "考试";
+"Class Name" = "课程名";
+"Time" = "时间";
+"Classroom" = "教室";
+"Class ID" = "课程号";
+"Type" = "类型";
+"Building" = "教学楼";
+"Campus" = "校区";
+"Description" = "说明";
+"More" = "展开";
+"Less" = "收起";
