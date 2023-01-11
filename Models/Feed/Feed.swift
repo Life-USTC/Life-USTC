@@ -13,7 +13,8 @@ import Foundation
  TODO: find a better way to deal with this once we have a better solution...
  */
 // let imageURLRegex = try! Regex(#"(htt[^\s]+ustc[^\s]+(jpg|jpeg|png|tiff)\b)"#)
-let imageURLRegex = try! Regex(#"(htt[^\s]+(jpg|jpeg|png|tiff)\b)"#)
+let imageURLRegex = try! Regex(#"(http[^\s]+(jpg|jpeg|png|tiff)\b)"#)
+let shortUstcLinkRegex = try! Regex(#"https?://www.ustc.edu.cn/info/\d+/\d+.htm"#)
 let httpRegex = try! Regex("^http[^s]//")
 
 class Feed: Codable {
@@ -34,18 +35,29 @@ class Feed: Codable {
         description = item.description
         datePosted = item.pubDate ?? Date()
         url = URL(string: item.link!)!
+//        print(item.link)
+//        if (item.link?.firstMatch(of: shortUstcLinkRegex)) != nil {
+//            let findNumber = item.link?.matches(of: try! Regex(#"\d+"#))
+//            debugPrint(findNumber)
+//            if findNumber != nil && findNumber?.count == 2 {
+//                let urlString = "https://www.ustc.edu.cn/tzggcontent.jsp?urltype=news.NewsContentUrl&wbtreeid=\(findNumber![0].0)&wbnewsid=\(findNumber![1].0)"
+//                print("[?] Upgrade to \(urlString)")
+//                url = URL(string: urlString)!
+//            }
+//        }
 
         // Try find an image-URL inside content, if found, set it as the image preview
         if let match = item.content?.contentEncoded?.firstMatch(of: imageURLRegex) {
             imageURL = URL(string: String(match.0))
         } else {
+            // TODO: Wrong usage of async functions. make variable lock and prevent being used until the imageURL is loaded
             // try load the content of URL:
-            Task {
-                let webPage = try String(contentsOf: url)
-                if let webPageMatch = webPage.firstMatch(of: imageURLRegex) {
-                    imageURL = URL(string: String(webPageMatch.0))
-                }
-            }
+//            Task {
+//                let webPage = try String(contentsOf: url)
+//                if let webPageMatch = webPage.firstMatch(of: imageURLRegex) {
+//                    imageURL = URL(string: String(webPageMatch.0))
+//                }
+//            }
         }
 
         id = UUID(name: url.absoluteString, nameSpace: .url)

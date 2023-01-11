@@ -93,6 +93,20 @@ struct ExamView: View {
                     try await UstcUgAASClient.main.getExamInfo()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        Task {
+                            try await UstcUgAASClient.main.forceUpdateExamInfo()
+                            asyncBind($exams, status: $status) {
+                                try await UstcUgAASClient.main.getExamInfo()
+                            }
+                        }
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.2.circlepath")
+                    }
+                }
+            }
         }
     }
 }

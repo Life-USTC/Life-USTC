@@ -20,6 +20,10 @@ extension View {
     func hStackLeading() -> some View {
         modifier(HStackLeading())
     }
+
+    func edgesIgnoringHorizontal(_: Edge.Set) -> some View {
+        self
+    }
 }
 
 enum TitleAndSubTitleStyle {

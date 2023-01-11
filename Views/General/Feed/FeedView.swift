@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/22.
 //
 
+import Reeeed
 import SwiftUI
 
 struct FeedView: View {
@@ -19,7 +20,7 @@ struct FeedView: View {
     @State var showPostDetail = false
     var body: some View {
         NavigationLink {
-            Browser(url: feed.url, title: feed.title)
+            ReeeederView(url: feed.url)
         } label: {
             Card(cardTitle: feed.title,
                  cardDescription: feed.description,
@@ -33,7 +34,7 @@ struct FeedView: View {
                         }
                     }
                 } preview: {
-                    Browser(url: feed.url, title: feed.title)
+                    ReeeederView(url: feed.url)
                         .frame(width: cardWidth)
                 }
             #if DEBUG

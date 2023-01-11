@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/17.
 //
 
+import Reeeed
 import SwiftUI
 
 struct FeaturesView: View {
@@ -104,7 +105,7 @@ extension FeaturesView {
             image = ustcWebFeature.image
             title = ustcWebFeature.name
             subTitle = ustcWebFeature.description
-            destinationView = AnyView(Browser(url: ustcWebFeature.url, title: ustcWebFeature.name))
+            destinationView = AnyView(ReeeederView(url: ustcWebFeature.url))
         }
     }
 

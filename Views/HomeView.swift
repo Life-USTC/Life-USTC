@@ -29,7 +29,7 @@ var currentWeekDayString: String {
 struct HomeView: View {
     var body: some View {
         NavigationStack {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 HStack {
                     TitleAndSubTitle(title: "Feed", subTitle: currentDateString, style: .reverse)
                     NavigationLink(destination: AllSourceView()) {
@@ -60,7 +60,7 @@ struct HomeView: View {
                 ExamPreview()
                 Divider()
             }
-            .padding()
+            .padding([.leading, .trailing])
             .navigationTitle("Life@USTC")
         }
     }

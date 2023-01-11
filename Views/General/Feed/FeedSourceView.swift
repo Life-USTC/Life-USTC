@@ -19,7 +19,7 @@ struct FeedSourceView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             asyncBind($feeds, status: $status) {
-                                try await feedSource.fetchRecentPost()
+                                try await feedSource.forceUpdatePost()
                             }
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
