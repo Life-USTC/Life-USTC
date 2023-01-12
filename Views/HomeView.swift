@@ -26,39 +26,33 @@ var currentWeekDayString: String {
     daysOfWeek[(currentWeekDay + 6) % 7]
 }
 
+private struct HomeFeature {
+    var title: String
+    var subTitle: String
+    var destination: AnyView
+    var preview: AnyView
+}
+
 struct HomeView: View {
+    private var features: [HomeFeature] =
+        [.init(title: "Feed", subTitle: currentDateString, destination: .init(AllSourceView()), preview: .init(FeedHScrollView())),
+         .init(title: "Curriculum", subTitle: currentWeekDayString, destination: .init(CurriculumView()), preview: .init(CurriculumPreview())),
+         .init(title: "Exam", subTitle: "", destination: .init(ExamView()), preview: .init(ExamPreview()))]
+
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                HStack {
-                    TitleAndSubTitle(title: "Feed", subTitle: currentDateString, style: .reverse)
-                    NavigationLink(destination: AllSourceView()) {
-                        Label("More", systemImage: "chevron.right.2")
-                            .labelStyle(.iconOnly)
+                ForEach(features, id: \.title) { feature in
+                    HStack {
+                        TitleAndSubTitle(title: feature.title, subTitle: feature.subTitle, style: .reverse)
+                        NavigationLink(destination: feature.destination) {
+                            Label("More", systemImage: "chevron.right.2")
+                                .labelStyle(.iconOnly)
+                        }
                     }
+                    feature.preview
+                    Divider()
                 }
-                FeedHScrollView()
-                Divider()
-
-                HStack {
-                    TitleAndSubTitle(title: "Curriculum", subTitle: currentWeekDayString, style: .reverse)
-                    NavigationLink(destination: CurriculumView()) {
-                        Label("More", systemImage: "chevron.right.2")
-                            .labelStyle(.iconOnly)
-                    }
-                }
-                CurriculumPreview()
-                Divider()
-
-                HStack {
-                    TitleAndSubTitle(title: "Exam", subTitle: "", style: .reverse)
-                    NavigationLink(destination: ExamView()) {
-                        Label("More", systemImage: "chevron.right.2")
-                            .labelStyle(.iconOnly)
-                    }
-                }
-                ExamPreview()
-                Divider()
             }
             .padding([.leading, .trailing])
             .navigationTitle("Life@USTC")

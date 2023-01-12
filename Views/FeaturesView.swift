@@ -14,15 +14,15 @@ struct FeaturesView: View {
         var results: [String: [FeatureWithView]] = [:]
 
         var tmp: [FeatureWithView] = []
-        tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AnyView(AllSourceView())))
+        tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AllSourceView()))
         for feedSource in FeedSource.all {
             tmp.append(.init(feedSource))
         }
         results["Feed"] = tmp
 
-        tmp = []
-        tmp.append(.init(image: "book", title: "Curriculum", subTitle: "", destinationView: AnyView(CurriculumView())))
-        tmp.append(.init(image: "calendar.badge.clock", title: "Exam", subTitle: "", destinationView: AnyView(ExamView())))
+        tmp = [.init(image: "book", title: "Curriculum", subTitle: "", destinationView: CurriculumView()),
+               .init(image: "calendar.badge.clock", title: "Exam", subTitle: "", destinationView: ExamView()),
+               .init(image: "graduationcap", title: "Score", subTitle: "", destinationView: ScoreView())]
         results["UG AAS"] = tmp
 
         tmp = []
@@ -87,25 +87,25 @@ extension FeaturesView {
             }
         }
 
-        init(image: String, title: String, subTitle: String, destinationView: AnyView) {
+        init(image: String, title: String, subTitle: String, destinationView: any View) {
             self.image = image
             self.title = title
             self.subTitle = subTitle
-            self.destinationView = destinationView
+            self.destinationView = .init(destinationView)
         }
 
         init(_ feedSource: FeedSource) {
             image = feedSource.image ?? "doc.richtext"
             title = feedSource.name
             subTitle = feedSource.description ?? ""
-            destinationView = AnyView(FeedSourceView(feedSource: feedSource))
+            destinationView = .init(FeedSourceView(feedSource: feedSource))
         }
 
         init(_ ustcWebFeature: USTCWebFeature) {
             image = ustcWebFeature.image
             title = ustcWebFeature.name
             subTitle = ustcWebFeature.description
-            destinationView = AnyView(ReeeederView(url: ustcWebFeature.url))
+            destinationView = .init(ReeeederView(url: ustcWebFeature.url))
         }
     }
 

@@ -34,4 +34,8 @@ extension String {
         let digest = Insecure.MD5.hash(data: data(using: .utf8) ?? Data())
         return digest.map { String(format: "%02hhx", $0) }.joined()
     }
+
+    var localized: String {
+        return NSLocalizedString(self, comment: "")
+    }
 }

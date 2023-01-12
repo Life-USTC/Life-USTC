@@ -38,10 +38,13 @@ class UstcUgAASClient {
     var courses: [Course] = []
     var curriculumJsonCache = JSON() // save&load as /document/ugaas_cache.json
 
-    var exams: [Exam] = []
     var lastUpdatedExams: Date?
+    var exams: [Exam] = []
 
-    /// Load /Document/ugaas_cache.json to self.curriculumJsonCache
+    var lastUpdatedScores: Date?
+    var score: Score = .init()
+    var scoreJsonCache = JSON() // save&load as /document/ugaas_score.json
+
     func loadCache() throws {
         let decoder = JSONDecoder()
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdatedCurriculum") {
@@ -49,6 +52,9 @@ class UstcUgAASClient {
         }
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateExams") {
             lastUpdatedExams = try decoder.decode(Date.self, from: data)
+        }
+        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateScores") {
+            lastUpdatedScores = try decoder.decode(Date.self, from: data)
         }
 
         let fileManager = FileManager.default
@@ -72,19 +78,30 @@ class UstcUgAASClient {
                 try await forceUpdateExamInfo()
             }
         }
+
+        filePath = path + "/ugaas_scores.json"
+        if fileManager.fileExists(atPath: filePath) {
+            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+            scoreJsonCache = try JSON(data: data)
+        } else {
+            Task {
+                try await forceUpdateScoreInfo()
+            }
+        }
     }
 
     func saveToCalendar(status: Binding<AsyncViewStatus>) {
         Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate, status: status)
     }
 
-    /// Save  self.curriculumJsonCache to /Document/ugaas_cache.json
     func saveCache() throws {
         let encoder = JSONEncoder()
         var data = try encoder.encode(lastUpdatedCurriculum)
         UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdatedCurriculum")
         data = try encoder.encode(lastUpdatedExams)
         UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdateExams")
+        data = try encoder.encode(lastUpdatedScores)
+        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdateScores")
 
         let fileManager = FileManager.default
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
@@ -99,6 +116,12 @@ class UstcUgAASClient {
             try fileManager.removeItem(atPath: filePath)
         }
         try JSONEncoder().encode(exams).write(to: URL(fileURLWithPath: filePath))
+
+        filePath = path + "/ugaas_scores.json"
+        if fileManager.fileExists(atPath: filePath) {
+            try fileManager.removeItem(atPath: filePath)
+        }
+        try scoreJsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
     }
 
     func login() async throws {
@@ -183,6 +206,48 @@ class UstcUgAASClient {
             exams.append(Exam(classIDString: textList[0], typeName: textList[1], className: textList[2], time: textList[3], classRoomName: textList[4], classRoomBuildingName: textList[5], classRoomDistrict: textList[6], description: textList[7]))
         }
         lastUpdatedExams = Date()
+        try saveCache()
+    }
+
+    func getScore() async throws -> Score {
+        if lastUpdatedScores == nil {
+            try await forceUpdateScoreInfo()
+        }
+        var result = Score()
+        let subJson = scoreJsonCache["stdGradeRank"]
+        result.gpa = Double(subJson["gpa"].stringValue)!
+        result.majorName = subJson["majorName"].stringValue
+        result.majorRank = Int(subJson["majorRank"].stringValue)!
+        result.majorStdCount = Int(subJson["majorStdCount"].stringValue)!
+
+        var courseScoreList: [CourseScore] = []
+        for (_, semesterJson): (String, JSON) in scoreJsonCache["semesters"] {
+            for (_, courseScoreJson): (String, JSON) in semesterJson["scores"] {
+                let tmp = CourseScore(courseName: courseScoreJson["courseNameCh"].stringValue,
+                                      courseCode: courseScoreJson["courseCode"].stringValue,
+                                      credit: Double(courseScoreJson["credits"].stringValue)!,
+                                      gpa: Double(courseScoreJson["gp"].stringValue),
+                                      lessonCode: courseScoreJson["lessonCode"].stringValue,
+                                      score: courseScoreJson["score"].stringValue,
+                                      semesterID: Int(courseScoreJson["semesterAssoc"].stringValue)!,
+                                      semesterName: courseScoreJson["semesterCh"].stringValue)
+                courseScoreList.append(tmp)
+            }
+        }
+        result.courseScores = courseScoreList
+        score = result
+        return score
+    }
+
+    func forceUpdateScoreInfo() async throws {
+        print("!!! Refresh UgAAS Score Info")
+        try await login()
+        let session = URLSession.shared
+        let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?semesterIds")!)
+
+        let (data, _) = try await session.data(for: request)
+        scoreJsonCache = try JSON(data: data)
+        lastUpdatedScores = Date()
         try saveCache()
     }
 

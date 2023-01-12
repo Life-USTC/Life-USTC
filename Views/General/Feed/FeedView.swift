@@ -35,7 +35,7 @@ struct FeedView: View {
                     }
                 } preview: {
                     ReeeederView(url: feed.url)
-                        .frame(width: cardWidth)
+                        .frame(width: cardWidth, height: 400.0)
                 }
             #if DEBUG
                 .overlay(alignment: .topLeading) {

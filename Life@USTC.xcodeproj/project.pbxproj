@@ -45,6 +45,8 @@
 		56DD03A6296C1D5F004C358C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A5296C1D5F004C358C /* Notification.swift */; };
 		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
+		56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* CourseScore.swift */; };
+		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
@@ -102,6 +104,8 @@
 		56D175CF2954589D0070778F /* FeedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListView.swift; sourceTree = "<group>"; };
 		56DD03A5296C1D5F004C358C /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		56E8AD69296FE880009006D0 /* CourseScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseScore.swift; sourceTree = "<group>"; };
+		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC (iOS).entitlements"; sourceTree = "<group>"; };
 		56F3EAD5296EB3B70095AEF4 /* Exam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exam.swift; sourceTree = "<group>"; };
 		56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreview.swift; sourceTree = "<group>"; };
@@ -151,6 +155,7 @@
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				56E8AD6B296FEEDD009006D0 /* Score */,
 				56F3EAD7296EB7E60095AEF4 /* Exam */,
 				56BE9200296679DB00822C98 /* Curriculum */,
 				56D175CA295456F10070778F /* Feed */,
@@ -247,6 +252,7 @@
 				5655880A294DEA6B0010E060 /* UstcCAS.swift */,
 				5694D91729668191009CFCDF /* Course.swift */,
 				56F3EAD5296EB3B70095AEF4 /* Exam.swift */,
+				56E8AD69296FE880009006D0 /* CourseScore.swift */,
 			);
 			path = USTC;
 			sourceTree = "<group>";
@@ -271,6 +277,14 @@
 				562169252956D49E00DF46BE /* FeedHScrollView.swift */,
 			);
 			path = Feed;
+			sourceTree = "<group>";
+		};
+		56E8AD6B296FEEDD009006D0 /* Score */ = {
+			isa = PBXGroup;
+			children = (
+				56E8AD6C296FEEE9009006D0 /* ScoreView.swift */,
+			);
+			path = Score;
 			sourceTree = "<group>";
 		};
 		56F3EAD7296EB7E60095AEF4 /* Exam */ = {
@@ -396,6 +410,7 @@
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
+				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedListView.swift in Sources */,
@@ -404,6 +419,7 @@
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
 				565587B3294ABE7C0010E060 /* Card.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
+				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				5655880B294DEA6B0010E060 /* UstcCAS.swift in Sources */,
