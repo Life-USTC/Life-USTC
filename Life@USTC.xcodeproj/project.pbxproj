@@ -106,6 +106,7 @@
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* CourseScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseScore.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
+		56E8AD6E2972F56C009006D0 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC (iOS).entitlements"; sourceTree = "<group>"; };
 		56F3EAD5296EB3B70095AEF4 /* Exam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exam.swift; sourceTree = "<group>"; };
 		56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreview.swift; sourceTree = "<group>"; };
@@ -186,6 +187,7 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
+				56E8AD6E2972F56C009006D0 /* CHANGELOG.md */,
 				56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */,
 				56BE91F82965D05A00822C98 /* README.md */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
