@@ -105,7 +105,7 @@ extension FeaturesView {
             image = ustcWebFeature.image
             title = ustcWebFeature.name
             subTitle = ustcWebFeature.description
-            destinationView = .init(ReeeederView(url: ustcWebFeature.url))
+            destinationView = .init(Browser(url: ustcWebFeature.url, title: ustcWebFeature.name))
         }
     }
 
