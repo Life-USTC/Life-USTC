@@ -68,6 +68,11 @@
 "Sat&Sun" = "显示周六&周日";
 "Select time" = "选择课表";
 "Save to Calendar" = "保存到日历";
+"Location: " = "位置: ";
+"Teacher: " = "教师: ";
+"ID: " = "课程号: ";
+"Week: " = "周数: ";
+"Time: " = "时间: ";
 
 "Exam" = "考试";
 "Class Name" = "课程名";
@@ -86,3 +91,15 @@
 "Sort by: %@" = "按%@排序";
 "Course Code" = "课程号";
 "Rating:" = "排名:";
+
+"Public" = "公开";
+"Classroom Status" = "教室状态";
+"Classroom List" = "全部教室";
+"General" = "概览";
+"Pick a date" = "选择日期";
+"Show empty room only" = "只展示空教室";
+"Buildings to show" = "选择教学楼";
+"Details" = "详情";
+"Lesson name: " = "课程名称: ";
+"Classroom: " = "教室: ";
+"Duration: " = "时间: ";

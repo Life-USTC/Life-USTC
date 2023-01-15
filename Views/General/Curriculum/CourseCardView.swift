@@ -51,11 +51,11 @@ struct CourseCardView: View {
                         .bold()
 
                     List {
-                        Text("Location: \(course.classPositionString)")
-                        Text("Teacher: \(course.classTeacherName)")
-                        Text("ID: \(course.classIDString)")
-                        Text("Week: \(course.weekString)")
-                        Text("Time: \(course.startTime) - \(course.endTime)")
+                        Text("Location: ".localized + course.classPositionString)
+                        Text("Teacher: ".localized + course.classTeacherName)
+                        Text("ID: ".localized + course.classIDString)
+                        Text("Week: ".localized + course.weekString)
+                        Text("Time: ".localized + "\(course.startTime) - \(course.endTime)")
                     }
                     .listStyle(.plain)
                     .scrollDisabled(true)

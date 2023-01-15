@@ -20,6 +20,9 @@ struct FeaturesView: View {
         }
         results["Feed"] = tmp
 
+        tmp = [.init(image: "doc.text.magnifyingglass", title: "Classroom Status", subTitle: "", destinationView: ClassroomView())]
+        results["Public"] = tmp
+
         tmp = [.init(image: "book", title: "Curriculum", subTitle: "", destinationView: CurriculumView()),
                .init(image: "calendar.badge.clock", title: "Exam", subTitle: "", destinationView: ExamView()),
                .init(image: "graduationcap", title: "Score", subTitle: "", destinationView: ScoreView())]
