@@ -83,6 +83,6 @@
 
 "Score" = "成绩单";
 "Filter Semester" = "选择学期";
-"Sort by:%@" = "按%@排序";
+"Sort by: %@" = "按%@排序";
 "Course Code" = "课程号";
 "Rating:" = "排名:";

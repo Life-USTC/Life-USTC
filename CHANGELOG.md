@@ -13,8 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed:
 
+- (UI) Score detailed view would now remember last-time sort preference
 - (UI) Add Reeeed for improved web browsing experience
 - (UI) Change Reeeeder back to WkWebView for web features
+
+### Fixed:
+
+- (UI) Translation problem for score detailed view
 
 ## [0.2]: 967da1554274494f1472316dca4ae83af5e6ddb9 -> e84e5d87b4150e61f018cffd74fbed3bbac81098
 

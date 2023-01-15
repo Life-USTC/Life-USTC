@@ -28,7 +28,7 @@ struct ScoreView: View {
     }
 
     @State var semesterNameToRemove: [String] = []
-    @State private var sortPreference: SortPreference?
+    @AppStorage("ScoreInfoSortPreference") private var sortPreference: SortPreference?
 
     var scoresFiltered: [CourseScore] {
         var result = score.courseScores
@@ -122,7 +122,7 @@ struct ScoreView: View {
                                 }
                             }
                         } label: {
-                            Label("Sort by: \(sortPreference == nil ? "" : sortPreference!.rawValue)", systemImage: "number.square")
+                            Label("Sort by: \((sortPreference == nil ? "" : sortPreference!.rawValue).localized)", systemImage: "number.square")
                                 .hStackLeading()
                         }
                     }
