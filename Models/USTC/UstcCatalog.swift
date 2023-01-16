@@ -18,6 +18,21 @@ struct Lesson: Identifiable {
     var startTime: String // hh:mm
     var endTime: String // hh:mm
     var color: Color?
+
+    static func clean(_ lessons: [Lesson]) -> [Lesson] {
+        var result = lessons
+        for lesson in result {
+            let tmp = result.filter { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName }
+            if tmp.count > 1 {
+                let startTime = tmp.map { $0.startTime }.sorted(by: { timeToInt($0) < timeToInt($1) }).first ?? "0"
+                let endTime = tmp.map { $0.endTime }.sorted(by: { timeToInt($0) < timeToInt($1) }).last ?? "0"
+
+                result.removeAll(where: { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName })
+                result.append(Lesson(classroomName: lesson.classroomName, courseName: lesson.courseName, startTime: startTime, endTime: endTime))
+            }
+        }
+        return result
+    }
 }
 
 func timeToInt(_ time: String) -> Int {

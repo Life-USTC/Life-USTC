@@ -8,6 +8,7 @@
 import SwiftUI
 
 private let baseStart = timeToInt("7:50")
+private let baseMiddle = timeToInt("12:30")
 private let baseEnd = timeToInt("21:55")
 
 private var currentTimeInt: Int {
@@ -51,11 +52,69 @@ private struct LessonView: View {
     }
 }
 
+private struct SingleClassroomView: View {
+    @AppStorage("showOneLine") var showOneLine = true
+    @State var highlighted = false
+    var room: String
+    var status: Bool
+    var lessons: [Lesson]
+
+    func makeView(with lessons: [Lesson], isUp: Bool) -> some View {
+        let start = isUp ? baseStart : baseMiddle
+        let end = isUp ? baseMiddle : baseEnd
+        let filteredClass = Lesson.clean(lessons.filter { isUp ? (timeToInt($0.startTime) < baseMiddle) : (timeToInt($0.endTime) > baseMiddle) })
+
+        return GeometryReader { geo in
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .foregroundColor(.init(uiColor: .lightGray))
+                    .opacity(isUp ? 0.7 : 0.3)
+                ForEach(filteredClass) { lesson in
+                    LessonView(lesson: lesson)
+                        .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start))
+                        .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
+                }
+                Rectangle()
+                    .foregroundColor(.green)
+                    .opacity(0.5)
+                    .frame(width: 5, height: geo.size.height)
+                    .offset(x: Double(currentTimeInt - (end + start) / 2) / Double(end - start) * geo.size.width)
+            }
+        }
+        .frame(height: 20)
+    }
+
+    var roomText: some View {
+        Text(room)
+            .font(.system(size: 10, design: .monospaced))
+            .lineLimit(1)
+            .foregroundColor(status ? .green : .primary)
+    }
+
+    var body: some View {
+        if showOneLine {
+            HStack {
+                roomText
+                makeView(with: lessons, isUp: currentTimeInt <= baseMiddle)
+            }
+        } else {
+            VStack(spacing: 2) {
+                HStack {
+                    roomText
+                    makeView(with: lessons, isUp: true)
+                }
+                makeView(with: lessons, isUp: false)
+            }
+        }
+    }
+}
+
 struct ClassroomView: View {
     @State var allLessons: [String: [Lesson]] = [:]
     @State var status: AsyncViewStatus = .inProgress
     @State var showSheet: Bool = false
     @State var date: Date = .init()
+    @AppStorage("showOneLine") var showOneLine = true
     @AppStorage("showEmptyRoomOnly") var showEmptyRoomOnly = false
     @AppStorage("filteredBuildingList") var filteredBuildingList: [String] = []
 
@@ -70,44 +129,68 @@ struct ClassroomView: View {
     func makeView(with building: String) -> some View {
         ForEach(UstcCatalogClient.buildingRooms[building] ?? [], id: \.self) { room in
             if !showEmptyRoomOnly || statusFor(building: building, room: room) {
-                HStack {
-                    Text(room)
-                        .font(.system(size: 10, design: .monospaced))
-                        .lineLimit(1)
-                        .foregroundColor(statusFor(building: building, room: room) ? .green : .primary)
+                SingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
+            }
+        }
+    }
 
-                    GeometryReader { geo in
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundColor(.init(uiColor: .lightGray))
-                                .opacity(0.5)
-                            ForEach(filterLesson(building: building, room: room)) { lesson in
-                                LessonView(lesson: lesson)
-                                    .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(baseEnd - baseStart))
-                                    .offset(x: -Double(baseEnd + baseStart - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(baseEnd - baseStart) / 2.0 * geo.size.width)
+    func settingSheet() -> some View {
+        NavigationStack {
+            List {
+                Section {
+                    DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
+                        .onChange(of: date) { newDate in
+                            print("Updated")
+                            asyncBind($allLessons, status: $status) {
+                                try await UstcCatalogClient.main.queryAllClassrooms(date: newDate)
                             }
-                            Rectangle()
-                                .foregroundColor(.green)
-                                .opacity(0.5)
-                                .frame(width: 5, height: geo.size.height)
-                                .offset(x: Double(currentTimeInt - (baseEnd + baseStart) / 2) / Double(baseEnd - baseStart) * geo.size.width)
+                        }
+                    Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
+                    Toggle("Show one line", isOn: $showOneLine)
+                } header: {
+                    Text("General")
+                }
+
+                Section {
+                    ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+                        Button {
+                            if filteredBuildingList.contains(building) {
+                                filteredBuildingList.removeAll(where: { $0 == building })
+                            } else {
+                                filteredBuildingList.append(building)
+                            }
+                        } label: {
+                            HStack {
+                                Text(UstcCatalogClient.buildingName(with: building))
+                                    .foregroundColor(.primary)
+                                if !filteredBuildingList.contains(building) {
+                                    Spacer()
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                     }
+                } header: {
+                    Text("Buildings to show")
                 }
             }
+            .navigationTitle("Settings")
         }
     }
 
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 2) {
-                    ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
-                        if !filteredBuildingList.contains(building) {
-                            Text(UstcCatalogClient.buildingName(with: building))
-                                .font(.title3)
-                                .padding()
-                            makeView(with: building)
+                ZStack {
+                    VStack(spacing: 2) {
+                        ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+                            if !filteredBuildingList.contains(building) {
+                                Text(UstcCatalogClient.buildingName(with: building))
+                                    .font(.title3)
+                                    .padding()
+                                    .hStackLeading()
+                                makeView(with: building)
+                            }
                         }
                     }
                 }
@@ -133,48 +216,7 @@ struct ClassroomView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showSheet) {
-                NavigationStack {
-                    List {
-                        Section {
-                            DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
-                                .onChange(of: date) { newDate in
-                                    print("Updated")
-                                    asyncBind($allLessons, status: $status) {
-                                        try await UstcCatalogClient.main.queryAllClassrooms(date: newDate)
-                                    }
-                                }
-                            Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
-                        } header: {
-                            Text("General")
-                        }
-
-                        Section {
-                            ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
-                                Button {
-                                    if filteredBuildingList.contains(building) {
-                                        filteredBuildingList.removeAll(where: { $0 == building })
-                                    } else {
-                                        filteredBuildingList.append(building)
-                                    }
-                                } label: {
-                                    HStack {
-                                        Text(UstcCatalogClient.buildingName(with: building))
-                                            .foregroundColor(.primary)
-                                        if !filteredBuildingList.contains(building) {
-                                            Spacer()
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        } header: {
-                            Text("Buildings to show")
-                        }
-                    }
-                    .navigationTitle("Settings")
-                }
-            }
+            .sheet(isPresented: $showSheet, content: settingSheet)
         }
     }
 }
