@@ -103,7 +103,7 @@ struct ExamView: View {
                             }
                         }
                     } label: {
-                        Label("Refresh", systemImage: "arrow.2.circlepath")
+                        Label("Refresh", systemImage: "arrow.clockwise")
                     }
                 }
             }

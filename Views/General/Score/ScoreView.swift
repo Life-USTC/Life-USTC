@@ -155,13 +155,13 @@ struct ScoreView: View {
                             }
                         }
                     } label: {
-                        Label("Refresh", systemImage: "arrow.2.circlepath")
+                        Label("Refresh", systemImage: "arrow.clockwise")
                     }
 
                     Button {
                         showAdvancedSettings.toggle()
                     } label: {
-                        Label("Settings", systemImage: "square.stack")
+                        Label("Settings", systemImage: "gearshape")
                     }
                 }
             }
