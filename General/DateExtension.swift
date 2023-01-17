@@ -47,7 +47,7 @@ enum TimePeroid: Int, CaseIterable {
         let base = Date().stripTime()
         switch self {
         case .day:
-            return base.add(day: -1) ... base
+            return base.add(day: -1) ... base.add(day: 1)
         case .week:
             return base.add(day: -7) ..< base.add(day: -1)
         case .month:

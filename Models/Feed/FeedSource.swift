@@ -8,9 +8,12 @@
 import FeedKit
 import SwiftUI
 
+private let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
+
 class FeedSource {
     static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL, name: "教务处", image: "person.crop.square.fill.and.at.rectangle"),
-                                    FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill")]
+                                    FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill"),
+                                    FeedSource(url: appFeedURL, name: "应用通知", image: "apps.iphone")]
 
     var url: URL
     var name: String
@@ -54,5 +57,31 @@ class FeedSource {
         }
         self.description = description
         self.image = image
+    }
+
+    /// Return a given amount of Feed from cache, which should contain all posts
+    static func recentFeeds(number: Int?) async throws -> [Feed] {
+        var result: [Feed] = []
+        var important: [Feed] = []
+        for source in FeedSource.all {
+            let feeds = try await source.fetchRecentPost()
+            for feed in feeds {
+                if feed.keywords.isDisjoint(with: importantLabels) {
+                    result.append(feed)
+                } else {
+                    important.append(feed)
+                }
+            }
+        }
+
+        result.sort(by: { $0.datePosted > $1.datePosted })
+        important.sort(by: { $0.datePosted > $1.datePosted })
+        result.insert(contentsOf: important, at: 0)
+
+        if let number {
+            return Array(result.prefix(number))
+        } else {
+            return result
+        }
     }
 }

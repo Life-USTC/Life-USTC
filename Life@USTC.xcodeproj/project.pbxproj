@@ -141,7 +141,6 @@
 				56558803294D93810010E060 /* FeaturesView.swift */,
 				565587E6294B43BD0010E060 /* HomeView.swift */,
 				56558808294DC9D40010E060 /* SettingsView.swift */,
-				56D175BE295048340070778F /* Features */,
 				565587FC294D65E30010E060 /* General */,
 				565587FF294D749C0010E060 /* Shared */,
 			);
@@ -246,13 +245,6 @@
 				56D175BF295048A10070778F /* CurriculumView.swift */,
 			);
 			path = Curriculum;
-			sourceTree = "<group>";
-		};
-		56D175BE295048340070778F /* Features */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Features;
 			sourceTree = "<group>";
 		};
 		56D175C4295411DA0070778F /* USTC */ = {

@@ -47,7 +47,7 @@ struct AllSourceView: View {
                         Button {
                             status = .inProgress
                             asyncBind($feeds, status: $status) {
-                                try await FeedCache.recentFeeds(number: nil)
+                                try await FeedSource.recentFeeds(number: nil)
                             }
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
@@ -57,7 +57,7 @@ struct AllSourceView: View {
         }
         .onAppear {
             asyncBind($feeds, status: $status) {
-                try await FeedCache.recentFeeds(number: nil)
+                try await FeedSource.recentFeeds(number: nil)
             }
         }
     }

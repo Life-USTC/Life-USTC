@@ -68,7 +68,7 @@ struct FeedHScrollView: View {
         }
         .onAppear {
             asyncBind($feeds, status: $status) {
-                try await FeedCache.recentFeeds(number: feedPostNumber)
+                try await FeedSource.recentFeeds(number: feedPostNumber)
             }
         }
     }
