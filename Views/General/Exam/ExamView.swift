@@ -82,8 +82,12 @@ struct ExamView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(exams) { exam in
-                    SingleExamView(exam: exam)
+                if status == .inProgress {
+                    ProgressView()
+                } else {
+                    ForEach(exams) { exam in
+                        SingleExamView(exam: exam)
+                    }
                 }
             }
             .navigationTitle("Exam")

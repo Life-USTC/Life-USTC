@@ -48,13 +48,13 @@ class UstcUgAASClient {
     func loadCache() throws {
         let decoder = JSONDecoder()
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdatedCurriculum") {
-            lastUpdatedCurriculum = try decoder.decode(Date.self, from: data)
+            lastUpdatedCurriculum = try decoder.decode(Date?.self, from: data)
         }
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateExams") {
-            lastUpdatedExams = try decoder.decode(Date.self, from: data)
+            lastUpdatedExams = try decoder.decode(Date?.self, from: data)
         }
         if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateScores") {
-            lastUpdatedScores = try decoder.decode(Date.self, from: data)
+            lastUpdatedScores = try decoder.decode(Date?.self, from: data)
         }
 
         let fileManager = FileManager.default
