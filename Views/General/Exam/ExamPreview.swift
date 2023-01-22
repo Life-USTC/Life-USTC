@@ -8,30 +8,15 @@
 import SwiftUI
 
 struct ExamPreview: View {
-    @State var exams: [Exam] = []
-    @State var status: AsyncViewStatus = .inProgress
-
     var body: some View {
-        Group {
-            if status == .inProgress {
-                ProgressView()
-            } else {
-                if exams.isEmpty {
-                    happyView
-                } else {
-                    mainView
-                }
-            }
-        }
-        .frame(width: cardWidth)
-        .onAppear {
-            asyncBind($exams, status: $status) {
-                try await UstcUgAASClient.main.getExamInfo()
-            }
+        AsyncView { exams in
+            makeView(with: exams)
+        } loadData: {
+            try await UstcUgAASClient.main.getExamInfo()
         }
     }
 
-    var mainView: some View {
+    func makeView(with exams: [Exam]) -> some View {
         List {
             ForEach(exams) { exam in
                 HStack {

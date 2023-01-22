@@ -90,8 +90,8 @@ class UstcUgAASClient {
         }
     }
 
-    func saveToCalendar(status: Binding<AsyncViewStatus>) {
-        Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate, status: status)
+    func saveToCalendar() throws {
+        try Course.saveToCalendar(courses, name: semesterName, startDate: semesterDate)
     }
 
     func saveCache() throws {

@@ -17,4 +17,13 @@ struct Exam: Codable, Identifiable {
     var classRoomBuildingName: String
     var classRoomDistrict: String
     var description: String
+
+    static let example: Exam = .init(classIDString: "classIDString",
+                                     typeName: "typeName",
+                                     className: "className",
+                                     time: "time",
+                                     classRoomName: "classRoomName",
+                                     classRoomBuildingName: "classRoomBuildingName",
+                                     classRoomDistrict: "classRoomDistrict",
+                                     description: "description")
 }

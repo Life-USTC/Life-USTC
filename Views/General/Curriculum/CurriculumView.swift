@@ -57,7 +57,9 @@ struct CurriculumView: View {
 
                 Button {
                     withAnimation {
-                        UstcUgAASClient.main.saveToCalendar(status: $saveCalendarStatus)
+                        asyncBind(.constant(()), status: $saveCalendarStatus) {
+                            try UstcUgAASClient.main.saveToCalendar()
+                        }
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                         Task {
                             try await Task.sleep(for: .seconds(2))

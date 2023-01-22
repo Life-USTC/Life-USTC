@@ -76,41 +76,22 @@ private struct SingleExamView: View {
 }
 
 struct ExamView: View {
-    @State var exams: [Exam] = []
-    @State var status: AsyncViewStatus = .inProgress
-
     var body: some View {
         NavigationStack {
-            List {
-                if status == .inProgress {
-                    ProgressView()
-                } else {
+            AsyncView { exams in
+                List {
                     ForEach(exams) { exam in
                         SingleExamView(exam: exam)
                     }
                 }
+            } loadData: {
+                try await UstcUgAASClient.main.getExamInfo()
+            } refreshData: {
+                try await UstcUgAASClient.main.forceUpdateExamInfo()
+                return try await UstcUgAASClient.main.getExamInfo()
             }
             .navigationTitle("Exam")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                asyncBind($exams, status: $status) {
-                    try await UstcUgAASClient.main.getExamInfo()
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        Task {
-                            try await UstcUgAASClient.main.forceUpdateExamInfo()
-                            asyncBind($exams, status: $status) {
-                                try await UstcUgAASClient.main.getExamInfo()
-                            }
-                        }
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                }
-            }
         }
     }
 }

@@ -121,3 +121,92 @@ struct ViewOffsetKey: PreferenceKey {
         value += nextValue()
     }
 }
+
+extension Color {
+    /// Generate the color from hash value
+    ///
+    /// - Note: Output color matches following range:
+    ///   hue: .random(in: 0...1)
+    ///   saturation: .random(in: 0.25...0.55)
+    ///   brightness: .random(in: 0.25...0.35, 0.75...0.85)
+    init(with string: String, mode: ColorScheme) {
+        let hash = Int(string.md5HexString.prefix(6), radix: 16)!
+        let hue = Double(hash % 360) / 360
+        let saturation = Double(hash % 30 + 25) / 100
+        var brightness = 0.0
+        if mode == .dark {
+            brightness = Double(hash % 10 + 25) / 100
+        } else {
+            brightness = Double(hash % 10 + 75) / 100
+        }
+        self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
+    }
+}
+
+struct FailureView: View {
+    var body: some View {
+        VStack {
+            Image(systemName: "xmark.circle")
+                .foregroundColor(.yellow)
+
+            Text("Something went wrong")
+        }
+    }
+}
+
+struct AsyncView<D>: View {
+    @State var status: AsyncViewStatus = .inProgress
+    @State var data: D?
+    var makeView: (D) -> AnyView
+    var loadData: () async throws -> D
+    var refreshData: (() async throws -> D)?
+
+    init(makeView: @escaping (D) -> any View,
+         loadData: @escaping () async throws -> D)
+    {
+        self.makeView = { AnyView(makeView($0)) }
+        self.loadData = loadData
+    }
+
+    init(makeView: @escaping (D) -> any View,
+         loadData: @escaping () async throws -> D,
+         refreshData: @escaping () async throws -> D)
+    {
+        self.makeView = { AnyView(makeView($0)) }
+        self.loadData = loadData
+        self.refreshData = refreshData
+    }
+
+    @ViewBuilder func makeMainView(with data: D) -> some View {
+        if refreshData == nil {
+            makeView(data)
+        } else {
+            makeView(data)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            asyncBind($data, status: $status, refreshData!)
+                        } label: {
+                            Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+                    }
+                }
+        }
+    }
+
+    var body: some View {
+        Group {
+            switch status {
+            case .inProgress:
+                ProgressView()
+            case .success:
+                makeMainView(with: data!)
+            case .failure:
+                FailureView()
+            }
+        }
+        .onAppear {
+            asyncBind($data, status: $status, loadData)
+        }
+    }
+}

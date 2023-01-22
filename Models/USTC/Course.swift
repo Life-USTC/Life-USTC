@@ -37,44 +37,43 @@ func parseWeekStr(_: String) -> [EKRecurrenceRule] {
 }
 
 extension Course {
-    static func saveToCalendar(_ courses: [Course], name: String, startDate: Date, status: Binding<AsyncViewStatus>) {
+    static func saveToCalendar(_ courses: [Course], name: String, startDate: Date) throws {
         let eventStore = EKEventStore()
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: (granted: Bool, error: (any Error)?) = (true, nil)
         eventStore.requestAccess(to: .event) { granted, error in
-            if !granted, error != nil {
-                status.wrappedValue = .failure
-                return
-            }
-
-            var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: { $0.title == name })
-            // try remove everything with that name in it
-            if calendar == nil {
-                calendar = EKCalendar(for: .event, eventStore: eventStore)
-                calendar!.title = name
-                calendar!.cgColor = Color.accentColor.cgColor
-                calendar!.source = eventStore.defaultCalendarForNewEvents?.source
-                try! eventStore.saveCalendar(calendar!, commit: true)
-            }
-
-            do {
-                for course in courses {
-                    let event = EKEvent(eventStore: eventStore)
-                    event.title = course.name
-                    event.location = course.classPositionString
-                    event.notes = "\(course.classIDString)@\(course.classTeacherName)"
-                    event.startDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.startTimes[course.startTime - 1]
-                    event.endDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.endTimes[course.endTime - 1]
-                    let rule = EKRecurrenceRule(recurrenceWith: .weekly, interval: 1, end: .init(occurrenceCount: 18))
-                    event.addRecurrenceRule(rule)
-                    event.calendar = calendar
-                    try eventStore.save(event, span: .thisEvent, commit: false)
-                }
-                try eventStore.commit()
-                status.wrappedValue = .success
-            } catch {
-                status.wrappedValue = .failure
-                print(error)
-            }
+            result.granted = granted
+            result.error = error
+            semaphore.signal()
         }
+        semaphore.wait()
+        if !result.granted || result.error != nil {
+            throw BaseError.runtimeError("Calendar access problem")
+        }
+
+        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: { $0.title == name })
+        // try remove everything with that name in it
+        if calendar == nil {
+            calendar = EKCalendar(for: .event, eventStore: eventStore)
+            calendar!.title = name
+            calendar!.cgColor = Color.accentColor.cgColor
+            calendar!.source = eventStore.defaultCalendarForNewEvents?.source
+            try! eventStore.saveCalendar(calendar!, commit: true)
+        }
+
+        for course in courses {
+            let event = EKEvent(eventStore: eventStore)
+            event.title = course.name
+            event.location = course.classPositionString
+            event.notes = "\(course.classIDString)@\(course.classTeacherName)"
+            event.startDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.startTimes[course.startTime - 1]
+            event.endDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.endTimes[course.endTime - 1]
+            let rule = EKRecurrenceRule(recurrenceWith: .weekly, interval: 1, end: .init(occurrenceCount: 18))
+            event.addRecurrenceRule(rule)
+            event.calendar = calendar
+            try eventStore.save(event, span: .thisEvent, commit: false)
+        }
+        try eventStore.commit()
     }
 
     static func clean(_ courses: [Course]) -> [Course] {

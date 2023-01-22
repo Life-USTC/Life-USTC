@@ -108,12 +108,6 @@ extension String {
     }
 }
 
-extension TimePeroid {
-    func makeView() -> some View {
-        TitleAndSubTitle(title: caption, subTitle: dateRangeCaption, style: .reverse)
-    }
-}
-
 extension DateComponents {
     var clockTime: String {
         let dateFormatter = DateFormatter()

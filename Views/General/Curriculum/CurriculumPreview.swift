@@ -8,37 +8,22 @@
 import SwiftUI
 
 struct CurriculumPreview: View {
-    @State var courses: [Course] = []
-    @State var status: AsyncViewStatus = .inProgress
-    var todayCourse: [Course] {
-        courses.filter { course in
-            course.dayOfWeek == currentWeekDay
-        }
-    }
-
     var body: some View {
-        Group {
-            if status == .inProgress {
-                ProgressView()
+        AsyncView { courses in
+            let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }
+            if todayCourse.isEmpty {
+                return happyView
             } else {
-                if todayCourse.isEmpty {
-                    happyView
-                } else {
-                    mainView
-                }
+                return makeView(with: todayCourse)
             }
-        }
-        .frame(width: cardWidth)
-        .onAppear {
-            asyncBind($courses, status: $status) {
-                try await UstcUgAASClient.main.getCurriculum()
-            }
+        } loadData: {
+            try await UstcUgAASClient.main.getCurriculum()
         }
     }
 
-    var mainView: some View {
+    func makeView(with courses: [Course]) -> some View {
         List {
-            ForEach(todayCourse) { course in
+            ForEach(courses) { course in
                 HStack {
                     TitleAndSubTitle(title: course.name, subTitle: course.classPositionString, style: .substring)
                     Spacer()
@@ -47,7 +32,7 @@ struct CurriculumPreview: View {
             }
         }
         .listStyle(.plain)
-        .frame(height: cardHeight / 3 * Double(todayCourse.count))
+        .frame(height: cardHeight / 3 * Double(courses.count))
     }
 
     /// If no class are shown...

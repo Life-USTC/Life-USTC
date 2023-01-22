@@ -40,7 +40,7 @@ class FeedSource {
                 FeedCache.update(using: id, with: feeds)
                 return feeds
             } else {
-                throw EncodingError.invalidValue(fetch, .init(codingPath: [], debugDescription: ""))
+                throw BaseError.runtimeError("Parse Error")
             }
         case let .failure(error):
             throw error

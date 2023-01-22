@@ -31,8 +31,4 @@ enum UserType: String, CaseIterable {
             return "Notice; Create Notice"
         }
     }
-
-    func makeView() -> some View {
-        TitleAndSubTitle(title: String(describing: self).capitalized, subTitle: caption, style: .substring)
-    }
 }

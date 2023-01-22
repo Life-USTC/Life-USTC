@@ -12,3 +12,4 @@ let ustcOAAFeedURL = URL(string: "https://www.teach.ustc.edu.cn/category/notice/
 let appFeedURL = URL(string: "https://tiankaima.github.io/Life-USTC-Web/notices/index.xml")!
 let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
 let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
+let exampleURL = URL(string: "https://example.com")!

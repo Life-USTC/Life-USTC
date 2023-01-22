@@ -63,7 +63,9 @@ struct FeaturesView: View {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Section {
                         ForEach(features) { feature in
-                            feature.makeView()
+                            NavigationLink(destination: feature.destinationView) {
+                                ListLabelView(image: feature.image, title: feature.title, subTitle: feature.subTitle)
+                            }
                         }
                     } header: {
                         Text(key)
@@ -83,12 +85,6 @@ extension FeaturesView {
         var title: String
         var subTitle: String
         var destinationView: AnyView
-
-        func makeView() -> some View {
-            NavigationLink(destination: destinationView) {
-                ListLabelView(image: image, title: title, subTitle: subTitle)
-            }
-        }
 
         init(image: String, title: String, subTitle: String, destinationView: any View) {
             self.image = image

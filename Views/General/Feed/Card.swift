@@ -7,32 +7,7 @@
 
 import SwiftUI
 
-var cardWidth: CGFloat {
-    (UIApplication.shared.connectedScenes.first as? UIWindowScene)!.screen.bounds.width - 30
-}
-
 let cardHeight = 200.0
-
-extension Color {
-    /// Generate the color from hash value
-    ///
-    /// - Note: Output color matches following range:
-    ///   hue: .random(in: 0...1)
-    ///   saturation: .random(in: 0.25...0.55)
-    ///   brightness: .random(in: 0.25...0.35, 0.75...0.85)
-    init(with string: String, mode: ColorScheme) {
-        let hash = Int(string.md5HexString.prefix(6), radix: 16)!
-        let hue = Double(hash % 360) / 360
-        let saturation = Double(hash % 30 + 25) / 100
-        var brightness = 0.0
-        if mode == .dark {
-            brightness = Double(hash % 10 + 25) / 100
-        } else {
-            brightness = Double(hash % 10 + 75) / 100
-        }
-        self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
-    }
-}
 
 struct Card: View {
     @Environment(\.colorScheme) var colorScheme
@@ -51,23 +26,26 @@ struct Card: View {
 
     var subtitleLength = 4
     var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.init(with: cardTitle, mode: colorScheme))
-            if let imageURL {
-                AsyncImage(url: imageURL) { image in
-                    image
-                        .resizable()
-                        .overlay(
-                            LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: .top, endPoint: .bottom)
-                        )
-                } placeholder: {
-                    ProgressView()
+        GeometryReader { geo in
+            ZStack {
+                Rectangle()
+                    .foregroundColor(.init(with: cardTitle, mode: colorScheme))
+                if let imageURL {
+                    AsyncImage(url: imageURL) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .overlay(
+                                LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(width: geo.size.width, height: geo.size.height)
+                    } placeholder: {
+                        ProgressView()
+                    }
                 }
             }
         }
-        .scaledToFill()
-        .frame(width: cardWidth, height: cardHeight)
+        .frame(height: cardHeight)
         .overlay(alignment: .bottomLeading) {
             VStack(alignment: .leading) {
                 Text(cardTitle)
@@ -118,6 +96,7 @@ struct Card: View {
             }
             .padding([.top, .trailing], 10)
         }
+        .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(Color.primary.opacity(0.3), lineWidth: 2))
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
     }

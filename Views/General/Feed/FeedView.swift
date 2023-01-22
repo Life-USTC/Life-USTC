@@ -34,16 +34,20 @@ struct FeedView: View {
                         }
                     }
                 } preview: {
-                    ReeeederView(url: feed.url)
-                        .frame(width: cardWidth, height: 400.0)
+                    NavigationStack {
+                        GeometryReader { geo in
+                            ReeeederView(url: feed.url)
+                                .frame(height: geo.size.height)
+                        }
+                        .toolbar(.hidden)
+                    }
                 }
-            #if DEBUG
-                .overlay(alignment: .topLeading) {
-                    Text(feed.id.uuidString)
-                        .foregroundColor(.white)
-                        .font(.caption)
-                }
-            #endif
         }
+    }
+}
+
+struct FeedView_Previews: PreviewProvider {
+    static var previews: some View {
+        FeedView(feed: Feed.example)
     }
 }

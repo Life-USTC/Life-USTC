@@ -8,22 +8,11 @@
 import SwiftUI
 
 struct FeedHScrollView: View {
-    @State var feeds: [Feed] = []
     @State var runOnce = false
     @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
-    @State var status: AsyncViewStatus = .inProgress
-    var feedPostIDList: [UUID] {
-        feeds.map { $0.id }
-    }
-
-    var featureList: some View {
-        VStack {
-            EmptyView()
-        }
-    }
 
     // exract a function to make infinite loop
-    func scrollTo(proxy: ScrollViewProxy, id: UUID) {
+    func scrollTo(proxy: ScrollViewProxy, id: UUID, feedPostIDList: [UUID]) {
         Task {
             try await Task.sleep(for: .seconds(3))
             withAnimation {
@@ -32,44 +21,40 @@ struct FeedHScrollView: View {
             let index = feedPostIDList.firstIndex(of: id) ?? -1
             var nextIndex = index + 1
             nextIndex = feedPostIDList.indices.contains(nextIndex) ? nextIndex : 0
-            scrollTo(proxy: proxy, id: feedPostIDList[nextIndex])
+            scrollTo(proxy: proxy, id: feedPostIDList[nextIndex], feedPostIDList: feedPostIDList)
         }
     }
 
-    var mainView: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: true) {
-                HStack(spacing: 0) {
-                    ForEach(feeds, id: \.id) { post in
-                        FeedView(feed: post)
-                            .id(post.id)
+    func makeView(with feeds: [Feed]) -> some View {
+        GeometryReader { geo in
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: true) {
+                    HStack(spacing: 0) {
+                        ForEach(feeds, id: \.id) { post in
+                            FeedView(feed: post)
+                                .frame(width: geo.size.width)
+                                .id(post.id)
+                        }
                     }
+                    .frame(width: geo.size.width * Double(feedPostNumber))
                 }
-                .frame(width: cardWidth * Double(feedPostNumber))
-            }
-            .scrollDisabled(true)
-            .task {
-                while status != .success {}
-                if let id = feedPostIDList.first {
-                    scrollTo(proxy: proxy, id: id)
+                .scrollDisabled(true)
+                .task {
+                    let feedPostIDList = feeds.map { $0.id }
+                    if let id = feedPostIDList.first {
+                        scrollTo(proxy: proxy, id: id, feedPostIDList: feedPostIDList)
+                    }
                 }
             }
         }
+        .frame(maxWidth: .infinity, minHeight: cardHeight)
     }
 
     var body: some View {
-        Group {
-            if status == .inProgress {
-                ProgressView()
-                    .frame(width: cardWidth, height: cardHeight)
-            } else {
-                mainView
-            }
-        }
-        .onAppear {
-            asyncBind($feeds, status: $status) {
-                try await FeedSource.recentFeeds(number: feedPostNumber)
-            }
+        AsyncView { feeds in
+            makeView(with: feeds)
+        } loadData: {
+            try await FeedSource.recentFeeds(number: feedPostNumber)
         }
     }
 }

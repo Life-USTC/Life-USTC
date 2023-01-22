@@ -16,3 +16,7 @@ func exceptionCall<T>(_ function: @escaping () throws -> T) -> T? {
     }
     return nil
 }
+
+enum BaseError: Error {
+    case runtimeError(String)
+}

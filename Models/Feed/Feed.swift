@@ -28,6 +28,32 @@ class Feed: Codable {
     var url: URL
     var imageURL: URL? // preview image URL
 
+    static let example = Feed(title: "title",
+                              source: "source",
+                              keywords: ["keyword1", "keyword2"],
+                              description: "description",
+                              datePosted: Date(),
+                              url: exampleURL)
+
+    init(id: UUID = UUID(),
+         title: String,
+         source: String,
+         keywords: Set<String>,
+         description: String? = nil,
+         datePosted: Date,
+         url: URL,
+         imageURL: URL? = nil)
+    {
+        self.id = id
+        self.title = title
+        self.source = source
+        self.keywords = keywords
+        self.description = description
+        self.datePosted = datePosted
+        self.url = url
+        self.imageURL = imageURL
+    }
+
     init(item: RSSFeedItem, source: String) {
         title = item.title ?? "!!No title found for this Feed"
         self.source = source

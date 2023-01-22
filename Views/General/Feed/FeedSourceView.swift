@@ -9,54 +9,28 @@ import SwiftUI
 
 struct FeedSourceView: View {
     let feedSource: FeedSource
-    @State var feeds: [Feed] = []
-    @State var status: AsyncViewStatus = .inProgress
 
     var body: some View {
         NavigationStack {
-            FeedVStackView(name: feedSource.name, feeds: $feeds, status: $status)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            asyncBind($feeds, status: $status) {
-                                try await feedSource.forceUpdatePost()
-                            }
-                        } label: {
-                            Label("Refresh", systemImage: "arrow.clockwise")
-                        }
-                    }
-                }
-        }
-        .onAppear {
-            asyncBind($feeds, status: $status) {
+            AsyncView { feeds in
+                FeedVStackView(name: feedSource.name, feeds: feeds)
+            } loadData: {
                 try await feedSource.fetchRecentPost()
+            } refreshData: {
+                try await feedSource.forceUpdatePost()
             }
         }
     }
 }
 
 struct AllSourceView: View {
-    @State var feeds: [Feed] = []
-    @State var status: AsyncViewStatus = .inProgress
-
     var body: some View {
         NavigationStack {
-            FeedVStackView(name: "Feed", feeds: $feeds, status: $status)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            status = .inProgress
-                            asyncBind($feeds, status: $status) {
-                                try await FeedSource.recentFeeds(number: nil)
-                            }
-                        } label: {
-                            Label("Refresh", systemImage: "arrow.clockwise")
-                        }
-                    }
-                }
-        }
-        .onAppear {
-            asyncBind($feeds, status: $status) {
+            AsyncView { feeds in
+                FeedVStackView(name: "Feed", feeds: feeds)
+            } loadData: {
+                try await FeedSource.recentFeeds(number: nil)
+            } refreshData: {
                 try await FeedSource.recentFeeds(number: nil)
             }
         }
