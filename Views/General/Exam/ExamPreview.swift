@@ -10,7 +10,11 @@ import SwiftUI
 struct ExamPreview: View {
     var body: some View {
         AsyncView { exams in
-            makeView(with: exams)
+            if exams.isEmpty {
+                return happyView
+            } else {
+                return makeView(with: exams)
+            }
         } loadData: {
             try await UstcUgAASClient.main.getExamInfo()
         }

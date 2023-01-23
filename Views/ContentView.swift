@@ -22,9 +22,8 @@ struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-    @AppStorage("semesterID") var semesterID = "281"
-    @AppStorage("passportUsername") var ustcCasUsername: String = ""
-    @AppStorage("passportPassword") var ustcCasPassword: String = ""
+    @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
+    @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
 
     var body: some View {
         TabView {
@@ -53,10 +52,14 @@ struct ContentView: View {
     }
 
     func onLoadFunction() {
-        exceptionCall {
-            loadMainUstcCasClient()
-            try loadMainUstcUgAASClient()
-            try loadFeedCache()
+        if ustcCasUsername.isEmpty, ustcCasPassword.isEmpty {
+            // if either of them is empty, no need to pass them to build the client
+            casLoginSheet = true
+            return
+        }
+        _ = Task {
+            // if the login result fails, present the user with the sheet.
+            casLoginSheet = try await !UstcCasClient.main.loginToCAS()
         }
     }
 }

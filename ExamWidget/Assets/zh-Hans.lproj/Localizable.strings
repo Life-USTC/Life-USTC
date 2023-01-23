@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  Life@USTC
+
+  Created by TiankaiMa on 2023/1/23.
+  
+*/
+
+"No More Exam..." = "无更多考试";
+"Open the app to make sure though..." = "打开App来确认";
+"Days Left" = "天后";
+"Time: %@" = "时间: %@";
+"Location: %@" = "地址: %@";
+"+%@ More Exam..." = "还有%@个考试";
+"Upcoming Exams" = "接下来的考试";
+"Exams:" = "考试:";
+"+%@D" = "%@天后";
+"%@+%@D" = "%@%@天后";
+"Exams" = "考试";
+"Show upcoming exam." = "显示接下来的考试安排";

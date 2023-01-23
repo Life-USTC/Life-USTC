@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>ExamWidgetExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>Life@USTC (iOS).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -54,7 +59,7 @@
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 		<key>Tools for plug-in “SwiftFormatPlugin” 1.xcscheme</key>
 		<dict>
@@ -81,6 +86,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>56AC72FF294A012F00A60F47</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>56FA8E74297D7263000AC3A9</key>
 		<dict>
 			<key>primary</key>
 			<true/>

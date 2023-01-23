@@ -25,7 +25,7 @@ class UstcUgAASClient {
          "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
          "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
 
-    var semesterID: String = "301"
+    var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
     var semesterName: String {
         UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
     }
@@ -47,41 +47,31 @@ class UstcUgAASClient {
 
     func loadCache() throws {
         let decoder = JSONDecoder()
-        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdatedCurriculum") {
+        if let data = userDefaults.data(forKey: "UstcUgAASLastUpdatedCurriculum") {
             lastUpdatedCurriculum = try decoder.decode(Date?.self, from: data)
         }
-        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateExams") {
+        if let data = userDefaults.data(forKey: "UstcUgAASLastUpdateExams") {
             lastUpdatedExams = try decoder.decode(Date?.self, from: data)
         }
-        if let data = UserDefaults.standard.data(forKey: "UstcUgAASLastUpdateScores") {
+        if let data = userDefaults.data(forKey: "UstcUgAASLastUpdateScores") {
             lastUpdatedScores = try decoder.decode(Date?.self, from: data)
         }
 
-        let fileManager = FileManager.default
-        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        var filePath = path + "/ugaas_cache.json"
-        if fileManager.fileExists(atPath: filePath) {
-            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        if let data = userDefaults.data(forKey: "UstcUgAASCurriculumCache") {
             curriculumJsonCache = try JSON(data: data)
         } else {
             Task {
                 try await forceUpdateCurriculum()
             }
         }
-
-        filePath = path + "/ugaas_exams.json"
-        if fileManager.fileExists(atPath: filePath) {
-            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        if let data = userDefaults.data(forKey: "UstcUgAASExamCache") {
             exams = try JSONDecoder().decode([Exam].self, from: data)
         } else {
             Task {
                 try await forceUpdateExamInfo()
             }
         }
-
-        filePath = path + "/ugaas_scores.json"
-        if fileManager.fileExists(atPath: filePath) {
-            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        if let data = userDefaults.data(forKey: "UstcUgAASScoreCache") {
             scoreJsonCache = try JSON(data: data)
         } else {
             Task {
@@ -95,33 +85,20 @@ class UstcUgAASClient {
     }
 
     func saveCache() throws {
+        print("!!! Save UGAAS Called")
         let encoder = JSONEncoder()
         var data = try encoder.encode(lastUpdatedCurriculum)
-        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdatedCurriculum")
+        userDefaults.set(data, forKey: "UstcUgAASLastUpdatedCurriculum")
         data = try encoder.encode(lastUpdatedExams)
-        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdateExams")
+        userDefaults.set(data, forKey: "UstcUgAASLastUpdateExams")
         data = try encoder.encode(lastUpdatedScores)
-        UserDefaults.standard.set(data, forKey: "UstcUgAASLastUpdateScores")
-
-        let fileManager = FileManager.default
-        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        var filePath = path + "/ugaas_cache.json"
-        if fileManager.fileExists(atPath: filePath) {
-            try fileManager.removeItem(atPath: filePath)
-        }
-        try curriculumJsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
-
-        filePath = path + "/ugaas_exams.json"
-        if fileManager.fileExists(atPath: filePath) {
-            try fileManager.removeItem(atPath: filePath)
-        }
-        try JSONEncoder().encode(exams).write(to: URL(fileURLWithPath: filePath))
-
-        filePath = path + "/ugaas_scores.json"
-        if fileManager.fileExists(atPath: filePath) {
-            try fileManager.removeItem(atPath: filePath)
-        }
-        try scoreJsonCache.rawData().write(to: URL(fileURLWithPath: filePath))
+        userDefaults.set(data, forKey: "UstcUgAASLastUpdateScores")
+        data = try curriculumJsonCache.rawData()
+        userDefaults.set(data, forKey: "UstcUgAASCurriculumCache")
+        data = try JSONEncoder().encode(exams)
+        userDefaults.set(data, forKey: "UstcUgAASExamCache")
+        data = try scoreJsonCache.rawData()
+        userDefaults.set(data, forKey: "UstcUgAASScoreCache")
     }
 
     func login() async throws {
@@ -253,11 +230,5 @@ class UstcUgAASClient {
 
     init() {
         exceptionCall(loadCache)
-    }
-}
-
-extension ContentView {
-    func loadMainUstcUgAASClient() throws {
-        UstcUgAASClient.main.semesterID = semesterID
     }
 }

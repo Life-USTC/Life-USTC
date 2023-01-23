@@ -64,11 +64,13 @@ struct FeaturesView: View {
                     Section {
                         ForEach(features) { feature in
                             NavigationLink(destination: feature.destinationView) {
-                                ListLabelView(image: feature.image, title: feature.title, subTitle: feature.subTitle)
+                                ListLabelView(image: feature.image,
+                                              title: feature.title.localized,
+                                              subTitle: feature.subTitle.localized)
                             }
                         }
                     } header: {
-                        Text(key)
+                        Text(key.localized)
                     }
                 }
             }

@@ -38,6 +38,10 @@ extension String {
     var localized: String {
         return NSLocalizedString(self, comment: "")
     }
+
+    func limitShow(_: Int) -> String {
+        return "\(String(prefix(6)))\(count > 6 ? "..." : "")"
+    }
 }
 
 extension Array: RawRepresentable where Element: Codable {

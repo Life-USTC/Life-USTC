@@ -13,3 +13,5 @@ let appFeedURL = URL(string: "https://tiankaima.github.io/Life-USTC-Web/notices/
 let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
 let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
 let exampleURL = URL(string: "https://example.com")!
+
+let userDefaults = UserDefaults(suiteName: "group.dev.tiankaima.Life-USTC")!

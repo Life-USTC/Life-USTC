@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CASLoginView: View {
     // abstract from LoginSheet, some variables are subject to change though
-    @AppStorage("passportUsername") var passportUsername: String = ""
-    @AppStorage("passportPassword") var passportPassword: String = ""
+    @AppStorage("passportUsername", store: userDefaults) var passportUsername: String = ""
+    @AppStorage("passportPassword", store: userDefaults) var passportPassword: String = ""
 
     @Binding var casLoginSheet: Bool // used to signal the sheet to close
     var isInSheet = false

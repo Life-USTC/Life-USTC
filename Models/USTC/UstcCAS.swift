@@ -29,8 +29,8 @@ extension URL {
 class UstcCasClient {
     static var main = UstcCasClient()
 
-    var username: String = ""
-    var password: String = ""
+    var username: String = userDefaults.string(forKey: "passportUsername") ?? ""
+    var password: String = userDefaults.string(forKey: "passportPassword") ?? ""
 
     private var lastLogined: Date?
 
@@ -94,21 +94,6 @@ class UstcCasClient {
             return true
         } else {
             return try await loginToCAS()
-        }
-    }
-}
-
-extension ContentView {
-    func loadMainUstcCasClient() {
-        if ustcCasUsername.isEmpty, ustcCasPassword.isEmpty {
-            // if either of them is empty, no need to pass them to build the client
-            casLoginSheet = true
-            return
-        }
-        UstcCasClient.main.update(username: ustcCasUsername, password: ustcCasPassword)
-        _ = Task {
-            // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.main.loginToCAS()
         }
     }
 }

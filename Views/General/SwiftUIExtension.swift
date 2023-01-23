@@ -110,10 +110,6 @@ struct BigButtonStyle: ButtonStyle {
     }
 }
 
-func Text(_ string: String) -> Text {
-    Text(LocalizedStringKey(string))
-}
-
 struct ViewOffsetKey: PreferenceKey {
     typealias Value = CGFloat
     static var defaultValue = CGFloat.zero
