@@ -63,7 +63,7 @@ struct FeaturesView: View {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Section {
                         ForEach(features) { feature in
-                            NavigationLink {
+                            NavigationLinkAddon {
                                 feature.destinationView
                             } label: {
                                 ListLabelView(image: feature.image,

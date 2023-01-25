@@ -166,15 +166,15 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 Section {
-                    NavigationLink("Feed Source Settings", destination: EmptyView())
-                    NavigationLink("CAS Settings", destination: CASLoginView.newPage)
-                    NavigationLink("Change User Type", destination: UserTypeView())
-                    NavigationLink("Notification Settings", destination: NotificationSettingView())
+                    NavigationLinkAddon("Feed Source Settings", destination: EmptyView())
+                    NavigationLinkAddon("CAS Settings", destination: CASLoginView.newPage)
+                    NavigationLinkAddon("Change User Type", destination: UserTypeView())
+                    NavigationLinkAddon("Notification Settings", destination: NotificationSettingView())
                 }
 
                 Section {
-                    NavigationLink("About Life@USTC", destination: AboutLifeAtUSTCView())
-                    NavigationLink("Legal Info", destination: LegalInfoView())
+                    NavigationLinkAddon("About Life@USTC", destination: AboutLifeAtUSTCView())
+                    NavigationLinkAddon("Legal Info", destination: LegalInfoView())
                 }
             }
             .navigationTitle("Settings")

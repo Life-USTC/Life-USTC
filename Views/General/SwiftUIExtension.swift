@@ -242,7 +242,8 @@ class GlobalNavigation: ObservableObject {
     }
 }
 
-@ViewBuilder func NavigationStack(_ label: String, destination: some View) -> some View {
+@ViewBuilder func NavigationLinkAddon(_ label: String, destination: some View) -> some View {
+#if os(iOS)
     if UIDevice.current.userInterfaceIdiom == .phone {
         NavigationLink {
             destination
@@ -255,20 +256,32 @@ class GlobalNavigation: ObservableObject {
                 GlobalNavigation.main.updateDetailView(AnyView(destination))
             }
     }
-}
-
-@ViewBuilder func NavigationStack(_ destination: some View, label: some View) -> some View {
-    if UIDevice.current.userInterfaceIdiom == .phone {
-        NavigationLink {
-            destination
-        } label: {
-            label
-        }
-    } else {
-        label.onTapGesture {
+#endif
+    Text(label)
+        .onTapGesture {
             GlobalNavigation.main.updateDetailView(AnyView(destination))
         }
+}
+
+@ViewBuilder func NavigationLinkAddon(_ destination: @escaping () -> some View, label: @escaping () -> some View) -> some View {
+#if os(iOS)
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        NavigationLink {
+            destination()
+        } label: {
+            label()
+        }
+    } else {
+        label()
+            .onTapGesture {
+                GlobalNavigation.main.updateDetailView(AnyView(destination()))
+            }
     }
+#endif
+    label()
+        .onTapGesture {
+            GlobalNavigation.main.updateDetailView(AnyView(destination()))
+        }
 }
 
 #if os(macOS)

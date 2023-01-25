@@ -19,7 +19,7 @@ struct FeedView: View {
 
     @State var showPostDetail = false
     var body: some View {
-        NavigationLink {
+        NavigationLinkAddon {
             ReeeederView(url: feed.url)
         } label: {
             Card(cardTitle: feed.title,

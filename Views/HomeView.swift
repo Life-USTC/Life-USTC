@@ -35,7 +35,7 @@ struct HomeView: View {
                 ForEach(features, id: \.title) { feature in
                     HStack {
                         TitleAndSubTitle(title: feature.title, subTitle: feature.subTitle, style: .reverse)
-                        NavigationLink {
+                        NavigationLinkAddon {
                             feature.destination
                         } label: {
                             Label("More", systemImage: "chevron.right.2")
