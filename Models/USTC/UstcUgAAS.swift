@@ -8,6 +8,7 @@
 import SwiftSoup
 import SwiftUI
 import SwiftyJSON
+import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
@@ -99,6 +100,8 @@ class UstcUgAASClient {
         userDefaults.set(data, forKey: "UstcUgAASExamCache")
         data = try scoreJsonCache.rawData()
         userDefaults.set(data, forKey: "UstcUgAASScoreCache")
+        
+        WidgetCenter.shared.reloadTimelines(ofKind: "dev.tiankaima.Life-USTC.ExamWidget")
     }
 
     func login() async throws {

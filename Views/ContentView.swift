@@ -27,6 +27,7 @@ struct ContentView: View {
     @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
     @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
     @StateObject var globalNavigation: GlobalNavigation = .main
+    @State var sideBar: NavigationSplitViewVisibility = .all
 
     var mainView: some View {
         TabView {
@@ -56,8 +57,9 @@ struct ContentView: View {
     var body: some View {
 #if os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $sideBar) {
                 mainView
+                    .navigationSplitViewColumnWidth(600)
             } detail: {
                 globalNavigation.detailView
             }

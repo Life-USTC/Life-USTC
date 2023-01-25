@@ -242,25 +242,32 @@ class GlobalNavigation: ObservableObject {
     }
 }
 
-struct NavigationLink: View {
-    var label: AnyView
-    var destinationView: AnyView
-
-    init(_ destinationView: @escaping () -> some View, label: @escaping () -> some View) {
-        self.label = AnyView(label())
-        self.destinationView = AnyView(destinationView())
-    }
-
-    init(_ label: String, destination: some View) {
-        self.label = AnyView(Text(label))
-        destinationView = AnyView(destination)
-    }
-
-    var body: some View {
-        label
+@ViewBuilder func NavigationStack(_ label: String, destination: some View) -> some View {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        NavigationLink {
+            destination
+        } label: {
+            Text(label)
+        }
+    } else {
+        Text(label)
             .onTapGesture {
-                GlobalNavigation.main.updateDetailView(self.destinationView)
+                GlobalNavigation.main.updateDetailView(AnyView(destination))
             }
+    }
+}
+
+@ViewBuilder func NavigationStack(_ destination: some View, label: some View) -> some View {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        NavigationLink {
+            destination
+        } label: {
+            label
+        }
+    } else {
+        label.onTapGesture {
+            GlobalNavigation.main.updateDetailView(AnyView(destination))
+        }
     }
 }
 
