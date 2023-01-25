@@ -9,7 +9,6 @@ import SwiftUI
 
 let heightPerClass = 60.0
 let paddingWidth = 2.0
-let stackWidth = (UIScreen.main.bounds.width - paddingWidth * 2) / 5
 
 struct CurriculumView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
@@ -60,7 +59,9 @@ struct CurriculumView: View {
                         asyncBind(.constant(()), status: $saveCalendarStatus) {
                             try UstcUgAASClient.main.saveToCalendar()
                         }
+#if os(iOS)
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+#endif
                         Task {
                             try await Task.sleep(for: .seconds(2))
                             saveCalendarStatus = .inProgress
@@ -91,8 +92,7 @@ struct CurriculumView: View {
             }
             .listStyle(.plain)
             .scrollDisabled(true)
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Settings", displayMode: .inline)
         }
         .presentationDetents([.fraction(0.4)])
     }
@@ -102,21 +102,18 @@ struct CurriculumView: View {
             mainView
                 .padding(paddingWidth)
                 .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        if status == .inProgress {
-                            ProgressView()
+                    if status == .inProgress {
+                        ProgressView()
+                    }
+                    Button {
+                        withAnimation {
+                            showSettingSheet.toggle()
                         }
-                        Button {
-                            withAnimation {
-                                showSettingSheet.toggle()
-                            }
-                        } label: {
-                            Label("Show settings", systemImage: "gearshape")
-                        }
+                    } label: {
+                        Label("Show settings", systemImage: "gearshape")
                     }
                 }
-                .navigationTitle("Curriculum")
-                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitle("Curriculum", displayMode: .inline)
                 .onAppear {
                     asyncBind($courses, status: $status) {
                         try await UstcUgAASClient.main.getCurriculum()
@@ -154,19 +151,22 @@ struct CurriculumView: View {
                     .opacity(0.5)
             }
         }
-        .frame(width: stackWidth, height: heightPerClass * 13)
     }
 
     var loadedView: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 0) {
-                    ForEach(0 ..< 5) { index in
-                        makeVStack(index: index)
-                    }
-                    if showSatAndSun {
-                        ForEach(5 ..< 7) { index in
+        GeometryReader { geo in
+            ScrollView(.vertical, showsIndicators: false) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(0 ..< 5) { index in
                             makeVStack(index: index)
+                                .frame(width: geo.size.width / 5, height: heightPerClass * 13)
+                        }
+                        if showSatAndSun {
+                            ForEach(5 ..< 7) { index in
+                                makeVStack(index: index)
+                                    .frame(width: geo.size.width / 5, height: heightPerClass * 13)
+                            }
                         }
                     }
                 }
@@ -183,5 +183,11 @@ struct CurriculumView: View {
                 loadedView
             }
         }
+    }
+}
+
+struct CurriculumView_Previews: PreviewProvider {
+    static var previews: some View {
+        CurriculumView()
     }
 }

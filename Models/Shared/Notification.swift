@@ -10,6 +10,7 @@ import SwiftUI
 var deviceTokenString: String?
 
 func tryRequestAuthorization() {
+#if os(iOS)
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in
         if error != nil || granted == false {
@@ -17,4 +18,5 @@ func tryRequestAuthorization() {
             return
         }
     }
+#endif
 }

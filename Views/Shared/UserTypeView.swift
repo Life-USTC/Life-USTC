@@ -45,6 +45,7 @@ struct UserTypeView: View {
             }
             .foregroundColor(.primary)
         }
+        .scrollContentBackground(.hidden)
     }
 
     var body: some View {
@@ -65,15 +66,13 @@ struct UserTypeView: View {
                     .buttonStyle(BigButtonStyle())
                 }
                 .padding()
-                .navigationTitle("Before we continue...")
-                .navigationBarTitleDisplayMode(.large)
+                .navigationBarTitle("Before we continue...", displayMode: .inline)
             }
         } else {
             NavigationStack {
                 mainView
             }
-            .navigationTitle("Change User Type")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Change User Type", displayMode: .inline)
         }
     }
 

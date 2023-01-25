@@ -22,17 +22,16 @@ struct CurriculumPreview: View {
     }
 
     func makeView(with courses: [Course]) -> some View {
-        List {
+        VStack {
             ForEach(courses) { course in
                 HStack {
                     TitleAndSubTitle(title: course.name, subTitle: course.classPositionString, style: .substring)
                     Spacer()
                     Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
                 }
+                Divider()
             }
         }
-        .listStyle(.plain)
-        .frame(height: cardHeight / 3 * Double(courses.count))
     }
 
     /// If no class are shown...

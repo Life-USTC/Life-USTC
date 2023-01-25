@@ -35,11 +35,13 @@ struct CourseCardView: View {
         .background {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(showPopUp ? Color.accentColor : Color.gray, lineWidth: 1)
-                .frame(width: stackWidth)
+//                .frame(width: stackWidth)
         }
         .onTapGesture {}
         .onLongPressGesture(minimumDuration: 0.6) {
+#if os(iOS)
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+#endif
             showPopUp = true
         }
         .sheet(isPresented: $showPopUp) {

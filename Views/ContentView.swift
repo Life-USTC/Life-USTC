@@ -9,7 +9,9 @@ import SwiftUI
 
 @main
 struct Life_USTCApp: App {
+#if os(iOS)
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+#endif
 
     var body: some Scene {
         WindowGroup {
@@ -24,8 +26,9 @@ struct ContentView: View {
     @AppStorage("firstLogin") var firstLogin: Bool = true
     @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
     @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
+    @StateObject var globalNavigation: GlobalNavigation = .main
 
-    var body: some View {
+    var mainView: some View {
         TabView {
             HomeView()
                 .tabItem {
@@ -45,10 +48,31 @@ struct ContentView: View {
                 .interactiveDismissDisabled(true)
         }
         .sheet(isPresented: $casLoginSheet) {
-            CASLoginView(casLoginSheet: $casLoginSheet, isInSheet: true, title: "One more step...", displayMode: .large)
-                .interactiveDismissDisabled(true)
+            CASLoginView.sheet(isPresented: $casLoginSheet)
         }
         .onAppear(perform: onLoadFunction)
+    }
+
+    var body: some View {
+#if os(iOS)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            NavigationSplitView {
+                mainView
+            } detail: {
+                globalNavigation.detailView
+            }
+            .navigationSplitViewStyle(.balanced)
+        } else {
+            mainView
+        }
+#else
+        NavigationSplitView {
+            mainView
+        } detail: {
+            globalNavigation.detailView
+        }
+        .navigationSplitViewStyle(.balanced)
+#endif
     }
 
     func onLoadFunction() {

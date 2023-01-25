@@ -32,7 +32,7 @@ struct FeedHScrollView: View {
                     HStack(spacing: 0) {
                         ForEach(feeds, id: \.id) { post in
                             FeedView(feed: post)
-                                .frame(width: geo.size.width)
+                                .frame(width: geo.size.width, height: geo.size.height)
                                 .id(post.id)
                         }
                     }
@@ -47,7 +47,7 @@ struct FeedHScrollView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, minHeight: cardHeight)
+        .frame(height: cardHeight)
     }
 
     var body: some View {
@@ -55,6 +55,17 @@ struct FeedHScrollView: View {
             makeView(with: feeds)
         } loadData: {
             try await FeedSource.recentFeeds(number: feedPostNumber)
+        }
+    }
+}
+
+struct FeedHScroll_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationStack {
+            FeedHScrollView()
+#if os(macOS)
+                .frame(width: 400, height: cardHeight)
+#endif
         }
     }
 }

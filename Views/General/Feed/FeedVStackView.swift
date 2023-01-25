@@ -43,7 +43,6 @@ struct FeedListView: View {
 }
 
 struct FeedVStackView: View {
-    let name: String
     var feeds: [Feed]
     var postsSorted: [TimePeroid: [Feed]] {
         var result: [TimePeroid: [Feed]] = [.day: [], .week: [], .month: [], .year: [], .longerThanAYear: []]
@@ -77,8 +76,6 @@ struct FeedVStackView: View {
                 }
                 .padding([.leading, .trailing])
             }
-            .navigationTitle(Text(name))
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

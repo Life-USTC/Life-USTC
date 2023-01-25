@@ -32,7 +32,9 @@ private struct LessonView: View {
             }
             .onTapGesture {}
             .onLongPressGesture {
+#if os(iOS)
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+#endif
                 showSheet = true
             }
             .sheet(isPresented: $showSheet) {
@@ -43,8 +45,7 @@ private struct LessonView: View {
                         Text("Duration: ".localized + lesson.startTime + "->" + lesson.endTime)
                     }
                     .foregroundColor(.primary)
-                    .navigationTitle("Details")
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarTitle("Details", displayMode: .inline)
                     .listStyle(.plain)
                 }
                 .presentationDetents([.fraction(0.3)])
@@ -67,7 +68,7 @@ private struct SingleClassroomView: View {
         return GeometryReader { geo in
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(.init(uiColor: .lightGray))
+                    .foregroundColor(.gray.opacity(0.5))
                     .opacity(isUp ? 0.7 : 0.3)
                 ForEach(filteredClass) { lesson in
                     LessonView(lesson: lesson)
@@ -201,19 +202,16 @@ struct ClassroomView: View {
                 }
             }
             .padding([.leading, .trailing], 2)
-            .navigationTitle("Classroom List")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Classroom List", displayMode: .inline)
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if status == .inProgress {
-                        ProgressView()
-                    }
+                if status == .inProgress {
+                    ProgressView()
+                }
 
-                    Button {
-                        showSheet = true
-                    } label: {
-                        Label("Settings", systemImage: "gearshape")
-                    }
+                Button {
+                    showSheet = true
+                } label: {
+                    Label("Settings", systemImage: "gearshape")
                 }
             }
             .sheet(isPresented: $showSheet, content: settingSheet)

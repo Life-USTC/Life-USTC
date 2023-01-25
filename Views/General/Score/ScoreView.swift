@@ -21,9 +21,9 @@ struct ScoreView: View {
         HStack {
             TitleAndSubTitle(title: courseScore.courseName, subTitle: courseScore.lessonCode, style: .substring)
             if courseScore.gpa == nil {
-                Text("\(courseScore.credit)/ /\(courseScore.score)")
+                Text("\(String(courseScore.credit))/ /\(courseScore.score)")
             } else {
-                Text("\(courseScore.credit)/\(String(courseScore.gpa!))/\(courseScore.score)")
+                Text("\(String(courseScore.credit))/\(String(courseScore.gpa!))/\(courseScore.score)")
                     .foregroundColor(courseScore.gpa! >= score.gpa ? .green : .red)
             }
         }
@@ -89,8 +89,7 @@ struct ScoreView: View {
                 }
             }
             .listStyle(.plain)
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Settings", displayMode: .inline)
         }
         .presentationDetents([.fraction(0.2)])
     }
@@ -143,16 +142,19 @@ struct ScoreView: View {
             try await UstcUgAASClient.main.forceUpdateScoreInfo()
             return try await UstcUgAASClient.main.getScore()
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Score")
+        .navigationBarTitle("Score", displayMode: .inline)
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    showAdvancedSettings.toggle()
-                } label: {
-                    Label("Settings", systemImage: "gearshape")
-                }
+            Button {
+                showAdvancedSettings.toggle()
+            } label: {
+                Label("Settings", systemImage: "gearshape")
             }
         }
+    }
+}
+
+struct ScoreView_Previews: PreviewProvider {
+    static var previews: some View {
+        ScoreView()
     }
 }

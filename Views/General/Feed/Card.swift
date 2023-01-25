@@ -7,7 +7,11 @@
 
 import SwiftUI
 
+#if os(iOS)
 let cardHeight = 200.0
+#else
+let cardHeight = 150.0
+#endif
 
 struct Card: View {
     @Environment(\.colorScheme) var colorScheme
@@ -98,6 +102,8 @@ struct Card: View {
         }
         .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(Color.primary.opacity(0.3), lineWidth: 2))
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-        .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
+#if os(iOS)
+            .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
+#endif
     }
 }

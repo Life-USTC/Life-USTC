@@ -23,14 +23,16 @@ struct NotificationSettingView: View {
             List {
                 Button {
                     tryRequestAuthorization()
+#if os(iOS)
                     UIApplication.shared.registerForRemoteNotifications()
+#endif
                 } label: {
                     Label("Upload Token", systemImage: "square.and.arrow.up")
                 }
 
                 Button {
                     tryRequestAuthorization()
-
+#if os(iOS)
                     let uuidString = UUID().uuidString
                     let content = UNMutableNotificationContent()
                     content.title = "TestTitle"
@@ -39,16 +41,20 @@ struct NotificationSettingView: View {
                     // set trigger to nil to instantly trigger a update
                     let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
                     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+#endif
                 } label: {
                     Label("Test Message", systemImage: "plus.square.dashed")
                 }
             }
-            .navigationTitle("Notification Settings")
+            .scrollContentBackground(.hidden)
+            .navigationBarTitle("Notification Settings", displayMode: .inline)
         }
     }
 }
 
 struct AboutLifeAtUSTCView: View {
+    @Environment(\.openURL) private var openURL
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -57,14 +63,15 @@ struct AboutLifeAtUSTCView: View {
                     .frame(width: 200, height: 200)
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                     .overlay(RoundedRectangle(cornerRadius: 15).stroke(.secondary, lineWidth: 2))
+#if os(iOS)
                     .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 15))
+#endif
                     .contextMenu {
                         ShareLink(item: "Life@USTC") {
                             Label("Share this app", systemImage: "square.and.arrow.up")
                         }
                         Button {
-                            let url = URL(string: "https://www.pixiv.net/artworks/97582506")!
-                            UIApplication.shared.open(url)
+                            openURL(URL(string: "https://www.pixiv.net/artworks/97582506")!)
                         } label: {
                             Label("Visit Icon original post", systemImage: "network")
                         }
@@ -107,8 +114,7 @@ struct AboutLifeAtUSTCView: View {
                 }
             }
             .padding()
-            .navigationTitle("About")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("About", displayMode: .inline)
         }
     }
 }
@@ -147,9 +153,9 @@ struct LegalInfoView: View {
                             .foregroundColor(.secondary)
                     }
                 }
+                .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Legal")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Legal", displayMode: .inline)
         }
     }
 }
@@ -161,7 +167,7 @@ struct SettingsView: View {
             List {
                 Section {
                     NavigationLink("Feed Source Settings", destination: EmptyView())
-                    NavigationLink("CAS Settings", destination: CASLoginView(casLoginSheet: .constant(false)))
+                    NavigationLink("CAS Settings", destination: CASLoginView.newPage)
                     NavigationLink("Change User Type", destination: UserTypeView())
                     NavigationLink("Notification Settings", destination: NotificationSettingView())
                 }
@@ -172,6 +178,7 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .scrollContentBackground(.hidden)
 //            .searchable(text: $searchText, placement: .toolbar)
         }
     }

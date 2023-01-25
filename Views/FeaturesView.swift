@@ -63,7 +63,9 @@ struct FeaturesView: View {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Section {
                         ForEach(features) { feature in
-                            NavigationLink(destination: feature.destinationView) {
+                            NavigationLink {
+                                feature.destinationView
+                            } label: {
                                 ListLabelView(image: feature.image,
                                               title: feature.title.localized,
                                               subTitle: feature.subTitle.localized)
@@ -74,8 +76,12 @@ struct FeaturesView: View {
                     }
                 }
             }
+            .listStyle(.sidebar)
             .navigationTitle("Features")
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            .scrollContentBackground(.hidden)
+#if os(iOS)
+                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+#endif
         }
     }
 }
@@ -178,4 +184,10 @@ extension FeaturesView {
                description: "本科教育提升计划-网络课程平台",
                url: "http://course.ustc.edu.cn/sso/ustc",
                markUp: true)]
+}
+
+struct FeaturesView_Previews: PreviewProvider {
+    static var previews: some View {
+        FeaturesView()
+    }
 }

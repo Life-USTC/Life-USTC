@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/17.
 //
 
+import Introspect
 import SwiftUI
 
 struct HStackLeading: ViewModifier {
@@ -100,6 +101,7 @@ struct BigButtonStyle: ButtonStyle {
     var size: CGFloat = 1.0
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+#if os(iOS)
             .foregroundColor(.white)
             .background {
                 RoundedRectangle(cornerRadius: 10 * size)
@@ -107,6 +109,7 @@ struct BigButtonStyle: ButtonStyle {
                     .foregroundColor(.accentColor)
             }
             .padding()
+#endif
     }
 }
 
@@ -135,13 +138,17 @@ extension Color {
         } else {
             brightness = Double(hash % 10 + 75) / 100
         }
+#if os(iOS)
         self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
+#else
+        self = Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
+#endif
     }
 }
 
 struct FailureView: View {
     var body: some View {
-        VStack {
+        HStack {
             Image(systemName: "xmark.circle")
                 .foregroundColor(.yellow)
 
@@ -179,12 +186,10 @@ struct AsyncView<D>: View {
         } else {
             makeView(data)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            asyncBind($data, status: $status, refreshData!)
-                        } label: {
-                            Label("Refresh", systemImage: "arrow.clockwise")
-                        }
+                    Button {
+                        asyncBind($data, status: $status, refreshData!)
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.clockwise")
                     }
                 }
         }
@@ -206,3 +211,71 @@ struct AsyncView<D>: View {
         }
     }
 }
+
+var currentDateString: String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .none
+    return dateFormatter.string(from: Date())
+}
+
+let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+var currentWeekDay: Int {
+    let calendar = Calendar.current
+    let weekday = calendar.component(.weekday, from: Date())
+    return (weekday + 6) % 7
+}
+
+var currentWeekDayString: String {
+    daysOfWeek[(currentWeekDay + 6) % 7]
+}
+
+// What a dirty way to make this cross-platform
+class GlobalNavigation: ObservableObject {
+    static var main = GlobalNavigation()
+    @Published var detailView: AnyView = .init(Text("Click on left panel for more information"))
+
+    func updateDetailView(_ newValue: AnyView) {
+        detailView = newValue
+        objectWillChange.send()
+    }
+}
+
+struct NavigationLink: View {
+    var label: AnyView
+    var destinationView: AnyView
+
+    init(_ destinationView: @escaping () -> some View, label: @escaping () -> some View) {
+        self.label = AnyView(label())
+        self.destinationView = AnyView(destinationView())
+    }
+
+    init(_ label: String, destination: some View) {
+        self.label = AnyView(Text(label))
+        destinationView = AnyView(destination)
+    }
+
+    var body: some View {
+        label
+            .onTapGesture {
+                GlobalNavigation.main.updateDetailView(self.destinationView)
+            }
+    }
+}
+
+#if os(macOS)
+enum NavigationBarItem {
+    enum TitleDisplayMode {
+        case inline
+        case large
+        case automatic
+    }
+}
+
+extension View {
+    func navigationBarTitle(_ title: String, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
+        return navigationTitle(Text(title))
+    }
+}
+#endif

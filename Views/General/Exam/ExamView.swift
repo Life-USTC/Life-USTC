@@ -84,14 +84,23 @@ struct ExamView: View {
                         SingleExamView(exam: exam)
                     }
                 }
+                .scrollContentBackground(.hidden)
             } loadData: {
                 try await UstcUgAASClient.main.getExamInfo()
             } refreshData: {
                 try await UstcUgAASClient.main.forceUpdateExamInfo()
                 return try await UstcUgAASClient.main.getExamInfo()
             }
-            .navigationTitle("Exam")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Exam", displayMode: .inline)
         }
+    }
+}
+
+struct ExamView_Previews: PreviewProvider {
+    static var previews: some View {
+        ExamView()
+#if os(macOS)
+            .frame(width: 400, height: 800)
+#endif
     }
 }

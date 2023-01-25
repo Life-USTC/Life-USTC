@@ -207,11 +207,17 @@ struct ExamWidget: Widget {
         IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
+        #if os(iOS)
         .supportedFamilies([.systemSmall,
                             .systemMedium,
                             .systemLarge,
                             .accessoryRectangular,
                             .accessoryInline])
+        #else
+        .supportedFamilies([.systemSmall,
+                            .systemMedium,
+                            .systemLarge])
+        #endif
         .configurationDisplayName("Exams")
         .description("Show upcoming exam.")
     }
@@ -225,9 +231,11 @@ struct ExamWidget_Previews: PreviewProvider {
             .previewContext(WidgetPreviewContext(family: .systemMedium))
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .systemLarge))
+        #if os(iOS)
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .accessoryInline))
+        #endif
     }
 }

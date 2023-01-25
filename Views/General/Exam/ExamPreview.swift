@@ -21,17 +21,16 @@ struct ExamPreview: View {
     }
 
     func makeView(with exams: [Exam]) -> some View {
-        List {
+        VStack {
             ForEach(exams) { exam in
                 HStack {
                     TitleAndSubTitle(title: exam.className, subTitle: exam.classRoomName, style: .substring)
                     Spacer()
                     Text(exam.time)
                 }
+                Divider()
             }
         }
-        .listStyle(.plain)
-        .frame(height: cardHeight / 3 * Double(exams.count))
     }
 
     var happyView: some View {
