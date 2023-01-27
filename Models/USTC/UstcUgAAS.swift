@@ -101,7 +101,12 @@ class UstcUgAASClient {
         data = try scoreJsonCache.rawData()
         userDefaults.set(data, forKey: "UstcUgAASScoreCache")
         
-        WidgetCenter.shared.reloadTimelines(ofKind: "dev.tiankaima.Life-USTC.ExamWidget")
+        // MARK: These code don't work for some reason, perhaps need to run in main thread?
+        // Also worth noticing is that, this function shouldn't be called often.
+        DispatchQueue.main.async {
+            WidgetCenter.shared.reloadTimelines(ofKind: "dev.tiankaima.Life-USTC.ExamWidget")
+            WidgetCenter.shared.reloadAllTimelines()
+        }
     }
 
     func login() async throws {

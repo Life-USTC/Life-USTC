@@ -256,11 +256,12 @@ class GlobalNavigation: ObservableObject {
                 GlobalNavigation.main.updateDetailView(AnyView(destination))
             }
     }
-#endif
+#else
     Text(label)
         .onTapGesture {
             GlobalNavigation.main.updateDetailView(AnyView(destination))
         }
+#endif
 }
 
 @ViewBuilder func NavigationLinkAddon(_ destination: @escaping () -> some View, label: @escaping () -> some View) -> some View {
@@ -277,11 +278,12 @@ class GlobalNavigation: ObservableObject {
                 GlobalNavigation.main.updateDetailView(AnyView(destination()))
             }
     }
-#endif
+#else
     label()
         .onTapGesture {
             GlobalNavigation.main.updateDetailView(AnyView(destination()))
         }
+#endif
 }
 
 #if os(macOS)

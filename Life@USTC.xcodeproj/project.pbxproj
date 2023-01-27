@@ -200,7 +200,7 @@
 		56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCatalog.swift; sourceTree = "<group>"; };
 		56E8AD712973EC0F009006D0 /* UstcRooms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = UstcRooms.json; sourceTree = "<group>"; };
 		56E8AD742973F25E009006D0 /* ClassroomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassroomView.swift; sourceTree = "<group>"; };
-		56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC (iOS).entitlements"; sourceTree = "<group>"; };
+		56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC.entitlements"; sourceTree = "<group>"; };
 		56F3EAD5296EB3B70095AEF4 /* Exam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exam.swift; sourceTree = "<group>"; };
 		56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreview.swift; sourceTree = "<group>"; };
 		56F3EADB296EB9EA0095AEF4 /* ExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamView.swift; sourceTree = "<group>"; };
@@ -328,7 +328,7 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
-				56F3EAD1296D0B8B0095AEF4 /* Life@USTC (iOS).entitlements */,
+				56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */,
 				56E8AD6E2972F56C009006D0 /* CHANGELOG.md */,
 				56BE91F82965D05A00822C98 /* README.md */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
@@ -956,7 +956,7 @@
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = "AppIcon macOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = "Life@USTC (iOS).entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
@@ -996,7 +996,7 @@
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = "AppIcon macOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = "Life@USTC (iOS).entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
