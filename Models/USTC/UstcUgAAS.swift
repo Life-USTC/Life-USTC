@@ -100,8 +100,9 @@ class UstcUgAASClient {
         userDefaults.set(data, forKey: "UstcUgAASExamCache")
         data = try scoreJsonCache.rawData()
         userDefaults.set(data, forKey: "UstcUgAASScoreCache")
-        
+
         // MARK: These code don't work for some reason, perhaps need to run in main thread?
+
         // Also worth noticing is that, this function shouldn't be called often.
         DispatchQueue.main.async {
             WidgetCenter.shared.reloadTimelines(ofKind: "dev.tiankaima.Life-USTC.ExamWidget")
@@ -170,7 +171,26 @@ class UstcUgAASClient {
         if !(lastUpdatedExams != nil && lastUpdatedExams!.addingTimeInterval(7200) > Date()) {
             try await forceUpdateExamInfo()
         }
-        return exams
+
+        let hiddenExamName = ([String].init(rawValue: userDefaults.string(forKey: "hiddenExamName") ?? "") ?? []).filter { !$0.isEmpty }
+        let result = exams.filter { exam in
+            for name in hiddenExamName {
+                if exam.className.contains(name) {
+                    return false
+                }
+            }
+            return true
+        }
+        let hiddenResult = exams.filter { exam in
+            for name in hiddenExamName {
+                if exam.className.contains(name) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        return result + hiddenResult
     }
 
     func forceUpdateExamInfo() async throws {

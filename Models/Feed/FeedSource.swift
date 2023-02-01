@@ -15,6 +15,16 @@ class FeedSource {
                                     FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill"),
                                     FeedSource(url: appFeedURL, name: "应用通知", image: "apps.iphone")]
 
+    static var allToShow: [FeedSource] {
+        let namesToRemove: [String] = .init(rawValue: UserDefaults().string(forKey: "feedSourceNameListToRemove") ?? "") ?? []
+
+        var result = all
+        for name in namesToRemove {
+            result.removeAll(where: { $0.name == name })
+        }
+        return result
+    }
+
     var url: URL
     var name: String
     var id: UUID
@@ -63,7 +73,7 @@ class FeedSource {
     static func recentFeeds(number: Int?) async throws -> [Feed] {
         var result: [Feed] = []
         var important: [Feed] = []
-        for source in FeedSource.all {
+        for source in FeedSource.allToShow {
             let feeds = try await source.fetchRecentPost()
             for feed in feeds {
                 if feed.keywords.isDisjoint(with: importantLabels) {

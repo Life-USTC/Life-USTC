@@ -12,65 +12,25 @@ private struct SingleExamView: View {
     @State var fold = true
 
     var body: some View {
-        Section {
-            Group {
-                HStack {
-                    Text("Class Name")
-                    Spacer()
-                    Text(exam.className)
-                }
-                HStack {
-                    Text("Time")
-                    Spacer()
-                    Text(exam.time)
-                }
-                HStack {
-                    Text("Classroom")
-                    Spacer()
-                    Text(exam.classRoomName)
-                }
-            }
-            .fontWeight(.bold)
-            if fold == false {
-                Group {
-                    HStack {
-                        Text("Class ID")
-                        Spacer()
-                        Text(exam.classIDString)
-                    }
-                    HStack {
-                        Text("Type")
-                        Spacer()
-                        Text(exam.typeName)
-                    }
+        VStack(alignment: .leading, spacing: 8) {
+            Text(exam.className)
+                .font(.title3)
+            Text("\(exam.classIDString) \(exam.typeName)")
 
-                    HStack {
-                        Text("Building")
-                        Spacer()
-                        Text(exam.classRoomBuildingName)
-                    }
-                    HStack {
-                        Text("Campus")
-                        Spacer()
-                        Text(exam.classRoomDistrict)
-                    }
-                    if !exam.description.isEmpty {
-                        HStack {
-                            Text("Description")
-                            Spacer()
-                            Text(exam.description)
-                        }
-                    }
-                }
-                .fontWeight(.light)
+            HStack {
+                Image(systemName: "calendar.badge.clock")
+                Text(exam.time)
+
+                Spacer()
+                Text(String(format: "%@ days left".localized, String(exam.daysLeft())))
+                    .foregroundColor(exam.daysLeft() <= 7 ? .red : .accentColor)
             }
-            Button {
-                withAnimation {
-                    fold.toggle()
-                }
-            } label: {
-                Text(fold ? "More" : "Less")
+            .foregroundColor(.accentColor)
+            HStack {
+                Image(systemName: "location.fill.viewfinder")
+                Text("\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)")
             }
+            .foregroundColor(.accentColor)
         }
     }
 }
@@ -98,9 +58,8 @@ struct ExamView: View {
 
 struct ExamView_Previews: PreviewProvider {
     static var previews: some View {
-        ExamView()
-#if os(macOS)
-            .frame(width: 400, height: 800)
-#endif
+        List {
+            SingleExamView(exam: .example)
+        }
     }
 }

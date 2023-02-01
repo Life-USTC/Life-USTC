@@ -27,7 +27,7 @@ struct Provider: IntentTimelineProvider {
             let exams = try await UstcUgAASClient.main.getExamInfo()
             let entry = SimpleEntry(exams: exams)
 
-            let date = Calendar.current.date(byAdding: .minute, value: 150, to: Date())!
+            let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(date))
             completion(timeline)
         }
@@ -207,19 +207,19 @@ struct ExamWidget: Widget {
         IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
-        #if os(iOS)
+#if os(iOS)
         .supportedFamilies([.systemSmall,
                             .systemMedium,
                             .systemLarge,
                             .accessoryRectangular,
                             .accessoryInline])
-        #else
-        .supportedFamilies([.systemSmall,
-                            .systemMedium,
-                            .systemLarge])
-        #endif
-        .configurationDisplayName("Exams")
-        .description("Show upcoming exam.")
+#else
+            .supportedFamilies([.systemSmall,
+                                .systemMedium,
+                                .systemLarge])
+#endif
+            .configurationDisplayName("Exams")
+            .description("Show upcoming exam.")
     }
 }
 
@@ -231,11 +231,11 @@ struct ExamWidget_Previews: PreviewProvider {
             .previewContext(WidgetPreviewContext(family: .systemMedium))
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .systemLarge))
-        #if os(iOS)
+#if os(iOS)
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .accessoryInline))
-        #endif
+#endif
     }
 }

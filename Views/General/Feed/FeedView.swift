@@ -9,6 +9,7 @@ import Reeeed
 import SwiftUI
 
 struct FeedView: View {
+    @AppStorage("useReeed") var useReeed = true
     let feed: Feed
     var date: String {
         let dateFormatter = DateFormatter()
@@ -20,7 +21,13 @@ struct FeedView: View {
     @State var showPostDetail = false
     var body: some View {
         NavigationLinkAddon {
-            ReeeederView(url: feed.url)
+            Group {
+                if useReeed {
+                    ReeeederView(url: feed.url)
+                } else {
+                    Browser(url: feed.url)
+                }
+            }
         } label: {
             Card(cardTitle: feed.title,
                  cardDescription: feed.description,

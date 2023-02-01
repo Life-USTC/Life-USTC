@@ -15,7 +15,7 @@ struct FeaturesView: View {
 
         var tmp: [FeatureWithView] = []
         tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AllSourceView()))
-        for feedSource in FeedSource.all {
+        for feedSource in FeedSource.allToShow {
             tmp.append(.init(feedSource))
         }
         results["Feed"] = tmp

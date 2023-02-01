@@ -104,3 +104,18 @@
 "Lesson name: " = "课程名称: ";
 "Classroom: " = "教室: ";
 "Duration: " = "时间: ";
+
+"Front page post numbers: " = "首页展示通知数量: ";
+"Use reader" = "使用阅读器";
+"General" = "概览";
+"Reader would generaly improve reading experience for web page that aren't optimized for mobile." = "阅读器会改善部分未针对手机优化的网页";
+"Feed source to show" = "显示的通知来源";
+"A reload may be required for this to take effect." = "可能需要重启应用来生效";
+
+"%@ days left" = "%@天后";
+
+"Exam Settings" = "考试设置";
+"Exam name to hide" = "隐藏显示的考试名";
+"Name" = "名称";
+"When exam contains these words, they will be shown at the bottom even they comes first in time" = "当考试名中含有这些词时, (虽然他们可能早于其他考试) 这个考试会在显示在底部";
+"Add new" = "新增";

@@ -242,7 +242,7 @@ class GlobalNavigation: ObservableObject {
     }
 }
 
-@ViewBuilder func NavigationLinkAddon(_ label: String, destination: some View) -> some View {
+@ViewBuilder func NavigationLinkAddon(_ label: LocalizedStringKey, destination: some View) -> some View {
 #if os(iOS)
     if UIDevice.current.userInterfaceIdiom == .phone {
         NavigationLink {

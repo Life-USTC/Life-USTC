@@ -114,10 +114,7 @@ struct CASLoginView: View {
                 Text("You're good to go")
             })
             .padding()
-            .navigationTitle(Text(title))
-#if os(iOS)
-                .navigationBarTitleDisplayMode(displayMode)
-#endif
+            .navigationBarTitle(title, displayMode: .inline)
         }
     }
 
