@@ -17,7 +17,10 @@ struct SettingsView: View {
                     NavigationLinkAddon("CAS Settings", destination: CASLoginView.newPage)
                     NavigationLinkAddon("Change User Type", destination: UserTypeView())
                     NavigationLinkAddon("Exam Settings", destination: ExamSettingView())
+                    NavigationLinkAddon("Health Check", destination: HealthCheckPage())
+#if os(iOS)
                     NavigationLinkAddon("Notification Settings", destination: NotificationSettingView())
+#endif
                 }
 
                 Section {

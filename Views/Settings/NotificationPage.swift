@@ -7,22 +7,20 @@
 
 import SwiftUI
 
+#if os(iOS)
 struct NotificationSettingView: View {
     var body: some View {
         NavigationStack {
             List {
                 Button {
                     tryRequestAuthorization()
-#if os(iOS)
                     UIApplication.shared.registerForRemoteNotifications()
-#endif
                 } label: {
                     Label("Upload Token", systemImage: "square.and.arrow.up")
                 }
 
                 Button {
                     tryRequestAuthorization()
-#if os(iOS)
                     let uuidString = UUID().uuidString
                     let content = UNMutableNotificationContent()
                     content.title = "TestTitle"
@@ -31,7 +29,6 @@ struct NotificationSettingView: View {
                     // set trigger to nil to instantly trigger a update
                     let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
                     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-#endif
                 } label: {
                     Label("Test Message", systemImage: "plus.square.dashed")
                 }
@@ -41,3 +38,4 @@ struct NotificationSettingView: View {
         }
     }
 }
+#endif

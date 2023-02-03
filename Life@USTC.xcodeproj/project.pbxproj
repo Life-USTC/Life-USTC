@@ -37,6 +37,13 @@
 		5611282A29814B7B00BB66EE /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 5611282929814B7B00BB66EE /* Reeeed */; };
 		5611282C29814B7B00BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611282B29814B7B00BB66EE /* Introspect */; };
 		5611282D29814CDA00BB66EE /* ExamWidgetExtension macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 561127FD298148E900BB66EE /* ExamWidgetExtension macOS.appex */; platformFilters = (macos, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
+		56128F51298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
+		56128F52298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
+		56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F53298D3D2D0080A9F7 /* HealthCheck.swift */; };
+		56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
+		56128F5A298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
+		56128F5B298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
 		56143F6B295EDEA5008CE454 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6C295EE47A008CE454 /* AsyncCalls.swift */; };
 		5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
@@ -159,6 +166,9 @@
 
 /* Begin PBXFileReference section */
 		561127FD298148E900BB66EE /* ExamWidgetExtension macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "ExamWidgetExtension macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcWeixin.swift; sourceTree = "<group>"; };
+		56128F53298D3D2D0080A9F7 /* HealthCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheck.swift; sourceTree = "<group>"; };
+		56128F58298D45030080A9F7 /* HealthCheckPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckPreview.swift; sourceTree = "<group>"; };
 		56143F6A295EDEA5008CE454 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		56143F6C295EE47A008CE454 /* AsyncCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCalls.swift; sourceTree = "<group>"; };
 		5621691B2955BEC500DF46BE /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -269,6 +279,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		56128F57298D44F30080A9F7 /* HealthCheck */ = {
+			isa = PBXGroup;
+			children = (
+				56128F58298D45030080A9F7 /* HealthCheckPreview.swift */,
+			);
+			path = HealthCheck;
+			sourceTree = "<group>";
+		};
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +315,7 @@
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				56128F57298D44F30080A9F7 /* HealthCheck */,
 				56E8AD732973F229009006D0 /* Classroom */,
 				56E8AD6B296FEEDD009006D0 /* Score */,
 				56F3EAD7296EB7E60095AEF4 /* Exam */,
@@ -311,6 +330,7 @@
 		565587FF294D749C0010E060 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				56128F53298D3D2D0080A9F7 /* HealthCheck.swift */,
 				562169232955BEF900DF46BE /* UserTypeView.swift */,
 				56558800294D74BB0010E060 /* CASLoginView.swift */,
 			);
@@ -404,6 +424,7 @@
 				56F3EAD5296EB3B70095AEF4 /* Exam.swift */,
 				56E8AD69296FE880009006D0 /* CourseScore.swift */,
 				56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */,
+				56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */,
 			);
 			path = USTC;
 			sourceTree = "<group>";
@@ -665,8 +686,10 @@
 				5611281D29814B1300BB66EE /* DateExtension.swift in Sources */,
 				5611281829814AED00BB66EE /* UstcUgAAS.swift in Sources */,
 				5611281F29814B1300BB66EE /* ExceptionCalls.swift in Sources */,
+				56128F5B298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				5611282029814B2000BB66EE /* SwiftUIExtension.swift in Sources */,
 				56112810298149F200BB66EE /* ExamWidget.swift in Sources */,
+				56128F52298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				5611281729814AED00BB66EE /* UstcCAS.swift in Sources */,
 				5611281C29814B1300BB66EE /* AsyncCalls.swift in Sources */,
 				5611280F298149EF00BB66EE /* ExamWidget.intentdefinition in Sources */,
@@ -701,6 +724,7 @@
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
+				56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
@@ -714,10 +738,12 @@
 				565587B3294ABE7C0010E060 /* Card.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
 				56E94E27298A77D00085241B /* NotificationPage.swift in Sources */,
+				56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */,
 				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
 				56E94E23298A77790085241B /* AboutPage.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
+				56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */,
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				56E94E29298A77F80085241B /* FeedPage.swift in Sources */,
 				56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */,
@@ -739,8 +765,10 @@
 				56734CEF297D871500DBB45F /* Constants.swift in Sources */,
 				56734CE6297D86F200DBB45F /* Course.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
+				56128F5A298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				569CFE4C297EB19C0072C094 /* SwiftUIExtension.swift in Sources */,
 				56734CE9297D86F200DBB45F /* UstcCatalog.swift in Sources */,
+				56128F51298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56FA8E7C297D7263000AC3A9 /* ExamWidgetBundle.swift in Sources */,
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
@@ -797,7 +825,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = ExamWidget/ExamWidget.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
@@ -815,6 +843,7 @@
 				MARKETING_VERSION = 0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.ExamWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -829,7 +858,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = ExamWidget/ExamWidget.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
@@ -847,6 +876,7 @@
 				MARKETING_VERSION = 0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.ExamWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

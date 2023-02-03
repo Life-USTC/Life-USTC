@@ -42,6 +42,10 @@ extension String {
     func limitShow(_: Int) -> String {
         return "\(String(prefix(6)))\(count > 6 ? "..." : "")"
     }
+
+    var urlEncoded: String? {
+        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    }
 }
 
 extension Array: RawRepresentable where Element: Codable {
