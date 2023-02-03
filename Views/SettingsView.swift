@@ -15,7 +15,9 @@ struct SettingsView: View {
                 Section {
                     NavigationLinkAddon("Feed Source Settings", destination: FeedSettingView())
                     NavigationLinkAddon("CAS Settings", destination: CASLoginView.newPage)
+#if DEBUG
                     NavigationLinkAddon("Change User Type", destination: UserTypeView())
+#endif
                     NavigationLinkAddon("Exam Settings", destination: ExamSettingView())
                     NavigationLinkAddon("Health Check", destination: HealthCheckPage())
 #if os(iOS)

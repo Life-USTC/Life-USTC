@@ -296,6 +296,10 @@ enum NavigationBarItem {
 }
 
 extension View {
+    func navigationBarTitle(_ title: LocalizedStringKey, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
+        return navigationTitle(Text(title))
+    }
+
     func navigationBarTitle(_ title: String, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
         return navigationTitle(Text(title))
     }

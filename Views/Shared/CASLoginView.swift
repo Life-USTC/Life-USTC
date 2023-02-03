@@ -9,11 +9,7 @@ import SwiftUI
 
 struct CASLoginView: View {
     static func sheet(isPresented: Binding<Bool>) -> CASLoginView {
-#if os(iOS)
         return CASLoginView(casLoginSheet: isPresented, isInSheet: true, title: "One more step...", displayMode: .large)
-#else
-        return CASLoginView(casLoginSheet: isPresented, isInSheet: true, title: "One more step...")
-#endif
     }
 
     static var newPage = CASLoginView(casLoginSheet: .constant(false))
@@ -25,10 +21,8 @@ struct CASLoginView: View {
     @Binding var casLoginSheet: Bool // used to signal the sheet to close
     var isInSheet = false
 
-    var title: String = "CAS Settings"
-#if os(iOS)
+    var title: LocalizedStringKey = "CAS Settings"
     var displayMode: NavigationBarItem.TitleDisplayMode = .inline
-#endif
 
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
