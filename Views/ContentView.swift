@@ -23,11 +23,7 @@ struct Life_USTCApp: App {
 struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
-#if DEBUG
-    @State var firstLogin: Bool = true
-#else
     @AppStorage("firstLogin") var firstLogin: Bool = true
-#endif
     @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
     @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
     @StateObject var globalNavigation: GlobalNavigation = .main

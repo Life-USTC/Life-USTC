@@ -9,30 +9,23 @@ import SwiftUI
 
 #if os(iOS)
 struct NotificationSettingView: View {
+    @AppStorage("useNotification", store: userDefaults) var useNotification = false
     var body: some View {
         NavigationStack {
             List {
-                Button {
-                    tryRequestAuthorization()
-                    UIApplication.shared.registerForRemoteNotifications()
-                } label: {
-                    Label("Upload Token", systemImage: "square.and.arrow.up")
-                }
-
-                Button {
-                    tryRequestAuthorization()
-                    let uuidString = UUID().uuidString
-                    let content = UNMutableNotificationContent()
-                    content.title = "TestTitle"
-                    content.body = "What the fuck is this"
-
-                    // set trigger to nil to instantly trigger a update
-                    let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
-                    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-                } label: {
-                    Label("Test Message", systemImage: "plus.square.dashed")
-                }
+                Toggle("Allow Notification", isOn: $useNotification)
+                    .onChange(of: useNotification) { newValue in
+                        if newValue {
+                            tryRequestAuthorization()
+                            UIApplication.shared.registerForRemoteNotifications()
+                        } else {
+                            Task {
+                                try await unRegisterDeviceToken()
+                            }
+                        }
+                    }
             }
+            .scrollDisabled(true)
             .scrollContentBackground(.hidden)
             .navigationBarTitle("Notification Settings", displayMode: .inline)
         }
