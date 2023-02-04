@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftSoup
 
 class UstcWeixinClient: ObservableObject {
     static var main = UstcWeixinClient()
@@ -46,6 +47,7 @@ class UstcWeixinClient: ObservableObject {
         guard let dataString = String(data: data, encoding: .utf8) else {
             return false
         }
+        let document: Document = try SwiftSoup.parse(dataString)
 
         guard let match = dataString.firstMatch(of: try Regex("[a-zA-Z1-9]{20,}")) else {
             return false
@@ -58,10 +60,14 @@ class UstcWeixinClient: ObservableObject {
             guard let tmpString = userDefaults.string(forKey: _key) else {
                 return false
             }
-            if tmpString == "" {
-                return false
+            if !tmpString.isEmpty {
+                dataList.append(tmpString)
+                continue
             }
-            dataList.append(tmpString)
+            let tmpElment = try document.select("input.form-control[name=\(_key)]")
+            let parsedTmpString = try tmpElment.attr("value")
+            dataList.append(parsedTmpString)
+            userDefaults.set(parsedTmpString, forKey: _key)
         }
 
         let queryString = "_token=\(String(match.0).urlEncoded!)&juzhudi=\(dataList[0].urlEncoded!)&q_0=\("良好".urlEncoded!)&body_condition_detail=&q_2=&q_3=&jinji_lxr=\(dataList[1].urlEncoded!)&jinji_guanxi=\(dataList[2].urlEncoded!)&jiji_mobile=\(dataList[3].urlEncoded!)&other_detail="
