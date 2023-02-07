@@ -14,7 +14,8 @@ func tryRequestAuthorization() {
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in
         if error != nil || granted == false {
-            print(error!)
+            print(error as Any)
+            print("Notification granted: \(granted)")
             return
         }
     }

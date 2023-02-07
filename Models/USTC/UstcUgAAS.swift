@@ -210,7 +210,13 @@ class UstcUgAASClient {
             let textList: [String] = examParsed.children().array().map { $0.ownText() }
             exams.append(Exam(classIDString: textList[0], typeName: textList[1], className: textList[2], time: textList[3], classRoomName: textList[4], classRoomBuildingName: textList[5], classRoomDistrict: textList[6], description: textList[7]))
         }
-        lastUpdatedExams = Date()
+        if !exams.isEmpty {
+            // MARK: The logic here really shouldn't be checking whether the exam list is empty, but rather checking network result,
+
+            // MARK: but I'm not sure for a not logined session what the response will be, so temp solution it is.
+
+            lastUpdatedExams = Date()
+        }
         try saveCache()
     }
 

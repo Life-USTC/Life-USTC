@@ -49,7 +49,7 @@ class UstcWeixinClient: ObservableObject {
         }
         let document: Document = try SwiftSoup.parse(dataString)
 
-        guard let match = dataString.firstMatch(of: try Regex("[a-zA-Z1-9]{20,}")) else {
+        guard let match = dataString.firstMatch(of: try Regex("[a-zA-Z0-9]{18,}")) else {
             return false
         }
 
@@ -57,12 +57,11 @@ class UstcWeixinClient: ObservableObject {
         let keyList = ["juzhudi", "jinji_lxr", "jinji_guanxi", "jiji_mobile"]
 
         for _key in keyList {
-            guard let tmpString = userDefaults.string(forKey: _key) else {
-                return false
-            }
-            if !tmpString.isEmpty {
-                dataList.append(tmpString)
-                continue
+            if let tmpString = userDefaults.string(forKey: _key) {
+                if !tmpString.isEmpty {
+                    dataList.append(tmpString)
+                    continue
+                }
             }
             let tmpElment = try document.select("input.form-control[name=\(_key)]")
             let parsedTmpString = try tmpElment.attr("value")

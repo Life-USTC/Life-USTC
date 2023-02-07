@@ -25,6 +25,8 @@ struct FeedSourceView: View {
 }
 
 struct AllSourceView: View {
+    @AppStorage("useNotification", store: userDefaults) var useNotification = true
+
     var body: some View {
         NavigationStack {
             AsyncView { feeds in
@@ -35,6 +37,18 @@ struct AllSourceView: View {
                 try await FeedSource.recentFeeds(number: nil)
             }
             .navigationBarTitle("Feed", displayMode: .inline)
+#if os(iOS)
+                .onAppear {
+                    if useNotification {
+                        tryRequestAuthorization()
+                        UIApplication.shared.registerForRemoteNotifications()
+                    } else {
+                        Task {
+                            try await unRegisterDeviceToken()
+                        }
+                    }
+                }
+#endif
         }
     }
 }

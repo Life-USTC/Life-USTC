@@ -9,7 +9,7 @@ import SwiftUI
 
 #if os(iOS)
 struct NotificationSettingView: View {
-    @AppStorage("useNotification", store: userDefaults) var useNotification = false
+    @AppStorage("useNotification", store: userDefaults) var useNotification = true
     var body: some View {
         NavigationStack {
             List {
