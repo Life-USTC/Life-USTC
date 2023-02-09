@@ -94,7 +94,7 @@ struct Card: View {
                         .padding(4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(.white)
+                                .fill(.background)
                         )
                         .font(.caption)
                 }
