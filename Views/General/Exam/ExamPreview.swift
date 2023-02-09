@@ -24,9 +24,20 @@ struct ExamPreview: View {
         VStack {
             ForEach(exams) { exam in
                 HStack {
-                    TitleAndSubTitle(title: exam.className, subTitle: exam.classRoomName, style: .substring)
+                    VStack(alignment: .leading) {
+                        Text(exam.className)
+                        Text(exam.classRoomName)
+                            .font(.subheadline)
+                            .foregroundColor(Color.gray)
+                    }
                     Spacer()
-                    Text(exam.time)
+                    VStack(alignment: .trailing) {
+                        Text(exam.time.split(separator: " ")[0])
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                        Text(exam.time.split(separator: " ")[1])
+                            .font(.subheadline)
+                    }
                 }
                 Divider()
             }

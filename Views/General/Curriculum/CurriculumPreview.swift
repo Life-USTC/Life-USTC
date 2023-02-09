@@ -25,9 +25,15 @@ struct CurriculumPreview: View {
         VStack {
             ForEach(courses) { course in
                 HStack {
-                    TitleAndSubTitle(title: course.name, subTitle: course.classPositionString, style: .substring)
+                    VStack(alignment: .leading) {
+                        Text(course.name)
+                        Text(course.classPositionString)
+                            .font(.subheadline)
+                            .foregroundColor(Color.gray)
+                    }
                     Spacer()
                     Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
+                        .fontWeight(.bold)
                 }
                 Divider()
             }
