@@ -170,8 +170,8 @@ struct CurriculumView: View {
                         }
                     }
                 }
+                .scrollDisabled(!showSatAndSun)
             }
-            .scrollDisabled(!showSatAndSun)
         }
     }
 
