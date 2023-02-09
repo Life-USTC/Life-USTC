@@ -140,14 +140,14 @@ struct CurriculumView: View {
                 }
 
                 Rectangle()
+                    .fill(Color.accentColor)
                     .frame(height: 1)
-                    .foregroundColor(.accentColor)
                     .offset(y: 5 * heightPerClass + 1.5)
                     .opacity(0.5)
 
                 Rectangle()
+                    .fill(Color.accentColor)
                     .frame(height: 1)
-                    .foregroundColor(.accentColor)
                     .offset(y: 10 * heightPerClass + 1.5)
                     .opacity(0.5)
             }

@@ -147,7 +147,7 @@ struct ExamWidgetEntryView: View {
 
             Divider()
 
-            if entry.exams.count > numberToShow && min(numberToShow, entry.exams.count) < 7 {
+            if entry.exams.count > numberToShow, min(numberToShow, entry.exams.count) < 7 {
                 Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
                     .foregroundColor(.accentColor)
             }

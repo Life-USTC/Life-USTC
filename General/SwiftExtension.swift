@@ -36,15 +36,15 @@ extension String {
     }
 
     var localized: String {
-        return NSLocalizedString(self, comment: "")
+        NSLocalizedString(self, comment: "")
     }
 
     func limitShow(_: Int) -> String {
-        return "\(String(prefix(6)))\(count > 6 ? "..." : "")"
+        "\(String(prefix(6)))\(count > 6 ? "..." : "")"
     }
 
     var urlEncoded: String? {
-        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 }
 

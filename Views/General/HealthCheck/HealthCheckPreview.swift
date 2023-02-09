@@ -27,7 +27,7 @@ struct HealthCheckPreview: View {
                     Text("未记录到上次打卡, 点此打卡")
                 }
 
-                if status == .success && checked {
+                if status == .success, checked {
                     Text("已完成打卡")
                         .foregroundColor(.accentColor)
                 } else {

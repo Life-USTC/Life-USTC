@@ -33,7 +33,7 @@ struct Card: View {
         GeometryReader { geo in
             ZStack {
                 Rectangle()
-                    .foregroundColor(.init(with: cardTitle, mode: colorScheme))
+                    .fill(Color(with: cardTitle, mode: colorScheme))
                 if let imageURL {
                     AsyncImage(url: imageURL) { image in
                         image

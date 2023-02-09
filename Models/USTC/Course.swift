@@ -33,7 +33,7 @@ func combine(_ lhs: String, _ rhs: String) -> String {
 
 /// Parse given weekStr, for example: "1-18", "1-7, 9-16" to EKRecurrenceRule List, just no any ideas on how to achieve that goal.
 func parseWeekStr(_: String) -> [EKRecurrenceRule] {
-    return []
+    []
 }
 
 extension Course {

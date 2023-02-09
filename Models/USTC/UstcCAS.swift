@@ -21,7 +21,7 @@ extension URL {
     }
 
     func ustcCASLoginMarkup() -> URL {
-        return CASLoginMarkup(casServer: ustcCasUrl)
+        CASLoginMarkup(casServer: ustcCasUrl)
     }
 }
 
@@ -35,7 +35,7 @@ class UstcCasClient {
     private var lastLogined: Date?
 
     private var precheckFails: Bool {
-        return (username.isEmpty || password.isEmpty)
+        username.isEmpty || password.isEmpty
     }
 
     func update(username: String, password: String) {

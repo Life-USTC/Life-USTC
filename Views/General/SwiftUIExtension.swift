@@ -115,8 +115,8 @@ struct BigButtonStyle: ButtonStyle {
             .foregroundColor(.white)
             .background {
                 RoundedRectangle(cornerRadius: 10 * size)
+                    .fill(Color.accentColor)
                     .frame(width: 250 * size, height: 50 * size)
-                    .foregroundColor(.accentColor)
             }
             .padding()
 #endif
@@ -307,11 +307,11 @@ enum NavigationBarItem {
 
 extension View {
     func navigationBarTitle(_ title: LocalizedStringKey, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
-        return navigationTitle(Text(title))
+        navigationTitle(Text(title))
     }
 
     func navigationBarTitle(_ title: String, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
-        return navigationTitle(Text(title))
+        navigationTitle(Text(title))
     }
 }
 #endif

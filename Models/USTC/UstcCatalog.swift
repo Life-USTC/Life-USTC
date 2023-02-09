@@ -24,8 +24,8 @@ struct Lesson: Identifiable {
         for lesson in result {
             let tmp = result.filter { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName }
             if tmp.count > 1 {
-                let startTime = tmp.map { $0.startTime }.sorted(by: { timeToInt($0) < timeToInt($1) }).first ?? "0"
-                let endTime = tmp.map { $0.endTime }.sorted(by: { timeToInt($0) < timeToInt($1) }).last ?? "0"
+                let startTime = tmp.map(\.startTime).sorted(by: { timeToInt($0) < timeToInt($1) }).first ?? "0"
+                let endTime = tmp.map(\.endTime).sorted(by: { timeToInt($0) < timeToInt($1) }).last ?? "0"
 
                 result.removeAll(where: { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName })
                 result.append(Lesson(classroomName: lesson.classroomName, courseName: lesson.courseName, startTime: startTime, endTime: endTime))
@@ -76,7 +76,7 @@ class UstcCatalogClient {
     }
 
     static func buildingName(with id: String) -> String {
-        return buildingNames.first(where: { $0.key == id })?.value ?? "Error"
+        buildingNames.first(where: { $0.key == id })?.value ?? "Error"
     }
 
     var token = ""

@@ -47,6 +47,6 @@ class FeedCache {
     }
 
     static func feedSourceCache(using id: UUID) -> FeedSourceCache? {
-        return feedSourceCaches.first(where: { $0.id == id })
+        feedSourceCaches.first(where: { $0.id == id })
     }
 }

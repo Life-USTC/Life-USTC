@@ -23,8 +23,8 @@ private struct LessonView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 10)
+            .fill(lesson.color ?? .red)
             .opacity(0.5)
-            .foregroundColor(lesson.color ?? .red)
             .overlay {
                 Text(lesson.courseName)
                     .font(.system(size: 10))
@@ -68,7 +68,7 @@ private struct SingleClassroomView: View {
         return GeometryReader { geo in
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(.gray.opacity(0.5))
+                    .fill(.gray.opacity(0.5))
                     .opacity(isUp ? 0.7 : 0.3)
                 ForEach(filteredClass) { lesson in
                     LessonView(lesson: lesson)
@@ -76,7 +76,7 @@ private struct SingleClassroomView: View {
                         .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
                 }
                 Rectangle()
-                    .foregroundColor(.green)
+                    .fill(.green)
                     .opacity(0.5)
                     .frame(width: 5, height: geo.size.height)
                     .offset(x: Double(currentTimeInt - (end + start) / 2) / Double(end - start) * geo.size.width)
@@ -120,11 +120,11 @@ struct ClassroomView: View {
     @AppStorage("filteredBuildingList") var filteredBuildingList: [String] = []
 
     func filterLesson(building: String, room: String) -> [Lesson] {
-        return allLessons[building]?.filter { $0.classroomName == room } ?? []
+        allLessons[building]?.filter { $0.classroomName == room } ?? []
     }
 
     func statusFor(building: String, room: String) -> Bool {
-        return filterLesson(building: building, room: room).first(where: { timeToInt($0.startTime) <= currentTimeInt && currentTimeInt <= timeToInt($0.endTime) }) == nil
+        filterLesson(building: building, room: room).first(where: { timeToInt($0.startTime) <= currentTimeInt && currentTimeInt <= timeToInt($0.endTime) }) == nil
     }
 
     func makeView(with building: String) -> some View {

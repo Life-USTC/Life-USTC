@@ -24,7 +24,7 @@ struct ExamSettingView: View {
                     .onDelete(perform: delete)
 
                     Button {
-                        if hiddenExamName.filter({ $0.isEmpty }).isEmpty {
+                        if hiddenExamName.filter(\.isEmpty).isEmpty {
                             // refuse to add new empty string if there's already an empty location
                             hiddenExamName.append("")
                         }

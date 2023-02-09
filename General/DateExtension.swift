@@ -80,13 +80,13 @@ enum TimePeroid: Int, CaseIterable {
 }
 
 func + (lhs: Date, rhs: DateComponents) -> Date {
-    return Calendar.current.date(byAdding: rhs, to: lhs)!
+    Calendar.current.date(byAdding: rhs, to: lhs)!
 }
 
 extension Date {
     /// Base time at 1970
     static var zero: Date {
-        return Date(timeIntervalSince1970: 0)
+        Date(timeIntervalSince1970: 0)
     }
 
     /// Keep year month and day components only
@@ -97,7 +97,7 @@ extension Date {
 
     /// Shorthand for adding DateComponents
     func add(year: Int = 0, month: Int = 0, day: Int = 0) -> Date {
-        return self + DateComponents(year: year, month: month, day: day)
+        self + DateComponents(year: year, month: month, day: day)
     }
 }
 

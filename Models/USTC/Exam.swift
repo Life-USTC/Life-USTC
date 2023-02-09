@@ -36,6 +36,6 @@ struct Exam: Codable, Identifiable {
     }
 
     func daysLeft() -> Int {
-        return Calendar.current.dateComponents([.day], from: Date().stripTime(), to: parseTime().time).day ?? 0
+        Calendar.current.dateComponents([.day], from: Date().stripTime(), to: parseTime().time).day ?? 0
     }
 }

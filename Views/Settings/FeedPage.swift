@@ -26,7 +26,7 @@ struct FeedSettingView: View {
                 }
 
                 Section {
-                    ForEach(FeedSource.all.map { $0.name }, id: \.self) { name in
+                    ForEach(FeedSource.all.map(\.name), id: \.self) { name in
                         Button {
                             if removedNameList.contains(name) {
                                 removedNameList.removeAll(where: { $0 == name })

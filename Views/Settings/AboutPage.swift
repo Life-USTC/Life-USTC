@@ -9,11 +9,11 @@ import SwiftUI
 
 extension Bundle {
     var releaseNumber: String? {
-        return infoDictionary?["CFBundleShortVersionString"] as? String
+        infoDictionary?["CFBundleShortVersionString"] as? String
     }
 
     var buildNumber: String? {
-        return infoDictionary?["CFBundleVersion"] as? String
+        infoDictionary?["CFBundleVersion"] as? String
     }
 }
 

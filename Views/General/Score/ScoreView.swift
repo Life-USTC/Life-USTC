@@ -72,7 +72,7 @@ struct ScoreView: View {
     func sheet(_ score: Score) -> some View {
         let semesterList = {
             var result: [String] = []
-            for name in score.courseScores.map({ $0.semesterName }) {
+            for name in score.courseScores.map(\.semesterName) {
                 if !result.contains(name) {
                     result.append(name)
                 }

@@ -40,7 +40,7 @@ struct FeedHScrollView: View {
                 }
                 .scrollDisabled(true)
                 .task {
-                    let feedPostIDList = feeds.map { $0.id }
+                    let feedPostIDList = feeds.map(\.id)
                     if let id = feedPostIDList.first {
                         scrollTo(proxy: proxy, id: id, feedPostIDList: feedPostIDList)
                     }
