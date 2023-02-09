@@ -134,20 +134,21 @@ struct CurriculumView: View {
                 ForEach(courses) { course in
                     if course.dayOfWeek == (index + 1) {
                         CourseCardView(course: course)
-                            .offset(y: Double(course.startTime - 1) * heightPerClass)
+                            .offset(y: Double(course.startTime - 1) * heightPerClass + 2)
+                            .padding(2)
                     }
                 }
 
                 Rectangle()
                     .frame(height: 1)
                     .foregroundColor(.accentColor)
-                    .offset(y: 5 * heightPerClass)
+                    .offset(y: 5 * heightPerClass + 1.5)
                     .opacity(0.5)
 
                 Rectangle()
                     .frame(height: 1)
                     .foregroundColor(.accentColor)
-                    .offset(y: 10 * heightPerClass)
+                    .offset(y: 10 * heightPerClass + 1.5)
                     .opacity(0.5)
             }
         }

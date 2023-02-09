@@ -73,7 +73,7 @@ struct Card: View {
                 ForEach(leadingPropertyList, id: \.name) { property in
                     ZStack(alignment: .center) {
                         RoundedRectangle(cornerRadius: 8)
-                            .foregroundColor(property.color ?? .accentColor)
+                            .fill(property.color ?? .accentColor)
                         Text(property.name)
                             .font(.caption)
                             .foregroundColor(.white)
@@ -89,19 +89,21 @@ struct Card: View {
             VStack(alignment: .trailing) {
                 ForEach(trailingPropertyList, id: \.self) { info in
                     Text(info)
-                        .foregroundColor(.white)
+                        .foregroundColor(.accentColor)
+                        .fontWeight(.semibold)
                         .padding(4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
+                                .fill(.white)
                         )
-                        .foregroundColor(.black)
                         .font(.caption)
                 }
             }
             .padding([.top, .trailing], 10)
         }
-        .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(Color.primary.opacity(0.3), lineWidth: 2))
+        .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(Color.primary.opacity(0.3), lineWidth: 0))
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .padding([.leading, .trailing], 2)
 #if os(iOS)
             .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
 #endif
