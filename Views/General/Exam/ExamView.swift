@@ -52,13 +52,25 @@ struct ExamView: View {
     var body: some View {
         NavigationStack {
             AsyncView { exams in
-                List {
+                VStack {
                     ForEach(exams) { exam in
                         SingleExamView(exam: exam)
+                        Divider()
+                    }
+                    Spacer()
+
+                    AsyncButton {
+                        try Exam.saveToCalendar(exams)
+                    } label: { status in
+                        HStack {
+                            Text("Save exams to calendar")
+                            if status == .success {
+                                Image(systemName: "checkmark")
+                            }
+                        }
                     }
                 }
-                .listStyle(.plain)
-                .padding(5)
+                .padding()
             } loadData: {
                 try await UstcUgAASClient.main.getExamInfo()
             } refreshData: {

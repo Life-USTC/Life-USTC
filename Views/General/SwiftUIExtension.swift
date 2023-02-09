@@ -214,11 +214,52 @@ struct AsyncView<D>: View {
                 makeMainView(with: data!)
             case .failure:
                 FailureView()
+            case .waiting:
+                EmptyView()
             }
         }
         .onAppear {
             asyncBind($data, status: $status, loadData)
         }
+    }
+}
+
+struct AsyncButton: View {
+    var function: () async throws -> Void
+    var makeView: (AsyncViewStatus) -> AnyView
+    @State var status = AsyncViewStatus.waiting
+
+    init(function: @escaping () async throws -> Void, label: @escaping (AsyncViewStatus) -> any View) {
+        self.function = function
+        makeView = { AnyView(label($0)) }
+    }
+
+    var body: some View {
+        Button {
+            asyncBind(.constant(()), status: $status) {
+                try await function()
+            }
+        } label: {
+            switch status {
+            case .waiting:
+                makeView(.waiting)
+            case .success:
+                makeView(.success)
+            case .inProgress:
+                makeView(.inProgress)
+            case .failure:
+                FailureView()
+            }
+        }
+#if os(iOS)
+        .foregroundColor(.white)
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(status == .inProgress ? Color.gray : Color.accentColor)
+                .frame(width: 250, height: 50)
+        }
+        .padding()
+#endif
     }
 }
 

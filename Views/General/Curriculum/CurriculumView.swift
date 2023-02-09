@@ -16,7 +16,7 @@ struct CurriculumView: View {
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var showSettingSheet = false
-    @State var saveCalendarStatus: AsyncViewStatus = .inProgress
+    @State var saveCalendarStatus: AsyncViewStatus = .waiting
     var settingSheet: some View {
         NavigationStack {
             List {
@@ -79,6 +79,8 @@ struct CurriculumView: View {
                             }
                             .foregroundColor(.accentColor)
                         case .inProgress:
+                            EmptyView()
+                        case .waiting:
                             EmptyView()
                         case .failure:
                             HStack {

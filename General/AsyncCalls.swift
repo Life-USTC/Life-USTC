@@ -12,6 +12,7 @@ enum AsyncViewStatus {
     case inProgress
     case success
     case failure
+    case waiting
 }
 
 /// Create an async task with given function, and pass the result to data, notify the View with status
@@ -19,6 +20,7 @@ func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>, _ functi
     status.wrappedValue = .inProgress
     Task {
         do {
+            status.wrappedValue = .inProgress
             data.wrappedValue = try await function()
             status.wrappedValue = .success
         } catch {

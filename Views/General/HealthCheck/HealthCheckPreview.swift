@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HealthCheckPreview: View {
     @ObservedObject var mainClient = UstcWeixinClient.main
-    @State var status = AsyncViewStatus.inProgress
+    @State var status = AsyncViewStatus.waiting
     @State var checked = false
 
     var body: some View {
@@ -31,9 +31,8 @@ struct HealthCheckPreview: View {
                     Text("已完成打卡")
                         .foregroundColor(.accentColor)
                 } else {
-                    if status != .inProgress {
-                        Text("Something went wrong")
-                            .foregroundColor(.red)
+                    if status != .success, status != .waiting {
+                        FailureView()
                     }
                 }
             }

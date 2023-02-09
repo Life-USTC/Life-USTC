@@ -13,7 +13,7 @@ struct HealthCheckPage: View {
     @AppStorage("jinji_lxr", store: userDefaults) var jinji_lxr: String = ""
     @AppStorage("jinji_guanxi", store: userDefaults) var jinji_guanxi: String = ""
     @AppStorage("jiji_mobile", store: userDefaults) var jiji_mobile: String = ""
-    @State var status = AsyncViewStatus.inProgress
+    @State var status = AsyncViewStatus.waiting
     @State var checked = false
 
     var body: some View {
@@ -46,14 +46,16 @@ struct HealthCheckPage: View {
 
                 Spacer()
 
-                Button {
-                    asyncBind($checked, status: $status) {
-                        try await UstcWeixinClient.main.dailyReportHealth()
+                AsyncButton {
+                    _ = try await UstcWeixinClient.main.dailyReportHealth()
+                } label: { status in
+                    HStack {
+                        Text("Check")
+                        if status == .success {
+                            Image(systemName: "checkmark")
+                        }
                     }
-                } label: {
-                    Text("Check")
                 }
-                .buttonStyle(BigButtonStyle())
 
                 if checked {
                     Label("Status: Checked", systemImage: "checkmark")
