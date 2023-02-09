@@ -25,7 +25,7 @@ struct CurriculumPreview: View {
         VStack {
             ForEach(courses) { course in
                 HStack {
-                    VStack (alignment: .leading){
+                    VStack(alignment: .leading) {
                         Text(course.name)
                         Text(course.classPositionString)
                             .font(.subheadline)

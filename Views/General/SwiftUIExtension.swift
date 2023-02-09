@@ -8,18 +8,28 @@
 import Introspect
 import SwiftUI
 
-struct HStackLeading: ViewModifier {
+struct HStackModifier: ViewModifier {
+    var trailing = false
     func body(content: Content) -> some View {
         HStack {
-            content
-            Spacer()
+            if trailing {
+                Spacer()
+                content
+            } else {
+                content
+                Spacer()
+            }
         }
     }
 }
 
 extension View {
     func hStackLeading() -> some View {
-        modifier(HStackLeading())
+        modifier(HStackModifier())
+    }
+
+    func hStackTrailing() -> some View {
+        modifier(HStackModifier(trailing: true))
     }
 
     func edgesIgnoringHorizontal(_: Edge.Set) -> some View {

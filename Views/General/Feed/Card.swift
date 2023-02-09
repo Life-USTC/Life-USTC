@@ -101,7 +101,6 @@ struct Card: View {
             }
             .padding([.top, .trailing], 10)
         }
-        .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(Color.primary.opacity(0.3), lineWidth: 0))
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .padding([.leading, .trailing], 2)
 #if os(iOS)

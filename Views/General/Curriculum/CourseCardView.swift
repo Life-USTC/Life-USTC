@@ -12,14 +12,12 @@ struct CourseCardView: View {
     @State var showPopUp = false
 
     var body: some View {
-        VStack (spacing:3){
-            HStack {
-                Text(Course.startTimes[course.startTime - 1].clockTime)
-                    .font(.system(size: 9))
-                    .fontWeight(.bold)
-                Spacer()
-            }
-            VStack (alignment: .center){
+        VStack(spacing: 3) {
+            Text(Course.startTimes[course.startTime - 1].clockTime)
+                .font(.system(size: 9))
+                .fontWeight(.bold)
+                .hStackLeading()
+            VStack(alignment: .center) {
                 Text(course.name)
                     .multilineTextAlignment(.center)
                     .lineLimit(nil)
@@ -27,24 +25,17 @@ struct CourseCardView: View {
                 Text(course.classPositionString)
                     .font(.system(size: 12))
                     .fontWeight(.bold)
-            
             }
-            VStack{
-                if course.startTime != course.endTime {
-                    Divider()
-                    Spacer()
-                    Text(course.classIDString)
-                        .font(.system(size: 9))
-                    Text(course.classTeacherName)
-                        .font(.system(size: 9))
-                    
-                    
-                    HStack {
-                        Spacer()
-                        Text(Course.endTimes[course.endTime - 1].clockTime)
-                            .font(.system(size: 9))
-                    }
-                }
+            if course.startTime != course.endTime {
+                Divider()
+                Spacer()
+                Text(course.classIDString)
+                    .font(.system(size: 9))
+                Text(course.classTeacherName)
+                    .font(.system(size: 9))
+                Text(Course.endTimes[course.endTime - 1].clockTime)
+                    .font(.system(size: 9))
+                    .hStackTrailing()
             }
         }
         .lineLimit(1)
@@ -53,8 +44,6 @@ struct CourseCardView: View {
         .background {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.accentColor.opacity(0.1))
-                //.stroke(showPopUp ? Color.accentColor : Color.gray, lineWidth: 1)
-                // .frame(width: stackWidth)
         }
         .onTapGesture {}
         .onLongPressGesture(minimumDuration: 0.6) {

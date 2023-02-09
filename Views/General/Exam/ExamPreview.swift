@@ -24,14 +24,14 @@ struct ExamPreview: View {
         VStack {
             ForEach(exams) { exam in
                 HStack {
-                    VStack (alignment: .leading) {
+                    VStack(alignment: .leading) {
                         Text(exam.className)
                         Text(exam.classRoomName)
                             .font(.subheadline)
                             .foregroundColor(Color.gray)
                     }
                     Spacer()
-                    VStack (alignment:.trailing){
+                    VStack(alignment: .trailing) {
                         Text(exam.time.split(separator: " ")[0])
                             .font(.subheadline)
                             .fontWeight(.bold)

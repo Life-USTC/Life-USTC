@@ -19,7 +19,7 @@ struct ScoreView: View {
 
     func makeView(with courseScore: CourseScore, score: Score) -> some View {
         HStack {
-            VStack (alignment: .leading){
+            VStack(alignment: .leading) {
                 Text(courseScore.courseName)
                     .fontWeight(.bold)
                 HStack {
@@ -27,12 +27,12 @@ struct ScoreView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.gray)
                     Text(courseScore.courseCode)
-                    .foregroundColor(.gray)
+                        .foregroundColor(.gray)
                 }
                 .font(.subheadline)
             }
             Spacer()
-            HStack (alignment: .bottom){
+            HStack(alignment: .bottom) {
                 if courseScore.gpa == nil {
                     Text("\(String(courseScore.score))")
                         .fontWeight(.bold)
@@ -44,24 +44,28 @@ struct ScoreView: View {
                                 .fill(Color.accentColor.opacity(0.7))
                         )
                 } else {
-                        HStack (alignment: .center, spacing: 5){
-                            Text("\(courseScore.score)")
-                                .frame(width: 30)
-                            Divider()
-                            Text("\(String(courseScore.gpa!))")
-                                .frame(width: 35)
-                        }
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(width: 85, height: 30)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(courseScore.gpa! >= 1.0 ? courseScore.gpa! >= score.gpa ? Color.accentColor.opacity(0.7) : Color.orange.opacity(0.7) : Color.red.opacity(0.6) )
-                            )
+                    HStack(alignment: .center, spacing: 5) {
+                        Text("\(courseScore.score)")
+                            .frame(width: 30)
+                        Divider()
+                        Text("\(String(courseScore.gpa!))")
+                            .frame(width: 35)
+                    }
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .frame(width: 85, height: 30)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill({ () -> Color in
+                                if courseScore.gpa! >= 1.0 {
+                                    return courseScore.gpa! >= score.gpa ? Color.accentColor.opacity(0.7) : Color.orange.opacity(0.7)
+                                } else {
+                                    return Color.red.opacity(0.6)
+                                }
+                            }())
+                    )
                 }
-                
             }
-            
         }
     }
 
@@ -158,7 +162,7 @@ struct ScoreView: View {
                         TitleAndSubTitle(title: "GPA: " + String(score.gpa),
                                          subTitle: score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount),
                                          style: .reverse)
-                        .padding(.vertical, 5)
+                            .padding(.vertical, 5)
                     }
                     ForEach(scoresFiltered) {
                         Divider()

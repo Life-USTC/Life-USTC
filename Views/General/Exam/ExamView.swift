@@ -13,8 +13,8 @@ private struct SingleExamView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 25) {
-            VStack (alignment: .leading){
-                HStack (alignment: .center){
+            VStack(alignment: .leading) {
+                HStack(alignment: .center) {
                     Text("\(exam.className)")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -22,13 +22,12 @@ private struct SingleExamView: View {
                     Text("\(exam.typeName)")
                         .foregroundColor(Color.gray)
                         .font(.subheadline)
-                        
                 }
                 Text("\(exam.classIDString)")
                     .foregroundColor(Color.gray)
                     .font(.subheadline)
             }
-            VStack (alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Image(systemName: "location.fill.viewfinder")
                     Text("\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)")
@@ -77,6 +76,5 @@ struct ExamView_Previews: PreviewProvider {
             SingleExamView(exam: .example)
         }
         .listStyle(.inset)
-
     }
 }
