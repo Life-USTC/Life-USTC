@@ -34,7 +34,7 @@
 "casFullHint" = "此功能由USTC统一身份认证向您提供, 并非我们.\n如需了解更多信息和用户协议,访问 https://passport.ustc.edu.cn/\n当处理你的用户名和密码时, 我们只会将其以行业标准地方式存储在本地. 我们使用你的账户和密码来跳过网页或者程序接口所需要的认证功能, 这一过程是通过模拟用户的行为来做到的, 在后台每15分钟运行一次(如果高频使用的话). 这一行为并不违反统一身份认证的用户协议, 但此协议并不由我们拥有, 因此随时有可能在没有预先通知的前提下进行更改.\n这个过程可能会触发统一身份认证的警告, 并且可能在将来失效. 因此我们不会对这个功能的可用性负责, 请用户自担风险.";
 
 "Before we continue..." = "在我们继续之前...";
-"Choose an identity" = "从下面中选一个";
+"Choose an identity" = "请选择你的身份";
 "You could modify this later in app settings" = "你可以稍后在应用设置中修改";
 "Teacher" = "教师";
 "Notice; Teacher AAS" = "通知; 教师教务系统";
@@ -117,6 +117,7 @@
 "Exam Settings" = "考试设置";
 "Exam name to hide" = "隐藏显示的考试名";
 "Name" = "名称";
+"Save exams to calendar" = "保存考试日程到日历";
 "When exam contains these words, they will be shown at the bottom even they comes first in time" = "当考试名中含有这些词时, (虽然他们可能早于其他考试) 这个考试会在显示在底部";
 "Add new" = "新增";
 "Health Check" = "健康打卡";

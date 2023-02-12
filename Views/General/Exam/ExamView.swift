@@ -44,7 +44,7 @@ private struct SingleExamView: View {
                 .font(.callout)
             }
         }
-        .padding(.vertical, 5)
+        .padding(.horizontal, 25)
     }
 }
 
@@ -52,25 +52,26 @@ struct ExamView: View {
     var body: some View {
         NavigationStack {
             AsyncView { exams in
-                VStack {
-                    ForEach(exams) { exam in
-                        SingleExamView(exam: exam)
-                        Divider()
-                    }
-                    Spacer()
-
-                    AsyncButton {
-                        try Exam.saveToCalendar(exams)
-                    } label: { status in
-                        HStack {
-                            Text("Save exams to calendar")
-                            if status == .success {
-                                Image(systemName: "checkmark")
+                ScrollView (showsIndicators: false){
+                    LazyVStack{
+                        ForEach(exams) { exam in
+                            SingleExamView(exam: exam)
+                            Divider()
+                        }
+                        AsyncButton {
+                            try Exam.saveToCalendar(exams)
+                        } label: { status in
+                            HStack {
+                                Text("Save exams to calendar")
+                                if status == .success {
+                                    Image(systemName: "checkmark")
+                                }
                             }
                         }
                     }
+                    .padding(.bottom, 10)
+                    
                 }
-                .padding()
             } loadData: {
                 try await UstcUgAASClient.main.getExamInfo()
             } refreshData: {
