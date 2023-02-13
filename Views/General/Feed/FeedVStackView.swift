@@ -10,15 +10,20 @@ import SwiftUI
 struct FeedListView: View {
     let feeds: [Feed]
     @State var showFullPage = false
+    @AppStorage("useNewUIForFeed") var useNewUI = true
 
     var body: some View {
-        if showFullPage {
+        if showFullPage || useNewUI {
             ForEach(feeds, id: \.id) { post in
-                GeometryReader { geo in
+                if useNewUI {
                     FeedView(feed: post)
-                        .frame(width: geo.size.width)
+                } else {
+                    GeometryReader { geo in
+                        FeedView(feed: post)
+                            .frame(width: geo.size.width)
+                    }
+                    .frame(height: cardHeight)
                 }
-                .frame(height: cardHeight)
             }
         } else {
             GeometryReader { geo in
