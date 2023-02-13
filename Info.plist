@@ -19,13 +19,6 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>phi-store.cc</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
 			<key>ustc.edu.cn</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
