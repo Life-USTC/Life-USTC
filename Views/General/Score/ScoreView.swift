@@ -23,7 +23,7 @@ struct ScoreView: View {
                 Text(courseScore.courseName)
                     .fontWeight(.bold)
                 HStack {
-                    Text("\(String(courseScore.credit))")
+                    Text(String(courseScore.credit))
                         .fontWeight(.bold)
                         .foregroundColor(.gray)
                     Text(courseScore.courseCode)
@@ -119,7 +119,7 @@ struct ScoreView: View {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.accentColor)
                                 }
-                                Text(_sortPreference.rawValue)
+                                Text(_sortPreference.rawValue.localized)
                             }
                         }
                     }
@@ -179,6 +179,13 @@ struct ScoreView: View {
     var body: some View {
         AsyncView { score in
             makeView(with: score)
+                .toolbar {
+                    Button {
+                        showAdvancedSettings.toggle()
+                    } label: {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                }
         } loadData: {
             try await UstcUgAASClient.main.getScore()
         } refreshData: {
@@ -186,13 +193,6 @@ struct ScoreView: View {
             return try await UstcUgAASClient.main.getScore()
         }
         .navigationBarTitle("Score", displayMode: .inline)
-        .toolbar {
-            Button {
-                showAdvancedSettings.toggle()
-            } label: {
-                Label("Settings", systemImage: "gearshape")
-            }
-        }
     }
 }
 

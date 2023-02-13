@@ -8,8 +8,7 @@
 import SwiftUI
 
 private struct SingleExamView: View {
-    var exam: Exam
-    @State var fold = true
+    let exam: Exam
 
     var body: some View {
         VStack(alignment: .leading, spacing: 25) {
@@ -44,7 +43,6 @@ private struct SingleExamView: View {
                 .font(.callout)
             }
         }
-        .padding(.horizontal, 25)
     }
 }
 
@@ -52,25 +50,20 @@ struct ExamView: View {
     var body: some View {
         NavigationStack {
             AsyncView { exams in
-                ScrollView (showsIndicators: false){
-                    LazyVStack{
-                        ForEach(exams) { exam in
-                            SingleExamView(exam: exam)
-                            Divider()
-                        }
-                        AsyncButton {
-                            try Exam.saveToCalendar(exams)
-                        } label: { status in
-                            HStack {
-                                Text("Save exams to calendar")
-                                if status == .success {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
+                ScrollView(showsIndicators: false) {
+                    ForEach(exams) { exam in
+                        SingleExamView(exam: exam)
+                        Divider()
                     }
-                    .padding(.bottom, 10)
-                    
+                    .padding(.top, 25)
+                }
+                .padding(.horizontal, 25)
+                .toolbar {
+                    AsyncButton(bigStyle: false) {
+                        try Exam.saveToCalendar(exams)
+                    } label: { _ in
+                        Image(systemName: "square.and.arrow.down")
+                    }
                 }
             } loadData: {
                 try await UstcUgAASClient.main.getExamInfo()

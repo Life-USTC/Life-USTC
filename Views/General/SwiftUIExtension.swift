@@ -157,12 +157,15 @@ extension Color {
 }
 
 struct FailureView: View {
+    var bigStyle = true
     var body: some View {
         HStack {
             Image(systemName: "xmark.circle")
                 .foregroundColor(.yellow)
 
-            Text("Something went wrong")
+            if bigStyle {
+                Text("Something went wrong")
+            }
         }
     }
 }
@@ -228,13 +231,15 @@ struct AsyncButton: View {
     var function: () async throws -> Void
     var makeView: (AsyncViewStatus) -> AnyView
     @State var status = AsyncViewStatus.waiting
+    var bigStyle = true
 
-    init(function: @escaping () async throws -> Void, label: @escaping (AsyncViewStatus) -> any View) {
+    init(bigStyle: Bool = true, function: @escaping () async throws -> Void, label: @escaping (AsyncViewStatus) -> any View) {
         self.function = function
         makeView = { AnyView(label($0)) }
+        self.bigStyle = bigStyle
     }
 
-    var body: some View {
+    var mainView: some View {
         Button {
             asyncBind(.constant(()), status: $status) {
                 try await function()
@@ -242,24 +247,41 @@ struct AsyncButton: View {
         } label: {
             switch status {
             case .waiting:
+                // Idle mode:
                 makeView(.waiting)
             case .success:
-                makeView(.success)
+                if bigStyle {
+                    makeView(.success)
+                } else {
+                    Image(systemName: "checkmark")
+                }
             case .inProgress:
-                makeView(.inProgress)
+                if bigStyle {
+                    makeView(.inProgress)
+                } else {
+                    ProgressView()
+                }
             case .failure:
-                FailureView()
+                FailureView(bigStyle: bigStyle)
             }
         }
+    }
+
+    var body: some View {
+        if bigStyle {
+            mainView
 #if os(iOS)
-        .foregroundColor(.white)
-        .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(status == .inProgress ? Color.gray : Color.accentColor)
-                .frame(width: 250, height: 50)
-        }
-        .padding()
+            .foregroundColor(.white)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(status == .inProgress ? Color.gray : Color.accentColor)
+                    .frame(width: 250, height: 50)
+            }
+            .padding()
 #endif
+        } else {
+            mainView
+        }
     }
 }
 
@@ -356,3 +378,42 @@ extension View {
     }
 }
 #endif
+
+struct AsyncButton_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            AsyncButton {} label: { status in
+                HStack {
+                    Text("Check")
+                    if status == .success {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+
+            AsyncButton {
+                throw BaseError.runtimeError("!!!")
+            } label: { status in
+                HStack {
+                    Text("Check")
+                    if status == .success {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+            HStack {
+                AsyncButton(bigStyle: false) {} label: { _ in
+                    Image(systemName: "square.and.arrow.down")
+                }
+
+                AsyncButton(bigStyle: false) {
+                    throw BaseError.runtimeError("!!!")
+                } label: { _ in
+                    Image(systemName: "square.and.arrow.down")
+                }
+            }
+            .font(.largeTitle)
+            .padding()
+        }
+    }
+}

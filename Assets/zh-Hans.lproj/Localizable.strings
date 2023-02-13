@@ -121,3 +121,5 @@
 "When exam contains these words, they will be shown at the bottom even they comes first in time" = "当考试名中含有这些词时, (虽然他们可能早于其他考试) 这个考试会在显示在底部";
 "Add new" = "新增";
 "Health Check" = "健康打卡";
+
+"Default" = "默认值";
