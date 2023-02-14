@@ -11,12 +11,14 @@ struct FeedSettingView: View {
     @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     @AppStorage("useReeed") var useReeed = true
+    @AppStorage("useNewUIForFeed") var useNewUI = true
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
                     Stepper("Front page post numbers: ".localized + String(feedPostNumber), value: $feedPostNumber)
+                    Toggle("Use new UI", isOn: $useNewUI)
                     Toggle("Use reader", isOn: $useReeed)
                 } header: {
                     Text("General")

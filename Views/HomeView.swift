@@ -50,7 +50,6 @@ struct HomeView: View {
                     .padding(.top, 15)
 
                     feature.preview
-
                 }
             }
             .padding([.leading, .trailing])
