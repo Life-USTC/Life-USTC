@@ -46,8 +46,11 @@ struct HomeView: View {
                                 .labelStyle(.iconOnly)
                         }
                     }
-                    .padding([.top, .bottom])
+                    .padding(.bottom, 7)
+                    .padding(.top, 15)
+
                     feature.preview
+
                 }
             }
             .padding([.leading, .trailing])

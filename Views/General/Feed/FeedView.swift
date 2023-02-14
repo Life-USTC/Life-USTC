@@ -63,24 +63,27 @@ struct SecondFeedView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                Text(feed.source)
+            VStack (alignment: .leading, spacing: 5){
+                Text(feed.title)
+                    .font(.title2)
                     .bold()
-                Spacer()
-                Text(String(feed.datePosted))
+                    .multilineTextAlignment(.leading)
+                HStack {
+                    Text(feed.source)
+                        .bold()
+                    Text(String(feed.datePosted))
+                    Spacer()
+                }
+                .font(.caption)
+                .foregroundColor(.gray)
             }
-
             Divider()
-
             HStack {
                 VStack(alignment: .leading) {
-                    Text(feed.title)
-                        .font(.title2)
-                        .bold()
-                        .multilineTextAlignment(.leading)
                     if let description = feed.description {
                         Text(description)
-                            .lineLimit(3)
+                            .font(.subheadline)
+                            .lineLimit(4)
                             .multilineTextAlignment(.leading)
                     }
                 }
@@ -107,6 +110,8 @@ struct SecondFeedView: View {
                 .fill(Color.accentColor)
         }
         .foregroundColor(.primary)
+        .padding(.horizontal,4)
+        
     }
 }
 
