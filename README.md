@@ -1,6 +1,6 @@
 # Life@USTC
 
-![Life@USTC](./Docs/Assets/Icon.png)
+<img src="./Docs/Assets/Icon.png"  width="200" height="200">
 
 ## 简介
 
@@ -31,6 +31,8 @@
 To build this, You'll need Xcode 14.0+ and Swift 5.7+.
 
 App Target is set to iOS 16.0+ since we face student users only.
+
+> :warning: **Use ./format to format your code before commit**
 
 ## License
 
