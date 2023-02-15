@@ -36,6 +36,7 @@ struct ContentView: View {
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State var tab: HomeViewTab = .home
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     var mainView: some View {
         TabView {
@@ -66,7 +67,7 @@ struct ContentView: View {
 
     var body: some View {
 #if os(iOS)
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && horizontalSizeClass == .regular {
             HStack {
                 Spacer(minLength: 70)
                 NavigationSplitView(columnVisibility: $columnVisibility) {
