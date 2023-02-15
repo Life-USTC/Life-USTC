@@ -10,6 +10,9 @@ import SwiftUI
 
 struct FeaturesView: View {
     @State var searchText = ""
+
+    @State var feature: FeatureWithView? // MARK: This is not working as I expected. List row doesn't 'lit up' after selection. fixing that later.
+
     var ustcFeatures: [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
 
@@ -59,10 +62,10 @@ struct FeaturesView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            List(selection: $feature) {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Section {
-                        ForEach(features) { feature in
+                        ForEach(features, id: \.self) { feature in
                             NavigationLinkAddon {
                                 feature.destinationView
                             } label: {
@@ -80,19 +83,27 @@ struct FeaturesView: View {
             .navigationTitle("Features")
             .scrollContentBackground(.hidden)
 #if os(iOS)
-                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+                .searchable(text: $searchText, placement: .automatic)
 #endif
         }
     }
 }
 
 extension FeaturesView {
-    struct FeatureWithView: Identifiable {
+    struct FeatureWithView: Identifiable, Hashable {
+        static func == (lhs: FeaturesView.FeatureWithView, rhs: FeaturesView.FeatureWithView) -> Bool {
+            lhs.id == rhs.id
+        }
+
         var id = UUID()
         var image: String
         var title: String
         var subTitle: String
         var destinationView: AnyView
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
 
         init(image: String, title: String, subTitle: String, destinationView: any View) {
             self.image = image

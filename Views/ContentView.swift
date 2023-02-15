@@ -20,6 +20,12 @@ struct Life_USTCApp: App {
     }
 }
 
+enum HomeViewTab: String, CaseIterable {
+    case home
+    case feature
+    case setting
+}
+
 struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
@@ -28,6 +34,8 @@ struct ContentView: View {
     @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
     @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
+    @State var tab: HomeViewTab = .home
+    @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var mainView: some View {
         TabView {
@@ -37,7 +45,7 @@ struct ContentView: View {
                 }
             FeaturesView()
                 .tabItem {
-                    Label("Features", systemImage: "square.grid.2x2.fill")
+                    Label("Features", systemImage: "square.grid.2x2")
                 }
             SettingsView()
                 .tabItem {
@@ -59,13 +67,62 @@ struct ContentView: View {
     var body: some View {
 #if os(iOS)
         if UIDevice.current.userInterfaceIdiom == .pad {
-            NavigationSplitView(columnVisibility: $sideBar) {
-                mainView
-                    .navigationSplitViewColumnWidth(600)
-            } detail: {
-                globalNavigation.detailView
+            HStack {
+                Spacer(minLength: 70)
+                NavigationSplitView(columnVisibility: $columnVisibility) {
+                    Group {
+                        switch tab {
+                        case .home:
+                            HomeView()
+                        case .feature:
+                            FeaturesView()
+                        case .setting:
+                            SettingsView()
+                        }
+                    }
+                } detail: {
+                    globalNavigation.detailView
+                }
             }
-            .navigationSplitViewStyle(.balanced)
+            .overlay(alignment: .leading) {
+                VStack(spacing: 40) {
+                    Image("Icon")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50)
+                        .clipShape(RoundedRectangle(cornerRadius: 50))
+                        .overlay {
+                            Circle()
+                                .stroke(Color.accentColor, style: .init(lineWidth: 2))
+                        }
+                    ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
+                        Button {
+                            columnVisibility = .all
+                            tab = eachTab
+                        } label: {
+                            Group {
+                                switch eachTab {
+                                case .home:
+                                    Label("Home", systemImage: "square.stack.3d.up")
+                                case .feature:
+                                    Label("Features", systemImage: "square.grid.2x2")
+                                case .setting:
+                                    Label("Settings", systemImage: "gearshape")
+                                }
+                            }
+                            .foregroundColor(eachTab == tab ? .accentColor : .primary)
+                        }
+                    }
+                }
+                .labelStyle(.iconOnly)
+                .font(.system(size: 30))
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(UIColor.systemBackground))
+                }
+                .frame(width: 70)
+            }
         } else {
             mainView
         }
