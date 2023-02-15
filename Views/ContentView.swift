@@ -74,6 +74,7 @@ struct ContentView: View {
         }
     }
 
+#if os(iOS)
     var sideBarView: some View {
         VStack(spacing: 40) {
             Spacer()
@@ -115,16 +116,15 @@ struct ContentView: View {
             sideBarView
                 .navigationSplitViewColumnWidth(80)
                 .navigationBarHidden(true)
-        }
-        content: {
+        } content: {
             tab.view()
                 .navigationSplitViewColumnWidth(400)
-        }
-        detail: {
+        } detail: {
             globalNavigation.detailView
         }
         .navigationSplitViewStyle(.balanced)
     }
+#endif
 
     var body: some View {
         Group {
