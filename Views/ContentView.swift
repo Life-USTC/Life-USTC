@@ -24,6 +24,28 @@ enum HomeViewTab: String, CaseIterable {
     case home
     case feature
     case setting
+
+    @ViewBuilder func view() -> some View {
+        switch self {
+        case .home:
+            HomeView()
+        case .feature:
+            FeaturesView()
+        case .setting:
+            SettingsView()
+        }
+    }
+
+    @ViewBuilder func label() -> some View {
+        switch self {
+        case .home:
+            Label("Home", systemImage: "square.stack.3d.up")
+        case .feature:
+            Label("Features", systemImage: "square.grid.2x2")
+        case .setting:
+            Label("Settings", systemImage: "gearshape")
+        }
+    }
 }
 
 struct ContentView: View {
@@ -36,22 +58,90 @@ struct ContentView: View {
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State var tab: HomeViewTab = .home
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+#endif
 
-    var mainView: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "square.stack.3d.up")
+    var iPhoneView: some View {
+        TabView(selection: $tab) {
+            ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
+                eachTab.view()
+                    .tabItem {
+                        eachTab.label()
+                    }
+                    .tag(eachTab)
+            }
+        }
+    }
+
+    var sideBarView: some View {
+        VStack(spacing: 40) {
+            Image("Icon")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .clipShape(RoundedRectangle(cornerRadius: 50))
+                .overlay {
+                    Circle()
+                        .stroke(Color.accentColor, style: .init(lineWidth: 2))
                 }
-            FeaturesView()
-                .tabItem {
-                    Label("Features", systemImage: "square.grid.2x2")
+            ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
+                Button {
+                    if tab == eachTab {
+                        columnVisibility = .detailOnly
+                    } else {
+                        columnVisibility = .all
+                        tab = eachTab
+                    }
+                } label: {
+                    eachTab.label()
+                        .foregroundColor(eachTab == tab ? .accentColor : .primary)
                 }
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
-                }
+            }
+        }
+        .labelStyle(.iconOnly)
+        .font(.system(size: 30))
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(UIColor.systemBackground))
+        }
+        .frame(width: 70)
+    }
+
+    var iPadView: some View {
+        HStack {
+            Spacer(minLength: 70)
+            NavigationSplitView(columnVisibility: $columnVisibility) {
+                tab.view()
+            } detail: {
+                globalNavigation.detailView
+            }
+        }
+        .overlay(alignment: .leading) {
+            sideBarView
+        }
+    }
+
+    var body: some View {
+        Group {
+#if os(iOS)
+            if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
+                // iPadOS:
+                iPadView
+            } else {
+                // iOS:
+                iPhoneView
+            }
+#else
+            // macOS:
+            NavigationSplitView {
+                iPhoneView
+            } detail: {
+                globalNavigation.detailView
+            }
+            .navigationSplitViewStyle(.balanced)
+#endif
         }
 #if DEBUG
             .sheet(isPresented: $firstLogin) {
@@ -63,78 +153,6 @@ struct ContentView: View {
                     CASLoginView.sheet(isPresented: $casLoginSheet)
                 }
                 .onAppear(perform: onLoadFunction)
-    }
-
-    var body: some View {
-#if os(iOS)
-        if UIDevice.current.userInterfaceIdiom == .pad && horizontalSizeClass == .regular {
-            HStack {
-                Spacer(minLength: 70)
-                NavigationSplitView(columnVisibility: $columnVisibility) {
-                    Group {
-                        switch tab {
-                        case .home:
-                            HomeView()
-                        case .feature:
-                            FeaturesView()
-                        case .setting:
-                            SettingsView()
-                        }
-                    }
-                } detail: {
-                    globalNavigation.detailView
-                }
-            }
-            .overlay(alignment: .leading) {
-                VStack(spacing: 40) {
-                    Image("Icon")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                        .clipShape(RoundedRectangle(cornerRadius: 50))
-                        .overlay {
-                            Circle()
-                                .stroke(Color.accentColor, style: .init(lineWidth: 2))
-                        }
-                    ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
-                        Button {
-                            columnVisibility = .all
-                            tab = eachTab
-                        } label: {
-                            Group {
-                                switch eachTab {
-                                case .home:
-                                    Label("Home", systemImage: "square.stack.3d.up")
-                                case .feature:
-                                    Label("Features", systemImage: "square.grid.2x2")
-                                case .setting:
-                                    Label("Settings", systemImage: "gearshape")
-                                }
-                            }
-                            .foregroundColor(eachTab == tab ? .accentColor : .primary)
-                        }
-                    }
-                }
-                .labelStyle(.iconOnly)
-                .font(.system(size: 30))
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(UIColor.systemBackground))
-                }
-                .frame(width: 70)
-            }
-        } else {
-            mainView
-        }
-#else
-        NavigationSplitView {
-            mainView
-        } detail: {
-            globalNavigation.detailView
-        }
-        .navigationSplitViewStyle(.balanced)
-#endif
     }
 
     func onLoadFunction() {
