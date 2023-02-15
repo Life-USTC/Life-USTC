@@ -76,6 +76,7 @@ struct ContentView: View {
 
     var sideBarView: some View {
         VStack(spacing: 40) {
+            Spacer()
             Image("Icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -110,17 +111,19 @@ struct ContentView: View {
     }
 
     var iPadView: some View {
-        HStack {
-            Spacer(minLength: 70)
-            NavigationSplitView(columnVisibility: $columnVisibility) {
-                tab.view()
-            } detail: {
-                globalNavigation.detailView
-            }
-        }
-        .overlay(alignment: .leading) {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             sideBarView
+                .navigationSplitViewColumnWidth(80)
+                .navigationBarHidden(true)
         }
+        content: {
+            tab.view()
+                .navigationSplitViewColumnWidth(400)
+        }
+        detail: {
+            globalNavigation.detailView
+        }
+        .navigationSplitViewStyle(.balanced)
     }
 
     var body: some View {
