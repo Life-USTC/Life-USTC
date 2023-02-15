@@ -10,34 +10,50 @@ import SwiftUI
 struct FeedListView: View {
     let feeds: [Feed]
     @State var showFullPage = false
+    @AppStorage("useNewUIForFeed") var useNewUI = true
+
+    var fullPageView: some View {
+        ForEach(feeds, id: \.id) { post in
+            GeometryReader { geo in
+                FeedView(feed: post)
+                    .frame(width: geo.size.width)
+            }
+            .frame(height: cardHeight)
+        }
+    }
+
+    var embeddedView: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                ForEach(0 ..< min(feeds.count, 3)) { index in
+                    FeedView(feed: feeds[index])
+                        .frame(width: geo.size.width)
+                        .offset(y: -Double(index * 20))
+                        .zIndex(-Double(index))
+                }
+                Button {
+                    showFullPage.toggle()
+                } label: {
+                    Color.gray
+                        .opacity(0.01) // 你觉得你是Color.clear吗? 我觉得你是
+                }
+            }
+        }
+        .frame(height: cardHeight + 40)
+    }
 
     var body: some View {
-        if showFullPage {
+        if useNewUI {
             ForEach(feeds, id: \.id) { post in
-                GeometryReader { geo in
-                    FeedView(feed: post)
-                        .frame(width: geo.size.width)
-                }
-                .frame(height: cardHeight)
+                FeedView(feed: post)
             }
+            .listStyle(.plain)
         } else {
-            GeometryReader { geo in
-                ZStack(alignment: .bottom) {
-                    ForEach(0 ..< min(feeds.count, 3)) { index in
-                        FeedView(feed: feeds[index])
-                            .frame(width: geo.size.width)
-                            .offset(y: -Double(index * 20))
-                            .zIndex(-Double(index))
-                    }
-                    Button {
-                        showFullPage.toggle()
-                    } label: {
-                        Color.gray
-                            .opacity(0.01) // 你觉得你是Color.clear吗? 我觉得你是
-                    }
-                }
+            if showFullPage {
+                fullPageView
+            } else {
+                embeddedView
             }
-            .frame(height: cardHeight + 40)
         }
     }
 }

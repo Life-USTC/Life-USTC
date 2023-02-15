@@ -29,11 +29,11 @@ struct FeedHScrollView: View {
         GeometryReader { geo in
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: true) {
-                    HStack(spacing: 0) {
+                    HStack(alignment: .top, spacing: 0) {
                         ForEach(feeds, id: \.id) { post in
                             FeedView(feed: post)
-                                .frame(width: geo.size.width, height: geo.size.height)
                                 .id(post.id)
+                                .padding(.top, 2)
                         }
                     }
                     .frame(width: geo.size.width * Double(feedPostNumber))
