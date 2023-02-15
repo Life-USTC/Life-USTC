@@ -20,10 +20,10 @@ struct Life_USTCApp: App {
     }
 }
 
-enum HomeViewTab: String, CaseIterable {
-    case home
-    case feature
-    case setting
+enum HomeViewTab: Int, CaseIterable {
+    case home = 1
+    case feature = 2
+    case setting = 3
 
     @ViewBuilder func view() -> some View {
         switch self {
@@ -61,7 +61,6 @@ struct ContentView: View {
 #if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 #endif
-
     var iPhoneView: some View {
         TabView(selection: $tab) {
             ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
@@ -89,7 +88,7 @@ struct ContentView: View {
                 }
             ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
                 Button {
-                    if tab == eachTab {
+                    if tab == eachTab  && columnVisibility == .all {
                         columnVisibility = .detailOnly
                     } else {
                         columnVisibility = .all
@@ -99,6 +98,7 @@ struct ContentView: View {
                     eachTab.label()
                         .foregroundColor(eachTab == tab ? .accentColor : .primary)
                 }
+                .keyboardShortcut(KeyEquivalent(Character(String(eachTab.rawValue))), modifiers: [])
             }
         }
         .labelStyle(.iconOnly)

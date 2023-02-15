@@ -324,10 +324,11 @@ class GlobalNavigation: ObservableObject {
             Text(label)
         }
     } else {
-        Text(label)
-            .onTapGesture {
-                GlobalNavigation.main.updateDetailView(AnyView(destination))
-            }
+        Button {
+            GlobalNavigation.main.updateDetailView(AnyView(destination))
+        } label: {
+            Text(label)
+        }
     }
 #else
     Text(label)
@@ -346,10 +347,11 @@ class GlobalNavigation: ObservableObject {
             label()
         }
     } else {
-        label()
-            .onTapGesture {
-                GlobalNavigation.main.updateDetailView(AnyView(destination()))
-            }
+        Button {
+            GlobalNavigation.main.updateDetailView(AnyView(destination()))
+        } label: {
+            label()
+        }
     }
 #else
     label()

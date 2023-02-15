@@ -72,6 +72,7 @@ struct CASLoginView: View {
             .scrollDisabled(true)
 
             Button(action: checkAndLogin, label: { Text("Check & Login") })
+                .keyboardShortcut(.defaultAction)
 #if os(iOS)
                 .buttonStyle(BigButtonStyle(size: 1))
 #endif
