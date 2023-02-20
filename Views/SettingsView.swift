@@ -19,7 +19,7 @@ struct SettingsView: View {
                     NavigationLinkAddon("Change User Type", destination: UserTypeView())
 #endif
                     NavigationLinkAddon("Exam Settings", destination: ExamSettingView())
-                    NavigationLinkAddon("Health Check", destination: HealthCheckPage())
+//                    NavigationLinkAddon("Health Check", destination: HealthCheckPage())
 #if os(iOS)
                     NavigationLinkAddon("Notification Settings", destination: NotificationSettingView())
 #endif

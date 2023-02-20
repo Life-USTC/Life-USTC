@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated)
 struct HealthCheckPreview: View {
     @ObservedObject var mainClient = UstcWeixinClient.main
     @State var status = AsyncViewStatus.waiting
@@ -56,6 +57,7 @@ struct HealthCheckPreview: View {
     }
 }
 
+@available(*, deprecated)
 struct HealthCheckPreview_Previews: PreviewProvider {
     static var previews: some View {
         HealthCheckPreview()

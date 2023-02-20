@@ -8,6 +8,7 @@
 import Foundation
 import SwiftSoup
 
+@available(*, deprecated)
 class UstcWeixinClient: ObservableObject {
     static var main = UstcWeixinClient()
 

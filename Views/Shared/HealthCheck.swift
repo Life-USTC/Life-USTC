@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated)
 struct HealthCheckPage: View {
     @AppStorage("juzhudi", store: userDefaults) var juzhudi: String = ""
     @AppStorage("jinji_lxr", store: userDefaults) var jinji_lxr: String = ""
@@ -47,6 +48,7 @@ struct HealthCheckPage: View {
     }
 }
 
+@available(*, deprecated)
 struct HealthCheckPage_Previews: PreviewProvider {
     static var previews: some View {
         HealthCheckPage()
