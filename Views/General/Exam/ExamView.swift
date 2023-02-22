@@ -17,6 +17,7 @@ private struct SingleExamView: View {
                     Text("\(exam.className)")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .strikethrough(exam.parseTime().endTime < Date())
                     Spacer()
                     Text("\(exam.typeName)")
                         .foregroundColor(Color.gray)
@@ -36,9 +37,18 @@ private struct SingleExamView: View {
                     Image(systemName: "calendar.badge.clock")
                     Text(exam.time)
                     Spacer()
-                    Text(String(format: "%@ days left".localized, String(exam.daysLeft())))
+                    if exam.parseTime().endTime < Date() {
+                        Text("Finished".localized)
+                            .foregroundColor(.gray)
+                            .fontWeight(.bold)
+                    } else {
+                        Text(exam.daysLeft() == 1 ?
+                            "1 day left".localized :
+                            String(format: "%@ days left".localized, String(exam.daysLeft()))
+                        )
                         .foregroundColor(exam.daysLeft() <= 7 ? .red : .accentColor)
                         .fontWeight(.bold)
+                    }
                 }
                 .font(.callout)
             }

@@ -114,6 +114,8 @@
 "A reload may be required for this to take effect." = "可能需要重启应用来生效";
 
 "%@ days left" = "%@天后";
+"1 day left" = "明天";
+"Finished" = "已结束";
 
 "Exam Settings" = "考试设置";
 "Exam name to hide" = "隐藏显示的考试名";

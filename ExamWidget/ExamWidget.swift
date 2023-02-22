@@ -140,6 +140,7 @@ struct ExamWidgetEntryView: View {
             ForEach(entry.exams.prefix(numberToShow)) { exam in
                 Divider()
                 Text(exam.className)
+                    .strikethrough(exam.parseTime().endTime < Date())
                     .bold()
                     .foregroundColor(exam.daysLeft() <= 7 ? .red : .primary)
                 Text("\(exam.time) @ \(exam.classRoomName)")

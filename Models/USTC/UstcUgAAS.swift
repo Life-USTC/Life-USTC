@@ -190,7 +190,7 @@ class UstcUgAASClient {
             return false
         }
 
-        return result + hiddenResult
+        return Exam.show(result) + Exam.show(hiddenResult)
     }
 
     func forceUpdateExamInfo() async throws {

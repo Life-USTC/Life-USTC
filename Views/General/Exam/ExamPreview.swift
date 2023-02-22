@@ -26,6 +26,7 @@ struct ExamPreview: View {
                 HStack {
                     VStack(alignment: .leading) {
                         Text(exam.className)
+                            .strikethrough(exam.parseTime().endTime < Date())
                         Text(exam.classRoomName)
                             .font(.subheadline)
                             .foregroundColor(Color.gray)

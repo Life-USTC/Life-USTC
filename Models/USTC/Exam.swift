@@ -83,4 +83,14 @@ extension Exam {
         }
         try eventStore.commit()
     }
+
+    /// Sort given exams by time(ascending), and put the ones that are already over to the end of the array
+    static func show(_ exams: [Exam]) -> [Exam] {
+        exams
+            .filter { $0.parseTime().time > Date() }
+            .sorted { $0.parseTime().time < $1.parseTime().time }
+            + exams
+            .filter { $0.parseTime().time <= Date() }
+            .sorted { $0.parseTime().time > $1.parseTime().time }
+    }
 }
