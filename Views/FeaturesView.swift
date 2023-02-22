@@ -47,10 +47,10 @@ struct FeaturesView: View {
             var result: [String: [FeatureWithView]] = [:]
             for (key, value) in ustcFeatures {
                 let tmp = value.filter {
-                    $0.title.contains(searchText) ||
-                        $0.subTitle.contains(searchText) ||
-                        NSLocalizedString($0.title, comment: "").contains(searchText) ||
-                        NSLocalizedString($0.subTitle, comment: "").contains(searchText)
+                    $0.title.lowercased().contains(searchText.lowercased()) ||
+                        $0.subTitle.lowercased().contains(searchText.lowercased()) ||
+                        $0.title.localized.contains(searchText) ||
+                        $0.subTitle.localized.contains(searchText)
                 }
                 if !tmp.isEmpty {
                     result[key] = tmp
