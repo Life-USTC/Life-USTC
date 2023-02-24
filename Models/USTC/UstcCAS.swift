@@ -26,24 +26,22 @@ extension URL {
 }
 
 /// A cas client to login to https://passport.ustc.edu.cn/
-class UstcCasClient {
-    static var main = UstcCasClient()
+enum UstcCasClient {
+    static var username: String = userDefaults.string(forKey: "passportUsername") ?? ""
+    static var password: String = userDefaults.string(forKey: "passportPassword") ?? ""
 
-    var username: String = userDefaults.string(forKey: "passportUsername") ?? ""
-    var password: String = userDefaults.string(forKey: "passportPassword") ?? ""
+    private static var lastLogined: Date?
 
-    private var lastLogined: Date?
-
-    private var precheckFails: Bool {
+    private static var precheckFails: Bool {
         username.isEmpty || password.isEmpty
     }
 
-    func update(username: String, password: String) {
+    static func update(username: String, password: String) {
         self.username = username
         self.password = password
     }
 
-    func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    static func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
@@ -61,7 +59,7 @@ class UstcCasClient {
     }
 
     /// Call this function before using casCookie
-    func loginToCAS() async throws -> Bool {
+    static func loginToCAS() async throws -> Bool {
         if precheckFails {
             return false
         }
@@ -81,7 +79,7 @@ class UstcCasClient {
         return try await checkLogined()
     }
 
-    func checkLogined() async throws -> Bool {
+    static func checkLogined() async throws -> Bool {
         if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
             return false
         }
@@ -89,7 +87,7 @@ class UstcCasClient {
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
     }
 
-    func requireLogin() async throws -> Bool {
+    static func requireLogin() async throws -> Bool {
         if try await checkLogined() {
             return true
         } else {

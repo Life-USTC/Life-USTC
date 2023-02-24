@@ -166,7 +166,7 @@ struct ContentView: View {
         }
         _ = Task {
             // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.main.loginToCAS()
+            casLoginSheet = try await !UstcCasClient.loginToCAS()
         }
     }
 }

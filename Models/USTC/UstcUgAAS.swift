@@ -12,15 +12,14 @@ import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient {
-    static var main = UstcUgAASClient()
-    private var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
+    private static var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
 
-    var curriculumDelegate = CurriculumDelegate()
-    var examDelegate = ExamDelegate()
-    var scoreDelegate = ScoreDelegate()
+    static var curriculumDelegate = CurriculumDelegate()
+    static var examDelegate = ExamDelegate()
+    static var scoreDelegate = ScoreDelegate()
 
-    func login() async throws {
-        if try await !UstcCasClient.main.requireLogin() {
+    static func login() async throws {
+        if try await !UstcCasClient.requireLogin() {
             return
         }
 
@@ -44,19 +43,19 @@ extension UstcUgAASClient {
          "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
          "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
 
-    func selectSemester(id: String) {
+    static func selectSemester(id: String) {
         semesterID = id
     }
 
-    func getSemesterID() -> String {
+    static func getSemesterID() -> String {
         semesterID
     }
 
-    var semesterName: String {
+    static var semesterName: String {
         UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
     }
 
-    var semesterStartDate: Date {
+    static var semesterStartDate: Date {
         UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterName })!.value
     }
 }

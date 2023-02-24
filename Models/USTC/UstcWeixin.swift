@@ -38,7 +38,7 @@ class UstcWeixinClient: ObservableObject {
     func dailyReportHealth() async throws -> Bool {
         print("!!! Daily health report")
 
-        if try await !UstcCasClient.main.requireLogin() {
+        if try await !UstcCasClient.requireLogin() {
             return false
         }
 

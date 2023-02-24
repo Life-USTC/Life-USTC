@@ -114,9 +114,9 @@ struct CASLoginView: View {
     }
 
     private func checkAndLogin() {
-        UstcCasClient.main.update(username: passportUsername, password: passportPassword)
+        UstcCasClient.update(username: passportUsername, password: passportPassword)
         _ = Task {
-            let result = try await UstcCasClient.main.loginToCAS()
+            let result = try await UstcCasClient.loginToCAS()
             if result {
                 if isInSheet {
                     showSuccessAlert = true

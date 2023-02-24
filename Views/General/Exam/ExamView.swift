@@ -59,7 +59,7 @@ private struct SingleExamView: View {
 struct ExamView: View {
     var body: some View {
         NavigationStack {
-            AsyncView(delegate: UstcUgAASClient.main.examDelegate) {
+            AsyncView(delegate: UstcUgAASClient.examDelegate) {
                 exams in
                 ScrollView(showsIndicators: false) {
                     ForEach(exams) { exam in

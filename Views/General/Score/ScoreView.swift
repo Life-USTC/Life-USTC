@@ -177,7 +177,7 @@ struct ScoreView: View {
     }
 
     var body: some View {
-        AsyncView(delegate: UstcUgAASClient.main.scoreDelegate) { score in
+        AsyncView(delegate: UstcUgAASClient.scoreDelegate) { score in
             makeView(with: score)
                 .toolbar {
                     Button {

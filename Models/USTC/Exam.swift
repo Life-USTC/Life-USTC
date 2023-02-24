@@ -131,7 +131,7 @@ class ExamDelegate: BaseAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        try await UstcUgAASClient.main.login()
+        try await UstcUgAASClient.login()
 
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!)
         guard let dataString = String(data: data, encoding: .utf8) else {

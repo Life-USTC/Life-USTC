@@ -15,7 +15,7 @@ struct CurriculumPreview: View {
     }
 
     var body: some View {
-        AsyncView(delegate: UstcUgAASClient.main.curriculumDelegate, showReloadButton: false) { courses in
+        AsyncView(delegate: UstcUgAASClient.curriculumDelegate, showReloadButton: false) { courses in
             let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }
             if todayCourse.isEmpty {
                 return happyView

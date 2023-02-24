@@ -56,7 +56,7 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
 
     func forceUpdate() async throws {
         print("!!! Refresh UgAAS Curriculum")
-        try await UstcUgAASClient.main.login()
+        try await UstcUgAASClient.login()
         let (_, response) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
 
         let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))
@@ -67,7 +67,7 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
             }
         }
 
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.main.getSemesterID())/print-data/\(tableID)?weekIndex=")!)
+        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.getSemesterID())/print-data/\(tableID)?weekIndex=")!)
         cache = try JSON(data: data)
         lastUpdate = Date()
         try saveCache()
@@ -77,8 +77,8 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
         Task {
             let courses = try await self.retrive()
             try Course.saveToCalendar(courses,
-                                      name: UstcUgAASClient.main.semesterName,
-                                      startDate: UstcUgAASClient.main.semesterStartDate)
+                                      name: UstcUgAASClient.semesterName,
+                                      startDate: UstcUgAASClient.semesterStartDate)
         }
     }
 

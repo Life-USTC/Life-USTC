@@ -16,7 +16,7 @@ struct Provider: IntentTimelineProvider {
 
     func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
-            let exams = try await UstcUgAASClient.main.examDelegate.retrive()
+            let exams = try await UstcUgAASClient.examDelegate.retrive()
             let entry = SimpleEntry(exams: exams)
             completion(entry)
         }
@@ -24,7 +24,7 @@ struct Provider: IntentTimelineProvider {
 
     func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let exams = try await UstcUgAASClient.main.examDelegate.retrive()
+            let exams = try await UstcUgAASClient.examDelegate.retrive()
             let entry = SimpleEntry(exams: exams)
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
