@@ -67,3 +67,11 @@ extension Array: RawRepresentable where Element: Codable {
         return result
     }
 }
+
+func combine(_ lhs: String, _ rhs: String) -> String {
+    if lhs == rhs {
+        return lhs
+    } else {
+        return "\(lhs) & \(rhs)"
+    }
+}

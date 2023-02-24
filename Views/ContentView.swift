@@ -88,7 +88,7 @@ struct ContentView: View {
                 }
             ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
                 Button {
-                    if tab == eachTab  && columnVisibility == .all {
+                    if tab == eachTab, columnVisibility == .all {
                         columnVisibility = .detailOnly
                     } else {
                         columnVisibility = .all

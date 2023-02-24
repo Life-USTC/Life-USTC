@@ -16,7 +16,7 @@ struct Provider: IntentTimelineProvider {
 
     func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
-            let exams = try await UstcUgAASClient.main.getExamInfo()
+            let exams = try await UstcUgAASClient.main.examDelegate.retrive()
             let entry = SimpleEntry(exams: exams)
             completion(entry)
         }
@@ -24,7 +24,7 @@ struct Provider: IntentTimelineProvider {
 
     func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let exams = try await UstcUgAASClient.main.getExamInfo()
+            let exams = try await UstcUgAASClient.main.examDelegate.retrive()
             let entry = SimpleEntry(exams: exams)
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
@@ -39,7 +39,8 @@ struct SimpleEntry: TimelineEntry {
     let exams: [Exam]
     var configuration = ConfigurationIntent()
 
-    static let example = SimpleEntry(exams: [.example, .example, .example, .example], configuration: ConfigurationIntent())
+    static let example = SimpleEntry(exams: [Exam].init(repeating: .example, count: 10),
+                                     configuration: ConfigurationIntent())
 }
 
 struct ExamWidgetEntryView: View {
@@ -90,7 +91,7 @@ struct ExamWidgetEntryView: View {
                     .font(.caption)
 
                 HStack(alignment: .lastTextBaseline) {
-                    Text(String(exam.daysLeft()))
+                    Text(String(exam.daysLeft))
                         .lineLimit(1)
                         .font(.largeTitle)
                         .foregroundColor(.red)
@@ -100,7 +101,7 @@ struct ExamWidgetEntryView: View {
 
                 Spacer()
 
-                Text("Time: \(exam.parseTime().description)")
+                Text("Time: \(exam.timeDescription)")
                     .lineLimit(1)
                     .foregroundColor(.gray)
                     .font(.caption2)
@@ -125,7 +126,7 @@ struct ExamWidgetEntryView: View {
     var oneLine: some View {
         Text(String(format: "%@+%@D".localized,
                     exam.className.limitShow(6),
-                    String(exam.daysLeft())))
+                    String(exam.daysLeft)))
     }
 
     var listView: some View {
@@ -140,10 +141,23 @@ struct ExamWidgetEntryView: View {
             ForEach(entry.exams.prefix(numberToShow)) { exam in
                 Divider()
                 Text(exam.className)
-                    .strikethrough(exam.parseTime().endTime < Date())
+                    .strikethrough(exam.isFinished)
                     .bold()
-                    .foregroundColor(exam.daysLeft() <= 7 ? .red : .primary)
-                Text("\(exam.time) @ \(exam.classRoomName)")
+                HStack {
+                    Text("\(exam.rawTime) @ \(exam.classRoomName)")
+                    Spacer()
+                    if exam.isFinished {
+                        Text("Finished".localized)
+                            .foregroundColor(.gray)
+                            .fontWeight(.bold)
+                    } else {
+                        Text(exam.daysLeft == 1 ?
+                            "1 day left".localized :
+                            String(format: "%@ days left".localized, String(exam.daysLeft)))
+                            .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
+                            .fontWeight(.bold)
+                    }
+                }
             }
 
             Divider()
@@ -170,9 +184,9 @@ struct ExamWidgetEntryView: View {
                     Text(exam.className)
                         .bold()
                     Spacer()
-                    Text("+\(String(exam.daysLeft()))D")
+                    Text("+\(String(exam.daysLeft))D")
                 }
-                .foregroundColor(exam.daysLeft() <= 7 ? .primary : .red)
+                .foregroundColor(exam.daysLeft <= 7 ? .primary : .red)
             }
             Spacer()
         }
@@ -189,6 +203,8 @@ struct ExamWidgetEntryView: View {
             case .systemMedium:
                 listView
             case .systemLarge:
+                listView
+            case .systemExtraLarge:
                 listView
             case .accessoryInline:
                 oneLine
@@ -232,6 +248,8 @@ struct ExamWidget_Previews: PreviewProvider {
             .previewContext(WidgetPreviewContext(family: .systemMedium))
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .systemLarge))
+        ExamWidgetEntryView(entry: SimpleEntry.example)
+            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
 #if os(iOS)
         ExamWidgetEntryView(entry: SimpleEntry.example)
             .previewContext(WidgetPreviewContext(family: .accessoryRectangular))

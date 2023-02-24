@@ -32,10 +32,10 @@ struct CurriculumView: View {
                         ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
                             Button {
                                 semesterID = id
-                                UstcUgAASClient.main.semesterID = semesterID
+                                UstcUgAASClient.main.selectSemester(id: semesterID)
                                 asyncBind($courses, status: $status) {
-                                    try await UstcUgAASClient.main.forceUpdateCurriculum()
-                                    return try await UstcUgAASClient.main.getCurriculum()
+                                    try await UstcUgAASClient.main.curriculumDelegate.forceUpdate()
+                                    return try await UstcUgAASClient.main.curriculumDelegate.parseCache()
                                 }
                             } label: {
                                 if semesterID == id {
@@ -57,7 +57,7 @@ struct CurriculumView: View {
                 Button {
                     withAnimation {
                         asyncBind(.constant(()), status: $saveCalendarStatus) {
-                            try UstcUgAASClient.main.saveToCalendar()
+                            try await UstcUgAASClient.main.curriculumDelegate.saveToCalendar()
                         }
 #if os(iOS)
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
@@ -72,6 +72,8 @@ struct CurriculumView: View {
                         Label("Save to Calendar", systemImage: "square.and.arrow.down")
                         Spacer()
                         switch saveCalendarStatus {
+                        case .cached:
+                            EmptyView()
                         case .success:
                             HStack {
                                 Text("Saved")
@@ -116,10 +118,8 @@ struct CurriculumView: View {
                     }
                 }
                 .navigationBarTitle("Curriculum", displayMode: .inline)
-                .onAppear {
-                    asyncBind($courses, status: $status) {
-                        try await UstcUgAASClient.main.getCurriculum()
-                    }
+                .task {
+                    UstcUgAASClient.main.curriculumDelegate.asyncBind($courses, status: $status)
                 }
                 .sheet(isPresented: $showSettingSheet) {
                     settingSheet

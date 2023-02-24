@@ -17,7 +17,7 @@ private struct SingleExamView: View {
                     Text("\(exam.className)")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .strikethrough(exam.parseTime().endTime < Date())
+                        .strikethrough(exam.isFinished)
                     Spacer()
                     Text("\(exam.typeName)")
                         .foregroundColor(Color.gray)
@@ -35,18 +35,18 @@ private struct SingleExamView: View {
                 .font(.callout)
                 HStack {
                     Image(systemName: "calendar.badge.clock")
-                    Text(exam.time)
+                    Text(exam.rawTime)
                     Spacer()
-                    if exam.parseTime().endTime < Date() {
+                    if exam.isFinished {
                         Text("Finished".localized)
                             .foregroundColor(.gray)
                             .fontWeight(.bold)
                     } else {
-                        Text(exam.daysLeft() == 1 ?
+                        Text(exam.daysLeft == 1 ?
                             "1 day left".localized :
-                            String(format: "%@ days left".localized, String(exam.daysLeft()))
+                            String(format: "%@ days left".localized, String(exam.daysLeft))
                         )
-                        .foregroundColor(exam.daysLeft() <= 7 ? .red : .accentColor)
+                        .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
                         .fontWeight(.bold)
                     }
                 }
@@ -59,7 +59,8 @@ private struct SingleExamView: View {
 struct ExamView: View {
     var body: some View {
         NavigationStack {
-            AsyncView { exams in
+            AsyncView(delegate: UstcUgAASClient.main.examDelegate) {
+                exams in
                 ScrollView(showsIndicators: false) {
                     ForEach(exams) { exam in
                         SingleExamView(exam: exam)
@@ -75,11 +76,6 @@ struct ExamView: View {
                         Image(systemName: "square.and.arrow.down")
                     }
                 }
-            } loadData: {
-                try await UstcUgAASClient.main.getExamInfo()
-            } refreshData: {
-                try await UstcUgAASClient.main.forceUpdateExamInfo()
-                return try await UstcUgAASClient.main.getExamInfo()
             }
             .navigationBarTitle("Exam", displayMode: .inline)
         }

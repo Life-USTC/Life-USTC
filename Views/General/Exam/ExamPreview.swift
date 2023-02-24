@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct ExamPreview: View {
+    @State var exams: [Exam] = []
+    @State var status: AsyncViewStatus = .inProgress
     var body: some View {
-        AsyncView { exams in
+        AsyncView(delegate: UstcUgAASClient.main.examDelegate, showReloadButton: false) { exams in
             if exams.isEmpty {
                 return happyView
             } else {
                 return makeView(with: exams)
             }
-        } loadData: {
-            try await UstcUgAASClient.main.getExamInfo()
         }
     }
 
@@ -26,17 +26,17 @@ struct ExamPreview: View {
                 HStack {
                     VStack(alignment: .leading) {
                         Text(exam.className)
-                            .strikethrough(exam.parseTime().endTime < Date())
+                            .strikethrough(exam.isFinished)
                         Text(exam.classRoomName)
                             .font(.subheadline)
                             .foregroundColor(Color.gray)
                     }
                     Spacer()
                     VStack(alignment: .trailing) {
-                        Text(exam.time.split(separator: " ")[0])
+                        Text(exam.rawTime.split(separator: " ")[0])
                             .font(.subheadline)
                             .fontWeight(.bold)
-                        Text(exam.time.split(separator: " ")[1])
+                        Text(exam.rawTime.split(separator: " ")[1])
                             .font(.subheadline)
                     }
                 }

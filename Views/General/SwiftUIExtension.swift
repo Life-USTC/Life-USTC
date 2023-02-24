@@ -43,6 +43,7 @@ enum TitleAndSubTitleStyle {
     case caption
 }
 
+@available(*, deprecated)
 struct TitleAndSubTitle: View {
     var title: String
     var subTitle: String
@@ -85,6 +86,7 @@ struct TitleAndSubTitle: View {
     }
 }
 
+@available(*, deprecated)
 struct ListLabelView: View {
     var image: String
     var title: String
@@ -174,8 +176,11 @@ struct AsyncView<D>: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var data: D?
     var makeView: (D) -> AnyView
-    var loadData: () async throws -> D
+    var loadData: (() async throws -> D)?
     var refreshData: (() async throws -> D)?
+
+    var asyncDataDelegate: (any AsyncDataDelegate)?
+    var showReloadButton: Bool = true
 
     init(makeView: @escaping (D) -> any View,
          loadData: @escaping () async throws -> D)
@@ -193,19 +198,44 @@ struct AsyncView<D>: View {
         self.refreshData = refreshData
     }
 
-    @ViewBuilder func makeMainView(with data: D) -> some View {
-        if refreshData == nil {
-            makeView(data)
-        } else {
-            makeView(data)
+    init<AsyncDataDelegateType: AsyncDataDelegate>
+    (delegate: AsyncDataDelegateType,
+     showReloadButton: Bool = true,
+     makeView: @escaping (D) -> any View) where
+        AsyncDataDelegateType.D == D
+    {
+        asyncDataDelegate = delegate
+        self.showReloadButton = showReloadButton
+        self.makeView = { AnyView(makeView($0)) }
+    }
+
+    func makeMainView(with providedData: D) -> some View {
+        if asyncDataDelegate != nil, showReloadButton {
+            return AnyView(makeView(providedData)
+                .toolbar {
+                    Button {
+                        // TODO: Not fully testedprovidedData
+                        Task {
+                            try await asyncDataDelegate?.forceUpdate()
+                            data = try await asyncDataDelegate?.parseCache() as? D
+                        }
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                })
+        }
+        if refreshData == nil || asyncDataDelegate != nil {
+            return makeView(providedData)
+        }
+        return AnyView(
+            makeView(providedData)
                 .toolbar {
                     Button {
                         asyncBind($data, status: $status, refreshData!)
                     } label: {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
-                }
-        }
+                })
     }
 
     var body: some View {
@@ -215,6 +245,8 @@ struct AsyncView<D>: View {
                 ProgressView()
             case .success:
                 makeMainView(with: data!)
+            case .cached:
+                makeMainView(with: data!)
             case .failure:
                 FailureView()
             case .waiting:
@@ -222,7 +254,11 @@ struct AsyncView<D>: View {
             }
         }
         .onAppear {
-            asyncBind($data, status: $status, loadData)
+            if loadData != nil {
+                asyncBind($data, status: $status, loadData!)
+            } else {
+                asyncDataDelegate?.asyncBind($data, status: $status)
+            }
         }
     }
 }
@@ -249,6 +285,13 @@ struct AsyncButton: View {
             case .waiting:
                 // Idle mode:
                 makeView(.waiting)
+            case .cached:
+                // TODO: Why should a button have a status of cached??
+                if bigStyle {
+                    makeView(.success)
+                } else {
+                    Image(systemName: "checkmark")
+                }
             case .success:
                 if bigStyle {
                     makeView(.success)

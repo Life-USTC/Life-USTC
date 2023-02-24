@@ -177,7 +177,7 @@ struct ScoreView: View {
     }
 
     var body: some View {
-        AsyncView { score in
+        AsyncView(delegate: UstcUgAASClient.main.scoreDelegate) { score in
             makeView(with: score)
                 .toolbar {
                     Button {
@@ -186,11 +186,6 @@ struct ScoreView: View {
                         Label("Settings", systemImage: "gearshape")
                     }
                 }
-        } loadData: {
-            try await UstcUgAASClient.main.getScore()
-        } refreshData: {
-            try await UstcUgAASClient.main.forceUpdateScoreInfo()
-            return try await UstcUgAASClient.main.getScore()
         }
         .navigationBarTitle("Score", displayMode: .inline)
     }
