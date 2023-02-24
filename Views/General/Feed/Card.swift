@@ -13,6 +13,7 @@ let cardHeight = 200.0
 let cardHeight = 150.0
 #endif
 
+@available(*, deprecated)
 struct Card: View {
     @Environment(\.colorScheme) var colorScheme
     var cardTitle: String

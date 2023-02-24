@@ -29,7 +29,6 @@
 		5611281D29814B1300BB66EE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
 		5611281E29814B1300BB66EE /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		5611281F29814B1300BB66EE /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
-		5611282029814B2000BB66EE /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
 		5611282229814B7B00BB66EE /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5611282129814B7B00BB66EE /* FeedKit */; };
 		5611282429814B7B00BB66EE /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 5611282329814B7B00BB66EE /* SwiftyJSON */; };
 		5611282629814B7B00BB66EE /* SwiftFormat in Frameworks */ = {isa = PBXBuildFile; productRef = 5611282529814B7B00BB66EE /* SwiftFormat */; };
@@ -42,8 +41,6 @@
 		56128F52298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
 		56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F53298D3D2D0080A9F7 /* HealthCheck.swift */; };
 		56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
-		56128F5A298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
-		56128F5B298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
 		56143F6B295EDEA5008CE454 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6C295EE47A008CE454 /* AsyncCalls.swift */; };
 		5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
@@ -79,8 +76,20 @@
 		569CFE46297D87640072C094 /* SwiftFormat in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE45297D87640072C094 /* SwiftFormat */; };
 		569CFE48297D87660072C094 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE47297D87660072C094 /* SwiftSoup */; };
 		569CFE4A297D87690072C094 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE49297D87690072C094 /* Reeeed */; };
-		569CFE4C297EB19C0072C094 /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
 		569CFE50297EBD240072C094 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 569CFE52297EBD240072C094 /* Localizable.strings */; };
+		56A3B86C29A889B500BFE64F /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B86B29A889B500BFE64F /* Navigation.swift */; };
+		56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B86D29A889D100BFE64F /* AsyncView.swift */; };
+		56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
+		56A3B87029A88A5600BFE64F /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
+		56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* ExamDelegate.swift */; };
+		56A3B87629A8B88400BFE64F /* ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* ExamDelegate.swift */; };
+		56A3B87729A8B88400BFE64F /* ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* ExamDelegate.swift */; };
+		56A3B87929A8B8A400BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
+		56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
+		56A3B87C29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
+		56A3B87D29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
+		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
+		56A3B87F29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
@@ -193,6 +202,11 @@
 		569CFE4B297E85F30072C094 /* ExamWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExamWidget.entitlements; sourceTree = "<group>"; };
 		569CFE51297EBD240072C094 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		569CFE53297EBD2E0072C094 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		56A3B86B29A889B500BFE64F /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
+		56A3B86D29A889D100BFE64F /* AsyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncView.swift; sourceTree = "<group>"; };
+		56A3B87429A8B86700BFE64F /* ExamDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamDelegate.swift; sourceTree = "<group>"; };
+		56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumDelegate.swift; sourceTree = "<group>"; };
+		56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreDelegate.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
@@ -282,6 +296,7 @@
 		56128F57298D44F30080A9F7 /* HealthCheck */ = {
 			isa = PBXGroup;
 			children = (
+				56128F53298D3D2D0080A9F7 /* HealthCheck.swift */,
 				56128F58298D45030080A9F7 /* HealthCheckPreview.swift */,
 			);
 			path = HealthCheck;
@@ -290,6 +305,7 @@
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				56A3B86A29A8899800BFE64F /* Extensions */,
 				56E94E21298A775C0085241B /* Settings */,
 				562169212955BEDE00DF46BE /* ContentView.swift */,
 				56558803294D93810010E060 /* FeaturesView.swift */,
@@ -322,7 +338,6 @@
 				56BE9200296679DB00822C98 /* Curriculum */,
 				56D175CA295456F10070778F /* Feed */,
 				565587B5294ACEFD0010E060 /* Browser.swift */,
-				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -330,7 +345,6 @@
 		565587FF294D749C0010E060 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				56128F53298D3D2D0080A9F7 /* HealthCheck.swift */,
 				562169232955BEF900DF46BE /* UserTypeView.swift */,
 				56558800294D74BB0010E060 /* CASLoginView.swift */,
 			);
@@ -354,6 +368,43 @@
 				569CFE52297EBD240072C094 /* Localizable.strings */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		56A3B86A29A8899800BFE64F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
+				56A3B86B29A889B500BFE64F /* Navigation.swift */,
+				56A3B86D29A889D100BFE64F /* AsyncView.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		56A3B87129A8B83E00BFE64F /* Exam */ = {
+			isa = PBXGroup;
+			children = (
+				56F3EAD5296EB3B70095AEF4 /* Exam.swift */,
+				56A3B87429A8B86700BFE64F /* ExamDelegate.swift */,
+			);
+			path = Exam;
+			sourceTree = "<group>";
+		};
+		56A3B87229A8B84C00BFE64F /* Course */ = {
+			isa = PBXGroup;
+			children = (
+				5694D91729668191009CFCDF /* Course.swift */,
+				56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */,
+			);
+			path = Course;
+			sourceTree = "<group>";
+		};
+		56A3B87329A8B85400BFE64F /* Score */ = {
+			isa = PBXGroup;
+			children = (
+				56E8AD69296FE880009006D0 /* CourseScore.swift */,
+				56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */,
+			);
+			path = Score;
 			sourceTree = "<group>";
 		};
 		56AC72F3294A012600A60F47 = {
@@ -418,11 +469,11 @@
 		56D175C4295411DA0070778F /* USTC */ = {
 			isa = PBXGroup;
 			children = (
+				56A3B87329A8B85400BFE64F /* Score */,
+				56A3B87229A8B84C00BFE64F /* Course */,
+				56A3B87129A8B83E00BFE64F /* Exam */,
 				565587F0294C4E5D0010E060 /* UstcUgAAS.swift */,
 				5655880A294DEA6B0010E060 /* UstcCAS.swift */,
-				5694D91729668191009CFCDF /* Course.swift */,
-				56F3EAD5296EB3B70095AEF4 /* Exam.swift */,
-				56E8AD69296FE880009006D0 /* CourseScore.swift */,
 				56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */,
 				56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */,
 			);
@@ -680,15 +731,17 @@
 				5611281E29814B1300BB66EE /* UUIDExtension.swift in Sources */,
 				5611281929814AED00BB66EE /* Course.swift in Sources */,
 				5611281B29814B1300BB66EE /* Constants.swift in Sources */,
+				56A3B87029A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
 				5611281429814AED00BB66EE /* Exam.swift in Sources */,
 				5611281629814AED00BB66EE /* CourseScore.swift in Sources */,
 				5611281A29814B1300BB66EE /* SwiftExtension.swift in Sources */,
 				5611281D29814B1300BB66EE /* DateExtension.swift in Sources */,
+				56A3B87D29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */,
 				5611281829814AED00BB66EE /* UstcUgAAS.swift in Sources */,
+				56A3B87729A8B88400BFE64F /* ExamDelegate.swift in Sources */,
 				5611281F29814B1300BB66EE /* ExceptionCalls.swift in Sources */,
-				56128F5B298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
-				5611282029814B2000BB66EE /* SwiftUIExtension.swift in Sources */,
 				56112810298149F200BB66EE /* ExamWidget.swift in Sources */,
+				56A3B87F29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */,
 				56128F52298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				5611281729814AED00BB66EE /* UstcCAS.swift in Sources */,
 				5611281C29814B1300BB66EE /* AsyncCalls.swift in Sources */,
@@ -710,6 +763,7 @@
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
 				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
+				56A3B87929A8B8A400BFE64F /* CurriculumDelegate.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLoginView.swift in Sources */,
 				56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */,
 				56E94E25298A77990085241B /* LegalPage.swift in Sources */,
@@ -729,18 +783,22 @@
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				56E94E2B298AA3720085241B /* ExamPage.swift in Sources */,
+				56A3B86C29A889B500BFE64F /* Navigation.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
 				56E8AD702973D0DB009006D0 /* UstcCatalog.swift in Sources */,
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
+				56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
 				565587B3294ABE7C0010E060 /* Card.swift in Sources */,
+				56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
 				56E94E27298A77D00085241B /* NotificationPage.swift in Sources */,
 				56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */,
 				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
+				56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */,
 				56E94E23298A77790085241B /* AboutPage.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
 				56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */,
@@ -759,15 +817,17 @@
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
+				56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
 				56734CEA297D86F200DBB45F /* UstcUgAAS.swift in Sources */,
 				56734CE7297D86F200DBB45F /* Exam.swift in Sources */,
 				56734CE8297D86F200DBB45F /* CourseScore.swift in Sources */,
 				56734CEF297D871500DBB45F /* Constants.swift in Sources */,
+				56A3B87C29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */,
 				56734CE6297D86F200DBB45F /* Course.swift in Sources */,
+				56A3B87629A8B88400BFE64F /* ExamDelegate.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
-				56128F5A298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
-				569CFE4C297EB19C0072C094 /* SwiftUIExtension.swift in Sources */,
 				56734CE9297D86F200DBB45F /* UstcCatalog.swift in Sources */,
+				56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */,
 				56128F51298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56FA8E7C297D7263000AC3A9 /* ExamWidgetBundle.swift in Sources */,
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
