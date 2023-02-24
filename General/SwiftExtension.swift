@@ -75,3 +75,9 @@ func combine(_ lhs: String, _ rhs: String) -> String {
         return "\(lhs) & \(rhs)"
     }
 }
+
+public extension Collection where Indices.Iterator.Element == Index {
+    subscript(safe index: Index) -> Iterator.Element? {
+        (startIndex <= index && index < endIndex) ? self[index] : nil
+    }
+}

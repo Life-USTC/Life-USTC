@@ -28,6 +28,9 @@ struct AboutLifeAtUSTCView: View {
                     .frame(width: 200, height: 200)
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                     .overlay(RoundedRectangle(cornerRadius: 15).stroke(.secondary, lineWidth: 2))
+                    .onTapGesture(count: 5) {
+                        UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
+                    }
 #if os(iOS)
                     .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 15))
 #endif
@@ -35,11 +38,11 @@ struct AboutLifeAtUSTCView: View {
                         ShareLink(item: "Life@USTC") {
                             Label("Share this app", systemImage: "square.and.arrow.up")
                         }
-                        Button {
-                            openURL(URL(string: "https://www.pixiv.net/artworks/97582506")!)
-                        } label: {
-                            Label("Visit Icon original post", systemImage: "network")
-                        }
+//                        Button {
+//                            openURL(URL(string: "https://www.pixiv.net/artworks/97582506")!)
+//                        } label: {
+//                            Label("Visit Icon original post", systemImage: "network")
+//                        }
                     }
 
                 Text("Life@USTC")
