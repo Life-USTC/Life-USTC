@@ -33,6 +33,13 @@ var defaultDateFormatter: DateFormatter {
     return dateFormatter
 }
 
+var longDateFormatter: DateFormatter {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .short
+    return dateFormatter
+}
+
 /// Represent a certain peroid of time
 ///
 /// The concept is generally related to today, say 2000/10/1 for example,
@@ -122,8 +129,11 @@ extension Date {
 
 extension String {
     /// Format date with default formatter
-    init(_ date: Date) {
+    init(_ date: Date, long: Bool = false) {
         self = defaultDateFormatter.string(from: date)
+        if long {
+            self = longDateFormatter.string(from: date)
+        }
     }
 }
 

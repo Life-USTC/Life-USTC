@@ -41,19 +41,26 @@ class FeedSource {
         return data
     }
 
-    func forceUpdatePost() async throws -> [Feed] {
-        print("!!! Refresh \(name) RSSFeedPost")
-        let result = FeedParser(URL: url).parse()
-        switch result {
-        case let .success(fetch):
-            if let feeds = fetch.rssFeed?.items?.map({ Feed(item: $0, source: self.name) }) {
-                FeedCache.update(using: id, with: feeds)
-                return feeds
-            } else {
-                throw BaseError.runtimeError("Parse Error")
+    func forceUpdatePost(loopCount: Int = 0) async throws -> [Feed] {
+        do {
+            print("!!! Refresh \(name) RSSFeedPost")
+            let result = FeedParser(URL: url).parse()
+            switch result {
+            case let .success(fetch):
+                if let feeds = fetch.rssFeed?.items?.map({ Feed(item: $0, source: self.name) }) {
+                    FeedCache.update(using: id, with: feeds)
+                    return feeds
+                }
+            case let .failure(error):
+                throw error
             }
-        case let .failure(error):
-            throw error
+        } catch {}
+
+        try await Task.sleep(for: .seconds(5))
+        if loopCount < 10 {
+            return try await forceUpdatePost(loopCount: loopCount + 1)
+        } else {
+            throw BaseError.runtimeError("Error when parsing posts")
         }
     }
 
@@ -87,6 +94,13 @@ class FeedSource {
         result.sort(by: { $0.datePosted > $1.datePosted })
         important.sort(by: { $0.datePosted > $1.datePosted })
         result.insert(contentsOf: important, at: 0)
+
+        if (number ?? 1) > result.count {
+            for source in FeedSource.allToShow {
+                _ = try await source.forceUpdatePost()
+                return try await recentFeeds(number: number)
+            }
+        }
 
         if let number {
             return Array(result.prefix(number))

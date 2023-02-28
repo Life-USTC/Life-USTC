@@ -27,18 +27,18 @@ extension URL {
 
 /// A cas client to login to https://passport.ustc.edu.cn/
 enum UstcCasClient {
-    static var username: String = userDefaults.string(forKey: "passportUsername") ?? ""
-    static var password: String = userDefaults.string(forKey: "passportPassword") ?? ""
+    static var username: String {
+        userDefaults.string(forKey: "passportUsername") ?? ""
+    }
+
+    static var password: String {
+        userDefaults.string(forKey: "passportPassword") ?? ""
+    }
 
     private static var lastLogined: Date?
 
     private static var precheckFails: Bool {
         username.isEmpty || password.isEmpty
-    }
-
-    static func update(username: String, password: String) {
-        self.username = username
-        self.password = password
     }
 
     static func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
@@ -59,24 +59,33 @@ enum UstcCasClient {
     }
 
     /// Call this function before using casCookie
-    static func loginToCAS() async throws -> Bool {
-        if precheckFails {
-            return false
-        }
-        let session = URLSession.shared
-        let (ltToken, cookies) = try await getLtTokenFromCAS()
+    static func loginToCAS(undeterimined: Bool = false) async throws -> Bool {
+        do {
+            if precheckFails {
+                throw BaseError.runtimeError("precheck fails")
+            }
+            let session = URLSession.shared
+            let (ltToken, cookies) = try await getLtTokenFromCAS()
 
-        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
-        var request = URLRequest(url: ustcLoginUrl)
-        request.httpMethod = "POST"
-        request.httpBody = dataString.data(using: .utf8)
-        request.httpShouldHandleCookies = true
-        session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
+            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
+            var request = URLRequest(url: ustcLoginUrl)
+            request.httpMethod = "POST"
+            request.httpBody = dataString.data(using: .utf8)
+            request.httpShouldHandleCookies = true
+            session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        _ = try await session.data(for: request)
-        lastLogined = .now
-
-        return try await checkLogined()
+            _ = try await session.data(for: request)
+            if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
+                lastLogined = .now
+                return true
+            }
+            if undeterimined {
+                return false
+            }
+        } catch {}
+        lastLogined = nil
+        try await Task.sleep(for: .seconds(5))
+        return try await loginToCAS()
     }
 
     static func checkLogined() async throws -> Bool {

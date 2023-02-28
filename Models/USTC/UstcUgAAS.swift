@@ -20,7 +20,7 @@ class UstcUgAASClient {
 
     static func login() async throws {
         if try await !UstcCasClient.requireLogin() {
-            return
+            throw BaseError.runtimeError("UstcCAS Not logined")
         }
 
         // jw.ustc.edu.cn login.

@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         deviceTokenString = deviceToken.hexString
+#if DEBUG
+        debugPrint(deviceTokenString)
+#endif
         if userDefaults.bool(forKey: "useNotification") {
             Task {
                 try await registerDeviceToken()

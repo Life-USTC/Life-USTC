@@ -102,11 +102,11 @@ struct CASLoginView: View {
 
                 inputForm
             }
-            .alert("Login Failed", isPresented: $showFailedAlert, actions: {}, message: {
-                Text("Double check your username and password")
+            .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
+                Text("Double check your username and password".localized)
             })
-            .alert("Login Success", isPresented: $showSuccessAlert, actions: {}, message: {
-                Text("You're good to go")
+            .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
+                Text("You're good to go".localized)
             })
             .padding()
             .navigationBarTitle(title, displayMode: .inline)
@@ -114,9 +114,8 @@ struct CASLoginView: View {
     }
 
     private func checkAndLogin() {
-        UstcCasClient.update(username: passportUsername, password: passportPassword)
         _ = Task {
-            let result = try await UstcCasClient.loginToCAS()
+            let result = try await UstcCasClient.loginToCAS(undeterimined: true)
             if result {
                 if isInSheet {
                     showSuccessAlert = true

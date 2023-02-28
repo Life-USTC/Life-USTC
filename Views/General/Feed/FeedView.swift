@@ -72,7 +72,7 @@ struct SecondFeedView: View {
                 HStack {
                     Text(feed.source)
                         .bold()
-                    Text(String(feed.datePosted))
+                    Text(String(feed.datePosted, long: true))
                     Spacer()
                 }
                 .font(.caption)
