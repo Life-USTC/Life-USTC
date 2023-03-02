@@ -30,6 +30,7 @@ struct AboutLifeAtUSTCView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                Spacer()
                 Image("Icon")
                     .resizable()
                     .frame(width: 200, height: 200)
@@ -41,14 +42,15 @@ struct AboutLifeAtUSTCView: View {
 #endif
                     }
 #if os(iOS)
-                    .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 15))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
 #endif
                     .contextMenu {
                         ShareLink(item: "Life@USTC") {
                             Label("Share this app", systemImage: "square.and.arrow.up")
                         }
                     }
-
+                    .shadow(radius: 10)
+                Spacer()
                 Text("Life@USTC")
                     .font(.title)
                     .bold()
