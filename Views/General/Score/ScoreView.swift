@@ -13,9 +13,9 @@ private enum SortPreference: String, CaseIterable {
 }
 
 struct ScoreView: View {
-    @State var showAdvancedSettings: Bool = false
-    @State var semesterNameToRemove: [String] = []
-    @State private var sortPreference: SortPreference?
+    @State var showSettings: Bool = false
+    @AppStorage("scoreViewSemesterNameToRemove") var semesterNameToRemove: [String] = []
+    @AppStorage("scoreViewSortPreference") private var sortPreference: SortPreference?
 
     func makeView(with courseScore: CourseScore, score: Score) -> some View {
         HStack {
@@ -101,8 +101,10 @@ struct ScoreView: View {
                         }
                     }
                 } label: {
-                    Label("Filter Semester", systemImage: "square.dashed.inset.filled")
-                        .hStackLeading()
+                    Label("Semester: \(String(semesterList.filter { !semesterNameToRemove.contains($0) }.map { $0.prefix(6)}.joined(separator: ",")))",
+                          systemImage: "square.dashed.inset.filled")
+                    .lineLimit(1)
+                    .hStackLeading()
                 }
 
                 Menu {
@@ -124,8 +126,13 @@ struct ScoreView: View {
                         }
                     }
                 } label: {
-                    Label("Sort by: \((sortPreference == nil ? "Default" : sortPreference!.rawValue).localized)", systemImage: "number.square")
-                        .hStackLeading()
+                    if sortPreference == nil {
+                        Label("Sort by: Default", systemImage: "number.square")
+                            .hStackLeading()
+                    } else {
+                        Label("Sort by: \(sortPreference!.rawValue.localized)", systemImage: "number.square")
+                            .hStackLeading()
+                    }
                 }
             }
             .listStyle(.plain)
@@ -135,12 +142,13 @@ struct ScoreView: View {
     }
 
     func makeView(with score: Score) -> some View {
-        let scoresFiltered = {
+        let semesterDividedResult = {
             var result = score.courseScores
             for name in semesterNameToRemove {
                 result.removeAll(where: { $0.semesterName == name })
             }
 
+            result.sort(by: { $0.semesterID < $1.semesterID })
             switch sortPreference {
             case .none:
                 break
@@ -152,7 +160,15 @@ struct ScoreView: View {
                     result.sort(by: { $0.lessonCode < $1.lessonCode })
                 }
             }
-            return result
+            var semesterDividedResult: [String : [CourseScore]] = [:]
+            for _result in result {
+                if semesterDividedResult.keys.contains(_result.semesterName) {
+                    semesterDividedResult[_result.semesterName]?.append(_result)
+                } else {
+                    semesterDividedResult[_result.semesterName] = [_result]
+                }
+            }
+            return semesterDividedResult
         }()
 
         return NavigationStack {
@@ -164,14 +180,21 @@ struct ScoreView: View {
                                          style: .reverse)
                             .padding(.vertical, 5)
                     }
-                    ForEach(scoresFiltered) {
+                    ForEach(semesterDividedResult.sorted { $0.key > $1.key }, id: \.key) {
+                        Text($0.key)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.gray)
+                        ForEach($0.value) { course in
+                            Divider()
+                            makeView(with: course, score: score)
+                                .padding(.vertical, 5)
+                        }
                         Divider()
-                        makeView(with: $0, score: score)
-                            .padding(.vertical, 5)
+                            .padding(.bottom, 45)
                     }
                 }
             }
-            .sheet(isPresented: $showAdvancedSettings) { sheet(score) }
+            .sheet(isPresented: $showSettings) { sheet(score) }
             .padding([.leading, .trailing])
         }
     }
@@ -181,7 +204,7 @@ struct ScoreView: View {
             makeView(with: score)
                 .toolbar {
                     Button {
-                        showAdvancedSettings.toggle()
+                        showSettings.toggle()
                     } label: {
                         Label("Settings", systemImage: "gearshape")
                     }

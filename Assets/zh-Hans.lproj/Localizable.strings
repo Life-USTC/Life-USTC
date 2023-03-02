@@ -87,7 +87,7 @@
 "Less" = "收起";
 
 "Score" = "成绩单";
-"Filter Semester" = "选择学期";
+"Semester: %@" = "选择学期: %@";
 "Sort by: %@" = "按%@排序";
 "Course Code" = "课程号";
 "Rating:" = "排名:";
@@ -128,3 +128,5 @@
 "Default" = "默认值";
 "About" = "关于";
 "Legal" = "法律信息";
+
+"Sort by: Default" = "按默认值排序";

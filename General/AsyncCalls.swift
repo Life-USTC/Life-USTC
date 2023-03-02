@@ -49,16 +49,22 @@ extension AsyncDataDelegate {
         Task {
             do {
                 data.wrappedValue = try await parseCache() as! T
-                if requireUpdate {
-                    status.wrappedValue = .cached
-                    try await forceUpdate()
-                    data.wrappedValue = try await parseCache() as! T
-                }
-                status.wrappedValue = .success
             } catch {
                 print(error)
                 status.wrappedValue = .failure
             }
+
+            if requireUpdate || status.wrappedValue == .failure {
+                do {
+                    status.wrappedValue = .cached
+                    try await forceUpdate()
+                    data.wrappedValue = try await parseCache() as! T
+                } catch {
+                    print(error)
+                    return
+                }
+            }
+            status.wrappedValue = .success
         }
     }
 
