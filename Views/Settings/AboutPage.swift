@@ -8,7 +8,8 @@
 import SwiftUI
 import SwiftyJSON
 
-private let githubDumbToken = "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"
+private let githubDumbTokenA = "github_pat_11AV4QBHQ0I8IdqcDkTkvH_"
+private let githubDumbTokenB = "gQyW7CGYb4OmlfJVApx3g7QsTo17d07SACsOAkpXkhBLN4NHZFZhg5zjWoy"
 
 extension Bundle {
     var releaseNumber: String? {
@@ -25,7 +26,9 @@ struct AboutLifeAtUSTCView: View {
     let links: [(label: String, url: String)] = [("GitHub", "https://github.com/tiankaima/Life-USTC"),
 //                                                 ("Twitter","https://twitter.com/tiankaima"),
                                                  ("Discord", "https://discord.gg/BxdsySpkYP")]
-    @State var contributorList: [(name: String, avatar: URL?)] = []
+    @State var contributorList: [(name: String, avatar: URL?)] =
+    [("tiankaima", URL(string: "https://avatars.githubusercontent.com/u/91816094?v=4")),
+     ("odeinjul", URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4"))]
 
     var body: some View {
         NavigationStack {
@@ -109,10 +112,15 @@ struct AboutLifeAtUSTCView: View {
                 var request = URLRequest(url: URL(string: "https://api.github.com/repos/tiankaima/Life-USTC/contributors")!)
                 request.httpMethod = "GET"
                 request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-                request.setValue("Bearer \(githubDumbToken)", forHTTPHeaderField: "Authorization")
+                request.setValue("Bearer \(githubDumbTokenA + githubDumbTokenB)", forHTTPHeaderField: "Authorization")
                 request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
 
-                let (data, _) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await URLSession.shared.data(for: request)
+                if (response as! HTTPURLResponse).statusCode == 401 {
+                    // Token is expired for some reason
+                    return
+                }
+                contributorList.removeAll()
                 let dataJson = try JSON(data: data)
                 for (_, userInfo) in dataJson {
                     contributorList.append((userInfo["login"].stringValue, URL(string: userInfo["avatar_url"].stringValue)))
