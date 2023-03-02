@@ -7,34 +7,24 @@
 
 import SwiftUI
 
+let credit = "Credit to FeedKit, Fuzi, Introspect, Reeeed, SwiftFormat, SwiftSoup, SwiftyJSON, which all makes this app possible.😘"
+
 struct LegalInfoView: View {
     var body: some View {
         NavigationStack {
             VStack {
                 List {
                     VStack(alignment: .leading) {
-                        Text("Icon source")
-                        Text("Visit https://www.pixiv.net/artworks/97582506 for origin post, much thanks to original author.🥰")
-                            .font(.caption)
-                            .bold()
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(alignment: .leading) {
-                        Text("Feedkit source")
-                        Text("Visit https://github.com/nmdias/FeedKit (MIT License) for origin repo, much thanks to original author.😘")
-                            .font(.caption)
-                            .bold()
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(alignment: .leading) {
-                        Text("SwiftyJSON source")
-                        Text("Visit https://github.com/SwiftyJSON/SwiftyJSON (MIT License) for origin repo, much thanks to repo contributors.🥳")
+                        Text("Open source code usage:")
+                            .padding(.bottom, 2)
+                        Text(credit)
                             .font(.caption)
                             .bold()
                             .foregroundColor(.secondary)
                     }
                     VStack(alignment: .leading) {
                         Text("USTC CAS DISCLAIMER:")
+                            .padding(.bottom, 2)
                         Text("casFullHint")
                             .font(.caption)
                             .bold()
@@ -45,5 +35,11 @@ struct LegalInfoView: View {
             }
             .navigationBarTitle("Legal", displayMode: .inline)
         }
+    }
+}
+
+struct LegalPage_Previews: PreviewProvider {
+    static var previews: some View {
+        LegalInfoView()
     }
 }

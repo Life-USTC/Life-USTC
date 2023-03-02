@@ -25,7 +25,6 @@ struct NotificationSettingView: View {
                         }
                     }
             }
-            .scrollDisabled(true)
             .scrollContentBackground(.hidden)
             .navigationBarTitle("Notification Settings", displayMode: .inline)
         }

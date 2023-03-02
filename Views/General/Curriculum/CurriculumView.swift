@@ -125,6 +125,7 @@ struct CurriculumView: View {
                     settingSheet
                 }
         }
+        .toolbar(.hidden, for: .tabBar)
     }
 
     func makeVStack(index: Int) -> some View {

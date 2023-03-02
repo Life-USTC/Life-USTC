@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import SwiftyJSON
+
+private let githubDumbToken = "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"
 
 extension Bundle {
     var releaseNumber: String? {
@@ -19,6 +22,10 @@ extension Bundle {
 
 struct AboutLifeAtUSTCView: View {
     @Environment(\.openURL) private var openURL
+    let links: [(label: String, url: String)] = [("GitHub", "https://github.com/tiankaima/Life-USTC"),
+//                                                 ("Twitter","https://twitter.com/tiankaima"),
+                                                 ("Discord", "https://discord.gg/BxdsySpkYP")]
+    @State var contributorList: [(name: String, avatar: URL?)] = []
 
     var body: some View {
         NavigationStack {
@@ -26,10 +33,12 @@ struct AboutLifeAtUSTCView: View {
                 Image("Icon")
                     .resizable()
                     .frame(width: 200, height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .overlay(RoundedRectangle(cornerRadius: 15).stroke(.secondary, lineWidth: 2))
                     .onTapGesture(count: 5) {
+#if os(macOS)
+                        NSPasteboard.general.setString(String(describing: Array(userDefaults.dictionaryRepresentation())), forType: .string)
+#else
                         UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
+#endif
                     }
 #if os(iOS)
                     .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 15))
@@ -38,21 +47,11 @@ struct AboutLifeAtUSTCView: View {
                         ShareLink(item: "Life@USTC") {
                             Label("Share this app", systemImage: "square.and.arrow.up")
                         }
-//                        Button {
-//                            openURL(URL(string: "https://www.pixiv.net/artworks/97582506")!)
-//                        } label: {
-//                            Label("Visit Icon original post", systemImage: "network")
-//                        }
                     }
 
                 Text("Life@USTC")
                     .font(.title)
                     .bold()
-
-                Text("Brought to you by @tiankaima")
-                    .font(.caption)
-                    .bold()
-                    .foregroundColor(.secondary)
 
                 Text("Ver: \(Bundle.main.releaseNumber ?? "") build\(Bundle.main.buildNumber ?? "")")
                     .font(.caption)
@@ -61,28 +60,70 @@ struct AboutLifeAtUSTCView: View {
 
                 Spacer()
 
-                VStack(alignment: .leading) {
-                    Text("Github")
+                HStack {
+                    Text("Author")
                         .fontWeight(.semibold)
                         .font(.title2)
-                        .padding([.top, .bottom], 2)
-                    Text("https://github.com/tiankaima/Life-USTC")
 
-                    Text("Twitter")
-                        .fontWeight(.semibold)
-                        .font(.title2)
-                        .padding([.top, .bottom], 2)
-                    Text("https://twitter.com/tiankaima")
-
-                    Text("Discord")
-                        .fontWeight(.semibold)
-                        .font(.title2)
-                        .padding([.top, .bottom], 2)
-                    Text("https://discord.gg/BxdsySpkYP")
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(contributorList, id: \.name) { contributor in
+                                AsyncImage(url: contributor.avatar) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: 30, maxHeight: 30)
+                                        .clipShape(Circle())
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                Text(contributor.name)
+                                    .fontWeight(.medium)
+                                    .font(.title3)
+                            }
+                        }
+                    }
                 }
+
+                VStack(alignment: .leading) {
+                    ForEach(links, id: \.label) { link in
+                        HStack {
+                            Text(link.label)
+                                .fontWeight(.semibold)
+                                .font(.title2)
+                                .padding([.top, .bottom], 2)
+                            Text(link.url)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .frame(height: 40)
+                }
+                .hStackLeading()
             }
             .padding()
             .navigationBarTitle("About", displayMode: .inline)
+            .toolbar(.hidden, for: .tabBar)
         }
+        .onAppear {
+            Task {
+                var request = URLRequest(url: URL(string: "https://api.github.com/repos/tiankaima/Life-USTC/contributors")!)
+                request.httpMethod = "GET"
+                request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+                request.setValue("Bearer \(githubDumbToken)", forHTTPHeaderField: "Authorization")
+                request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
+
+                let (data, _) = try await URLSession.shared.data(for: request)
+                let dataJson = try JSON(data: data)
+                for (_, userInfo) in dataJson {
+                    contributorList.append((userInfo["login"].stringValue, URL(string: userInfo["avatar_url"].stringValue)))
+                }
+            }
+        }
+    }
+}
+
+struct AboutPage_Previews: PreviewProvider {
+    static var previews: some View {
+        AboutLifeAtUSTCView()
     }
 }

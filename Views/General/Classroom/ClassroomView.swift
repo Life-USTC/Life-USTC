@@ -216,5 +216,6 @@ struct ClassroomView: View {
             }
             .sheet(isPresented: $showSheet, content: settingSheet)
         }
+        .toolbar(.hidden, for: .tabBar)
     }
 }
