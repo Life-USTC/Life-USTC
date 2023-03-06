@@ -58,25 +58,31 @@ enum UstcCasClient {
         return (String(match.0), HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!))
     }
 
-    /// Call this function before using casCookie
-    static func loginToCAS(undeterimined: Bool = false) async throws -> Bool {
+    private static func loginToCAS() async throws -> Bool {
+        if precheckFails {
+            throw BaseError.runtimeError("precheck fails")
+        }
+        let session = URLSession.shared
+        let (ltToken, cookies) = try await getLtTokenFromCAS()
+
+        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
+        var request = URLRequest(url: ustcLoginUrl)
+        request.httpMethod = "POST"
+        request.httpBody = dataString.data(using: .utf8)
+        request.httpShouldHandleCookies = true
+        session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
+
+        _ = try await session.data(for: request)
+        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
+            lastLogined = .now
+            return true
+        }
+        return false
+    }
+
+    static func login(undeterimined: Bool = false) async throws -> Bool {
         do {
-            if precheckFails {
-                throw BaseError.runtimeError("precheck fails")
-            }
-            let session = URLSession.shared
-            let (ltToken, cookies) = try await getLtTokenFromCAS()
-
-            let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
-            var request = URLRequest(url: ustcLoginUrl)
-            request.httpMethod = "POST"
-            request.httpBody = dataString.data(using: .utf8)
-            request.httpShouldHandleCookies = true
-            session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
-
-            _ = try await session.data(for: request)
-            if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
-                lastLogined = .now
+            if try await loginToCAS() {
                 return true
             }
             if undeterimined {
@@ -85,7 +91,7 @@ enum UstcCasClient {
         } catch {}
         lastLogined = nil
         try await Task.sleep(for: .seconds(5))
-        return try await loginToCAS()
+        return try await login()
     }
 
     static func checkLogined() async throws -> Bool {
@@ -100,7 +106,7 @@ enum UstcCasClient {
         if try await checkLogined() {
             return true
         } else {
-            return try await loginToCAS()
+            return try await login()
         }
     }
 }

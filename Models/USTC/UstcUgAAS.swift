@@ -11,20 +11,44 @@ import SwiftyJSON
 import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
-class UstcUgAASClient {
+enum UstcUgAASClient {
+    private static var lastLogined: Date?
     private static var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
 
     static var curriculumDelegate = CurriculumDelegate()
     static var examDelegate = ExamDelegate()
     static var scoreDelegate = ScoreDelegate()
 
-    static func login() async throws {
+    private static func login() async throws -> Bool {
         if try await !UstcCasClient.requireLogin() {
             throw BaseError.runtimeError("UstcCAS Not logined")
         }
 
         // jw.ustc.edu.cn login.
-        let _ = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
+        let session = URLSession.shared
+        let _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
+
+        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
+            lastLogined = .now
+            return true
+        }
+        return false
+    }
+
+    static func checkLogined() async throws -> Bool {
+        if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
+            return false
+        }
+        let session = URLSession.shared
+        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "fine_auth_token" }) ?? false
+    }
+
+    static func requireLogin() async throws -> Bool {
+        if try await checkLogined() {
+            return true
+        } else {
+            return try await login()
+        }
     }
 }
 

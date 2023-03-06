@@ -40,8 +40,9 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        print("!!! Refresh UgAAS Curriculum")
-        try await UstcUgAASClient.login()
+        if try await !UstcUgAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
         let (_, response) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
 
         let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))

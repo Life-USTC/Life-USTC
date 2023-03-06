@@ -43,7 +43,10 @@ class ScoreDelegate: CacheAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        try await UstcUgAASClient.login()
+        if try await !UstcUgAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
+
         let session = URLSession.shared
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?semesterIds")!)
 

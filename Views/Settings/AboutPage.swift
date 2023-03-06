@@ -27,8 +27,8 @@ struct AboutLifeAtUSTCView: View {
 //                                                 ("Twitter","https://twitter.com/tiankaima"),
                                                  ("Discord", "https://discord.gg/BxdsySpkYP")]
     @State var contributorList: [(name: String, avatar: URL?)] =
-    [("tiankaima", URL(string: "https://avatars.githubusercontent.com/u/91816094?v=4")),
-     ("odeinjul", URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4"))]
+        [("tiankaima", URL(string: "https://avatars.githubusercontent.com/u/91816094?v=4")),
+         ("odeinjul", URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4"))]
 
     var body: some View {
         NavigationStack {

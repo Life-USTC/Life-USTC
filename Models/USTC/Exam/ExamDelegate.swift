@@ -41,7 +41,9 @@ class ExamDelegate: BaseAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        try await UstcUgAASClient.login()
+        if try await !UstcUgAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
 
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!)
         guard let dataString = String(data: data, encoding: .utf8) else {

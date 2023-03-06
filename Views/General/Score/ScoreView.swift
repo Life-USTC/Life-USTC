@@ -17,6 +17,45 @@ struct ScoreView: View {
     @AppStorage("scoreViewSemesterNameToRemove") var semesterNameToRemove: [String] = []
     @AppStorage("scoreViewSortPreference") private var sortPreference: SortPreference?
 
+    private func sort(score: Score) -> [String: [CourseScore]] {
+        var result = score.courseScores
+        for name in semesterNameToRemove {
+            result.removeAll(where: { $0.semesterName == name })
+        }
+
+        result.sort(by: { $0.semesterID < $1.semesterID })
+        switch sortPreference {
+        case .none:
+            break
+        case let .some(wrapped):
+            switch wrapped {
+            case .gpa:
+                result.sort(by: { ($0.gpa ?? 0) > ($1.gpa ?? 0) })
+            case .code:
+                result.sort(by: { $0.lessonCode < $1.lessonCode })
+            }
+        }
+        var semesterDividedResult: [String: [CourseScore]] = [:]
+        for _result in result {
+            if semesterDividedResult.keys.contains(_result.semesterName) {
+                semesterDividedResult[_result.semesterName]?.append(_result)
+            } else {
+                semesterDividedResult[_result.semesterName] = [_result]
+            }
+        }
+        return semesterDividedResult
+    }
+
+    private func semesterList(_ score: Score) -> [String] {
+        var result: [String] = []
+        for name in score.courseScores.map(\.semesterName) {
+            if !result.contains(name) {
+                result.append(name)
+            }
+        }
+        return result
+    }
+
     func makeView(with courseScore: CourseScore, score: Score) -> some View {
         HStack {
             VStack(alignment: .leading) {
@@ -69,21 +108,11 @@ struct ScoreView: View {
         }
     }
 
-    func sheet(_ score: Score) -> some View {
-        let semesterList = {
-            var result: [String] = []
-            for name in score.courseScores.map(\.semesterName) {
-                if !result.contains(name) {
-                    result.append(name)
-                }
-            }
-            return result
-        }()
-
-        return NavigationStack {
+    @ViewBuilder func sheet(_ score: Score) -> some View {
+        NavigationStack {
             List {
                 Menu {
-                    ForEach(semesterList, id: \.self) { semester in
+                    ForEach(semesterList(score), id: \.self) { semester in
                         Button {
                             if semesterNameToRemove.contains(semester) {
                                 semesterNameToRemove.removeAll(where: { $0 == semester })
@@ -101,10 +130,10 @@ struct ScoreView: View {
                         }
                     }
                 } label: {
-                    Label("Semester: \(String(semesterList.filter { !semesterNameToRemove.contains($0) }.map { $0.prefix(6)}.joined(separator: ",")))",
+                    Label("Semester: \(String(semesterList(score).filter { !semesterNameToRemove.contains($0) }.map { $0.prefix(6) }.joined(separator: ",")))",
                           systemImage: "square.dashed.inset.filled")
-                    .lineLimit(1)
-                    .hStackLeading()
+                        .lineLimit(1)
+                        .hStackLeading()
                 }
 
                 Menu {
@@ -141,37 +170,8 @@ struct ScoreView: View {
         .presentationDetents([.fraction(0.2)])
     }
 
-    func makeView(with score: Score) -> some View {
-        let semesterDividedResult = {
-            var result = score.courseScores
-            for name in semesterNameToRemove {
-                result.removeAll(where: { $0.semesterName == name })
-            }
-
-            result.sort(by: { $0.semesterID < $1.semesterID })
-            switch sortPreference {
-            case .none:
-                break
-            case let .some(wrapped):
-                switch wrapped {
-                case .gpa:
-                    result.sort(by: { ($0.gpa ?? 0) > ($1.gpa ?? 0) })
-                case .code:
-                    result.sort(by: { $0.lessonCode < $1.lessonCode })
-                }
-            }
-            var semesterDividedResult: [String : [CourseScore]] = [:]
-            for _result in result {
-                if semesterDividedResult.keys.contains(_result.semesterName) {
-                    semesterDividedResult[_result.semesterName]?.append(_result)
-                } else {
-                    semesterDividedResult[_result.semesterName] = [_result]
-                }
-            }
-            return semesterDividedResult
-        }()
-
-        return NavigationStack {
+    @ViewBuilder func makeView(with score: Score) -> some View {
+        NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack {
                     HStack {
@@ -180,7 +180,7 @@ struct ScoreView: View {
                                          style: .reverse)
                             .padding(.vertical, 5)
                     }
-                    ForEach(semesterDividedResult.sorted { $0.key > $1.key }, id: \.key) {
+                    ForEach(sort(score: score).sorted { $0.key > $1.key }, id: \.key) {
                         Text($0.key)
                             .fontWeight(.semibold)
                             .foregroundColor(.gray)

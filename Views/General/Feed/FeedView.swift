@@ -34,10 +34,8 @@ struct FeedView: View {
                 }
             }
             .contextMenu {
-                if let url = feed.url {
-                    ShareLink(item: url) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
+                ShareLink(item: feed.url) {
+                    Label("Share", systemImage: "square.and.arrow.up")
                 }
             } preview: {
                 NavigationStack {
