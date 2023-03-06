@@ -18,50 +18,44 @@ class GlobalNavigation: ObservableObject {
     }
 }
 
-@ViewBuilder func NavigationLinkAddon(_ label: LocalizedStringKey, destination: some View) -> some View {
-#if os(iOS)
-    if UIDevice.current.userInterfaceIdiom == .phone {
-        NavigationLink {
-            destination
-        } label: {
-            Text(label)
-        }
-    } else {
-        Button {
-            GlobalNavigation.main.updateDetailView(AnyView(destination))
-        } label: {
-            Text(label)
-        }
-    }
-#else
-    Text(label)
-        .onTapGesture {
-            GlobalNavigation.main.updateDetailView(AnyView(destination))
-        }
-#endif
-}
+struct NavigationLinkAddon: View {
+    var destination: () -> AnyView
+    var label: () -> AnyView
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-@ViewBuilder func NavigationLinkAddon(_ destination: @escaping () -> some View, label: @escaping () -> some View) -> some View {
-#if os(iOS)
-    if UIDevice.current.userInterfaceIdiom == .phone {
-        NavigationLink {
-            destination()
-        } label: {
-            label()
-        }
-    } else {
-        Button {
-            GlobalNavigation.main.updateDetailView(AnyView(destination()))
-        } label: {
-            label()
-        }
+    init(_ label: LocalizedStringKey, destination: some View) {
+        self.destination = { AnyView(destination) }
+        self.label = { AnyView(Text(label)) }
     }
-#else
-    label()
-        .onTapGesture {
-            GlobalNavigation.main.updateDetailView(AnyView(destination()))
+
+    init(_ destination: @escaping () -> some View, label: @escaping () -> some View) {
+        self.destination = { AnyView(destination()) }
+        self.label = { AnyView(label()) }
+    }
+
+    var body: some View {
+#if os(iOS)
+        // No need to listen to state update as the view would be completely refreshed as horizontalSizeClass changes.
+        if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
+            Button {
+                GlobalNavigation.main.updateDetailView(AnyView(destination()))
+            } label: {
+                label()
+            }
+        } else {
+            NavigationLink {
+                destination()
+            } label: {
+                label()
+            }
         }
+#else
+        label()
+            .onTapGesture {
+                GlobalNavigation.main.updateDetailView(AnyView(destination()))
+            }
 #endif
+    }
 }
 
 #if os(macOS)
