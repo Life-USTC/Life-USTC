@@ -8,15 +8,9 @@
 import SwiftUI
 
 struct CurriculumPreview: View {
-    @State var courses: [Course] = []
-    @State var status: AsyncViewStatus = .inProgress
-    var todayCourse: [Course] {
-        courses.filter { $0.dayOfWeek == currentWeekDay }
-    }
-
     var body: some View {
         AsyncView(delegate: UstcUgAASClient.curriculumDelegate, showReloadButton: false) { courses in
-            let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }
+            let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
             if todayCourse.isEmpty {
                 return happyView
             } else {
