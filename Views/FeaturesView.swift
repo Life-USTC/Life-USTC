@@ -8,10 +8,27 @@
 import Reeeed
 import SwiftUI
 
+struct FeatureLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(spacing: 10) {
+            configuration.icon
+                .font(.title)
+            configuration.title
+                .lineLimit(2)
+                .font(.caption)
+        }
+        .padding()
+    }
+}
+
 struct FeaturesView: View {
     @State var searchText = ""
 
     @State var feature: FeatureWithView? // MARK: This is not working as I expected. List row doesn't 'lit up' after selection. fixing that later.
+    let gridItemLayout = [GridItem(.adaptive(minimum: 80)),
+                          GridItem(.adaptive(minimum: 80)),
+                          GridItem(.adaptive(minimum: 80)),
+                          GridItem(.adaptive(minimum: 80)),]
 
     var ustcFeatures: [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
@@ -59,8 +76,46 @@ struct FeaturesView: View {
             return result
         }
     }
+    
+    var gridView: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+                    Text(key.localized)
+                        .font(.headline)
+                        .hStackLeading()
+                    LazyVGrid(columns: gridItemLayout) {
+                        ForEach(features, id: \.self) { feature in
+                            NavigationLinkAddon {
+                                feature.destinationView
+                            } label: {
+                                Label(feature.title.localized, systemImage: feature.image)
+                                    .labelStyle(FeatureLabelStyle())
+                                    .frame(width: 85, height: 95)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .fill(Color.gray)
+                                            .opacity(0.1)
+                                    }
+                            }
+                        }
+                    }
+                    .padding(.bottom, 30)
+                }
+                .padding()
+            }
+            .navigationTitle("Features")
+#if os(iOS)
+            .searchable(text: $searchText, placement: .toolbar)
+#endif
+        }
+    }
 
     var body: some View {
+        gridView
+    }
+    
+    var mainView: some View {
         NavigationStack {
             List(selection: $feature) {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
@@ -161,11 +216,11 @@ extension FeaturesView {
                description: "本科生教务系统",
                url: "https://jw.ustc.edu.cn/ucas-sso/login",
                markUp: true),
-         .init(name: "健康打卡系统",
-               image: "thermometer.medium",
-               description: "似乎是早该过去的上一个时代的产物, 不知为何还会出现在此刻, 显得突兀",
-               url: "https://weixine.ustc.edu.cn/2020/caslogin",
-               markUp: true),
+//         .init(name: "健康打卡系统",
+//               image: "thermometer.medium",
+//               description: "似乎是早该过去的上一个时代的产物, 不知为何还会出现在此刻, 显得突兀",
+//               url: "https://weixine.ustc.edu.cn/2020/caslogin",
+//               markUp: true),
          .init(name: "公共查询",
                image: "doc.text.magnifyingglass",
                description: "查询教室使用情况",
@@ -205,5 +260,6 @@ extension FeaturesView {
 struct FeaturesView_Previews: PreviewProvider {
     static var previews: some View {
         FeaturesView()
+        FeaturesView().gridView
     }
 }

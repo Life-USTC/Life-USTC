@@ -71,20 +71,37 @@ struct CASLoginView: View {
             .scrollContentBackground(.hidden)
             .scrollDisabled(true)
 
-            Button(action: checkAndLogin, label: { Text("Check & Login") })
-                .keyboardShortcut(.defaultAction)
-#if os(iOS)
-                .buttonStyle(BigButtonStyle(size: 1))
-#endif
-
-            Button {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    casLoginSheet = false
+            HStack(spacing: 45){
+                if isInSheet {
+                    Button {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            casLoginSheet = false
+                        }
+                    } label: {
+                        Label("Skip for now", systemImage: "xmark")
+                            .padding()
+                            .labelStyle(.iconOnly)
+                            .background {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.25))
+                            }
+                    }
                 }
-            } label: {
-                Text("Skip for now")
+                
+                Button {
+                    checkAndLogin()
+                } label: {
+                    Text("Check & Login")
+                        .foregroundColor(.white)
+                        .padding()
+                        .padding([.leading, .trailing], 35)
+                        .background{
+                            RoundedRectangle(cornerRadius: 50)
+                            .fill(Color.accentColor)
+                        }
+                }
+                .keyboardShortcut(.defaultAction)
             }
-            .foregroundColor(.gray)
         }
     }
 
@@ -109,7 +126,7 @@ struct CASLoginView: View {
                 Text("You're good to go".localized)
             })
             .padding()
-            .navigationBarTitle(title, displayMode: .inline)
+            .navigationBarTitle(title, displayMode: displayMode)
         }
     }
 
@@ -137,9 +154,9 @@ struct CASLoginView: View {
 
 struct CASLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        CASLoginView(casLoginSheet: .constant(false))
+        CASLoginView.newPage
 #if os(iOS)
-        CASLoginView(casLoginSheet: .constant(false), displayMode: .large)
+        CASLoginView.sheet(isPresented: .constant(false))
 #endif
     }
 }
