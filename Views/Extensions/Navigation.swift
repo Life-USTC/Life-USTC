@@ -21,7 +21,9 @@ class GlobalNavigation: ObservableObject {
 struct NavigationLinkAddon: View {
     var destination: () -> AnyView
     var label: () -> AnyView
+#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+#endif
 
     init(_ label: LocalizedStringKey, destination: some View) {
         self.destination = { AnyView(destination) }

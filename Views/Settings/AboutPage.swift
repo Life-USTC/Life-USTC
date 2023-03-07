@@ -107,7 +107,9 @@ struct AboutLifeAtUSTCView: View {
             }
             .padding()
             .navigationBarTitle("About", displayMode: .inline)
-            .toolbar(.hidden, for: .tabBar)
+#if os(iOS)
+                .toolbar(.hidden, for: .tabBar)
+#endif
         }
         .onAppear {
             Task {

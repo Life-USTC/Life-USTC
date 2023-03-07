@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "56FA8E74297D7263000AC3A9"
-               BuildableName = "ExamWidgetExtension iOS.appex"
-               BlueprintName = "ExamWidgetExtension iOS"
+               BuildableName = "Widget iOS.appex"
+               BlueprintName = "Widget iOS"
                ReferencedContainer = "container:Life@USTC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "56FA8E74297D7263000AC3A9"
-            BuildableName = "ExamWidgetExtension iOS.appex"
-            BlueprintName = "ExamWidgetExtension iOS"
+            BuildableName = "Widget iOS.appex"
+            BlueprintName = "Widget iOS"
             ReferencedContainer = "container:Life@USTC.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
@@ -99,8 +99,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "56FA8E74297D7263000AC3A9"
-            BuildableName = "ExamWidgetExtension iOS.appex"
-            BlueprintName = "ExamWidgetExtension iOS"
+            BuildableName = "Widget iOS.appex"
+            BlueprintName = "Widget iOS"
             ReferencedContainer = "container:Life@USTC.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

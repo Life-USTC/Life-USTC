@@ -78,6 +78,8 @@ struct Browser: View {
                 }
             }
             .navigationBarTitle(title, displayMode: .inline)
+#if os(iOS)
             .toolbar(.hidden, for: .tabBar)
+#endif
     }
 }

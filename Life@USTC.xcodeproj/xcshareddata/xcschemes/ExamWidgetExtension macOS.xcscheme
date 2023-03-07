@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "561127FC298148E900BB66EE"
-               BuildableName = "ExamWidgetExtension macOS.appex"
-               BlueprintName = "ExamWidgetExtension macOS"
+               BuildableName = "Widget macOS.appex"
+               BlueprintName = "Widget macOS"
                ReferencedContainer = "container:Life@USTC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "561127FC298148E900BB66EE"
-            BuildableName = "ExamWidgetExtension macOS.appex"
-            BlueprintName = "ExamWidgetExtension macOS"
+            BuildableName = "Widget macOS.appex"
+            BlueprintName = "Widget macOS"
             ReferencedContainer = "container:Life@USTC.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
@@ -99,8 +99,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "561127FC298148E900BB66EE"
-            BuildableName = "ExamWidgetExtension macOS.appex"
-            BlueprintName = "ExamWidgetExtension macOS"
+            BuildableName = "Widget macOS.appex"
+            BlueprintName = "Widget macOS"
             ReferencedContainer = "container:Life@USTC.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

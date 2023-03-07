@@ -19,7 +19,9 @@ struct FeedSourceView: View {
             } refreshData: {
                 try await feedSource.forceUpdatePost()
             }
+#if os(iOS)
             .toolbar(.hidden, for: .tabBar)
+#endif
             .navigationBarTitle(feedSource.name, displayMode: .inline)
         }
     }
@@ -37,7 +39,9 @@ struct AllSourceView: View {
             } refreshData: {
                 try await FeedSource.recentFeeds(number: nil)
             }
+#if os(iOS)
             .toolbar(.hidden, for: .tabBar)
+#endif
             .navigationBarTitle("Feed", displayMode: .inline)
 #if os(iOS)
                 .onAppear {
