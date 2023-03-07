@@ -34,8 +34,8 @@ struct CurriculumView: View {
                                 semesterID = id
                                 UstcUgAASClient.selectSemester(id: semesterID)
                                 asyncBind($courses, status: $status) {
-                                    try await UstcUgAASClient.curriculumDelegate.forceUpdate()
-                                    return try await UstcUgAASClient.curriculumDelegate.parseCache()
+                                    try await CurriculumDelegate.shared.forceUpdate()
+                                    return try await CurriculumDelegate.shared.parseCache()
                                 }
                             } label: {
                                 if semesterID == id {
@@ -57,7 +57,7 @@ struct CurriculumView: View {
                 Button {
                     withAnimation {
                         asyncBind(.constant(()), status: $saveCalendarStatus) {
-                            try await UstcUgAASClient.curriculumDelegate.saveToCalendar()
+                            try await CurriculumDelegate.shared.saveToCalendar()
                         }
 #if os(iOS)
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
@@ -119,7 +119,7 @@ struct CurriculumView: View {
                 }
                 .navigationBarTitle("Curriculum", displayMode: .inline)
                 .task {
-                    UstcUgAASClient.curriculumDelegate.asyncBind($courses, status: $status)
+                    CurriculumDelegate.shared.asyncBind($courses, status: $status)
                 }
                 .sheet(isPresented: $showSettingSheet) {
                     settingSheet

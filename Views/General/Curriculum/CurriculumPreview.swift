@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CurriculumPreview: View {
     var body: some View {
-        AsyncView(delegate: UstcUgAASClient.curriculumDelegate, showReloadButton: false) { courses in
+        AsyncView(delegate: CurriculumDelegate.shared, showReloadButton: false) { courses in
             let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
             if todayCourse.isEmpty {
                 return happyView

@@ -12,12 +12,14 @@ import WidgetKit
 
 class ExamDelegate: BaseAsyncDataDelegate {
     typealias D = [Exam]
-    var cache: [Exam] = []
 
     var lastUpdate: Date?
     var timeInterval: Double?
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
+    var ustcUgAASClient: UstcUgAASClient
+    var cache: [Exam] = []
+    static var shared = ExamDelegate(.shared)
 
     func parseCache() async throws -> [Exam] {
         let hiddenExamName = ([String].init(rawValue: userDefaults.string(forKey: "hiddenExamName") ?? "") ?? []).filter { !$0.isEmpty }
@@ -41,7 +43,7 @@ class ExamDelegate: BaseAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        if try await !UstcUgAASClient.requireLogin() {
+        if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
@@ -74,7 +76,8 @@ class ExamDelegate: BaseAsyncDataDelegate {
         }
     }
 
-    init() {
+    init(_ client: UstcUgAASClient) {
+        ustcUgAASClient = client
         exceptionCall {
             try self.loadCache()
         }

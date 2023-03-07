@@ -59,7 +59,7 @@ private struct SingleExamView: View {
 struct ExamView: View {
     var body: some View {
         NavigationStack {
-            AsyncView(delegate: UstcUgAASClient.examDelegate) {
+            AsyncView(delegate: ExamDelegate.shared) {
                 exams in
                 ScrollView(showsIndicators: false) {
                     ForEach(exams) { exam in
@@ -71,7 +71,7 @@ struct ExamView: View {
                 .padding(.horizontal, 25)
                 .toolbar {
                     AsyncButton(bigStyle: false) {
-                        try Exam.saveToCalendar(exams)
+                        try await Exam.saveToCalendar(exams)
                     } label: { _ in
                         Image(systemName: "square.and.arrow.down")
                     }

@@ -49,17 +49,9 @@ struct Exam: Codable, Identifiable {
         return (result.stripTime(), String(rawTime.suffix(11)), startTime, endTime)
     }
 
-    static func saveToCalendar(_ exams: [Exam]) throws {
+    static func saveToCalendar(_ exams: [Exam]) async throws {
         let eventStore = EKEventStore()
-        let semaphore = DispatchSemaphore(value: 0)
-        var result: (granted: Bool, error: (any Error)?) = (true, nil)
-        eventStore.requestAccess(to: .event) { granted, error in
-            result.granted = granted
-            result.error = error
-            semaphore.signal()
-        }
-        semaphore.wait()
-        if !result.granted || result.error != nil {
+        if try await !eventStore.requestAccess(to: .event) {
             throw BaseError.runtimeError("Calendar access problem")
         }
         let calendarName = "Upcoming Exams"

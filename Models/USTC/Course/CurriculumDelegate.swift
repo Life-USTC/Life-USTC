@@ -11,12 +11,15 @@ import SwiftyJSON
 
 class CurriculumDelegate: CacheAsyncDataDelegate {
     typealias D = [Course]
+
     var lastUpdate: Date?
     var timeInterval: Double?
     var cacheName: String = "UstcUgAASCurriculumCache"
     var timeCacheName: String = "UstcUgAASLastUpdatedCurriculum"
 
+    var ustcUgAASClient: UstcUgAASClient
     var cache = JSON()
+    static var shared = CurriculumDelegate(.shared)
 
     func parseCache() async throws -> [Course] {
         var result: [Course] = []
@@ -40,7 +43,7 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        if try await !UstcUgAASClient.requireLogin() {
+        if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
         let (_, response) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!)
@@ -60,15 +63,14 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
     }
 
     func saveToCalendar() async throws {
-        Task {
-            let courses = try await self.retrive()
-            try Course.saveToCalendar(courses,
-                                      name: UstcUgAASClient.semesterName,
-                                      startDate: UstcUgAASClient.semesterStartDate)
-        }
+        let courses = try await retrive()
+        try await Course.saveToCalendar(courses,
+                                        name: UstcUgAASClient.semesterName,
+                                        startDate: UstcUgAASClient.semesterStartDate)
     }
 
-    init() {
+    init(_ client: UstcUgAASClient) {
+        ustcUgAASClient = client
         exceptionCall {
             try self.loadCache()
         }

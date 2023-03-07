@@ -10,12 +10,15 @@ import SwiftyJSON
 
 class ScoreDelegate: CacheAsyncDataDelegate {
     typealias D = Score
+
     var lastUpdate: Date?
     var timeInterval: Double?
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
 
     var cache = JSON()
+    var ustcUgAASClient: UstcUgAASClient
+    static var shared = ScoreDelegate(.shared)
 
     func parseCache() async throws -> Score {
         var result = Score()
@@ -43,7 +46,7 @@ class ScoreDelegate: CacheAsyncDataDelegate {
     }
 
     func forceUpdate() async throws {
-        if try await !UstcUgAASClient.requireLogin() {
+        if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
@@ -56,7 +59,8 @@ class ScoreDelegate: CacheAsyncDataDelegate {
         try saveCache()
     }
 
-    init() {
+    init(_ client: UstcUgAASClient) {
+        ustcUgAASClient = client
         exceptionCall {
             try self.loadCache()
         }

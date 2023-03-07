@@ -159,14 +159,14 @@ struct ContentView: View {
     }
 
     func onLoadFunction() {
-        if ustcCasUsername.isEmpty, ustcCasPassword.isEmpty {
+        if ustcCasUsername.isEmpty || ustcCasPassword.isEmpty {
             // if either of them is empty, no need to pass them to build the client
             casLoginSheet = true
             return
         }
-        _ = Task {
+        Task {
             // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.login()
+            casLoginSheet = try await !UstcCasClient.shared.login()
         }
     }
 }

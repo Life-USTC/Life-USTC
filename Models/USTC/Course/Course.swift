@@ -30,17 +30,9 @@ func parseWeekStr(_: String) -> [EKRecurrenceRule] {
 }
 
 extension Course {
-    static func saveToCalendar(_ courses: [Course], name: String, startDate: Date) throws {
+    static func saveToCalendar(_ courses: [Course], name: String, startDate: Date) async throws {
         let eventStore = EKEventStore()
-        let semaphore = DispatchSemaphore(value: 0)
-        var result: (granted: Bool, error: (any Error)?) = (true, nil)
-        eventStore.requestAccess(to: .event) { granted, error in
-            result.granted = granted
-            result.error = error
-            semaphore.signal()
-        }
-        semaphore.wait()
-        if !result.granted || result.error != nil {
+        if try await !eventStore.requestAccess(to: .event) {
             throw BaseError.runtimeError("Calendar access problem")
         }
 

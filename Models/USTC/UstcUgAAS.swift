@@ -11,21 +11,23 @@ import SwiftyJSON
 import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
-enum UstcUgAASClient {
-    private static var lastLogined: Date?
+actor UstcUgAASClient {
+    var session: URLSession
+    private var lastLogined: Date?
     private static var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
 
-    static var curriculumDelegate = CurriculumDelegate()
-    static var examDelegate = ExamDelegate()
-    static var scoreDelegate = ScoreDelegate()
+    static var shared = UstcUgAASClient(session: .shared)
 
-    private static func login() async throws -> Bool {
-        if try await !UstcCasClient.requireLogin() {
+    init(session: URLSession) {
+        self.session = session
+    }
+
+    private func login() async throws -> Bool {
+        if try await !UstcCasClient.shared.requireLogin() {
             throw BaseError.runtimeError("UstcCAS Not logined")
         }
 
         // jw.ustc.edu.cn login.
-        let session = URLSession.shared
         let _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
 
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
@@ -35,19 +37,30 @@ enum UstcUgAASClient {
         return false
     }
 
-    static func checkLogined() async throws -> Bool {
+    func checkLogined() -> Bool {
         if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
             return false
         }
-        let session = URLSession.shared
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "fine_auth_token" }) ?? false
     }
 
-    static func requireLogin() async throws -> Bool {
-        if try await checkLogined() {
+    var loginTask: Task<Bool, Error>?
+
+    func requireLogin() async throws -> Bool {
+        if let loginTask {
+            return try await loginTask.value
+        }
+
+        if checkLogined() {
             return true
         } else {
-            return try await login()
+            let task = Task {
+                try await self.login()
+            }
+            loginTask = task
+            let result = try await task.value
+            loginTask = nil
+            return result
         }
     }
 }

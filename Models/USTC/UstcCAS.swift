@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
 
@@ -26,22 +27,29 @@ extension URL {
 }
 
 /// A cas client to login to https://passport.ustc.edu.cn/
-enum UstcCasClient {
-    static var username: String {
+actor UstcCasClient {
+    var session: URLSession
+    var username: String {
         userDefaults.string(forKey: "passportUsername") ?? ""
     }
 
-    static var password: String {
+    var password: String {
         userDefaults.string(forKey: "passportPassword") ?? ""
     }
 
-    private static var lastLogined: Date?
+    var lastLogined: Date?
 
-    private static var precheckFails: Bool {
+    static var shared = UstcCasClient(session: .shared)
+
+    init(session: URLSession, lastLogined _: Date? = nil) {
+        self.session = session
+    }
+
+    private var precheckFails: Bool {
         username.isEmpty || password.isEmpty
     }
 
-    static func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
@@ -58,7 +66,7 @@ enum UstcCasClient {
         return (String(match.0), HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!))
     }
 
-    private static func loginToCAS() async throws -> Bool {
+    private func loginToCAS() async throws -> Bool {
         if precheckFails {
             throw BaseError.runtimeError("precheck fails")
         }
@@ -80,21 +88,22 @@ enum UstcCasClient {
         return false
     }
 
-    static func login(undeterimined: Bool = false) async throws -> Bool {
-        do {
-            if try await loginToCAS() {
-                return true
-            }
+    func login(undeterimined: Bool = false) async throws -> Bool {
+        // capture first run
+        while true {
+            do {
+                if try await loginToCAS() {
+                    return true
+                }
+            } catch {}
             if undeterimined {
                 return false
             }
-        } catch {}
-        lastLogined = nil
-        try await Task.sleep(for: .seconds(5))
-        return try await login()
+            try await Task.sleep(for: .microseconds(400))
+        }
     }
 
-    static func checkLogined() async throws -> Bool {
+    func checkLogined() -> Bool {
         if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
             return false
         }
@@ -102,11 +111,23 @@ enum UstcCasClient {
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
     }
 
-    static func requireLogin() async throws -> Bool {
-        if try await checkLogined() {
+    var loginTask: Task<Bool, Error>?
+
+    func requireLogin() async throws -> Bool {
+        if let loginTask {
+            return try await loginTask.value
+        }
+
+        if checkLogined() {
             return true
         } else {
-            return try await login()
+            let task = Task {
+                try await self.login()
+            }
+            loginTask = task
+            let result = try await task.value
+            loginTask = nil
+            return result
         }
     }
 }

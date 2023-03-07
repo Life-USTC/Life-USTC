@@ -114,8 +114,8 @@ struct CASLoginView: View {
     }
 
     private func checkAndLogin() {
-        _ = Task {
-            let result = try await UstcCasClient.login(undeterimined: true)
+        Task {
+            let result = try await UstcCasClient.shared.login(undeterimined: true)
             if result {
                 if isInSheet {
                     showSuccessAlert = true

@@ -11,7 +11,7 @@ struct ExamPreview: View {
     @State var exams: [Exam] = []
     @State var status: AsyncViewStatus = .inProgress
     var body: some View {
-        AsyncView(delegate: UstcUgAASClient.examDelegate, showReloadButton: false) { exams in
+        AsyncView(delegate: ExamDelegate.shared, showReloadButton: false) { exams in
             if exams.isEmpty {
                 return happyView
             } else {
