@@ -23,7 +23,7 @@ class ScoreDelegate: CacheAsyncDataDelegate {
     func parseCache() async throws -> Score {
         var result = Score()
         let subJson = cache["stdGradeRank"]
-        result.gpa = subJson["gpa"].double ?? 0
+        result.gpa = cache["overview"]["gpa"].double ?? 0
         result.majorName = subJson["majorName"].string ?? "Error"
         result.majorRank = subJson["majorRank"].int ?? 0
         result.majorStdCount = subJson["majorStdCount"].int ?? 0
@@ -36,7 +36,7 @@ class ScoreDelegate: CacheAsyncDataDelegate {
                                                    credit: Double(courseScoreJson["credits"].stringValue)!,
                                                    gpa: Double(courseScoreJson["gp"].stringValue),
                                                    lessonCode: courseScoreJson["lessonCode"].stringValue,
-                                                   score: courseScoreJson["score"].stringValue,
+                                                   score: courseScoreJson["scoreCh"].stringValue,
                                                    semesterID: Int(courseScoreJson["semesterAssoc"].stringValue)!,
                                                    semesterName: courseScoreJson["semesterCh"].stringValue))
             }
@@ -51,7 +51,7 @@ class ScoreDelegate: CacheAsyncDataDelegate {
         }
 
         let session = URLSession.shared
-        let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?semesterIds")!)
+        let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
 
         let (data, _) = try await session.data(for: request)
         cache = try JSON(data: data)
