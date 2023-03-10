@@ -22,6 +22,15 @@ struct Course: Identifiable, Equatable {
     var classPositionString: String
     var classTeacherName: String
     var weekString: String
+    static let example: Course = .init(dayOfWeek: 1,
+                                       startTime: 1,
+                                       endTime: 1,
+                                       name: "操作系统原理与设计(H)",
+                                       classIDString: "011705",
+                                       classPositionString: "3A407",
+                                       classTeacherName: "刑凯",
+                                       weekString: "1-15"
+                                        )
 }
 
 /// Parse given weekStr, for example: "1-18", "1-7, 9-16" to EKRecurrenceRule List, just no any ideas on how to achieve that goal.
