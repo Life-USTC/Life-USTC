@@ -25,27 +25,27 @@ struct FeaturesView: View {
     @State var searchText = ""
 
     @State var feature: FeatureWithView? // MARK: This is not working as I expected. List row doesn't 'lit up' after selection. fixing that later.
-    let gridItemLayout = [GridItem(.adaptive(minimum: 80)),
-                          GridItem(.adaptive(minimum: 80)),
-                          GridItem(.adaptive(minimum: 80)),
-                          GridItem(.adaptive(minimum: 80)),]
+    let gridItemLayout = [GridItem(.adaptive(minimum: 110)),
+                          GridItem(.adaptive(minimum: 110)),
+                          GridItem(.adaptive(minimum: 110)),
+                          ]
 
     var ustcFeatures: [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
 
         var tmp: [FeatureWithView] = []
-        tmp.append(.init(image: "doc.richtext", title: "Feed", subTitle: "", destinationView: AllSourceView()))
+        tmp.append(.init(image: "doc.richtext", title: "Feed".localized, subTitle: "", destinationView: AllSourceView()))
         for feedSource in FeedSource.allToShow {
             tmp.append(.init(feedSource))
         }
         results["Feed"] = tmp
 
-        tmp = [.init(image: "doc.text.magnifyingglass", title: "Classroom Status", subTitle: "", destinationView: ClassroomView())]
+        tmp = [.init(image: "doc.text.magnifyingglass", title: "Classroom Status".localized, subTitle: "", destinationView: ClassroomView())]
         results["Public"] = tmp
 
-        tmp = [.init(image: "book", title: "Curriculum", subTitle: "", destinationView: CurriculumView()),
-               .init(image: "calendar.badge.clock", title: "Exam", subTitle: "", destinationView: ExamView()),
-               .init(image: "graduationcap", title: "Score", subTitle: "", destinationView: ScoreView())]
+        tmp = [.init(image: "book", title: "Curriculum".localized, subTitle: "", destinationView: CurriculumView()),
+               .init(image: "calendar.badge.clock", title: "Exam".localized, subTitle: "", destinationView: ExamView()),
+               .init(image: "graduationcap", title: "Score".localized, subTitle: "", destinationView: ScoreView())]
         results["UG AAS"] = tmp
 
         tmp = []
@@ -82,7 +82,8 @@ struct FeaturesView: View {
             ScrollView(showsIndicators: false) {
                 ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                     Text(key.localized)
-                        .font(.headline)
+                        .font(.title2)
+                        .fontWeight(.medium)
                         .hStackLeading()
                     LazyVGrid(columns: gridItemLayout) {
                         ForEach(features, id: \.self) { feature in
@@ -91,16 +92,25 @@ struct FeaturesView: View {
                             } label: {
                                 Label(feature.title.localized, systemImage: feature.image)
                                     .labelStyle(FeatureLabelStyle())
-                                    .frame(width: 85, height: 95)
+                                    .frame(width: 110, height: 110)
+                                    //.cornerRadius(15)
                                     .background {
-                                        RoundedRectangle(cornerRadius: 15)
-                                            .fill(Color.gray)
-                                            .opacity(0.1)
+                                        RoundedRectangle(cornerRadius: 15, style: .continuous)
+                                            .fill(Color.white)
+                                            //.stroke(Color.gray, lineWidth: 1.5)
+                                            .shadow(color:Color.gray.opacity(0.5),radius:2)
+                                            
                                     }
+                                    .padding(.bottom, 20)
+
                             }
+                            /*.background {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.red)
+                                    .opacity(0.1)
+                            }*/
                         }
                     }
-                    .padding(.bottom, 30)
                 }
                 .padding()
             }
