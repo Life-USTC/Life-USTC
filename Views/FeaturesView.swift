@@ -94,12 +94,10 @@ struct FeaturesView: View {
                                     .labelStyle(FeatureLabelStyle())
                                     .frame(width: 110, height: 110)
                                     //.cornerRadius(15)
-                                    .background {
+                                    .overlay {
                                         RoundedRectangle(cornerRadius: 15, style: .continuous)
-                                            .fill(Color.white)
-                                            //.stroke(Color.gray, lineWidth: 1.5)
-                                            .shadow(color:Color.gray.opacity(0.5),radius:2)
-                                            
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                                
                                     }
                                     .padding(.bottom, 20)
 
