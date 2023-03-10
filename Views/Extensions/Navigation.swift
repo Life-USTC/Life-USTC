@@ -57,6 +57,13 @@ struct NavigationLinkAddon: View {
                 GlobalNavigation.main.updateDetailView(AnyView(destination()))
             }
 #endif
+//        NavigationLink(destination: destination(), label: label)
+//            .simultaneousGesture(
+//                TapGesture()
+//                    .onEnded {
+//                        GlobalNavigation.main.updateDetailView(AnyView(destination()))
+//                    }
+//            )
     }
 }
 

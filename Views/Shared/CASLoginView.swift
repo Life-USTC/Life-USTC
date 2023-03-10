@@ -71,7 +71,7 @@ struct CASLoginView: View {
             .scrollContentBackground(.hidden)
             .scrollDisabled(true)
 
-            HStack(spacing: 45){
+            HStack(spacing: 45) {
                 if isInSheet {
                     Button {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -87,7 +87,7 @@ struct CASLoginView: View {
                             }
                     }
                 }
-                
+
                 Button {
                     checkAndLogin()
                 } label: {
@@ -95,9 +95,9 @@ struct CASLoginView: View {
                         .foregroundColor(.white)
                         .padding()
                         .padding([.leading, .trailing], 35)
-                        .background{
+                        .background {
                             RoundedRectangle(cornerRadius: 50)
-                            .fill(Color.accentColor)
+                                .fill(Color.accentColor)
                         }
                 }
                 .keyboardShortcut(.defaultAction)

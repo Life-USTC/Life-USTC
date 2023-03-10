@@ -34,27 +34,25 @@ struct HomeView: View {
                preview: .init(ExamPreview()))]
 
     var body: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                ForEach(features, id: \.title) { feature in
-                    HStack {
-                        TitleAndSubTitle(title: feature.title, subTitle: feature.subTitle, style: .reverse)
-                        NavigationLinkAddon {
-                            feature.destination
-                        } label: {
-                            Label("More", systemImage: "chevron.right.2")
-                                .labelStyle(.iconOnly)
-                        }
+        ScrollView(showsIndicators: false) {
+            ForEach(features, id: \.title) { feature in
+                HStack {
+                    TitleAndSubTitle(title: feature.title, subTitle: feature.subTitle, style: .reverse)
+                    NavigationLinkAddon {
+                        feature.destination
+                    } label: {
+                        Label("More", systemImage: "chevron.right.2")
+                            .labelStyle(.iconOnly)
                     }
-                    .padding(.bottom, 7)
-                    .padding(.top, 15)
-
-                    feature.preview
                 }
+                .padding(.bottom, 7)
+                .padding(.top, 15)
+
+                feature.preview
             }
-            .padding([.leading, .trailing])
-            .navigationTitle("Life@USTC")
         }
+        .padding([.leading, .trailing])
+        .navigationTitle("Life@USTC")
     }
 }
 

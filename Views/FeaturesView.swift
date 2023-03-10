@@ -13,22 +13,40 @@ struct FeatureLabelStyle: LabelStyle {
         VStack(spacing: 10) {
             configuration.icon
                 .font(.title)
+                .symbolRenderingMode(.hierarchical)
             configuration.title
                 .lineLimit(2)
                 .font(.caption)
         }
-        .padding()
+        .frame(width: 110, height: 110)
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+        }
     }
 }
 
 struct FeaturesView: View {
-    @State var searchText = ""
+    private enum Style: String, CaseIterable {
+        case list
+        case grid
 
-    @State var feature: FeatureWithView? // MARK: This is not working as I expected. List row doesn't 'lit up' after selection. fixing that later.
+        var imageName: String {
+            switch self {
+            case .list:
+                return "list.bullet.below.rectangle"
+            case .grid:
+                return "square.grid.2x2"
+            }
+        }
+    }
+
+    @State var searchText = ""
+    @AppStorage("featureViewStyle") private var style: Style = .grid
+
     let gridItemLayout = [GridItem(.adaptive(minimum: 110)),
                           GridItem(.adaptive(minimum: 110)),
-                          GridItem(.adaptive(minimum: 110)),
-                          ]
+                          GridItem(.adaptive(minimum: 110))]
 
     var ustcFeatures: [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
@@ -76,79 +94,73 @@ struct FeaturesView: View {
             return result
         }
     }
-    
-    var gridView: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
-                    Text(key.localized)
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .hStackLeading()
-                    LazyVGrid(columns: gridItemLayout) {
-                        ForEach(features, id: \.self) { feature in
-                            NavigationLinkAddon {
-                                feature.destinationView
-                            } label: {
-                                Label(feature.title.localized, systemImage: feature.image)
-                                    .labelStyle(FeatureLabelStyle())
-                                    .frame(width: 110, height: 110)
-                                    //.cornerRadius(15)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 15, style: .continuous)
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                                
-                                    }
-                                    .padding(.bottom, 20)
 
-                            }
-                            /*.background {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color.red)
-                                    .opacity(0.1)
-                            }*/
+    var gridView: some View {
+        ScrollView(showsIndicators: false) {
+            ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+                Text(key.localized)
+                    .font(.title2)
+                    .fontWeight(.medium)
+                    .hStackLeading()
+                LazyVGrid(columns: gridItemLayout) {
+                    ForEach(features, id: \.self) { feature in
+                        NavigationLinkAddon {
+                            feature.destinationView
+                        } label: {
+                            Label(feature.title.localized, systemImage: feature.image)
+                                .labelStyle(FeatureLabelStyle())
                         }
                     }
                 }
-                .padding()
             }
-            .navigationTitle("Features")
-#if os(iOS)
-            .searchable(text: $searchText, placement: .toolbar)
-#endif
+            .padding()
         }
+    }
+
+    var mainView: some View {
+        List {
+            ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+                Section {
+                    ForEach(features, id: \.self) { feature in
+                        NavigationLinkAddon {
+                            feature.destinationView
+                        } label: {
+                            Label(feature.title.localized, systemImage: feature.image)
+                                .symbolRenderingMode(.hierarchical)
+                        }
+                    }
+                } header: {
+                    Text(key.localized)
+                }
+            }
+        }
+        .scrollIndicators(.hidden)
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
     }
 
     var body: some View {
-        gridView
-    }
-    
-    var mainView: some View {
-        NavigationStack {
-            List(selection: $feature) {
-                ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
-                    Section {
-                        ForEach(features, id: \.self) { feature in
-                            NavigationLinkAddon {
-                                feature.destinationView
-                            } label: {
-                                ListLabelView(image: feature.image,
-                                              title: feature.title.localized,
-                                              subTitle: feature.subTitle.localized)
-                            }
-                        }
-                    } header: {
-                        Text(key.localized)
-                    }
-                }
+        Group {
+            switch style {
+            case .grid:
+                gridView
+            case .list:
+                mainView
             }
-            .listStyle(.sidebar)
-            .navigationTitle("Features")
-            .scrollContentBackground(.hidden)
-#if os(iOS)
-                .searchable(text: $searchText, placement: .automatic)
-#endif
         }
+        .navigationTitle("Features")
+        .toolbar {
+            Button {
+                withAnimation {
+                    style = style.next()
+                }
+            } label: {
+                Label("Switch", systemImage: style.next().imageName)
+            }
+        }
+#if os(iOS)
+        .searchable(text: $searchText, placement: .automatic)
+#endif
     }
 }
 
@@ -224,11 +236,6 @@ extension FeaturesView {
                description: "本科生教务系统",
                url: "https://jw.ustc.edu.cn/ucas-sso/login",
                markUp: true),
-//         .init(name: "健康打卡系统",
-//               image: "thermometer.medium",
-//               description: "似乎是早该过去的上一个时代的产物, 不知为何还会出现在此刻, 显得突兀",
-//               url: "https://weixine.ustc.edu.cn/2020/caslogin",
-//               markUp: true),
          .init(name: "公共查询",
                image: "doc.text.magnifyingglass",
                description: "查询教室使用情况",
@@ -268,6 +275,5 @@ extension FeaturesView {
 struct FeaturesView_Previews: PreviewProvider {
     static var previews: some View {
         FeaturesView()
-        FeaturesView().gridView
     }
 }

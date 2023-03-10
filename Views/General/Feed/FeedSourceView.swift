@@ -11,19 +11,17 @@ struct FeedSourceView: View {
     let feedSource: FeedSource
 
     var body: some View {
-        NavigationStack {
-            AsyncView { feeds in
-                FeedVStackView(feeds: feeds)
-            } loadData: {
-                try await feedSource.fetchRecentPost()
-            } refreshData: {
-                try await feedSource.forceUpdatePost()
-            }
+        AsyncView { feeds in
+            FeedVStackView(feeds: feeds)
+        } loadData: {
+            try await feedSource.fetchRecentPost()
+        } refreshData: {
+            try await feedSource.forceUpdatePost()
+        }
+        .navigationBarTitle(feedSource.name, displayMode: .inline)
 #if os(iOS)
             .toolbar(.hidden, for: .tabBar)
 #endif
-            .navigationBarTitle(feedSource.name, displayMode: .inline)
-        }
     }
 }
 
@@ -31,30 +29,26 @@ struct AllSourceView: View {
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
 
     var body: some View {
-        NavigationStack {
-            AsyncView { feeds in
-                FeedVStackView(feeds: feeds)
-            } loadData: {
-                try await FeedSource.recentFeeds(number: nil)
-            } refreshData: {
-                try await FeedSource.recentFeeds(number: nil)
-            }
+        AsyncView { feeds in
+            FeedVStackView(feeds: feeds)
+        } loadData: {
+            try await FeedSource.recentFeeds(number: nil)
+        } refreshData: {
+            try await FeedSource.recentFeeds(number: nil)
+        }
+        .navigationBarTitle("Feed", displayMode: .inline)
 #if os(iOS)
             .toolbar(.hidden, for: .tabBar)
-#endif
-            .navigationBarTitle("Feed", displayMode: .inline)
-#if os(iOS)
-                .onAppear {
-                    if useNotification {
-                        tryRequestAuthorization()
-                        UIApplication.shared.registerForRemoteNotifications()
-                    } else {
-                        Task {
-                            try await unRegisterDeviceToken()
-                        }
+            .onAppear {
+                if useNotification {
+                    tryRequestAuthorization()
+                    UIApplication.shared.registerForRemoteNotifications()
+                } else {
+                    Task {
+                        try await unRegisterDeviceToken()
                     }
                 }
+            }
 #endif
-        }
     }
 }
