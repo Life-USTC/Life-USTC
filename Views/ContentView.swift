@@ -64,11 +64,13 @@ struct ContentView: View {
     var iPhoneView: some View {
         TabView(selection: $tab) {
             ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
-                eachTab.view()
-                    .tabItem {
-                        eachTab.label()
-                    }
-                    .tag(eachTab)
+                NavigationStack {
+                    eachTab.view()
+                }
+                .tabItem {
+                    eachTab.label()
+                }
+                .tag(eachTab)
             }
         }
     }

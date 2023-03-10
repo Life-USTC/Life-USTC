@@ -171,32 +171,30 @@ struct ScoreView: View {
     }
 
     @ViewBuilder func makeView(with score: Score) -> some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    HStack {
-                        TitleAndSubTitle(title: "GPA: " + String(score.gpa),
-                                         subTitle: score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount),
-                                         style: .reverse)
+        ScrollView(showsIndicators: false) {
+            VStack {
+                HStack {
+                    TitleAndSubTitle(title: "GPA: " + String(score.gpa),
+                                     subTitle: score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount),
+                                     style: .reverse)
+                        .padding(.vertical, 5)
+                }
+                ForEach(sort(score: score).sorted { $0.key > $1.key }, id: \.key) {
+                    Text($0.key)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.gray)
+                    ForEach($0.value) { course in
+                        Divider()
+                        makeView(with: course, score: score)
                             .padding(.vertical, 5)
                     }
-                    ForEach(sort(score: score).sorted { $0.key > $1.key }, id: \.key) {
-                        Text($0.key)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.gray)
-                        ForEach($0.value) { course in
-                            Divider()
-                            makeView(with: course, score: score)
-                                .padding(.vertical, 5)
-                        }
-                        Divider()
-                            .padding(.bottom, 45)
-                    }
+                    Divider()
+                        .padding(.bottom, 45)
                 }
             }
-            .sheet(isPresented: $showSettings) { sheet(score) }
-            .padding([.leading, .trailing])
         }
+        .sheet(isPresented: $showSettings) { sheet(score) }
+        .padding([.leading, .trailing])
     }
 
     var body: some View {

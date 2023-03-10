@@ -53,8 +53,10 @@
 "All" = "全部";
 "See More" = "查看更多";
 
+"Classroom Status" = "教室情况";
 "UG AAS" = "本科生教务";
-"Curriculum" = "课表";
+"Curriculum" = "课程表";
+"Feed" = "通知";
 "Web" = "网页";
 "Mon" = "周一";
 "Tue" = "周二";

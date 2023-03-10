@@ -11,30 +11,28 @@ let credit = "Credit to FeedKit, Fuzi, Introspect, Reeeed, SwiftFormat, SwiftSou
 
 struct LegalInfoView: View {
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    VStack(alignment: .leading) {
-                        Text("Open source code usage:")
-                            .padding(.bottom, 2)
-                        Text(credit)
-                            .font(.caption)
-                            .bold()
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(alignment: .leading) {
-                        Text("USTC CAS DISCLAIMER:")
-                            .padding(.bottom, 2)
-                        Text("casFullHint")
-                            .font(.caption)
-                            .bold()
-                            .foregroundColor(.secondary)
-                    }
+        VStack {
+            List {
+                VStack(alignment: .leading) {
+                    Text("Open source code usage:")
+                        .padding(.bottom, 2)
+                    Text(credit)
+                        .font(.caption)
+                        .bold()
+                        .foregroundColor(.secondary)
                 }
-                .scrollContentBackground(.hidden)
+                VStack(alignment: .leading) {
+                    Text("USTC CAS DISCLAIMER:")
+                        .padding(.bottom, 2)
+                    Text("casFullHint")
+                        .font(.caption)
+                        .bold()
+                        .foregroundColor(.secondary)
+                }
             }
-            .navigationBarTitle("Legal", displayMode: .inline)
+            .scrollContentBackground(.hidden)
         }
+        .navigationBarTitle("Legal", displayMode: .inline)
     }
 }
 

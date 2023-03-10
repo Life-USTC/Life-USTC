@@ -15,33 +15,31 @@ struct ExamSettingView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    ForEach(hiddenExamName.indices, id: \.self) { index in
-                        TextField("Name", text: $hiddenExamName[index])
-                    }
-                    .onDelete(perform: delete)
-
-                    Button {
-                        if hiddenExamName.filter(\.isEmpty).isEmpty {
-                            // refuse to add new empty string if there's already an empty location
-                            hiddenExamName.append("")
-                        }
-                    } label: {
-                        Label("Add new", systemImage: "plus")
-                    }
-                } header: {
-                    Text("Exam name to hide")
-                        .textCase(.none)
-                } footer: {
-                    Text("When exam contains these words, they will be shown at the bottom even they comes first in time")
+        List {
+            Section {
+                ForEach(hiddenExamName.indices, id: \.self) { index in
+                    TextField("Name", text: $hiddenExamName[index])
                 }
-                EmptyView()
+                .onDelete(perform: delete)
+
+                Button {
+                    if hiddenExamName.filter(\.isEmpty).isEmpty {
+                        // refuse to add new empty string if there's already an empty location
+                        hiddenExamName.append("")
+                    }
+                } label: {
+                    Label("Add new", systemImage: "plus")
+                }
+            } header: {
+                Text("Exam name to hide")
+                    .textCase(.none)
+            } footer: {
+                Text("When exam contains these words, they will be shown at the bottom even they comes first in time")
             }
-            .scrollContentBackground(.hidden)
-            .navigationBarTitle("Exam Settings", displayMode: .inline)
+            EmptyView()
         }
+        .scrollContentBackground(.hidden)
+        .navigationBarTitle("Exam Settings", displayMode: .inline)
     }
 }
 

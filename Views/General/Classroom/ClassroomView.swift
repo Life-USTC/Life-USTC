@@ -180,44 +180,42 @@ struct ClassroomView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                ZStack {
-                    VStack(spacing: 2) {
-                        ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
-                            if !filteredBuildingList.contains(building) {
-                                Text(UstcCatalogClient.buildingName(with: building))
-                                    .font(.title3)
-                                    .padding()
-                                    .hStackLeading()
-                                makeView(with: building)
-                            }
+        ScrollView(showsIndicators: false) {
+            ZStack {
+                VStack(spacing: 2) {
+                    ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+                        if !filteredBuildingList.contains(building) {
+                            Text(UstcCatalogClient.buildingName(with: building))
+                                .font(.title3)
+                                .padding()
+                                .hStackLeading()
+                            makeView(with: building)
                         }
                     }
                 }
             }
-            .onAppear {
-                asyncBind($allLessons, status: $status) {
-                    try await UstcCatalogClient.main.queryAllClassrooms()
-                }
-            }
-            .padding([.leading, .trailing], 2)
-            .navigationBarTitle("Classroom List", displayMode: .inline)
-            .toolbar {
-                if status == .inProgress {
-                    ProgressView()
-                }
-
-                Button {
-                    showSheet = true
-                } label: {
-                    Label("Settings", systemImage: "gearshape")
-                }
-            }
-            .sheet(isPresented: $showSheet, content: settingSheet)
         }
+        .onAppear {
+            asyncBind($allLessons, status: $status) {
+                try await UstcCatalogClient.main.queryAllClassrooms()
+            }
+        }
+        .padding([.leading, .trailing], 2)
+        .navigationBarTitle("Classroom List", displayMode: .inline)
+        .toolbar {
+            if status == .inProgress {
+                ProgressView()
+            }
+
+            Button {
+                showSheet = true
+            } label: {
+                Label("Settings", systemImage: "gearshape")
+            }
+        }
+        .sheet(isPresented: $showSheet, content: settingSheet)
 #if os(iOS)
-        .toolbar(.hidden, for: .tabBar)
+            .toolbar(.hidden, for: .tabBar)
 #endif
     }
 }

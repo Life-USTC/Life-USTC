@@ -83,15 +83,13 @@ struct FeedVStackView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack {
-                    ForEach(postsSorted.sorted(by: { $0.key.rawValue < $1.key.rawValue }), id: \.key.hashValue) { key, value in
-                        makeView(key, value)
-                    }
+        ScrollView {
+            VStack {
+                ForEach(postsSorted.sorted(by: { $0.key.rawValue < $1.key.rawValue }), id: \.key.hashValue) { key, value in
+                    makeView(key, value)
                 }
-                .padding([.leading, .trailing])
             }
+            .padding([.leading, .trailing])
         }
     }
 }

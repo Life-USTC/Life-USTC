@@ -102,31 +102,29 @@ struct CurriculumView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            mainView
-                .padding(paddingWidth)
-                .toolbar {
-                    if status == .inProgress {
-                        ProgressView()
+        mainView
+            .padding(paddingWidth)
+            .toolbar {
+                if status == .inProgress {
+                    ProgressView()
+                }
+                Button {
+                    withAnimation {
+                        showSettingSheet.toggle()
                     }
-                    Button {
-                        withAnimation {
-                            showSettingSheet.toggle()
-                        }
-                    } label: {
-                        Label("Show settings", systemImage: "gearshape")
-                    }
+                } label: {
+                    Label("Show settings", systemImage: "gearshape")
                 }
-                .navigationBarTitle("Curriculum", displayMode: .inline)
-                .task {
-                    CurriculumDelegate.shared.asyncBind($courses, status: $status)
-                }
-                .sheet(isPresented: $showSettingSheet) {
-                    settingSheet
-                }
-        }
+            }
+            .navigationBarTitle("Curriculum", displayMode: .inline)
+            .task {
+                CurriculumDelegate.shared.asyncBind($courses, status: $status)
+            }
+            .sheet(isPresented: $showSettingSheet) {
+                settingSheet
+            }
 #if os(iOS)
-        .toolbar(.hidden, for: .tabBar)
+            .toolbar(.hidden, for: .tabBar)
 #endif
     }
 

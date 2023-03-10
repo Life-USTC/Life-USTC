@@ -69,10 +69,8 @@ struct UserTypeView: View {
                 .navigationBarTitle("Before we continue...", displayMode: .inline)
             }
         } else {
-            NavigationStack {
-                mainView
-            }
-            .navigationBarTitle("Change User Type", displayMode: .inline)
+            mainView
+                .navigationBarTitle("Change User Type", displayMode: .inline)
         }
     }
 
