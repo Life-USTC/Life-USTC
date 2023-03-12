@@ -56,9 +56,9 @@ struct ExamWidgetEntryView: View {
         case .systemMedium:
             return 2
         case .systemLarge:
-            return 7
+            return 6
         case .systemExtraLarge:
-            return 7
+            return 6
         default:
             return 0
         }
@@ -84,42 +84,40 @@ struct ExamWidgetEntryView: View {
     }
 
     var mainView: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(exam.className)
+        VStack(alignment: .leading) {
+            Text(exam.className)
+                .lineLimit(1)
+                .font(.caption)
+
+            HStack(alignment: .lastTextBaseline) {
+                Text(String(exam.daysLeft))
                     .lineLimit(1)
-                    .font(.caption)
-
-                HStack(alignment: .lastTextBaseline) {
-                    Text(String(exam.daysLeft))
-                        .lineLimit(1)
-                        .font(.largeTitle)
-                        .foregroundColor(.red)
-                    Text("Days Left")
-                        .font(.caption2)
-                }
-
-                Spacer()
-
-                Text("Time: \(exam.timeDescription)")
-                    .lineLimit(1)
-                    .foregroundColor(.gray)
+                    .font(.largeTitle)
+                    .foregroundColor(.red)
+                Text("Days Left")
                     .font(.caption2)
-
-                Text("Location: \(exam.classRoomName)")
-                    .lineLimit(1)
-                    .foregroundColor(.gray)
-                    .font(.caption2)
-
-                Spacer()
-
-                Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
-                    .lineLimit(1)
-                    .font(.caption)
-                    .foregroundColor(.accentColor)
             }
+
             Spacer()
+
+            Text("Time: \(exam.timeDescription)")
+                .lineLimit(1)
+                .foregroundColor(.gray)
+                .font(.caption2)
+
+            Text("Location: \(exam.classRoomName)")
+                .lineLimit(1)
+                .foregroundColor(.gray)
+                .font(.caption2)
+
+            Spacer()
+
+            Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
+                .lineLimit(1)
+                .font(.caption)
+                .foregroundColor(.accentColor)
         }
+        .hStackLeading()
         .padding()
     }
 
@@ -162,7 +160,7 @@ struct ExamWidgetEntryView: View {
 
             Divider()
 
-            if entry.exams.count > numberToShow, min(numberToShow, entry.exams.count) < 7 {
+            if entry.exams.count > numberToShow {
                 Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
                     .foregroundColor(.accentColor)
             }
@@ -190,7 +188,6 @@ struct ExamWidgetEntryView: View {
             }
             Spacer()
         }
-        .hStackLeading()
     }
 
     var body: some View {
@@ -224,37 +221,24 @@ struct ExamWidget: Widget {
         IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
-#if os(iOS)
-        .supportedFamilies([.systemSmall,
-                            .systemMedium,
-                            .systemLarge,
-                            .accessoryRectangular,
-                            .accessoryInline])
-#else
-            .supportedFamilies([.systemSmall,
-                                .systemMedium,
-                                .systemLarge])
-#endif
-            .configurationDisplayName("Exams")
-            .description("Show upcoming exam.")
+        .configurationDisplayName("Exams")
+        .description("Show upcoming exam.")
+        .supportedFamilies(WidgetFamily.allCases)
     }
 }
 
 struct ExamWidget_Previews: PreviewProvider {
     static var previews: some View {
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemMedium))
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemLarge))
-#if os(iOS)
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
-        ExamWidgetEntryView(entry: SimpleEntry.example)
-            .previewContext(WidgetPreviewContext(family: .accessoryInline))
-#endif
+        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
+            ExamWidgetEntryView(entry: .example)
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName(family.description)
+        }
+
+        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
+            ExamWidgetEntryView(entry: .init(exams: []))
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName("\(family.description) [EMPTY]")
+        }
     }
 }

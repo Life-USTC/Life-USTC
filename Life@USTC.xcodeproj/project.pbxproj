@@ -97,6 +97,8 @@
 		56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* SwiftExtension.swift */; };
 		56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FC2966799200822C98 /* CourseCardView.swift */; };
 		56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
+		56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
+		56C3A72729BDA10500A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
@@ -732,6 +734,7 @@
 			files = (
 				5611281E29814B1300BB66EE /* UUIDExtension.swift in Sources */,
 				5611281929814AED00BB66EE /* Course.swift in Sources */,
+				56C3A72729BDA10500A5017A /* CurriculumWidget.swift in Sources */,
 				5611281B29814B1300BB66EE /* Constants.swift in Sources */,
 				56A3B87029A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
 				5611281429814AED00BB66EE /* Exam.swift in Sources */,
@@ -818,6 +821,7 @@
 			files = (
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
+				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
 				56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
 				56734CEA297D86F200DBB45F /* UstcUgAAS.swift in Sources */,
@@ -902,7 +906,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -935,7 +939,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1094,7 +1098,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1134,7 +1138,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1169,7 +1173,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1201,7 +1205,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

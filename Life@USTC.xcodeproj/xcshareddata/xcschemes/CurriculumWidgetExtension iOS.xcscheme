@@ -71,8 +71,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCWidgetKind"
-            value = ""
-            isEnabled = "NO">
+            value = "CurriculumWidget"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "_XCWidgetDefaultView"
@@ -82,7 +82,7 @@
          <EnvironmentVariable
             key = "_XCWidgetFamily"
             value = "medium"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>

@@ -1,4 +1,3 @@
-
 //
 //  CurriculumWidget.swift
 //  CurriculumWidget
@@ -41,23 +40,27 @@ struct CurriculumEntry: TimelineEntry {
     var configuration = ConfigurationIntent()
 
     static let example = CurriculumEntry(curriculums: [Course].init(repeating: .example, count: 10),
-                                     configuration: ConfigurationIntent())
+                                         configuration: ConfigurationIntent())
 }
 
 struct CurriculumWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumProvider.Entry
-    
-    var curriculum: Course {
-        entry.curriculums.first ?? Course.example
+
+    var courses: [Course] {
+        entry.curriculums.filter { $0.dayOfWeek == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
     }
-    
+
+    var courseToShow: Course {
+        courses.first { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() } ?? .example
+    }
+
     var numberToShow: Int {
         switch widgetFamily {
         case .systemSmall:
             return 1
         case .systemMedium:
-            return 2
+            return 4
         case .systemLarge:
             return 7
         case .systemExtraLarge:
@@ -66,136 +69,111 @@ struct CurriculumWidgetEntryView: View {
             return 0
         }
     }
-    
+
     var noMoreCurriculumView: some View {
         VStack {
             Spacer()
-            
-            Image(systemName: "sparkles")
+
+            Image(systemName: "moon.stars")
                 .font(.largeTitle)
+                .fontWeight(.regular)
                 .foregroundColor(.accentColor)
-            
+
             Text("Free today!")
-            
+
             Spacer()
-            
+
             Text("Open the app to make sure though...")
                 .font(.caption2)
                 .foregroundColor(.gray)
         }
         .padding()
     }
-    
+
     var mainView: some View {
-        
-        VStack(alignment: .center, spacing: 7)  {
-            Text(curriculum.name)
+        VStack(alignment: .center, spacing: 7) {
+            Text(courseToShow.name)
                 .lineLimit(2)
                 .font(.headline)
             VStack(alignment: .center, spacing: -3) {
                 HStack {
-                    /* Text("  ")
-                        .font(.headline)
-                        .padding(.horizontal, 10)
-                        .background(RoundedRectangle(cornerRadius: 7).fill(Color.accentColor))
-                    */
-                    Text("" + Course.startTimes[curriculum.startTime - 1].clockTime + "")
+                    Text(Course.startTimes[courseToShow.startTime - 1].clockTime)
                         .font(.headline)
                         .foregroundColor(.accentColor)
                 }
-                HStack{
-                    /*
-                    Text("-")
-                        .font(.headline)
-                        .padding(.horizontal, 10)
-                        .background(RoundedRectangle(cornerRadius: 7).fill(Color.gray))
-                    */
-                    Text(" " + Course.endTimes[curriculum.endTime - 1].clockTime + " ")
+                HStack {
+                    Text(Course.endTimes[courseToShow.endTime - 1].clockTime)
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
-                
             }
             VStack {
-                Text("\(curriculum.classPositionString)")
+                Text(courseToShow.classPositionString)
                     .lineLimit(1)
                     .font(.callout)
                     .foregroundColor(.accentColor)
-                Text("\(curriculum.classTeacherName)")
+                Text(courseToShow.classTeacherName)
                     .lineLimit(1)
                     .foregroundColor(.gray)
                     .font(.caption2)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 10)
+        .padding()
     }
+
     var oneLine: some View {
         Text(String(format: "%@ - %@".localized,
-                    curriculum.name.limitShow(1),
-                    Course.startTimes[curriculum.startTime - 1].clockTime))
+                    courseToShow.name.limitShow(1),
+                    Course.startTimes[courseToShow.startTime - 1].clockTime))
     }
 
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack {
-                Image(systemName: "sparkles")
+                Image(systemName: "moon.stars")
                 Text("Upcoming Course")
                     .bold()
             }
             .foregroundColor(.accentColor)
-            Spacer()
-            ForEach(entry.curriculums.prefix(numberToShow)) { curriculum in
+
+            ForEach(courses.prefix(numberToShow)) { course in
                 Divider()
                 HStack {
-                    Text(curriculum.name)
+                    Text(course.name.limitShow(1))
                         .bold()
                     Spacer()
-                    Text(Course.startTimes[curriculum.startTime - 1].clockTime + " - " + Course.endTimes[curriculum.endTime - 1].clockTime)
-                    /*if exam.isFinished {
-                        Text("Finished".localized)
-                            .foregroundColor(.gray)
-                            .fontWeight(.bold)
-                    } else {
-                        Text(exam.daysLeft == 1 ?
-                            "1 day left".localized :
-                            String(format: "%@ days left".localized, String(exam.daysLeft)))
-                            .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
-                            .fontWeight(.bold)
-                    }*/
+                    Text("@\(course.classPositionString)")
+                        .foregroundColor(.gray)
+                    Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
                 }
-                .padding(5)
             }
 
             Divider()
 
-            if entry.curriculums.count > numberToShow, min(numberToShow, entry.curriculums.count) < 7 {
+            if courses.count > numberToShow, min(numberToShow, entry.curriculums.count) < 7 {
                 Text("+\(String(entry.curriculums.count - numberToShow)) More Courses...")
                     .foregroundColor(.accentColor)
             }
 
-            if entry.curriculums.count < numberToShow {
+            if courses.count < numberToShow {
                 Spacer()
             }
-            Spacer()
         }
         .font(.footnote)
         .padding()
     }
 
-    var shortListView: some View {
+    var smallView: some View {
         VStack(alignment: .leading) {
-                Text(entry.curriculums[0].name)
-                .font(Font.system(size: 13))
-                Text("\(Course.startTimes[curriculum.startTime - 1].clockTime)")
-                .font(Font.system(size: 13))
-                .fontWeight(.bold)
+            Text(courseToShow.name.limitShow(1))
+            Text(courseToShow.clockTime)
+            Text(courseToShow.classPositionString)
         }
         .padding(1)
     }
 
     var body: some View {
-        if entry.curriculums.isEmpty {
+        if courses.isEmpty {
             noMoreCurriculumView
         } else {
             switch widgetFamily {
@@ -210,7 +188,7 @@ struct CurriculumWidgetEntryView: View {
             case .accessoryInline:
                 oneLine
             case .accessoryRectangular:
-                shortListView
+                smallView
             default:
                 oneLine
             }
@@ -218,21 +196,31 @@ struct CurriculumWidgetEntryView: View {
     }
 }
 
+struct CurriculumWidget: Widget {
+    let kind: String = "CurriculumWidget"
+
+    var body: some WidgetConfiguration {
+        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: CurriculumProvider()) { entry in
+            CurriculumWidgetEntryView(entry: entry)
+        }
+        .supportedFamilies(WidgetFamily.allCases)
+        .configurationDisplayName("Curriculum")
+        .description("Show today's curriculum.")
+    }
+}
+
 struct CurriculumWidget_Previews: PreviewProvider {
     static var previews: some View {
-        CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-       CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemMedium))
-        CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemLarge))
-#if os(iOS)
-        CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
-        CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
-        CurriculumWidgetEntryView(entry: CurriculumEntry.example)
-            .previewContext(WidgetPreviewContext(family: .accessoryInline))
-#endif
+        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
+            CurriculumWidgetEntryView(entry: .example)
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName(family.description)
+        }
+        
+        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
+            CurriculumWidgetEntryView(entry: .init(curriculums: []))
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName("\(family.description) [EMPTY]")
+        }
     }
 }

@@ -22,15 +22,14 @@ struct Course: Identifiable, Equatable {
     var classPositionString: String
     var classTeacherName: String
     var weekString: String
-    static let example: Course = .init(dayOfWeek: 1,
+    static let example: Course = .init(dayOfWeek: currentWeekDay,
                                        startTime: 1,
                                        endTime: 1,
                                        name: "操作系统原理与设计(H)",
                                        classIDString: "011705",
                                        classPositionString: "3A407",
                                        classTeacherName: "刑凯",
-                                       weekString: "1-15"
-                                        )
+                                       weekString: "1-15")
 }
 
 /// Parse given weekStr, for example: "1-18", "1-7, 9-16" to EKRecurrenceRule List, just no any ideas on how to achieve that goal.
@@ -39,6 +38,10 @@ func parseWeekStr(_: String) -> [EKRecurrenceRule] {
 }
 
 extension Course {
+    var clockTime: String {
+        Course.startTimes[startTime - 1].clockTime + " - " + Course.endTimes[endTime - 1].clockTime
+    }
+
     static func saveToCalendar(_ courses: [Course], name: String, startDate: Date) async throws {
         let eventStore = EKEventStore()
         if try await !eventStore.requestAccess(to: .event) {

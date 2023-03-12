@@ -7,6 +7,7 @@
 
 import Introspect
 import SwiftUI
+import WidgetKit
 
 struct HStackModifier: ViewModifier {
     var trailing = false
@@ -171,6 +172,16 @@ extension Color {
         self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
 #else
         self = Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
+#endif
+    }
+}
+
+extension WidgetFamily: CaseIterable {
+    public static var allCases: [WidgetFamily] {
+#if os(iOS)
+        [.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge, .accessoryRectangular, .accessoryInline]
+#else
+        [.systemSmall, .systemMedium, .systemLarge]
 #endif
     }
 }

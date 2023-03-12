@@ -12,7 +12,6 @@ import WidgetKit
 struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {
         ExamWidget()
-        
+        CurriculumWidget()
     }
 }
-
