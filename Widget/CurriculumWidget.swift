@@ -178,7 +178,11 @@ struct CurriculumWidgetEntryView: View {
         } else {
             switch widgetFamily {
             case .systemSmall:
-                mainView
+                if courses.first(where: { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() })  == nil {
+                    noMoreCurriculumView
+                } else {
+                    mainView
+                }
             case .systemMedium:
                 listView
             case .systemLarge:
