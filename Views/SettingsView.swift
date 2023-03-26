@@ -12,13 +12,13 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
+                NavigationLinkAddon("App Settings", destination: AppSettingPage())
                 NavigationLinkAddon("Feed Source Settings", destination: FeedSettingView())
                 NavigationLinkAddon("CAS Settings", destination: CASLoginView.newPage)
 #if DEBUG
                 NavigationLinkAddon("Change User Type", destination: UserTypeView())
 #endif
                 NavigationLinkAddon("Exam Settings", destination: ExamSettingView())
-//                    NavigationLinkAddon("Health Check", destination: HealthCheckPage())
 #if os(iOS)
                 NavigationLinkAddon("Notification Settings", destination: NotificationSettingView())
 #endif
@@ -31,6 +31,5 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .scrollContentBackground(.hidden)
-//        .searchable(text: $searchText, placement: .toolbar)
     }
 }

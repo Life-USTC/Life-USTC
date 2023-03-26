@@ -49,7 +49,6 @@ struct FeedView: View {
                         }
                         .frame(height: geo.size.height)
                     }
-                    .toolbar(.hidden)
                 }
             }
         }

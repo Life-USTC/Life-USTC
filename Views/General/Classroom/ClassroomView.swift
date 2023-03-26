@@ -214,8 +214,5 @@ struct ClassroomView: View {
             }
         }
         .sheet(isPresented: $showSheet, content: settingSheet)
-#if os(iOS)
-            .toolbar(.hidden, for: .tabBar)
-#endif
     }
 }

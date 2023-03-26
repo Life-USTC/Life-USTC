@@ -20,62 +20,43 @@ struct Life_USTCApp: App {
     }
 }
 
-enum HomeViewTab: Int, CaseIterable {
-    case home = 1
-    case feature = 2
-    case setting = 3
-
-    @ViewBuilder func view() -> some View {
-        switch self {
-        case .home:
-            HomeView()
-        case .feature:
-            FeaturesView()
-        case .setting:
-            SettingsView()
-        }
-    }
-
-    @ViewBuilder func label() -> some View {
-        switch self {
-        case .home:
-            Label("Home", systemImage: "square.stack.3d.up")
-        case .feature:
-            Label("Features", systemImage: "square.grid.2x2")
-        case .setting:
-            Label("Settings", systemImage: "gearshape")
-        }
-    }
-}
-
 struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-    @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
-    @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
+    @AppStorage("useNewUIForTabBar") var useNewUI = true
     @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
-    @State var tab: HomeViewTab = .home
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+    @State private var tabSelection: ContentViewTab = .home
 #if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-#endif
     var iPhoneView: some View {
-        TabView(selection: $tab) {
-            ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
+        Group {
+            if useNewUI {
                 NavigationStack {
-                    eachTab.view()
+                    ContentViewTabBarContainerView(selection: $tabSelection) {
+                        ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
+                            eachTab.view()
+                                .tabBarItem(tab: eachTab, selection: $tabSelection)
+                        }
+                    }
                 }
-                .tabItem {
-                    eachTab.label()
+            } else {
+                TabView {
+                    ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
+                        NavigationStack {
+                            eachTab.view()
+                        }
+                        .tabItem {
+                            eachTab.label()
+                        }
+                    }
                 }
-                .tag(eachTab)
             }
         }
     }
 
-#if os(iOS)
     var sideBarView: some View {
         VStack(spacing: 40) {
             Spacer()
@@ -88,17 +69,17 @@ struct ContentView: View {
                     Circle()
                         .stroke(Color.accentColor, style: .init(lineWidth: 2))
                 }
-            ForEach(HomeViewTab.allCases, id: \.self) { eachTab in
+            ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
                 Button {
-                    if tab == eachTab, columnVisibility == .all {
+                    if tabSelection == eachTab, columnVisibility == .all {
                         columnVisibility = .detailOnly
                     } else {
                         columnVisibility = .all
-                        tab = eachTab
+                        tabSelection = eachTab
                     }
                 } label: {
                     eachTab.label()
-                        .foregroundColor(eachTab == tab ? .accentColor : .primary)
+                        .foregroundColor(eachTab == tabSelection ? eachTab.color : .primary)
                 }
                 .keyboardShortcut(KeyEquivalent(Character(String(eachTab.rawValue))), modifiers: [])
             }
@@ -119,7 +100,7 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(80)
                 .navigationBarHidden(true)
         } content: {
-            tab.view()
+            tabSelection.view()
                 .navigationSplitViewColumnWidth(400)
         } detail: {
             globalNavigation.detailView
@@ -148,27 +129,159 @@ struct ContentView: View {
             .navigationSplitViewStyle(.balanced)
 #endif
         }
+        .sheet(isPresented: $casLoginSheet) {
+            CASLoginView.sheet(isPresented: $casLoginSheet)
+        }
+        .onAppear(perform: onLoadFunction)
 #if DEBUG
             .sheet(isPresented: $firstLogin) {
                 UserTypeView(userTypeSheet: $firstLogin)
                     .interactiveDismissDisabled(true)
             }
 #endif
-                .sheet(isPresented: $casLoginSheet) {
-                    CASLoginView.sheet(isPresented: $casLoginSheet)
-                }
-                .onAppear(perform: onLoadFunction)
     }
 
     func onLoadFunction() {
-        if ustcCasUsername.isEmpty || ustcCasPassword.isEmpty {
-            // if either of them is empty, no need to pass them to build the client
-            casLoginSheet = true
-            return
-        }
         Task {
+            if await UstcCasClient.shared.precheckFails {
+                casLoginSheet = true
+            }
             // if the login result fails, present the user with the sheet.
             casLoginSheet = try await !UstcCasClient.shared.login()
         }
+    }
+}
+
+private enum ContentViewTab: Int, CaseIterable {
+    case home = 1
+    case feature = 2
+    case setting = 3
+
+    @ViewBuilder func view() -> some View {
+        switch self {
+        case .home:
+            HomeView()
+        case .feature:
+            FeaturesView()
+        case .setting:
+            SettingsView()
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .home:
+            return .accentColor
+        case .feature:
+            return .red
+        case .setting:
+            return .green
+        }
+    }
+
+    @ViewBuilder func label() -> some View {
+        switch self {
+        case .home:
+            Label("Home", systemImage: "square.stack.3d.up")
+        case .feature:
+            Label("Features", systemImage: "square.grid.2x2")
+        case .setting:
+            Label("Settings", systemImage: "gearshape")
+        }
+    }
+}
+
+private struct ContentViewTabBarItemModifier: ViewModifier {
+    let tab: ContentViewTab
+    @Binding var selection: ContentViewTab
+
+    func body(content: Content) -> some View {
+        if selection == tab {
+            content
+        } else {
+            EmptyView()
+        }
+    }
+}
+
+private extension View {
+    func tabBarItem(tab: ContentViewTab, selection: Binding<ContentViewTab>) -> some View {
+        modifier(ContentViewTabBarItemModifier(tab: tab, selection: selection))
+    }
+}
+
+private struct ContentViewTabBarContainerView<Content: View>: View {
+    @Binding var selection: ContentViewTab
+    let content: Content
+
+    init(selection: Binding<ContentViewTab>, @ViewBuilder content: () -> Content) {
+        _selection = selection
+        self.content = content()
+    }
+
+    var body: some View {
+        ZStack {
+            content
+        }
+        .overlay(alignment: .bottom) {
+            ContentViewTabBarView(selection: $selection)
+        }
+    }
+}
+
+private struct ContentViewTabBarView: View {
+    @Binding var selection: ContentViewTab
+    @Namespace private var namespace
+
+    func tabView(tab: ContentViewTab) -> some View {
+        tab.label()
+            .foregroundColor(selection == tab ? tab.color : Color.gray)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background(
+                ZStack {
+                    if selection == tab {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(tab.color.opacity(0.2))
+                            .matchedGeometryEffect(id: "background_rectangle", in: namespace)
+                    }
+                }
+            )
+    }
+
+    var body: some View {
+        HStack {
+            ForEach(ContentViewTab.allCases, id: \.self) { tab in
+                tabView(tab: tab)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            selection = tab
+                        }
+                    }
+            }
+        }
+        .padding(6)
+        .background(Color.white.ignoresSafeArea(edges: .bottom))
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 3)
+        .padding(.horizontal)
+    }
+}
+
+struct ContentViewTabBarView_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            ForEach(ContentViewTab.allCases, id: \.self) { tab in
+                ContentViewTabBarView(selection: .constant(tab))
+                    .padding(.vertical, 20)
+            }
+        }
+        .previewDisplayName("TabBar Preview")
+
+        ContentView()
+            .previewDisplayName("Main")
+
+        ContentView(useNewUI: false)
+            .previewDisplayName("Main (old UI)")
     }
 }

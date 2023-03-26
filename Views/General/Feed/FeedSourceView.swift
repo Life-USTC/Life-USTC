@@ -19,9 +19,6 @@ struct FeedSourceView: View {
             try await feedSource.forceUpdatePost()
         }
         .navigationBarTitle(feedSource.name, displayMode: .inline)
-#if os(iOS)
-            .toolbar(.hidden, for: .tabBar)
-#endif
     }
 }
 
@@ -38,7 +35,6 @@ struct AllSourceView: View {
         }
         .navigationBarTitle("Feed", displayMode: .inline)
 #if os(iOS)
-            .toolbar(.hidden, for: .tabBar)
             .onAppear {
                 if useNotification {
                     tryRequestAuthorization()

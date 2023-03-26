@@ -71,6 +71,7 @@
 		56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
 		56734CEF297D871500DBB45F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
+		567FA93129D083180003050F /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567FA93029D083180003050F /* AppPage.swift */; };
 		5694D91829668191009CFCDF /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91729668191009CFCDF /* Course.swift */; };
 		569CFE44297D87620072C094 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE43297D87620072C094 /* SwiftyJSON */; };
 		569CFE46297D87640072C094 /* SwiftFormat in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE45297D87640072C094 /* SwiftFormat */; };
@@ -199,6 +200,7 @@
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
+		567FA93029D083180003050F /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5694D91729668191009CFCDF /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		569CFE4B297E85F30072C094 /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
@@ -529,6 +531,7 @@
 				56E94E26298A77D00085241B /* NotificationPage.swift */,
 				56E94E28298A77F80085241B /* FeedPage.swift */,
 				56E94E2A298AA3720085241B /* ExamPage.swift */,
+				567FA93029D083180003050F /* AppPage.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -557,10 +560,10 @@
 				569CFE4B297E85F30072C094 /* Widget.entitlements */,
 				569CFE4D297EBCFA0072C094 /* Assets */,
 				56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */,
+				56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */,
 				56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */,
 				56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */,
 				56FA8E84297D7264000AC3A9 /* Info.plist */,
-				56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -767,6 +770,7 @@
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
 				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
+				567FA93129D083180003050F /* AppPage.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				56A3B87929A8B8A400BFE64F /* CurriculumDelegate.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLoginView.swift in Sources */,
@@ -906,7 +910,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -939,7 +943,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1098,7 +1102,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1138,7 +1142,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1173,7 +1177,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1205,7 +1209,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
