@@ -12,12 +12,15 @@
 "" = "";
 "ustc.edu.cn" = "官网";
 
+"App Settings" = "应用设置";
 "Feed Source Settings" = "通知设置";
 "CAS Settings" = "统一身份认证设置";
 "Change User Type" = "更改用户类型";
 "Notification Settings" = "消息设置";
 "About Life@USTC" = "关于 Life@USTC";
 "Legal Info" = "法律信息";
+
+"Use new UI for tabBar" = "在标签栏位置使用新版UI";
 
 "Input USTC CAS username & password" = "输入统一身份认证账户&密码";
 

@@ -125,9 +125,6 @@ struct AboutLifeAtUSTCView: View {
                 }
             }
         }
-#if os(iOS)
-        .toolbar(.hidden, for: .tabBar)
-#endif
     }
 }
 

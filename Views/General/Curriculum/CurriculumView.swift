@@ -123,9 +123,6 @@ struct CurriculumView: View {
             .sheet(isPresented: $showSettingSheet) {
                 settingSheet
             }
-#if os(iOS)
-            .toolbar(.hidden, for: .tabBar)
-#endif
     }
 
     func makeVStack(index: Int) -> some View {

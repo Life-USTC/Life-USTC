@@ -178,7 +178,7 @@ struct CurriculumWidgetEntryView: View {
         } else {
             switch widgetFamily {
             case .systemSmall:
-                if courses.first(where: { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() })  == nil {
+                if courses.first(where: { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() }) == nil {
                     noMoreCurriculumView
                 } else {
                     mainView
@@ -220,7 +220,7 @@ struct CurriculumWidget_Previews: PreviewProvider {
                 .previewContext(WidgetPreviewContext(family: family))
                 .previewDisplayName(family.description)
         }
-        
+
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
             CurriculumWidgetEntryView(entry: .init(curriculums: []))
                 .previewContext(WidgetPreviewContext(family: family))

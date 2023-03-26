@@ -24,8 +24,7 @@ struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-    @AppStorage("passportUsername", store: userDefaults) var ustcCasUsername: String = ""
-    @AppStorage("passportPassword", store: userDefaults) var ustcCasPassword: String = ""
+    @AppStorage("useNewUIForTabBar") var useNewUI = true
     @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -33,11 +32,26 @@ struct ContentView: View {
 #if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     var iPhoneView: some View {
-        NavigationStack {
-            ContentViewTabBarContainerView(selection: $tabSelection) {
-                ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                    eachTab.view()
-                        .tabBarItem(tab: eachTab, selection: $tabSelection)
+        Group {
+            if useNewUI {
+                NavigationStack {
+                    ContentViewTabBarContainerView(selection: $tabSelection) {
+                        ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
+                            eachTab.view()
+                                .tabBarItem(tab: eachTab, selection: $tabSelection)
+                        }
+                    }
+                }
+            } else {
+                TabView {
+                    ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
+                        NavigationStack {
+                            eachTab.view()
+                        }
+                        .tabItem {
+                            eachTab.label()
+                        }
+                    }
                 }
             }
         }
@@ -128,12 +142,10 @@ struct ContentView: View {
     }
 
     func onLoadFunction() {
-        if ustcCasUsername.isEmpty || ustcCasPassword.isEmpty {
-            // if either of them is empty, no need to pass them to build the client
-            casLoginSheet = true
-            return
-        }
         Task {
+            if await UstcCasClient.shared.precheckFails {
+                casLoginSheet = true
+            }
             // if the login result fails, present the user with the sheet.
             casLoginSheet = try await !UstcCasClient.shared.login()
         }
@@ -229,7 +241,7 @@ private struct ContentViewTabBarView: View {
             .background(
                 ZStack {
                     if selection == tab {
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 15)
                             .fill(tab.color.opacity(0.2))
                             .matchedGeometryEffect(id: "background_rectangle", in: namespace)
                     }
@@ -250,8 +262,26 @@ private struct ContentViewTabBarView: View {
         }
         .padding(6)
         .background(Color.white.ignoresSafeArea(edges: .bottom))
-        .cornerRadius(10)
-        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 3)
         .padding(.horizontal)
+    }
+}
+
+struct ContentViewTabBarView_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            ForEach(ContentViewTab.allCases, id: \.self) { tab in
+                ContentViewTabBarView(selection: .constant(tab))
+                    .padding(.vertical, 20)
+            }
+        }
+        .previewDisplayName("TabBar Preview")
+
+        ContentView()
+            .previewDisplayName("Main")
+
+        ContentView(useNewUI: false)
+            .previewDisplayName("Main (old UI)")
     }
 }

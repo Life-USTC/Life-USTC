@@ -45,7 +45,7 @@ actor UstcCasClient {
         self.session = session
     }
 
-    private var precheckFails: Bool {
+    var precheckFails: Bool {
         username.isEmpty || password.isEmpty
     }
 
