@@ -12,45 +12,48 @@ struct FeedView: View {
     @AppStorage("useReeed") var useReeed = true
     @AppStorage("useNewUIForFeed") var useNewUI = true
     let feed: Feed
+
+    var preview: some View {
+        Group {
+            if useNewUI {
+                SecondFeedView(feed: feed)
+            } else {
+                Card(cardTitle: feed.title,
+                     cardDescription: feed.description,
+                     leadingPropertyList: feed.keywords.map { ($0, nil) },
+                     trailingPropertyList: [.init(feed.datePosted), feed.source],
+                     imageURL: feed.imageURL)
+            }
+        }
+    }
+
+    var destination: some View {
+        Group {
+            if useReeed {
+                ReeeederView(url: feed.url)
+            } else {
+                Browser(url: feed.url)
+            }
+        }
+    }
+
     var body: some View {
         NavigationLinkAddon {
-            Group {
-                if useReeed {
-                    ReeeederView(url: feed.url)
-                } else {
-                    Browser(url: feed.url)
-                }
-            }
+            destination
         } label: {
-            Group {
-                if useNewUI {
-                    SecondFeedView(feed: feed)
-                } else {
-                    Card(cardTitle: feed.title,
-                         cardDescription: feed.description,
-                         leadingPropertyList: feed.keywords.map { ($0, nil) },
-                         trailingPropertyList: [.init(feed.datePosted), feed.source],
-                         imageURL: feed.imageURL)
-                }
-            }
-            .contextMenu {
-                ShareLink(item: feed.url) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
-            } preview: {
-                NavigationStack {
-                    GeometryReader { geo in
-                        Group {
-                            if useReeed {
-                                ReeeederView(url: feed.url)
-                            } else {
-                                Browser(url: feed.url)
-                            }
+            preview
+                .contextMenu {
+                    ShareLink(item: feed.url) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                } preview: {
+                    NavigationStack {
+                        GeometryReader { geo in
+                            destination
+                                .frame(height: geo.size.height)
                         }
-                        .frame(height: geo.size.height)
                     }
                 }
-            }
         }
     }
 }

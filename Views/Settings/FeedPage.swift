@@ -17,13 +17,20 @@ struct FeedSettingView: View {
         List {
             Section {
                 Stepper("Front page post numbers: ".localized + String(feedPostNumber), value: $feedPostNumber)
-                Toggle("Use new UI", isOn: $useNewUI)
-                Toggle("Use reader", isOn: $useReeed)
             } header: {
                 Text("General")
                     .textCase(.none)
             } footer: {
                 Text("Reader would generaly improve reading experience for web page that aren't optimized for mobile.")
+            }
+
+            Section {
+                FeedView(feed: .example).preview
+                Toggle("Use new UI", isOn: $useNewUI)
+                Toggle("Use reader", isOn: $useReeed)
+            } header: {
+                Text("UI Preference")
+                    .textCase(.none)
             }
 
             Section {
@@ -59,6 +66,8 @@ struct FeedSettingView: View {
 
 struct FeedSettingView_Previews: PreviewProvider {
     static var previews: some View {
-        FeedSettingView()
+        NavigationStack {
+            FeedSettingView()
+        }
     }
 }

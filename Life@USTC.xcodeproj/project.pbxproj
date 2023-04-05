@@ -91,6 +91,7 @@
 		56A3B87D29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
 		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
 		56A3B87F29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
+		56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */ = {isa = PBXBuildFile; productRef = 56A7D71729DD20AD00EE7880 /* LoremSwiftum */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
@@ -275,6 +276,7 @@
 			files = (
 				56E8AD67296F069E009006D0 /* Reeeed in Frameworks */,
 				56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */,
+				56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */,
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
@@ -619,6 +621,7 @@
 				56F3EAD3296EAF020095AEF4 /* SwiftSoup */,
 				56E8AD66296F069E009006D0 /* Reeeed */,
 				56112706298126C100BB66EE /* Introspect */,
+				56A7D71729DD20AD00EE7880 /* LoremSwiftum */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
@@ -686,6 +689,7 @@
 				56F3EAD2296EAF020095AEF4 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				56E8AD65296F069E009006D0 /* XCRemoteSwiftPackageReference "reeeed" */,
 				56112705298126C100BB66EE /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
@@ -1279,6 +1283,14 @@
 				kind = branch;
 			};
 		};
+		56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lukaskubanek/LoremSwiftum";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		56D175B6294F01EA0070778F /* XCRemoteSwiftPackageReference "FeedKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nmdias/FeedKit";
@@ -1373,6 +1385,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56E8AD65296F069E009006D0 /* XCRemoteSwiftPackageReference "reeeed" */;
 			productName = Reeeed;
+		};
+		56A7D71729DD20AD00EE7880 /* LoremSwiftum */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */;
+			productName = LoremSwiftum;
 		};
 		56D175B7294F01EA0070778F /* FeedKit */ = {
 			isa = XCSwiftPackageProductDependency;

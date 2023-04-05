@@ -7,6 +7,7 @@
 
 import FeedKit
 import Foundation
+import LoremSwiftum
 
 /*
  TODO: short notice here: the ustc label is used to check if the image is actually part of the post, not some sort of icon
@@ -28,10 +29,10 @@ class Feed: Codable {
     var url: URL
     var imageURL: URL? // preview image URL
 
-    static let example = Feed(title: "title",
-                              source: "source",
-                              keywords: ["keyword1", "keyword2"],
-                              description: "description",
+    static let example = Feed(title: Lorem.sentence,
+                              source: Lorem.word,
+                              keywords: [Lorem.word, Lorem.word],
+                              description: Lorem.sentences(2),
                               datePosted: Date(),
                               url: exampleURL)
 
