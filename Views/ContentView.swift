@@ -232,6 +232,7 @@ private struct ContentViewTabBarContainerView<Content: View>: View {
 private struct ContentViewTabBarView: View {
     @Binding var selection: ContentViewTab
     @Namespace private var namespace
+    @Environment(\.colorScheme) var colorScheme
 
     func tabView(tab: ContentViewTab) -> some View {
         tab.label()
@@ -261,9 +262,12 @@ private struct ContentViewTabBarView: View {
             }
         }
         .padding(6)
-        .background(Color.white.ignoresSafeArea(edges: .bottom))
+        .background(colorScheme == .dark ? Color.black : Color.white)
         .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 3)
+        .overlay {
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(.gray.opacity(0.2))
+        }
         .padding(.horizontal)
     }
 }
