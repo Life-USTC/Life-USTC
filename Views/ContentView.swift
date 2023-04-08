@@ -275,6 +275,7 @@ private struct ContentViewTabBarView: View {
                 .stroke(.gray.opacity(0.2))
         }
         .padding(.horizontal)
+        .ignoresSafeArea(.keyboard)
     }
 }
 

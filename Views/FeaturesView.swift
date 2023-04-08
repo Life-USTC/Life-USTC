@@ -274,6 +274,8 @@ extension FeaturesView {
 
 struct FeaturesView_Previews: PreviewProvider {
     static var previews: some View {
-        FeaturesView()
+        NavigationStack {
+            FeaturesView()
+        }
     }
 }
