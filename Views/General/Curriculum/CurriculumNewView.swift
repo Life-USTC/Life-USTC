@@ -19,11 +19,11 @@ struct CurriculumNewView: View {
                 Image(systemName: "arrowtriangle.down.fill")
             }
             .padding(.vertical)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
-                ScrollViewReader { proxy in
+                ScrollViewReader { _ in
                     HStack {
-                        ForEach(0..<50) { index in
+                        ForEach(0 ..< 50) { index in
                             VStack {
                                 Text("!")
                                 Circle()
@@ -35,7 +35,7 @@ struct CurriculumNewView: View {
                     }
                 }
             }
-            
+
             List {
                 ForEach(Array(repeating: Course.example, count: 5)) { course in
                     VStack(alignment: .leading) {
@@ -49,7 +49,7 @@ struct CurriculumNewView: View {
             }
             .listStyle(.grouped)
             .scrollContentBackground(.hidden)
-            
+
             Spacer()
         }
         .navigationBarTitle("Curriculum", displayMode: .inline)

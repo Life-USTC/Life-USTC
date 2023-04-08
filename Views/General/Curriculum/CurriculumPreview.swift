@@ -20,20 +20,34 @@ struct CurriculumPreview: View {
     }
 
     func makeView(with courses: [Course]) -> some View {
-        VStack {
+        VStack(spacing: 0) {
             ForEach(courses) { course in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(course.name)
-                        Text(course.classPositionString)
-                            .font(.subheadline)
-                            .foregroundColor(Color.gray)
+                ZStack {
+                    GeometryReader { geo in
+                        RectangleProgressBar(
+                            height: geo.size.height,
+                            width: geo.size.width,
+                            startDate: Date().stripTime() + Course.startTimes[course.startTime - 1],
+                            endDate: Date().stripTime() + Course.endTimes[course.endTime - 1],
+                            color: .black
+                        )
                     }
-                    Spacer()
-                    Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
-                        .fontWeight(.bold)
+                    .frame(height: 50)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(course.name)
+                            Text(course.classPositionString)
+                                .font(.subheadline)
+                        }
+                        Spacer()
+                        Text(course.clockTime)
+                            .fontWeight(.bold)
+                    }
+                    .foregroundColor(.white)
+                    .blendMode(.exclusion)
+                    .padding(.horizontal)
                 }
-                Divider()
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
     }
@@ -44,9 +58,9 @@ struct CurriculumPreview: View {
             Text("Free today!")
                 .font(.title3)
                 .fontWeight(.bold)
-            
+
             Spacer()
-            
+
             Image(systemName: "calendar.badge.clock")
                 .fontWeight(.light)
                 .font(.largeTitle)
@@ -65,7 +79,13 @@ struct CurriculumPreview: View {
 struct CurriculumPreview_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            CurriculumPreview().happyView
+            VStack {
+                CurriculumPreview()
+                    .happyView
+
+                CurriculumPreview().makeView(with: [.example, .example])
+            }
+            .padding()
         }
     }
 }
