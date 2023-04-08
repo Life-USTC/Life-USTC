@@ -28,6 +28,8 @@ extension URL {
 
 /// A cas client to login to https://passport.ustc.edu.cn/
 actor UstcCasClient {
+    static var shared = UstcCasClient(session: .shared)
+
     var session: URLSession
     var username: String {
         userDefaults.string(forKey: "passportUsername") ?? ""
@@ -38,8 +40,6 @@ actor UstcCasClient {
     }
 
     var lastLogined: Date?
-
-    static var shared = UstcCasClient(session: .shared)
 
     init(session: URLSession, lastLogined _: Date? = nil) {
         self.session = session
@@ -89,7 +89,6 @@ actor UstcCasClient {
     }
 
     func login(undeterimined: Bool = false) async throws -> Bool {
-        // capture first run
         while true {
             do {
                 if try await loginToCAS() {
@@ -129,5 +128,9 @@ actor UstcCasClient {
             loginTask = nil
             return result
         }
+    }
+
+    func clearLoginStatus() {
+        lastLogined = nil
     }
 }

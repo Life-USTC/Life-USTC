@@ -56,7 +56,8 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
             }
         }
 
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.getSemesterID())/print-data/\(tableID)?weekIndex=")!)
+        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(await UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
+        debugPrint(String(data: data, encoding: .utf8))
         cache = try JSON(data: data)
         lastUpdate = Date()
         try saveCache()
@@ -65,8 +66,8 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
     func saveToCalendar() async throws {
         let courses = try await retrive()
         try await Course.saveToCalendar(courses,
-                                        name: UstcUgAASClient.semesterName,
-                                        startDate: UstcUgAASClient.semesterStartDate)
+                                        name: await UstcUgAASClient.shared.semesterName,
+                                        startDate: await UstcUgAASClient.shared.semesterStartDate)
     }
 
     init(_ client: UstcUgAASClient) {

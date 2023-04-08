@@ -143,6 +143,10 @@ struct ContentView: View {
 
     func onLoadFunction() {
         Task {
+            await UstcCasClient.shared.clearLoginStatus()
+            await UstcUgAASClient.shared.clearLoginStatus()
+            await URLSession.shared.reset()
+
             if await UstcCasClient.shared.precheckFails {
                 casLoginSheet = true
             }
@@ -255,6 +259,8 @@ private struct ContentViewTabBarView: View {
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 tabView(tab: tab)
                     .onTapGesture {
+                        // MARK: A bug is noticed here when switching tabs frequently, this might be related to the way GCD control UI rendering, holding the fix until there's a perfect solution.
+
                         withAnimation(.spring()) {
                             selection = tab
                         }

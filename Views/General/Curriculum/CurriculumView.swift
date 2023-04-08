@@ -10,83 +10,52 @@ import SwiftUI
 let heightPerClass = 60.0
 let paddingWidth = 2.0
 
-struct CurriculumView: View {
+struct CurriculumSettingView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
-    @AppStorage("semesterID") var semesterID = "281"
-    @State var courses: [Course] = []
-    @State var status: AsyncViewStatus = .inProgress
-    @State var showSettingSheet = false
-    @State var saveCalendarStatus: AsyncViewStatus = .waiting
-    var settingSheet: some View {
+    @AppStorage("semesterID", store: userDefaults) var semesterID = "281"
+    @Binding var courses: [Course]
+    @Binding var status: AsyncViewStatus
+    @State var saveCalendarStatus = AsyncViewStatus.inProgress
+    var body: some View {
         NavigationStack {
             List {
                 Toggle(isOn: $showSatAndSun) {
                     Label("Sat&Sun", systemImage: "lines.measurement.horizontal")
                 }
 
-                // Notice that this is only achieving a Picker's functionality, but perhaps writing the code this way is much more simpler
-                HStack {
+                Picker(selection: $semesterID) {
+                    ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
+                        Text(key)
+                            .tag(id)
+                    }
+                } label: {
                     Label("Select time", systemImage: "square.3.stack.3d")
-                    Spacer()
-                    Menu {
-                        ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
-                            Button {
-                                semesterID = id
-                                UstcUgAASClient.selectSemester(id: semesterID)
-                                asyncBind($courses, status: $status) {
-                                    try await CurriculumDelegate.shared.forceUpdate()
-                                    return try await CurriculumDelegate.shared.parseCache()
-                                }
-                            } label: {
-                                if semesterID == id {
-                                    HStack {
-                                        Text(key)
-                                        Spacer()
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.accentColor)
-                                    }
-                                }
-                                Text(key)
-                            }
-                        }
-                    } label: {
-                        Text(UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })?.key ?? "")
+                }
+                .onChange(of: semesterID) { _ in
+                    asyncBind($courses, status: $status) {
+                        try await CurriculumDelegate.shared.forceUpdate()
+                        return try await CurriculumDelegate.shared.parseCache()
                     }
                 }
 
                 Button {
-                    withAnimation {
-                        asyncBind(.constant(()), status: $saveCalendarStatus) {
-                            try await CurriculumDelegate.shared.saveToCalendar()
-                        }
-#if os(iOS)
-                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-#endif
-                        Task {
-                            try await Task.sleep(for: .seconds(2))
-                            saveCalendarStatus = .inProgress
-                        }
+                    asyncBind(.constant(()), status: $saveCalendarStatus) {
+                        try await CurriculumDelegate.shared.saveToCalendar()
                     }
                 } label: {
                     HStack {
                         Label("Save to Calendar", systemImage: "square.and.arrow.down")
                         Spacer()
-                        switch saveCalendarStatus {
-                        case .cached:
-                            EmptyView()
-                        case .success:
+                        if saveCalendarStatus == .success {
                             HStack {
                                 Text("Saved")
                                 Image(systemName: "checkmark.seal")
                             }
                             .foregroundColor(.accentColor)
-                        case .inProgress:
-                            EmptyView()
-                        case .waiting:
-                            EmptyView()
-                        case .failure:
+                        }
+                        if saveCalendarStatus == .failure {
                             HStack {
-                                Text("Something Went Wrong")
+                                Text("Something went wrong")
                                 Image(systemName: "questionmark.diamond.fill")
                             }
                             .foregroundColor(.red)
@@ -100,6 +69,14 @@ struct CurriculumView: View {
         }
         .presentationDetents([.fraction(0.4)])
     }
+}
+
+struct CurriculumView: View {
+    @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
+    @AppStorage("semesterID") var semesterID = "281"
+    @State var courses: [Course] = []
+    @State var status: AsyncViewStatus = .inProgress
+    @State var showSettingSheet = false
 
     var body: some View {
         mainView
@@ -121,7 +98,7 @@ struct CurriculumView: View {
                 CurriculumDelegate.shared.asyncBind($courses, status: $status)
             }
             .sheet(isPresented: $showSettingSheet) {
-                settingSheet
+                CurriculumSettingView(courses: $courses, status: $status)
             }
     }
 
@@ -189,6 +166,11 @@ struct CurriculumView: View {
 
 struct CurriculumView_Previews: PreviewProvider {
     static var previews: some View {
-        CurriculumView()
+        NavigationStack {
+            CurriculumView()
+        }
+
+        CurriculumSettingView(courses: .constant([]), status: .constant(.cached))
+            .previewDisplayName("Settings")
     }
 }

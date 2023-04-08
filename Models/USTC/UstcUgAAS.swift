@@ -12,11 +12,14 @@ import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
 actor UstcUgAASClient {
-    var session: URLSession
-    private var lastLogined: Date?
-    private static var semesterID: String = userDefaults.string(forKey: "semesterID") ?? "301"
-
     static var shared = UstcUgAASClient(session: .shared)
+
+    var session: URLSession
+    var semesterID: String {
+        userDefaults.string(forKey: "semesterID") ?? "221"
+    }
+
+    var lastLogined: Date?
 
     init(session: URLSession) {
         self.session = session
@@ -28,7 +31,8 @@ actor UstcUgAASClient {
         }
 
         // jw.ustc.edu.cn login.
-        let _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
+        let (data, response) = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
+        debugPrint(String(data: data, encoding: .utf8), response)
 
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
             lastLogined = .now
@@ -63,6 +67,10 @@ actor UstcUgAASClient {
             return result
         }
     }
+
+    func clearLoginStatus() {
+        lastLogined = nil
+    }
 }
 
 extension UstcUgAASClient {
@@ -80,19 +88,11 @@ extension UstcUgAASClient {
          "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
          "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
 
-    static func selectSemester(id: String) {
-        semesterID = id
-    }
-
-    static func getSemesterID() -> String {
-        semesterID
-    }
-
-    static var semesterName: String {
+    var semesterName: String {
         UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
     }
 
-    static var semesterStartDate: Date {
+    var semesterStartDate: Date {
         UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterName })!.value
     }
 }
