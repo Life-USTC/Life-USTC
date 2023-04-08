@@ -22,7 +22,11 @@ class ExamDelegate: BaseAsyncDataDelegate {
     static var shared = ExamDelegate(.shared)
 
     func parseCache() async throws -> [Exam] {
-        let hiddenExamName = ([String].init(rawValue: userDefaults.string(forKey: "hiddenExamName") ?? "") ?? []).filter { !$0.isEmpty }
+        let hiddenExamName = (
+            [String].init(rawValue: userDefaults.string(forKey: "hiddenExamName") ?? ""
+            ) ?? []).filter {
+            !$0.isEmpty
+        }
         let result = cache.filter { exam in
             for name in hiddenExamName {
                 if exam.className.contains(name) {
@@ -68,12 +72,10 @@ class ExamDelegate: BaseAsyncDataDelegate {
                                      description: textList[7]))
         }
 
-        if !fetchedExams.isEmpty {
-            lastUpdate = Date()
-            cache = fetchedExams
-            WidgetCenter.shared.reloadAllTimelines()
-            try saveCache()
-        }
+        lastUpdate = Date()
+        cache = fetchedExams
+        WidgetCenter.shared.reloadAllTimelines()
+        try saveCache()
     }
 
     init(_ client: UstcUgAASClient) {
