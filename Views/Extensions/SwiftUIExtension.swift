@@ -185,3 +185,42 @@ extension WidgetFamily: CaseIterable {
 #endif
     }
 }
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+        
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}
+
+let exampleGradientList: [[Color]] = [
+    [.init(hex: "#0F2027"), .init(hex: "#203A43"), .init(hex: "#2C5364")],
+    [.init(hex: "#373B44"), .init(hex: "#4286f4")],
+    [.init(hex: "#2980B9"), .init(hex: "#6DD5FA")],
+    [.init(hex: "#8E2DE2"), .init(hex: "#4A00E0")],
+    [.init(hex: "#7F7FD5"), .init(hex: "#7F7FD5"), .init(hex: "#91EAE4")],
+    [.init(hex: "#c31432"), .init(hex: "#240b36")],
+    [.init(hex: "#f12711"), .init(hex: "#f5af19")],
+    [.init(hex: "#659999"), .init(hex: "#f4791f")],
+    [.init(hex: "#dd3e54"), .init(hex: "#6be585")],
+]

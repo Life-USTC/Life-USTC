@@ -19,7 +19,7 @@ struct ExamPreview: View {
             }
         }
     }
-
+    
     func makeView(with exams: [Exam]) -> some View {
         VStack {
             ForEach(exams) { exam in
@@ -44,13 +44,26 @@ struct ExamPreview: View {
             }
         }
     }
-
+    
     var happyView: some View {
-        VStack {
-            Image(systemName: "signature")
-                .foregroundColor(.accentColor)
-                .font(.system(size: 40))
-            Text("No more exam!")
+        HStack {
+            Text("No More Exam!")
+                .font(.title3)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            Image(systemName: "checklist.checked")
+                .fontWeight(.light)
+                .font(.largeTitle)
+        }
+        .foregroundColor(.white)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(LinearGradient(colors: exampleGradientList.randomElement() ?? [],
+                                     startPoint: .topLeading,
+                                     endPoint: .bottomTrailing))
         }
     }
 }

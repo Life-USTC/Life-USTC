@@ -109,6 +109,7 @@
 		56D175CC295457100070778F /* FeedSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CB295457100070778F /* FeedSourceView.swift */; };
 		56D175CE295457810070778F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CD295457810070778F /* FeedView.swift */; };
 		56D175D02954589D0070778F /* FeedVStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedVStackView.swift */; };
+		56D18BBC29E13342002C6677 /* CurriculumNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D18BBB29E13342002C6677 /* CurriculumNewView.swift */; };
 		56DD03A6296C1D5F004C358C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A5296C1D5F004C358C /* Notification.swift */; };
 		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
@@ -227,6 +228,7 @@
 		56D175CB295457100070778F /* FeedSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceView.swift; sourceTree = "<group>"; };
 		56D175CD295457810070778F /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		56D175CF2954589D0070778F /* FeedVStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVStackView.swift; sourceTree = "<group>"; };
+		56D18BBB29E13342002C6677 /* CurriculumNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumNewView.swift; sourceTree = "<group>"; };
 		56DD03A5296C1D5F004C358C /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* CourseScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseScore.swift; sourceTree = "<group>"; };
@@ -469,6 +471,7 @@
 				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
 				56BE91FC2966799200822C98 /* CourseCardView.swift */,
 				56D175BF295048A10070778F /* CurriculumView.swift */,
+				56D18BBB29E13342002C6677 /* CurriculumNewView.swift */,
 			);
 			path = Curriculum;
 			sourceTree = "<group>";
@@ -791,6 +794,7 @@
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
+				56D18BBC29E13342002C6677 /* CurriculumNewView.swift in Sources */,
 				56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,

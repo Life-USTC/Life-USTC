@@ -40,11 +40,32 @@ struct CurriculumPreview: View {
 
     /// If no class are shown...
     var happyView: some View {
-        VStack {
-            Image(systemName: "signature")
-                .foregroundColor(.accentColor)
-                .font(.system(size: 40))
+        HStack {
             Text("Free today!")
+                .font(.title3)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            Image(systemName: "calendar.badge.clock")
+                .fontWeight(.light)
+                .font(.largeTitle)
+        }
+        .foregroundColor(.white)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(LinearGradient(colors: exampleGradientList.randomElement() ?? [],
+                                     startPoint: .topLeading,
+                                     endPoint: .bottomTrailing))
+        }
+    }
+}
+
+struct CurriculumPreview_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationStack {
+            CurriculumPreview().happyView
         }
     }
 }
