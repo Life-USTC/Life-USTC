@@ -16,7 +16,7 @@ actor UstcUgAASClient {
 
     var session: URLSession
     var semesterID: String {
-        userDefaults.string(forKey: "semesterID") ?? "221"
+        userDefaults.string(forKey: "semesterID") ?? "301"
     }
 
     var lastLogined: Date?
@@ -50,24 +50,29 @@ actor UstcUgAASClient {
     }
 
     var loginTask: Task<Bool, Error>?
-
+    
     func requireLogin() async throws -> Bool {
         if let loginTask {
             return try await loginTask.value
         }
-
+        
         if checkLogined() {
             return true
-        } else {
-            let task = Task {
-                try await self.login()
-            }
-            loginTask = task
-            let result = try await task.value
-            loginTask = nil
-            return result
         }
+        
+        let task = Task {
+            do {
+                let result = try await self.login()
+                loginTask = nil
+                return result
+            } catch {
+                print(error)
+                return false
+            }
+        }
+        return await task.value
     }
+
 
     func clearLoginStatus() {
         lastLogined = nil

@@ -110,7 +110,7 @@ actor UstcCasClient {
             if undeterimined {
                 return false
             }
-            try await Task.sleep(for: .microseconds(400))
+            try await Task.sleep(for: .seconds(2))
         }
     }
 
@@ -131,15 +131,19 @@ actor UstcCasClient {
 
         if checkLogined() {
             return true
-        } else {
-            let task = Task {
-                try await self.login()
-            }
-            loginTask = task
-            let result = try await task.value
-            loginTask = nil
-            return result
         }
+
+        let task = Task {
+            do {
+                let result = try await self.login()
+                loginTask = nil
+                return result
+            } catch {
+                print(error)
+                return false
+            }
+        }
+        return await task.value
     }
 
     func clearLoginStatus() {
