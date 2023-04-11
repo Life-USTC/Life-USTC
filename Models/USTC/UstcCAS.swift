@@ -16,9 +16,9 @@ extension URL {
     ///  - Parameters:
     ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
     func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "service", value: components.url!.absoluteString)]
-        return URL(string: "\(casServer)/login?service=\(components.url!.absoluteString)")!
+        var components = URLComponents(url: casServer.appendingPathComponent("login"), resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "service", value: self.absoluteString)]
+        return components.url ?? exampleURL
     }
 
     func ustcCASLoginMarkup() -> URL {
@@ -72,12 +72,21 @@ actor UstcCasClient {
         }
         let session = URLSession.shared
         let (ltToken, cookies) = try await getLtTokenFromCAS()
+        
+        var components = URLComponents(url: ustcLoginUrl, resolvingAgainstBaseURL: true)!
+        components.queryItems = [URLQueryItem(name: "model", value: "upload.jsp"),
+                                 URLQueryItem(name: "CAS_LT", value: ltToken),
+                                 URLQueryItem(name: "service", value: nil),
+                                 URLQueryItem(name: "warn", value: nil),
+                                 URLQueryItem(name: "showCode", value: nil),
+                                 URLQueryItem(name: "qrcode", value: nil),
+                                 URLQueryItem(name: "username", value: username),
+                                 URLQueryItem(name: "password", value: password),
+                                 URLQueryItem(name: "LT", value: nil),
+                                 URLQueryItem(name: "button", value: nil)]
 
-        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&password=\(password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&LT=&button="
-        debugPrint(dataString)
-        var request = URLRequest(url: ustcLoginUrl)
+        var request = URLRequest(url: components.url ?? exampleURL)
         request.httpMethod = "POST"
-        request.httpBody = dataString.data(using: .utf8)
         request.httpShouldHandleCookies = true
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
