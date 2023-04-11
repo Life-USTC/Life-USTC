@@ -12,7 +12,7 @@ let paddingWidth = 2.0
 
 struct CurriculumSettingView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
-    @AppStorage("semesterID", store: userDefaults) var semesterID = "281"
+    @AppStorage("semesterID", store: userDefaults) var semesterID = "301"
     @Binding var courses: [Course]
     @Binding var status: AsyncViewStatus
     @State var saveCalendarStatus = AsyncViewStatus.inProgress
@@ -73,7 +73,6 @@ struct CurriculumSettingView: View {
 
 struct CurriculumView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
-    @AppStorage("semesterID") var semesterID = "281"
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var showSettingSheet = false
