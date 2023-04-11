@@ -33,6 +33,7 @@ actor UstcUgAASClient {
         // jw.ustc.edu.cn login.
         let (data, response) = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
         debugPrint(String(data: data, encoding: .utf8), response)
+        debugPrint(session.configuration.httpCookieStorage?.cookies)
 
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
             lastLogined = .now

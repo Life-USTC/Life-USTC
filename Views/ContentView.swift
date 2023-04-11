@@ -145,7 +145,7 @@ struct ContentView: View {
         Task {
             await UstcCasClient.shared.clearLoginStatus()
             await UstcUgAASClient.shared.clearLoginStatus()
-            await URLSession.shared.reset()
+//            await URLSession.shared.reset()
 
             if await UstcCasClient.shared.precheckFails {
                 casLoginSheet = true

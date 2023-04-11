@@ -13,7 +13,7 @@ struct CourseCardView: View {
 
     var body: some View {
         VStack(spacing: 3) {
-            Text(Course.startTimes[safe: course.startTime - 1]?.clockTime ?? "--:--")
+            Text(Course.startTimes[course.startTime - 1].clockTime)
                 .font(.system(size: 9))
                 .fontWeight(.bold)
                 .hStackLeading()
@@ -33,7 +33,7 @@ struct CourseCardView: View {
                     .font(.system(size: 9))
                 Text(course.classTeacherName)
                     .font(.system(size: 9))
-                Text(Course.endTimes[safe: course.endTime - 1]?.clockTime ?? "--:--")
+                Text(Course.endTimes[course.endTime - 1].clockTime)
                     .font(.system(size: 9))
                     .hStackTrailing()
             }

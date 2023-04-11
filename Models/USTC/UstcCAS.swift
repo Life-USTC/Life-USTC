@@ -73,14 +73,17 @@ actor UstcCasClient {
         let session = URLSession.shared
         let (ltToken, cookies) = try await getLtTokenFromCAS()
 
-        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username)&password=\(password)&LT=&button="
+        let dataString = "model=uplogin.jsp&CAS_LT=\(ltToken)&service=&warn=&showCode=&qrcode=&username=\(username.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&password=\(password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&LT=&button="
+        debugPrint(dataString)
         var request = URLRequest(url: ustcLoginUrl)
         request.httpMethod = "POST"
         request.httpBody = dataString.data(using: .utf8)
         request.httpShouldHandleCookies = true
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        _ = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
+        debugPrint(session.configuration.httpCookieStorage?.cookies)
+        debugPrint(String(data: data, encoding: .utf8), response)
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
             lastLogined = .now
             return true

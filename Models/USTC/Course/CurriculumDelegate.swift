@@ -28,15 +28,31 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
             if classPositionString == "" {
                 classPositionString = subJson["customPlace"].stringValue
             }
-            let tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!,
-                             startTime: Int(subJson["startUnit"].stringValue)!,
-                             endTime: Int(subJson["endUnit"].stringValue)!,
+            var tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!,
+                             startTime: Int(subJson["startUnit"].stringValue) ?? 1,
+                             endTime: Int(subJson["endUnit"].stringValue) ?? 1,
                              name: subJson["courseName"].stringValue,
                              classIDString: subJson["courseCode"].stringValue,
                              classPositionString: classPositionString,
                              classTeacherName: subJson["teachers"][0].stringValue,
                              weekString: subJson["weeksStr"].stringValue)
 
+            if tmp.startTime <= 0 {
+                tmp.startTime = 1
+            }
+            
+            if tmp.startTime > Course.startTimes.count {
+                tmp.startTime = Course.startTimes.count
+            }
+            
+            if tmp.endTime <= 0 {
+                tmp.endTime = 1
+            }
+            
+            if tmp.endTime > Course.endTimes.count {
+                tmp.endTime = Course.endTimes.count
+            }
+            
             result.append(tmp)
         }
         return Course.clean(result)
