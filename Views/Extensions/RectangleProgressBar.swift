@@ -52,9 +52,10 @@ struct RectangleProgressBar: View {
         self.startDate = Date().stripTime() + Course.startTimes[course.startTime - 1]
         self.endDate = Date().stripTime() + Course.endTimes[course.endTime - 1]
         self.colors = colors
-        self.textWithPositionList = [(Text(course.name), { _ in CGPoint(x: 15, y: 5) }, UnitPoint.topLeading),
-                                     (Text(course.classPositionString), { CGPoint(x: 15, y: $0.height - 5)}, .bottomLeading),
-                                     (Text(course.clockTime), { CGPoint(x: $0.width, y: $0.height / 2)}, UnitPoint.trailing)]
+        // MARK: - Fix padding issue
+        self.textWithPositionList = [(Text(course.name), { CGPoint(x: 15, y: $0.height / 2 - 18) }, UnitPoint.topLeading),
+                                     (Text(course.classPositionString), { CGPoint(x: 15, y: $0.height / 2 + 18)}, .bottomLeading),
+                                     (Text(course.clockTime), { CGPoint(x: $0.width - 15, y: $0.height / 2)}, UnitPoint.trailing)]
     }
     
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
