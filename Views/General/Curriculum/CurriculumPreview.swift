@@ -29,11 +29,9 @@ struct CurriculumPreview: View {
             ForEach(courses) { course in
                 GeometryReader { geo in
                     RectangleProgressBar(
-                        height: geo.size.height,
                         width: geo.size.width,
-                        startDate: Date().stripTime() + Course.startTimes[course.startTime - 1],
-                        endDate: Date().stripTime() + Course.endTimes[course.endTime - 1],
-                        text: "\(course.name)(\(course.classPositionString))\n\(course.clockTime)"
+                        height: geo.size.height,
+                        course: course
                     )
                 }
                 .frame(height: 50)
@@ -66,7 +64,7 @@ struct CurriculumPreview: View {
     }
 }
 
-fileprivate var exampleCourse: Course {
+var exampleCourse: Course {
     var result = Course.example
     
     result.startTime = 1

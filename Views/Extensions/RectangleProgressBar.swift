@@ -8,13 +8,55 @@
 import SwiftUI
 
 struct RectangleProgressBar: View {
-    var height = 80.0
     var width = 400.0
+    var height = 50.0
     var startDate: Date
     var endDate: Date
     var colors = exampleGradientList.randomElement() ?? []
-    var text: String = ""
-
+    var textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         startDate: Date,
+         endDate: Date,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]) {
+        self.width = width
+        self.height = height
+        self.startDate = startDate
+        self.endDate = endDate
+        self.colors = colors
+        self.textWithPositionList = textWithPositionList
+    }
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         startDate: Date,
+         endDate: Date,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         text: String) {
+        self.width = width
+        self.height = height
+        self.startDate = startDate
+        self.endDate = endDate
+        self.colors = colors
+        self.textWithPositionList = [(Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2)}, .center)]
+    }
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         course: Course) {
+        self.width = width
+        self.height = height
+        self.startDate = Date().stripTime() + Course.startTimes[course.startTime - 1]
+        self.endDate = Date().stripTime() + Course.endTimes[course.endTime - 1]
+        self.colors = colors
+        self.textWithPositionList = [(Text(course.name), { _ in CGPoint(x: 15, y: 5) }, UnitPoint.topLeading),
+                                     (Text(course.classPositionString), { CGPoint(x: 15, y: $0.height - 5)}, .bottomLeading),
+                                     (Text(course.clockTime), { CGPoint(x: $0.width, y: $0.height / 2)}, UnitPoint.trailing)]
+    }
+    
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
         let path = Path { path in
             path.move(to: .zero)
@@ -63,14 +105,14 @@ struct RectangleProgressBar: View {
                      timeline: timeline,
                      progress: progress)
                 
-                context.draw(
-                    Text(text)
-                        .font(.system(size: 15))
-                        .foregroundColor(.white)
-                        .bold(),
-                    at: .init(x: size.width / 2, y: size.height / 2),
-                    anchor: .center
-                )
+                for _textWithPosition in textWithPositionList {
+                    context.draw(
+                        _textWithPosition.text
+                            .foregroundColor(.white),
+                        at: _textWithPosition.at(size),
+                        anchor: _textWithPosition.anchor
+                    )
+                }
                 
                 context.clipToLayer(options: .inverse, content: { clipContext in
                     draw(context: clipContext,
@@ -80,14 +122,14 @@ struct RectangleProgressBar: View {
                 })
                 
                 context.clipToLayer(content: { clipContext in
-                    clipContext.draw(
-                        Text(text)
-                            .font(.system(size: 15))
-                            .foregroundColor(.black)
-                            .bold(),
-                        at: .init(x: size.width / 2, y: size.height / 2),
-                        anchor: .center
-                    )
+                    for _textWithPosition in textWithPositionList {
+                        clipContext.draw(
+                            _textWithPosition.text
+                                .foregroundColor(.black),
+                            at: _textWithPosition.at(size),
+                            anchor: _textWithPosition.anchor
+                        )
+                    }
                 })
                 
                 context.fill(Path(CGRect(origin: .zero, size: size)),
@@ -115,6 +157,7 @@ struct RectangleProgressBar_Previews: PreviewProvider {
                 colors: [.black],
                 text: "!!!!!!"
             )
+            RectangleProgressBar(course: exampleCourse)
         }
     }
 }
