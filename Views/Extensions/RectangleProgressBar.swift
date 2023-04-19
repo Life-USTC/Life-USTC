@@ -8,12 +8,56 @@
 import SwiftUI
 
 struct RectangleProgressBar: View {
-    var height = 80.0
     var width = 400.0
+    var height = 50.0
     var startDate: Date
     var endDate: Date
-    var color = Color.green
-
+    var colors = exampleGradientList.randomElement() ?? []
+    var textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         startDate: Date,
+         endDate: Date,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]) {
+        self.width = width
+        self.height = height
+        self.startDate = startDate
+        self.endDate = endDate
+        self.colors = colors
+        self.textWithPositionList = textWithPositionList
+    }
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         startDate: Date,
+         endDate: Date,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         text: String) {
+        self.width = width
+        self.height = height
+        self.startDate = startDate
+        self.endDate = endDate
+        self.colors = colors
+        self.textWithPositionList = [(Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2)}, .center)]
+    }
+    
+    init(width: Double = 400.0,
+         height: Double = 50.0,
+         colors: [Color] = exampleGradientList.randomElement() ?? [],
+         course: Course) {
+        self.width = width
+        self.height = height
+        self.startDate = Date().stripTime() + Course.startTimes[course.startTime - 1]
+        self.endDate = Date().stripTime() + Course.endTimes[course.endTime - 1]
+        self.colors = colors
+        // MARK: - Fix padding issue
+        self.textWithPositionList = [(Text(course.name), { CGPoint(x: 15, y: $0.height / 2 - 18) }, UnitPoint.topLeading),
+                                     (Text(course.classPositionString), { CGPoint(x: 15, y: $0.height / 2 + 18)}, .bottomLeading),
+                                     (Text(course.clockTime), { CGPoint(x: $0.width - 15, y: $0.height / 2)}, UnitPoint.trailing)]
+    }
+    
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
         let path = Path { path in
             path.move(to: .zero)
@@ -29,29 +73,73 @@ struct RectangleProgressBar: View {
 
         return path
     }
+    
+    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineViewDefaultContext, progress: Double) {
+        context.fill(
+            drawPath(in: size,
+                     time: timeline.date.timeIntervalSince1970 * 4.8 + 1.2,
+                     progress: progress + 0.01),
+            with: .linearGradient(Gradient(colors: colors.map { $0.opacity(0.25) }),
+                                  startPoint: .zero,
+                                  endPoint: .init(x: size.width, y: size.height)),
+            style: .init(antialiased: true)
+        )
+        
+        context.fill(
+            drawPath(in: size,
+                     time: timeline.date.timeIntervalSince1970 * 2.4,
+                     progress: progress),
+            with: .linearGradient(Gradient(colors: colors),
+                                  startPoint: .zero,
+                                  endPoint: .init(x: size.width, y: size.height)),
+            style: .init(antialiased: true)
+        )
+    }
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.01)) { timeline in
+        TimelineView(.periodic(from: .now, by: 1 / 60)) { timeline in
             Canvas { context, size in
                 let progress = (Date().timeIntervalSince1970 - startDate.timeIntervalSince1970) / (endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970)
-                context.fill(
-                    drawPath(in: size, time: timeline.date.timeIntervalSince1970 * 4.8 + 1.2, progress: progress + 0.01),
-                    with: .color(color.opacity(0.25)),
-                    style: .init(antialiased: true)
-                )
-
-                context.fill(
-                    drawPath(in: size, time: timeline.date.timeIntervalSince1970 * 2.4, progress: progress),
-                    with: .color(color),
-                    style: .init(antialiased: true)
+                
+                draw(context: context,
+                     size: size,
+                     timeline: timeline,
+                     progress: progress)
+                
+                for _textWithPosition in textWithPositionList {
+                    context.draw(
+                        _textWithPosition.text
+                            .foregroundColor(.white),
+                        at: _textWithPosition.at(size),
+                        anchor: _textWithPosition.anchor
+                    )
+                }
+                
+                context.clipToLayer(options: .inverse, content: { clipContext in
+                    draw(context: clipContext,
+                         size: size,
+                         timeline: timeline,
+                         progress: progress)
+                })
+                
+                context.clipToLayer(content: { clipContext in
+                    for _textWithPosition in textWithPositionList {
+                        clipContext.draw(
+                            _textWithPosition.text
+                                .foregroundColor(.black),
+                            at: _textWithPosition.at(size),
+                            anchor: _textWithPosition.anchor
+                        )
+                    }
+                })
+                
+                context.fill(Path(CGRect(origin: .zero, size: size)),
+                             with: .linearGradient(Gradient(colors: colors),
+                                                    startPoint: .zero,
+                                                    endPoint: .init(x: size.width, y: size.height))
                 )
             }
             .frame(width: width, height: height)
-        }
-        .background {
-            Rectangle()
-                .fill(.background)
-                .frame(width: width, height: height)
         }
     }
 }
@@ -59,7 +147,18 @@ struct RectangleProgressBar: View {
 struct RectangleProgressBar_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            RectangleProgressBar(startDate: Date().addingTimeInterval(-15 * 60), endDate: Date().addingTimeInterval(45 * 60))
+            RectangleProgressBar(
+                startDate: Date().addingTimeInterval(-15 * 60),
+                endDate: Date().addingTimeInterval(10 * 60),
+                text: "Example TEXT"
+            )
+            RectangleProgressBar(
+                startDate: Date().addingTimeInterval(-15 * 60),
+                endDate: Date().addingTimeInterval(5 * 60),
+                colors: [.black],
+                text: "!!!!!!"
+            )
+            RectangleProgressBar(course: exampleCourse)
         }
     }
 }
