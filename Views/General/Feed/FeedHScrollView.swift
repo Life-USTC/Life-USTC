@@ -38,7 +38,7 @@ struct FeedHScrollView: View {
                     }
                     .frame(width: geo.size.width * Double(feedPostNumber))
                 }
-                .scrollDisabled(true)
+                .scrollDisabled(false)
                 .task {
                     let feedPostIDList = feeds.map(\.id)
                     if let id = feedPostIDList.first {
