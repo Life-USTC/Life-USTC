@@ -50,6 +50,7 @@ struct HomeView: View {
 
                 feature.preview
             }
+            .padding(.bottom, 70)
         }
         .padding([.leading, .trailing])
         .navigationTitle("Life@USTC")

@@ -214,13 +214,11 @@ extension Color {
 }
 
 let exampleGradientList: [[Color]] = [
-    [.init(hex: "#0F2027"), .init(hex: "#203A43"), .init(hex: "#2C5364")],
-    [.init(hex: "#373B44"), .init(hex: "#4286f4")],
-    [.init(hex: "#2980B9"), .init(hex: "#6DD5FA")],
-    [.init(hex: "#8E2DE2"), .init(hex: "#4A00E0")],
-    [.init(hex: "#7F7FD5"), .init(hex: "#7F7FD5"), .init(hex: "#91EAE4")],
-    [.init(hex: "#c31432"), .init(hex: "#240b36")],
-    [.init(hex: "#f12711"), .init(hex: "#f5af19")],
-    [.init(hex: "#659999"), .init(hex: "#f4791f")],
-    [.init(hex: "#dd3e54"), .init(hex: "#6be585")],
+    [.init(hex: "#6A95A9"), .init(hex: "#4577C7")],
+    [.init(hex: "#9AE0E9"), .init(hex: "#89AFE8")],
+    [.init(hex: "#C298E5"), .init(hex: "#759BDC")],
+    [.init(hex: "#9999E5"), .init(hex: "#A7E6E2")],
+    [.init(hex: "#F3C981"), .init(hex: "#89CD7D")],
+    [.init(hex: "#3D6585"), .init(hex: "#99D587")],
+    [.init(hex: "#D5AF8D"), .init(hex: "#6FA3A3")],
 ]
