@@ -32,8 +32,8 @@ actor UstcUgAASClient {
 
         // jw.ustc.edu.cn login.
         let (data, response) = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
-        debugPrint(String(data: data, encoding: .utf8), response)
-        debugPrint(session.configuration.httpCookieStorage?.cookies)
+//        debugPrint(String(data: data, encoding: .utf8), response)
+//        debugPrint(session.configuration.httpCookieStorage?.cookies)
 
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
             lastLogined = .now
@@ -50,16 +50,16 @@ actor UstcUgAASClient {
     }
 
     var loginTask: Task<Bool, Error>?
-    
+
     func requireLogin() async throws -> Bool {
         if let loginTask {
             return try await loginTask.value
         }
-        
+
         if checkLogined() {
             return true
         }
-        
+
         let task = Task {
             do {
                 let result = try await self.login()
@@ -72,7 +72,6 @@ actor UstcUgAASClient {
         }
         return await task.value
     }
-
 
     func clearLoginStatus() {
         lastLogined = nil

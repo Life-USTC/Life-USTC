@@ -17,7 +17,7 @@ extension URL {
     ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
     func CASLoginMarkup(casServer: URL) -> URL {
         var components = URLComponents(url: casServer.appendingPathComponent("login"), resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "service", value: self.absoluteString)]
+        components.queryItems = [URLQueryItem(name: "service", value: absoluteString)]
         return components.url ?? exampleURL
     }
 
@@ -72,7 +72,7 @@ actor UstcCasClient {
         }
         let session = URLSession.shared
         let (ltToken, cookies) = try await getLtTokenFromCAS()
-        
+
         var components = URLComponents(url: ustcLoginUrl, resolvingAgainstBaseURL: true)!
         components.queryItems = [URLQueryItem(name: "model", value: "upload.jsp"),
                                  URLQueryItem(name: "CAS_LT", value: ltToken),
@@ -91,8 +91,8 @@ actor UstcCasClient {
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
         let (data, response) = try await session.data(for: request)
-        debugPrint(session.configuration.httpCookieStorage?.cookies)
-        debugPrint(String(data: data, encoding: .utf8), response)
+//        debugPrint(session.configuration.httpCookieStorage?.cookies)
+//        debugPrint(String(data: data, encoding: .utf8), response)
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
             lastLogined = .now
             return true

@@ -34,17 +34,5 @@ struct AllSourceView: View {
             try await FeedSource.recentFeeds(number: nil)
         }
         .navigationBarTitle("Feed", displayMode: .inline)
-#if os(iOS)
-            .onAppear {
-                if useNotification {
-                    tryRequestAuthorization()
-                    UIApplication.shared.registerForRemoteNotifications()
-                } else {
-                    Task {
-                        try await unRegisterDeviceToken()
-                    }
-                }
-            }
-#endif
     }
 }

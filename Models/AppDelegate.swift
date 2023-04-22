@@ -8,39 +8,29 @@
 import SwiftUI
 
 #if os(iOS)
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UNUserNotificationCenter.current().delegate = self
-        application.registerForRemoteNotifications()
+
+var tpnsLog: String = ""
+
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate {
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        XGPush.defaultManager().clearTPNSCache()
+        XGPush.defaultManager().isEnableDebug = true
+        XGPush.defaultManager().configureClusterDomainName("tpns.sh.tencent.com")
+        XGPush.defaultManager().appDelegate = self
+        XGPush.defaultManager().startXG(withAccessID: 1_680_015_447, accessKey: "IOSAEBOQD6US", delegate: self)
         return true
     }
 
-    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        deviceTokenString = deviceToken.hexString
-#if DEBUG
-        debugPrint(deviceTokenString)
-#endif
-        if userDefaults.bool(forKey: "useNotification") {
-            Task {
-                try await registerDeviceToken()
-            }
+    func xgPushDidRegisteredDeviceToken(_: String?, xgToken _: String?, error _: Error?) {}
+
+    func xgPushDidReceiveRemoteNotification(_: Any) async -> UInt {
+        1
+    }
+
+    func xgPushLog(_ logInfo: String?) {
+        if let logInfo {
+            tpnsLog += "\n" + logInfo
         }
-    }
-
-    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print(error)
-        // Try again later.
-    }
-
-    private func application(application _: UIApplication, didReceiveRemoteNotification userInfo: [NSObject: AnyObject]) {
-        print(userInfo)
-    }
-
-    func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // Update the app interface directly.
-
-        // Show a banner
-        completionHandler(.banner)
     }
 }
 #else

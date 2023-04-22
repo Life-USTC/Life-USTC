@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
     init(seed: Int) { srand48(seed) }
-    func next() -> UInt64 { return UInt64(drand48() * Double(UInt64.max)) }
+    func next() -> UInt64 { UInt64(drand48() * Double(UInt64.max)) }
 }
 
 struct CurriculumPreview: View {
@@ -66,15 +66,14 @@ struct CurriculumPreview: View {
 
 var exampleCourse: Course {
     var result = Course.example
-    
+
     result.startTime = 1
     result.endTime = 10
-    
+
     return result
 }
 
 struct CurriculumPreview_Previews: PreviewProvider {
-    
     static var previews: some View {
         NavigationStack {
             VStack {

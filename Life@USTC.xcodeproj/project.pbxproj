@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; };
+		299CC5634936A26A0F10C17F /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 327F6A0F98EF6EBD4399EE0D /* NotificationService.m */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -111,7 +113,6 @@
 		56D175D02954589D0070778F /* FeedVStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedVStackView.swift */; };
 		56D18BBC29E13342002C6677 /* CurriculumNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D18BBB29E13342002C6677 /* CurriculumNewView.swift */; };
 		56D18BBE29E140DE002C6677 /* RectangleProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */; };
-		56DD03A6296C1D5F004C358C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A5296C1D5F004C358C /* Notification.swift */; };
 		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* CourseScore.swift */; };
@@ -135,6 +136,17 @@
 		56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FA8E82297D7264000AC3A9 /* Assets.xcassets */; };
 		56FA8E85297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
 		56FA8E86297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
+		78D1F6FE39D9928EE99CAC44 /* XGMTACloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8374F92F03832B8097F86E2D /* XGMTACloud.framework */; };
+		7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */; };
+		813700120F84685D752015B2 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382E828813FA9C0554457CA /* CoreTelephony.framework */; };
+		902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A419DE96C0C3F0A443D9C8E7 /* libz.tbd */; };
+		905583363708B43FB93B6776 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55DDCF5537E65C2C916A8BC3 /* Security.framework */; };
+		9D77206865669A1F1F9075B0 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0022E5088450BB80383ABCB3 /* UserNotifications.framework */; };
+		A76F279A0A99FB2F21E2836F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56F1EC6CC15C289C92E2ECF /* CoreData.framework */; };
+		C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B766B60160E4B33F87B053CD /* TPNSService.appex */; platformFilter = ios; };
+		CC5FF768DE706F4BB623C17E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B238F82A27602447BBF1630E /* SystemConfiguration.framework */; };
+		D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */; };
+		D9670C867A7DEDB9BBBED157 /* libXGExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -151,6 +163,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 561127FC298148E900BB66EE;
 			remoteInfo = "ExamWidgetExtension (macOS)";
+		};
+		6D885CC0272CA873CCFE52E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56AC72F4294A012600A60F47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 86B22FE4CF1A3B007729F5D4;
+			remoteInfo = TPNSService;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -177,9 +196,27 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B93F358E78A48606EACA157C /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0022E5088450BB80383ABCB3 /* UserNotifications.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/UserNotifications.framework; sourceTree = "<group>"; };
+		12B90FF1CD0E87B07896B8A2 /* NotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Life@USTC-Bridging-Header.h"; sourceTree = "<group>"; };
+		31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libsqlite3.0.tbd; sourceTree = "<group>"; };
+		327F6A0F98EF6EBD4399EE0D /* NotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		3382E828813FA9C0554457CA /* CoreTelephony.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreTelephony.framework; sourceTree = "<group>"; };
+		55DDCF5537E65C2C916A8BC3 /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
 		561127FD298148E900BB66EE /* Widget macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Widget macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcWeixin.swift; sourceTree = "<group>"; };
 		56128F53298D3D2D0080A9F7 /* HealthCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheck.swift; sourceTree = "<group>"; };
@@ -231,7 +268,6 @@
 		56D175CF2954589D0070778F /* FeedVStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVStackView.swift; sourceTree = "<group>"; };
 		56D18BBB29E13342002C6677 /* CurriculumNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumNewView.swift; sourceTree = "<group>"; };
 		56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleProgressBar.swift; sourceTree = "<group>"; };
-		56DD03A5296C1D5F004C358C /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* CourseScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseScore.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
@@ -256,9 +292,30 @@
 		56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Widget.intentdefinition; sourceTree = "<group>"; };
 		56FA8E82297D7264000AC3A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56FA8E84297D7264000AC3A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = "<group>"; };
+		7099CF399AA3050A7B0A3914 /* XGPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGPush.h; sourceTree = "<group>"; };
+		8374F92F03832B8097F86E2D /* XGMTACloud.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = XGMTACloud.framework; path = "/Users/tiankaima/Source/Life-USTC/TPNS/XGMTACloud.framework"; sourceTree = "<group>"; };
+		9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = archive.ar; path = "libXG-SDK-Cloud.a"; sourceTree = "<group>"; };
+		A419DE96C0C3F0A443D9C8E7 /* libz.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libz.tbd; sourceTree = "<group>"; };
+		A5FC807DBEE87641A452BC5E /* XGPushPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGPushPrivate.h; sourceTree = "<group>"; };
+		B238F82A27602447BBF1630E /* SystemConfiguration.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<group>"; };
+		B766B60160E4B33F87B053CD /* TPNSService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TPNSService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = archive.ar; path = libXGExtension.a; sourceTree = "<group>"; };
+		C2446B2F1DC1CD08DF9BF47D /* XGExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGExtension.h; sourceTree = "<group>"; };
+		E2CB174781BB1213E91591A5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Info.plist; sourceTree = "<group>"; };
+		F56F1EC6CC15C289C92E2ECF /* CoreData.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = "<group>"; };
+		FAE8BC17C5C28641A56CC44E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1A690924AD42A013C1734648 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9670C867A7DEDB9BBBED157 /* libXGExtension.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561127FA298148E900BB66EE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -284,6 +341,16 @@
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
+				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
+				902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */,
+				D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */,
+				7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */,
+				CC5FF768DE706F4BB623C17E /* SystemConfiguration.framework in Frameworks */,
+				813700120F84685D752015B2 /* CoreTelephony.framework in Frameworks */,
+				905583363708B43FB93B6776 /* Security.framework in Frameworks */,
+				A76F279A0A99FB2F21E2836F /* CoreData.framework in Frameworks */,
+				78D1F6FE39D9928EE99CAC44 /* XGMTACloud.framework in Frameworks */,
+				9D77206865669A1F1F9075B0 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +371,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2695CD8B2F65282F8E6DC570 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				FAE8BC17C5C28641A56CC44E /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		2BBEA9FBFB8C9A607C68EB2F /* TPNS */ = {
+			isa = PBXGroup;
+			children = (
+				9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */,
+				7099CF399AA3050A7B0A3914 /* XGPush.h */,
+				A5FC807DBEE87641A452BC5E /* XGPushPrivate.h */,
+				2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */,
+			);
+			path = TPNS;
+			sourceTree = "<group>";
+		};
+		3169F6CDCAD06B0C5179F559 /* TPNSService */ = {
+			isa = PBXGroup;
+			children = (
+				E2CB174781BB1213E91591A5 /* Info.plist */,
+				12B90FF1CD0E87B07896B8A2 /* NotificationService.h */,
+				327F6A0F98EF6EBD4399EE0D /* NotificationService.m */,
+				6F7B48CC2B802B1041582133 /* TPNSExtensionLib */,
+			);
+			path = TPNSService;
+			sourceTree = "<group>";
+		};
 		56128F57298D44F30080A9F7 /* HealthCheck */ = {
 			isa = PBXGroup;
 			children = (
@@ -433,6 +530,8 @@
 				56AC7301294A012F00A60F47 /* Products */,
 				565587F4294D632D0010E060 /* Views */,
 				56F3EAE2296EFC6C0095AEF4 /* Frameworks */,
+				2BBEA9FBFB8C9A607C68EB2F /* TPNS */,
+				3169F6CDCAD06B0C5179F559 /* TPNSService */,
 			);
 			sourceTree = "<group>";
 		};
@@ -442,6 +541,7 @@
 				56AC7300294A012F00A60F47 /* Life@USTC.app */,
 				56FA8E75297D7263000AC3A9 /* Widget iOS.appex */,
 				561127FD298148E900BB66EE /* Widget macOS.appex */,
+				B766B60160E4B33F87B053CD /* TPNSService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -463,7 +563,6 @@
 			isa = PBXGroup;
 			children = (
 				5621691D2955BECA00DF46BE /* UserType.swift */,
-				56DD03A5296C1D5F004C358C /* Notification.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -558,6 +657,16 @@
 			children = (
 				56FA8E76297D7263000AC3A9 /* WidgetKit.framework */,
 				56FA8E78297D7263000AC3A9 /* SwiftUI.framework */,
+				A419DE96C0C3F0A443D9C8E7 /* libz.tbd */,
+				31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */,
+				597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */,
+				B238F82A27602447BBF1630E /* SystemConfiguration.framework */,
+				3382E828813FA9C0554457CA /* CoreTelephony.framework */,
+				55DDCF5537E65C2C916A8BC3 /* Security.framework */,
+				F56F1EC6CC15C289C92E2ECF /* CoreData.framework */,
+				8374F92F03832B8097F86E2D /* XGMTACloud.framework */,
+				0022E5088450BB80383ABCB3 /* UserNotifications.framework */,
+				2695CD8B2F65282F8E6DC570 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -574,6 +683,15 @@
 				56FA8E84297D7264000AC3A9 /* Info.plist */,
 			);
 			path = Widget;
+			sourceTree = "<group>";
+		};
+		6F7B48CC2B802B1041582133 /* TPNSExtensionLib */ = {
+			isa = PBXGroup;
+			children = (
+				C2446B2F1DC1CD08DF9BF47D /* XGExtension.h */,
+				BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */,
+			);
+			path = TPNSExtensionLib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -613,12 +731,14 @@
 				56AC72FE294A012F00A60F47 /* Resources */,
 				565587DF294AF61E0010E060 /* Embed Frameworks */,
 				5611272629813AAC00BB66EE /* Embed Foundation Extensions */,
+				B93F358E78A48606EACA157C /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5611272529813AAC00BB66EE /* PBXTargetDependency */,
 				5611282F29814CDA00BB66EE /* PBXTargetDependency */,
+				3A398E4BD52816676C149598 /* PBXTargetDependency */,
 			);
 			name = "Life@USTC";
 			packageProductDependencies = (
@@ -655,6 +775,23 @@
 			);
 			productName = ExamWidgetExtension;
 			productReference = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		86B22FE4CF1A3B007729F5D4 /* TPNSService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD760241AB469397A387050B /* Build configuration list for PBXNativeTarget "TPNSService" */;
+			buildPhases = (
+				43B046D0105C88187AB05B9D /* Sources */,
+				1A690924AD42A013C1734648 /* Frameworks */,
+				3CFC7C6F4D7FDF8E1A0339AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TPNSService;
+			productName = TPNSService;
+			productReference = B766B60160E4B33F87B053CD /* TPNSService.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -704,11 +841,19 @@
 				56AC72FF294A012F00A60F47 /* Life@USTC */,
 				56FA8E74297D7263000AC3A9 /* Widget iOS */,
 				561127FC298148E900BB66EE /* Widget macOS */,
+				86B22FE4CF1A3B007729F5D4 /* TPNSService */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3CFC7C6F4D7FDF8E1A0339AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561127FB298148E900BB66EE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -741,6 +886,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		43B046D0105C88187AB05B9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				299CC5634936A26A0F10C17F /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561127F9298148E900BB66EE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -826,7 +979,6 @@
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				56E94E29298A77F80085241B /* FeedPage.swift in Sources */,
 				56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */,
-				56DD03A6296C1D5F004C358C /* Notification.swift in Sources */,
 				56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -862,6 +1014,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3A398E4BD52816676C149598 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TPNSService;
+			target = 86B22FE4CF1A3B007729F5D4 /* TPNSService */;
+			targetProxy = 6D885CC0272CA873CCFE52E9 /* PBXContainerItemProxy */;
+		};
 		5611272529813AAC00BB66EE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
@@ -900,6 +1058,62 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		15E82F15D6A11ADFA59A3640 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				INFOPLIST_FILE = TPNSService/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
+				);
+				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2AAD22D5232439D1C942778E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				INFOPLIST_FILE = TPNSService/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		5611280B298148EA00BB66EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1005,6 +1219,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1069,6 +1284,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1081,6 +1297,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -1090,6 +1307,7 @@
 		56AC7312294A012F00A60F47 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
@@ -1101,6 +1319,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -1113,8 +1332,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.1;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1122,14 +1343,17 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TPNS/Life@USTC-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = NO;
 			};
 			name = Debug;
 		};
 		56AC7313294A012F00A60F47 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
@@ -1141,6 +1365,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -1153,8 +1378,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1162,6 +1390,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TPNS/Life@USTC-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1268,6 +1497,15 @@
 			buildConfigurations = (
 				56FA8E8B297D7264000AC3A9 /* Debug */,
 				56FA8E8C297D7264000AC3A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD760241AB469397A387050B /* Build configuration list for PBXNativeTarget "TPNSService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				15E82F15D6A11ADFA59A3640 /* Release */,
+				2AAD22D5232439D1C942778E /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

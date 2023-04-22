@@ -40,19 +40,19 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
             if tmp.startTime <= 0 {
                 tmp.startTime = 1
             }
-            
+
             if tmp.startTime > Course.startTimes.count {
                 tmp.startTime = Course.startTimes.count
             }
-            
+
             if tmp.endTime <= 0 {
                 tmp.endTime = 1
             }
-            
+
             if tmp.endTime > Course.endTimes.count {
                 tmp.endTime = Course.endTimes.count
             }
-            
+
             result.append(tmp)
         }
         return Course.clean(result)
@@ -73,7 +73,7 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
         }
 
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(await UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
-        debugPrint(String(data: data, encoding: .utf8))
+//        debugPrint(String(data: data, encoding: .utf8))
         cache = try JSON(data: data)
         lastUpdate = Date()
         try saveCache()
