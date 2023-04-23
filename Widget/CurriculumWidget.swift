@@ -48,7 +48,7 @@ struct CurriculumWidgetEntryView: View {
     var entry: CurriculumProvider.Entry
 
     var courses: [Course] {
-        entry.curriculums.filter { $0.dayOfWeek == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
+        entry.curriculums.filter { $0.dayOfWeek % 7 == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
     }
 
     var courseToShow: Course {
