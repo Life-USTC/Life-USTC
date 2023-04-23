@@ -143,7 +143,7 @@
 		905583363708B43FB93B6776 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55DDCF5537E65C2C916A8BC3 /* Security.framework */; };
 		9D77206865669A1F1F9075B0 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0022E5088450BB80383ABCB3 /* UserNotifications.framework */; };
 		A76F279A0A99FB2F21E2836F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56F1EC6CC15C289C92E2ECF /* CoreData.framework */; };
-		C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B766B60160E4B33F87B053CD /* TPNSService.appex */; platformFilter = ios; };
+		C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B766B60160E4B33F87B053CD /* TPNSService.appex */; platformFilter = ios; };
 		CC5FF768DE706F4BB623C17E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B238F82A27602447BBF1630E /* SystemConfiguration.framework */; };
 		D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */; };
 		D9670C867A7DEDB9BBBED157 /* libXGExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -196,15 +196,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B93F358E78A48606EACA157C /* Embed App Extensions */ = {
+		B93F358E78A48606EACA157C /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed App Extensions */,
+				C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -731,7 +731,7 @@
 				56AC72FE294A012F00A60F47 /* Resources */,
 				565587DF294AF61E0010E060 /* Embed Frameworks */,
 				5611272629813AAC00BB66EE /* Embed Foundation Extensions */,
-				B93F358E78A48606EACA157C /* Embed App Extensions */,
+				B93F358E78A48606EACA157C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -802,7 +802,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					561127FC298148E900BB66EE = {
 						CreatedOnToolsVersion = 14.2;
@@ -1017,6 +1017,7 @@
 		3A398E4BD52816676C149598 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TPNSService;
+			platformFilter = ios;
 			target = 86B22FE4CF1A3B007729F5D4 /* TPNSService */;
 			targetProxy = 6D885CC0272CA873CCFE52E9 /* PBXContainerItemProxy */;
 		};
@@ -1066,7 +1067,7 @@
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = TPNSService/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1076,7 +1077,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1095,7 +1096,7 @@
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = TPNSService/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1105,7 +1106,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
