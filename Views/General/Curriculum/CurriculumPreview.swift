@@ -15,7 +15,7 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
 struct CurriculumPreview: View {
     var body: some View {
         AsyncView(delegate: CurriculumDelegate.shared, showReloadButton: false) { courses in
-            let todayCourse = courses.filter { $0.dayOfWeek == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
+            let todayCourse = courses.filter { $0.dayOfWeek % 7 == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
             if todayCourse.isEmpty {
                 return happyView
             } else {
