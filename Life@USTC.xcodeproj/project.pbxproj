@@ -101,6 +101,8 @@
 		56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* SwiftExtension.swift */; };
 		56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FC2966799200822C98 /* CourseCardView.swift */; };
 		56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
+		56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425029F64618007D9BD4 /* PushNotification.swift */; };
+		56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425329F648A6007D9BD4 /* TPNSClient.swift */; };
 		56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
 		56C3A72729BDA10500A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
@@ -260,6 +262,8 @@
 		56BE91FA296677A300822C98 /* SwiftExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftExtension.swift; sourceTree = "<group>"; };
 		56BE91FC2966799200822C98 /* CourseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCardView.swift; sourceTree = "<group>"; };
 		56BE91FE296679BC00822C98 /* CurriculumPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreview.swift; sourceTree = "<group>"; };
+		56C1425029F64618007D9BD4 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
+		56C1425329F648A6007D9BD4 /* TPNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TPNSClient.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
@@ -428,6 +432,7 @@
 		565587F5294D635E0010E060 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				56C1425229F64886007D9BD4 /* PushNotification */,
 				56D175C9295438E80070778F /* Feed */,
 				56BE91F52962FEA900822C98 /* Shared */,
 				56D175C4295411DA0070778F /* USTC */,
@@ -439,6 +444,7 @@
 		565587FC294D65E30010E060 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				56C1424F29F64602007D9BD4 /* PushNotification */,
 				56128F57298D44F30080A9F7 /* HealthCheck */,
 				56E8AD732973F229009006D0 /* Classroom */,
 				56E8AD6B296FEEDD009006D0 /* Score */,
@@ -576,6 +582,22 @@
 				56D18BBB29E13342002C6677 /* CurriculumNewView.swift */,
 			);
 			path = Curriculum;
+			sourceTree = "<group>";
+		};
+		56C1424F29F64602007D9BD4 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				56C1425029F64618007D9BD4 /* PushNotification.swift */,
+			);
+			path = PushNotification;
+			sourceTree = "<group>";
+		};
+		56C1425229F64886007D9BD4 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				56C1425329F648A6007D9BD4 /* TPNSClient.swift */,
+			);
+			path = PushNotification;
 			sourceTree = "<group>";
 		};
 		56D175C4295411DA0070778F /* USTC */ = {
@@ -948,6 +970,7 @@
 				56FA8E86297D7264000AC3A9 /* Widget.intentdefinition in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
+				56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
@@ -972,6 +995,7 @@
 				56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */,
 				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
+				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
 				56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */,
 				56E94E23298A77790085241B /* AboutPage.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
