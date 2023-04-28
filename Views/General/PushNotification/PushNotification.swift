@@ -5,6 +5,7 @@
 //  Created by Tiankai Ma on 2023-04-24.
 //
 
+import SwiftOverlayShims
 import SwiftUI
 
 @ViewBuilder func HTextField(title: any StringProtocol, text: Binding<String>) -> AnyView {
@@ -24,7 +25,7 @@ struct PushNotification: View {
     @State var subTitle: String = ""
     @State var content: String = ""
     @State var tags: [String] = []
-    
+
     var body: some View {
         Form {
             Section {
@@ -35,21 +36,21 @@ struct PushNotification: View {
                 Text("Details")
                     .textCase(.none)
             }
-            
+
             Section {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(0..<10) { index in
+                        ForEach(0 ..< 10) { index in
                             Toggle("Tag \(index)", isOn:
-                                    .init(get: {
-                                        tags.contains("Tag \(index)")
-                                    }, set: { newValue in
-                                        if newValue {
-                                            tags.append("Tag \(index)")
-                                        } else {
-                                            tags.removeAll(where: {$0 == "Tag \(index)"})
-                                        }
-                                    }))
+                                .init(get: {
+                                    tags.contains("Tag \(index)")
+                                }, set: { newValue in
+                                    if newValue {
+                                        tags.append("Tag \(index)")
+                                    } else {
+                                        tags.removeAll(where: { $0 == "Tag \(index)" })
+                                    }
+                                }))
                                 .toggleStyle(.button)
                         }
                     }
@@ -58,12 +59,14 @@ struct PushNotification: View {
                 Text("Tags")
                     .textCase(.none)
             }
-            
-            Button(role: .destructive) {
-                
-            } label: {
+
+            Button(role: .destructive) {} label: {
                 Text("Push")
             }
+        }
+        .onTapGesture {
+            // dismiss keyboard
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .navigationTitle("Push Notification")
         .navigationBarTitleDisplayMode(.inline)

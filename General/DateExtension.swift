@@ -16,9 +16,16 @@ var currentDateString: String {
 
 let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
+@available(*, deprecated)
 var currentWeekDay: Int {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
+    return (weekday + 6) % 7
+}
+
+func weekday(for date: Date = Date()) -> Int {
+    let calendar = Calendar.current
+    let weekday = calendar.component(.weekday, from: date)
     return (weekday + 6) % 7
 }
 
@@ -143,5 +150,11 @@ extension DateComponents {
         dateFormatter.timeStyle = .short
         dateFormatter.dateStyle = .none
         return dateFormatter.string(from: Date().stripTime() + self)
+    }
+}
+
+extension Date: Equatable {
+    public static func == (lhs: Date, rhs: Date) -> Bool {
+        lhs.timeIntervalSince1970 == rhs.timeIntervalSince1970
     }
 }

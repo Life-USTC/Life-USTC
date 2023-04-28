@@ -76,6 +76,12 @@ actor UstcUgAASClient {
     func clearLoginStatus() {
         lastLogined = nil
     }
+
+    func weekNumber(for date: Date = Date()) -> Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents([.weekOfYear], from: semesterStartDate, to: date)
+        return components.weekOfYear! + 1
+    }
 }
 
 extension UstcUgAASClient {

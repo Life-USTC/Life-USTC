@@ -19,14 +19,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         return true
     }
-    
+
     func startTPNS() {
         XGPush.defaultManager().isEnableDebug = true
         XGPush.defaultManager().configureClusterDomainName("tpns.sh.tencent.com")
         XGPush.defaultManager().appDelegate = self
         XGPush.defaultManager().startXG(withAccessID: 1_680_015_447, accessKey: "IOSAEBOQD6US", delegate: self)
     }
-    
+
     func stopTPNS() {
         XGPush.defaultManager().stopXGNotification()
     }
@@ -34,16 +34,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func xgPushDidRegisteredDeviceToken(_: String?, xgToken _: String?, error _: Error?) {
         // When TPNS is started:
     }
-    
-    func xgPushDidFinishStop(_ isSuccess: Bool, error: Error?) {
+
+    func xgPushDidFinishStop(_: Bool, error _: Error?) {
         // When stop TPNS is requested, callback here
     }
-    
+
     func xgPushDidReceiveRemoteNotification(_: Any) async -> UInt {
         1
     }
-    
+
     func xgPushDidRequestNotificationPermission(_ isEnable: Bool, error: Error?) {
+#if DEBUG
         if !isEnable || error != nil {
             print("Request Notification failed")
 
@@ -55,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 controller?.present(alert, animated: true)
             }
         }
+#endif
     }
 
     func xgPushLog(_ logInfo: String?) {

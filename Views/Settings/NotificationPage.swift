@@ -13,7 +13,7 @@ struct NotificationSettingView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
     @State private var showingAlert = false
-    
+
     var body: some View {
         List {
 #if DEBUG && arch(arm64)
@@ -49,10 +49,9 @@ struct NotificationSettingView: View {
                 Text("General")
                     .textCase(.none)
             }
-            
+
 #if DEBUG
-            Section {   
-                
+            Section {
                 Button {
                     XGPushTokenManager.default().appendTags([])
                 } label: {

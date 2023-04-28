@@ -37,25 +37,26 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
                              classTeacherName: subJson["teachers"][0].stringValue,
                              weekString: subJson["weeksStr"].stringValue)
 
-            if tmp.startTime <= 0 {
-                tmp.startTime = 1
-            }
-
-            if tmp.startTime > Course.startTimes.count {
-                tmp.startTime = Course.startTimes.count
-            }
-
-            if tmp.endTime <= 0 {
-                tmp.endTime = 1
-            }
-
-            if tmp.endTime > Course.endTimes.count {
-                tmp.endTime = Course.endTimes.count
-            }
+//            if tmp.startTime <= 0 {
+//                tmp.startTime = 1
+//            }
+//
+//            if tmp.startTime > Course.startTimes.count {
+//                tmp.startTime = Course.startTimes.count
+//            }
+//
+//            if tmp.endTime <= 0 {
+//                tmp.endTime = 1
+//            }
+//
+//            if tmp.endTime > Course.endTimes.count {
+//                tmp.endTime = Course.endTimes.count
+//            }
 
             result.append(tmp)
         }
-        return Course.clean(result)
+//        return Course.clean(result)
+        return result
     }
 
     func forceUpdate() async throws {

@@ -13,7 +13,7 @@ struct CourseCardView: View {
 
     var body: some View {
         VStack(spacing: 3) {
-            Text(Course.startTimes[course.startTime - 1].clockTime)
+            Text(course._startTime.clockTime)
                 .font(.system(size: 9))
                 .fontWeight(.bold)
                 .hStackLeading()
@@ -26,21 +26,21 @@ struct CourseCardView: View {
                     .font(.system(size: 12))
                     .fontWeight(.bold)
             }
-            if course.startTime != course.endTime {
+            if course.length != 1 {
                 Divider()
                 Spacer()
                 Text(course.classIDString)
                     .font(.system(size: 9))
                 Text(course.classTeacherName)
                     .font(.system(size: 9))
-                Text(Course.endTimes[course.endTime - 1].clockTime)
+                Text(course._endTime.clockTime)
                     .font(.system(size: 9))
                     .hStackTrailing()
             }
         }
         .lineLimit(1)
         .padding(2)
-        .frame(height: heightPerClass * Double(course.endTime - course.startTime + 1) - 4)
+        .frame(height: heightPerClass * Double(course.length) - 4)
         .background {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.accentColor.opacity(0.1))
@@ -59,7 +59,7 @@ struct CourseCardView: View {
                         .foregroundColor(Color.accentColor)
                         .font(.title)
                         .fontWeight(.bold)
-                    Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
+                    Text(course._startTime.clockTime + " - " + course._endTime.clockTime)
                         .bold()
 
                     List {
@@ -91,7 +91,7 @@ struct CourseCardView: View {
                             Text("Time: ".localized)
                                 .fontWeight(.semibold)
                             Spacer()
-                            Text("\(course.startTime) - \(course.endTime)")
+                            Text(course.timeDescription)
                         }
                     }
                     .listStyle(.plain)

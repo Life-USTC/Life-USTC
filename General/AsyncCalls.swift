@@ -68,6 +68,30 @@ extension AsyncDataDelegate {
         }
     }
 
+    func asyncBind<T>(status: Binding<AsyncViewStatus>, setData: @escaping (T) async throws -> Void) {
+        status.wrappedValue = .inProgress
+        Task {
+            do {
+                try await setData(try await parseCache() as! T)
+            } catch {
+                print(error)
+                status.wrappedValue = .failure
+            }
+
+            if requireUpdate || status.wrappedValue == .failure {
+                do {
+                    status.wrappedValue = .cached
+                    try await forceUpdate()
+                    try await setData(try await parseCache() as! T)
+                } catch {
+                    print(error)
+                    return
+                }
+            }
+            status.wrappedValue = .success
+        }
+    }
+
     func retrive() async throws -> D {
         if requireUpdate {
             try await forceUpdate()

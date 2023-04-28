@@ -13,15 +13,46 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
 }
 
 struct CurriculumPreview: View {
+    @State var courses: [Course]? = nil
+    @State var status: AsyncViewStatus = .inProgress
+    @State var date = Date()
     var body: some View {
-        AsyncView(delegate: CurriculumDelegate.shared, showReloadButton: false) { courses in
-            let todayCourse = courses.filter { $0.dayOfWeek % 7 == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
-            if todayCourse.isEmpty {
-                return happyView
+        Group {
+            if courses != nil {
+                if courses!.isEmpty {
+                    happyView
+                } else {
+                    makeView(with: courses!)
+                }
             } else {
-                return makeView(with: todayCourse)
+                ProgressView()
             }
         }
+        .onAppear {
+            Task {
+                let weekNumber = await UstcUgAASClient.shared.weekNumber()
+                // try await CurriculumDelegate.shared.forceUpdate()
+                // courses = Course.filter((try await CurriculumDelegate.shared.parseCache()), week: weekNumber)
+                CurriculumDelegate.shared.asyncBind(status: $status) {
+                    self.courses = Course.filter($0, week: weekNumber)
+                }
+            }
+        }
+        .onChange(of: date) { _ in
+            Task {
+                let weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+                // try await CurriculumDelegate.shared.forceUpdate()
+                // courses = Course.filter((try await CurriculumDelegate.shared.parseCache()), week: weekNumber)
+                CurriculumDelegate.shared.asyncBind(status: $status) {
+                    self.courses = Course.filter($0, week: weekNumber, weekday: weekday(for: date))
+                }
+            }
+        }
+#if DEBUG
+            .toolbar {
+                DatePicker(selection: $date, displayedComponents: .date) {}
+            }
+#endif
     }
 
     func makeView(with courses: [Course]) -> some View {
@@ -67,8 +98,8 @@ struct CurriculumPreview: View {
 var exampleCourse: Course {
     var result = Course.example
 
-    result.startTime = 1
-    result.endTime = 10
+//    result.startTime = 1
+//    result.endTime = 10
 
     return result
 }

@@ -5,8 +5,8 @@
 //  Created by Tiankai Ma on 2023-04-24.
 //
 
-import Foundation
 import CryptoKit
+import Foundation
 
 enum TPNSClientError: Error {
     case noAccessID
@@ -59,6 +59,4 @@ enum TPNSClient {
 
         return request
     }
-
-
 }

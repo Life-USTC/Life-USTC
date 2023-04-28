@@ -23,6 +23,7 @@ struct CurriculumNewView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 ScrollViewReader { _ in
                     HStack {
+                        Spacer(minLength: 350)
                         ForEach(0 ..< 50) { index in
                             VStack {
                                 Text("!")
@@ -32,23 +33,17 @@ struct CurriculumNewView: View {
                             }
                             .tag(index)
                         }
+                        Spacer()
                     }
                 }
             }
-
-            List {
-                ForEach(Array(repeating: Course.example, count: 5)) { course in
-                    VStack(alignment: .leading) {
-                        Text(course.clockTime)
-                            .bold()
-                        Text(course.name)
-                            .fontWeight(.light)
-                            .font(.title3)
-                    }
+            ForEach(Array(repeating: Course.example, count: 5)) { course in
+                VStack(alignment: .leading) {
+                    RectangleProgressBar(course: course)
+                        .padding(.vertical, 2)
+                        .padding(.horizontal)
                 }
             }
-            .listStyle(.grouped)
-            .scrollContentBackground(.hidden)
 
             Spacer()
         }

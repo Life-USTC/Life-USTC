@@ -72,12 +72,12 @@ struct FeaturesView: View {
             tmp.append(.init(ustcWebFeature))
         }
         results["Web"] = tmp
-        
-        #if DEBUG
+
+#if DEBUG
         if userType == .managment {
             results["Managment"] = [.init(image: "bell.circle", title: "Push Notification", subTitle: "Send notifications to users", destinationView: PushNotification())]
         }
-        #endif
+#endif
 
         return results
     }

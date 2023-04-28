@@ -52,8 +52,8 @@ struct RectangleProgressBar: View {
     {
         self.width = width
         self.height = height
-        startDate = Date().stripTime() + Course.startTimes[course.startTime - 1]
-        endDate = Date().stripTime() + Course.endTimes[course.endTime - 1]
+        startDate = Date().stripTime() + course._startTime
+        endDate = Date().stripTime() + course._endTime
         self.colors = colors
 
         // MARK: - Fix padding issue

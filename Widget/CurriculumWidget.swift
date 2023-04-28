@@ -16,16 +16,20 @@ struct CurriculumProvider: IntentTimelineProvider {
 
     func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
         Task {
-            let curriculums = try await CurriculumDelegate.shared.retrive()
-            let entry = CurriculumEntry(curriculums: curriculums)
+            let courses = try await CurriculumDelegate.shared.retrive()
+            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let courseToShow = Course.nextCoursse(courses, week: weekNumber)
+            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber), courseToShow: courseToShow)
             completion(entry)
         }
     }
 
     func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let curriculums = try await CurriculumDelegate.shared.retrive()
-            let entry = CurriculumEntry(curriculums: curriculums)
+            let courses = try await CurriculumDelegate.shared.retrive()
+            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let courseToShow = Course.nextCoursse(courses, week: weekNumber)
+            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber), courseToShow: courseToShow)
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(date))
@@ -36,10 +40,12 @@ struct CurriculumProvider: IntentTimelineProvider {
 
 struct CurriculumEntry: TimelineEntry {
     let date = Date()
-    let curriculums: [Course]
+    let courses: [Course]
+    let courseToShow: Course!
     var configuration = ConfigurationIntent()
 
-    static let example = CurriculumEntry(curriculums: [Course].init(repeating: .example, count: 10),
+    static let example = CurriculumEntry(courses: [Course].init(repeating: .example, count: 10),
+                                         courseToShow: .example,
                                          configuration: ConfigurationIntent())
 }
 
@@ -47,12 +53,8 @@ struct CurriculumWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumProvider.Entry
 
-    var courses: [Course] {
-        entry.curriculums.filter { $0.dayOfWeek % 7 == currentWeekDay }.sorted(by: { $0.startTime < $1.startTime })
-    }
-
-    var courseToShow: Course {
-        courses.first { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() } ?? .example
+    var courseToShow: Course! {
+        entry.courseToShow
     }
 
     var numberToShow: Int {
@@ -97,12 +99,12 @@ struct CurriculumWidgetEntryView: View {
                 .font(.headline)
             VStack(alignment: .center, spacing: -3) {
                 HStack {
-                    Text(Course.startTimes[courseToShow.startTime - 1].clockTime)
+                    Text(courseToShow._startTime.clockTime)
                         .font(.headline)
                         .foregroundColor(.accentColor)
                 }
                 HStack {
-                    Text(Course.endTimes[courseToShow.endTime - 1].clockTime)
+                    Text(courseToShow._endTime.clockTime)
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
@@ -124,7 +126,7 @@ struct CurriculumWidgetEntryView: View {
     var oneLine: some View {
         Text(String(format: "%@ - %@".localized,
                     courseToShow.name.limitShow(1),
-                    Course.startTimes[courseToShow.startTime - 1].clockTime))
+                    courseToShow._startTime.clockTime))
     }
 
     var listView: some View {
@@ -136,7 +138,7 @@ struct CurriculumWidgetEntryView: View {
             }
             .foregroundColor(.accentColor)
 
-            ForEach(courses.prefix(numberToShow)) { course in
+            ForEach(entry.courses.prefix(numberToShow)) { course in
                 Divider()
                 HStack {
                     Text(course.name.limitShow(1))
@@ -144,18 +146,18 @@ struct CurriculumWidgetEntryView: View {
                     Spacer()
                     Text("@\(course.classPositionString)")
                         .foregroundColor(.gray)
-                    Text(Course.startTimes[course.startTime - 1].clockTime + " - " + Course.endTimes[course.endTime - 1].clockTime)
+                    Text(course._startTime.clockTime + " - " + course._endTime.clockTime)
                 }
             }
 
             Divider()
 
-            if courses.count > numberToShow, min(numberToShow, entry.curriculums.count) < 7 {
-                Text("+\(String(entry.curriculums.count - numberToShow)) More Courses...")
+            if entry.courses.count > numberToShow, min(numberToShow, entry.courses.count) < 7 {
+                Text("+\(String(entry.courses.count - numberToShow)) More Courses...")
                     .foregroundColor(.accentColor)
             }
 
-            if courses.count < numberToShow {
+            if entry.courses.count < numberToShow {
                 Spacer()
             }
         }
@@ -173,12 +175,12 @@ struct CurriculumWidgetEntryView: View {
     }
 
     var body: some View {
-        if courses.isEmpty {
+        if entry.courses.isEmpty {
             noMoreCurriculumView
         } else {
             switch widgetFamily {
             case .systemSmall:
-                if courses.first(where: { Date().stripTime() + Course.endTimes[$0.endTime - 1] > Date() }) == nil {
+                if entry.courses.first(where: { !$0.isFinished(at: Date()) }) == nil {
                     noMoreCurriculumView
                 } else {
                     mainView
@@ -222,7 +224,7 @@ struct CurriculumWidget_Previews: PreviewProvider {
         }
 
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWidgetEntryView(entry: .init(curriculums: []))
+            CurriculumWidgetEntryView(entry: .init(courses: [], courseToShow: nil))
                 .previewContext(WidgetPreviewContext(family: family))
                 .previewDisplayName("\(family.description) [EMPTY]")
         }

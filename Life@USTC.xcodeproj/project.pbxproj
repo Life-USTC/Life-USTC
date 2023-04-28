@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; };
 		299CC5634936A26A0F10C17F /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 327F6A0F98EF6EBD4399EE0D /* NotificationService.m */; };
+		56015AFC29FC0EC700559998 /* CurriculumDateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56015AFB29FC0EC700559998 /* CurriculumDateView.swift */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -219,6 +220,7 @@
 		327F6A0F98EF6EBD4399EE0D /* NotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		3382E828813FA9C0554457CA /* CoreTelephony.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreTelephony.framework; sourceTree = "<group>"; };
 		55DDCF5537E65C2C916A8BC3 /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
+		56015AFB29FC0EC700559998 /* CurriculumDateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumDateView.swift; sourceTree = "<group>"; };
 		561127FD298148E900BB66EE /* Widget macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Widget macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcWeixin.swift; sourceTree = "<group>"; };
 		56128F53298D3D2D0080A9F7 /* HealthCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheck.swift; sourceTree = "<group>"; };
@@ -580,6 +582,7 @@
 				56BE91FC2966799200822C98 /* CourseCardView.swift */,
 				56D175BF295048A10070778F /* CurriculumView.swift */,
 				56D18BBB29E13342002C6677 /* CurriculumNewView.swift */,
+				56015AFB29FC0EC700559998 /* CurriculumDateView.swift */,
 			);
 			path = Curriculum;
 			sourceTree = "<group>";
@@ -961,6 +964,7 @@
 				56558801294D74BB0010E060 /* CASLoginView.swift in Sources */,
 				56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */,
 				56E94E25298A77990085241B /* LegalPage.swift in Sources */,
+				56015AFC29FC0EC700559998 /* CurriculumDateView.swift in Sources */,
 				562169222955BEDE00DF46BE /* ContentView.swift in Sources */,
 				56D18BBE29E140DE002C6677 /* RectangleProgressBar.swift in Sources */,
 				56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */,
