@@ -16,7 +16,7 @@ struct FeedView: View {
     var preview: some View {
         Group {
             if useNewUI {
-                SecondFeedView(feed: feed)
+                FeedViewV2(feed: feed)
             } else {
                 Card(cardTitle: feed.title,
                      cardDescription: feed.description,
@@ -58,7 +58,7 @@ struct FeedView: View {
     }
 }
 
-struct SecondFeedView: View {
+struct FeedViewV2: View {
     let feed: Feed
 
     var body: some View {
@@ -114,7 +114,7 @@ struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             FeedView(feed: .example)
-            SecondFeedView(feed: .example)
+            FeedViewV2(feed: .example)
         }
         .padding()
     }

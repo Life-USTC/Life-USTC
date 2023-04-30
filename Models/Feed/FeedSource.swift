@@ -98,9 +98,14 @@ class FeedSource {
         if (number ?? 1) > result.count {
             for source in FeedSource.allToShow {
                 _ = try await source.forceUpdatePost()
-                return try await recentFeeds(number: number)
             }
+            return try await recentFeeds(number: number)
         }
+
+        // TODO: (BUG) if we don't "force" this function to be async, it seems to run off main thread,
+        // and since sorting this feeds might take a while, this could lead to UI unresponsiveness.
+        // adding a sleep here to show a progressview
+        try await Task.sleep(for: .seconds(1))
 
         if let number {
             return Array(result.prefix(number))

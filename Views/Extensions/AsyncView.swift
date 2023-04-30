@@ -77,6 +77,7 @@ struct AsyncView<D>: View {
             switch status {
             case .inProgress:
                 ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .success:
                 makeMainView(with: data!)
             case .cached:

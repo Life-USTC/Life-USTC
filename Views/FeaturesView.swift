@@ -53,7 +53,7 @@ struct FeaturesView: View {
         var results: [String: [FeatureWithView]] = [:]
 
         var tmp: [FeatureWithView] = []
-        tmp.append(.init(image: "doc.richtext", title: "Feed".localized, subTitle: "", destinationView: AllSourceView()))
+        tmp.append(.init(image: "doc.richtext", title: "Feed".localized, subTitle: "", destinationView: AllSourceView().navigationBarTitleDisplayMode(.inline)))
         for feedSource in FeedSource.allToShow {
             tmp.append(.init(feedSource))
         }

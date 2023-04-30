@@ -20,10 +20,7 @@ struct FeedSettingView: View {
             } header: {
                 Text("General")
                     .textCase(.none)
-            } footer: {
-                Text("Reader would generaly improve reading experience for web page that aren't optimized for mobile.")
             }
-
             Section {
                 FeedView(feed: .example).preview
                 Toggle("Use new UI", isOn: $useNewUI)
@@ -31,7 +28,10 @@ struct FeedSettingView: View {
             } header: {
                 Text("UI Preference")
                     .textCase(.none)
+            } footer: {
+                Text("Reader would generaly improve reading experience for web page that aren't optimized for mobile.")
             }
+
 
             Section {
                 ForEach(FeedSource.all.map(\.name), id: \.self) { name in

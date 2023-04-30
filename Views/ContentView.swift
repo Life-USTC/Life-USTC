@@ -28,7 +28,7 @@ struct ContentView: View {
     @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
-    @State private var tabSelection: ContentViewTab = .home
+    @State private var tabSelection: ContentViewTab = .position_1
 #if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     var iPhoneView: some View {
@@ -157,40 +157,62 @@ struct ContentView: View {
 }
 
 private enum ContentViewTab: Int, CaseIterable {
-    case home = 1
-    case feature = 2
-    case setting = 3
+    case position_1 = 1
+    case position_2 = 2
+    case position_3 = 3
 
     @ViewBuilder func view() -> some View {
-        switch self {
-        case .home:
-            HomeView()
-        case .feature:
-            FeaturesView()
-        case .setting:
-            SettingsView()
+        if UserDefaults.standard.bool(forKey: "useNewUILayout") {
+            switch self {
+            case .position_1:
+                HomeViewV2()
+            case .position_2:
+                AllSourceView()
+            case .position_3:
+                FeaturesView()
+            }
+        } else {
+            switch self {
+            case .position_1:
+                HomeView()
+            case .position_2:
+                FeaturesView()
+            case .position_3:
+                SettingsView()
+            }
         }
     }
 
     var color: Color {
         switch self {
-        case .home:
+        case .position_1:
             return .accentColor
-        case .feature:
+        case .position_2:
             return .red
-        case .setting:
+        case .position_3:
             return .green
         }
     }
 
     @ViewBuilder func label() -> some View {
-        switch self {
-        case .home:
-            Label("Home", systemImage: "square.stack.3d.up")
-        case .feature:
-            Label("Features", systemImage: "square.grid.2x2")
-        case .setting:
-            Label("Settings", systemImage: "gearshape")
+        if UserDefaults.standard.bool(forKey: "useNewUILayout") {
+            switch self {
+            case .position_1:
+                Label("Home", systemImage: "square.stack.3d.up")
+            case .position_2:
+                Label("Feed", systemImage: "doc.richtext.fill")
+            case .position_3:
+                Label("Features", systemImage: "square.grid.2x2")
+            }
+        } else {
+            switch self {
+            case .position_1:
+                Label("Home", systemImage: "square.stack.3d.up")
+            case .position_2:
+                Label("Features", systemImage: "square.grid.2x2")
+            case .position_3:
+                Label("Settings", systemImage: "gearshape")
+            }
         }
     }
 }
