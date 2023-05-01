@@ -12,6 +12,7 @@ import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject {
     @Published var tpnsLog: String = ""
+#if arch(arm64)
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if userDefaults.bool(forKey: "useNotification") {
@@ -67,6 +68,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
+#else
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        return true
+    }
+    
+    func startTPNS() {
+    }
+    
+    func stopTPNS() {
+    }
+#endif
 }
 #else
 

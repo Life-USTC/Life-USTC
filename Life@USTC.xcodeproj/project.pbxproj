@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; };
+		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		299CC5634936A26A0F10C17F /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 327F6A0F98EF6EBD4399EE0D /* NotificationService.m */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
@@ -60,6 +60,7 @@
 		56558801294D74BB0010E060 /* CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* CASLoginView.swift */; };
 		56558804294D93810010E060 /* FeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558803294D93810010E060 /* FeaturesView.swift */; };
 		56558809294DC9D40010E060 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558808294DC9D40010E060 /* SettingsView.swift */; };
+		565A11B829FF565E00310C8B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565A11B729FF565E00310C8B /* WelcomeView.swift */; };
 		56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
 		56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
 		56734CE6297D86F200DBB45F /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91729668191009CFCDF /* Course.swift */; };
@@ -241,6 +242,7 @@
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
+		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		567FA93029D083180003050F /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5694D91729668191009CFCDF /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				565A11B629FF563600310C8B /* StartUp */,
 				562169212955BEDE00DF46BE /* ContentView.swift */,
 				56558803294D93810010E060 /* FeaturesView.swift */,
 				565587E6294B43BD0010E060 /* HomeView.swift */,
@@ -471,6 +474,14 @@
 				56E8AD712973EC0F009006D0 /* UstcRooms.json */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		565A11B629FF563600310C8B /* StartUp */ = {
+			isa = PBXGroup;
+			children = (
+				565A11B729FF565E00310C8B /* WelcomeView.swift */,
+			);
+			path = StartUp;
 			sourceTree = "<group>";
 		};
 		569CFE4D297EBCFA0072C094 /* Assets */ = {
@@ -972,6 +983,7 @@
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
 				56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
+				565A11B829FF565E00310C8B /* WelcomeView.swift in Sources */,
 				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,

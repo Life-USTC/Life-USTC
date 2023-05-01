@@ -148,8 +148,10 @@ struct FeedViewV3: View {
 struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            FeedView(feed: .example)
-            FeedViewV2(feed: .example)
+            FeedView(feedViewStyle: .V1, feed: .example)
+            FeedView(feedViewStyle: .V2, feed: .example)
+            FeedView(feedViewStyle: .V3, feed: .example)
+                .frame(height: 80)
         }
         .padding()
     }
