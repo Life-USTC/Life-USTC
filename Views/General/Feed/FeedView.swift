@@ -8,21 +8,30 @@
 import Reeeed
 import SwiftUI
 
+enum FeedViewStyle: String {
+    case V1
+    case V2
+    case V3
+}
+
 struct FeedView: View {
     @AppStorage("useReeed") var useReeed = true
-    @AppStorage("useNewUIForFeed") var useNewUI = true
+    @AppStorage("feedViewStyle") var feedViewStyle: FeedViewStyle = .V3
     let feed: Feed
 
     var preview: some View {
         Group {
-            if useNewUI {
-                SecondFeedView(feed: feed)
-            } else {
+            switch feedViewStyle {
+            case .V1:
                 Card(cardTitle: feed.title,
                      cardDescription: feed.description,
                      leadingPropertyList: feed.keywords.map { ($0, nil) },
                      trailingPropertyList: [.init(feed.datePosted), feed.source],
                      imageURL: feed.imageURL)
+            case .V2:
+                FeedViewV2(feed: feed)
+            case .V3:
+                FeedViewV3(feed: feed)
             }
         }
     }
@@ -58,7 +67,7 @@ struct FeedView: View {
     }
 }
 
-struct SecondFeedView: View {
+struct FeedViewV2: View {
     let feed: Feed
 
     var body: some View {
@@ -110,11 +119,37 @@ struct SecondFeedView: View {
     }
 }
 
+struct FeedViewV3: View {
+    let feed: Feed
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(feed.datePosted.description)
+                Text(feed.source)
+            }
+            .font(.system(.caption, design: .monospaced))
+            .foregroundColor(.secondary)
+            
+            Spacer(minLength: 2)
+            
+            Text(feed.title)
+                .foregroundColor(.primary)
+                .font(.title3)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
+        }
+        .padding(.vertical, 5)
+        .hStackLeading()
+    }
+}
+
 struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             FeedView(feed: .example)
-            SecondFeedView(feed: .example)
+            FeedViewV2(feed: .example)
         }
         .padding()
     }

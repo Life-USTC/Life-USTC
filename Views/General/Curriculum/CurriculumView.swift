@@ -15,6 +15,7 @@ struct CurriculumSettingView: View {
     @AppStorage("semesterID", store: userDefaults) var semesterID = "301"
     @Binding var courses: [Course]
     @Binding var status: AsyncViewStatus
+    @Binding var date: Date
     @State var saveCalendarStatus = AsyncViewStatus.inProgress
     var body: some View {
         NavigationStack {
@@ -36,6 +37,10 @@ struct CurriculumSettingView: View {
                         try await CurriculumDelegate.shared.forceUpdate()
                         return try await CurriculumDelegate.shared.parseCache()
                     }
+                }
+                
+                DatePicker(selection: $date, displayedComponents: .date) {
+                    Label("Pick a date", systemImage: "calendar")
                 }
 
                 Button {
@@ -73,6 +78,8 @@ struct CurriculumSettingView: View {
 
 struct CurriculumView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
+    @State var weekNumber = 0
+    @State var date = Date()
     @State var courses: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var showSettingSheet = false
@@ -94,10 +101,21 @@ struct CurriculumView: View {
             }
             .navigationBarTitle("Curriculum", displayMode: .inline)
             .task {
-                CurriculumDelegate.shared.asyncBind($courses, status: $status)
+                weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+                CurriculumDelegate.shared.asyncBind(status: $status) {
+                    self.courses = Course.filter($0, week: weekNumber, weekday: nil)
+                }
+            }
+            .onChange(of: date) { newDate in
+                Task {
+                    weekNumber = await UstcUgAASClient.shared.weekNumber(for: newDate)
+                    CurriculumDelegate.shared.asyncBind(status: $status) {
+                        self.courses = Course.filter($0, week: weekNumber, weekday: nil)
+                    }
+                }
             }
             .sheet(isPresented: $showSettingSheet) {
-                CurriculumSettingView(courses: $courses, status: $status)
+                CurriculumSettingView(courses: $courses, status: $status, date: $date)
             }
     }
 
@@ -133,6 +151,14 @@ struct CurriculumView: View {
     var loadedView: some View {
         GeometryReader { geo in
             ScrollView(.vertical, showsIndicators: false) {
+                Text("Week \(weekNumber)")
+                    .foregroundColor(.white)
+                    .padding(3)
+                    .background {
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.secondary)
+                    }
+                
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {
                         ForEach(0 ..< 5) { index in
@@ -169,7 +195,7 @@ struct CurriculumView_Previews: PreviewProvider {
             CurriculumView()
         }
 
-        CurriculumSettingView(courses: .constant([]), status: .constant(.cached))
+        CurriculumSettingView(courses: .constant([]), status: .constant(.cached), date: .constant(Date()))
             .previewDisplayName("Settings")
     }
 }

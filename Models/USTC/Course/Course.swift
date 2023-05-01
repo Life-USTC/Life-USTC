@@ -111,16 +111,27 @@ extension Course {
         _startTime.clockTime + " - " + _endTime.clockTime
     }
 
-    static func filter(_ courses: [Course], week: Int, weekday: Int = weekday()) -> [Course] {
-        courses.filter { course in
+    static func filter(_ courses: [Course], week: Int, weekday: Int? = weekday()) -> [Course] {
+        let course_filtered = courses.filter { course in
             let weekRanges = parseWeekStr(course.weekString)
             for weekRange in weekRanges {
-                if weekRange.start <= week, week <= weekRange.end, course.dayOfWeek == weekday {
-                    return true
+                if let weekday {
+                    if weekRange.start <= week, week <= weekRange.end, course.dayOfWeek == weekday {
+                        return true
+                    }
+                } else {
+                    if weekRange.start <= week, week <= weekRange.end {
+                        return true
+                    }
                 }
             }
             return false
         }
+        return course_filtered.sorted(by: { $0.startTime < $1.startTime })
+    }
+
+    static func filter(_ courses: [Course], week: Int, for date: Date) -> [Course] {
+        filter(courses, week: week, weekday: weekday(for: date))
     }
 
     static func nextCoursse(_ courses: [Course], week: Int, now: Date = Date()) -> Course? {

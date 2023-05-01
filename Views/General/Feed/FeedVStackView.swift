@@ -10,7 +10,7 @@ import SwiftUI
 struct FeedListView: View {
     let feeds: [Feed]
     @State var showFullPage = false
-    @AppStorage("useNewUIForFeed") var useNewUI = true
+    @AppStorage("feedViewStyle") var feedViewStyle: FeedViewStyle = .V3
 
     var fullPageView: some View {
         ForEach(feeds, id: \.id) { post in
@@ -43,22 +43,29 @@ struct FeedListView: View {
     }
 
     var body: some View {
-        if useNewUI {
-            ForEach(feeds, id: \.id) { post in
-                FeedView(feed: post)
-            }
-            .listStyle(.plain)
-        } else {
+        switch feedViewStyle {
+        case .V1:
             if showFullPage {
                 fullPageView
             } else {
                 embeddedView
+            }
+        case .V2:
+            ForEach(feeds, id: \.id) { post in
+                FeedView(feed: post)
+            }
+            .listStyle(.plain)
+        case .V3:
+            ForEach(feeds, id: \.id) { post in
+                FeedView(feed: post)
             }
         }
     }
 }
 
 struct FeedVStackView: View {
+    @AppStorage("feedViewStyle") var feedViewStyle: FeedViewStyle = .V3
+
     var feeds: [Feed]
     var postsSorted: [TimePeroid: [Feed]] {
         var result: [TimePeroid: [Feed]] = [.day: [], .week: [], .month: [], .year: [], .longerThanAYear: []]
@@ -83,13 +90,19 @@ struct FeedVStackView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack {
+        if feedViewStyle == .V3 {
+            List {
+                ForEach(feeds.sorted(by: { $0.datePosted > $1.datePosted }), id: \.id) {
+                    FeedView(feed: $0)
+                }
+            }
+        } else {
+            ScrollView {
                 ForEach(postsSorted.sorted(by: { $0.key.rawValue < $1.key.rawValue }), id: \.key.hashValue) { key, value in
                     makeView(key, value)
                 }
+                .padding([.leading, .trailing])
             }
-            .padding([.leading, .trailing])
         }
     }
 }

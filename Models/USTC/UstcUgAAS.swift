@@ -79,8 +79,7 @@ actor UstcUgAASClient {
 
     func weekNumber(for date: Date = Date()) -> Int {
         let calendar = Calendar(identifier: .gregorian)
-        let components = calendar.dateComponents([.weekOfYear], from: semesterStartDate, to: date)
-        return components.weekOfYear! + 1
+        return calendar.dateComponents([.weekOfYear], from: date).weekOfYear! - calendar.dateComponents([.weekOfYear], from: semesterStartDate).weekOfYear! + 1
     }
 }
 

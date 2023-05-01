@@ -34,11 +34,10 @@ struct ExamPreview: View {
                     Spacer()
                     VStack(alignment: .trailing) {
                         Text(exam.rawTime.split(separator: " ")[0])
-                            .font(.subheadline)
                             .fontWeight(.bold)
                         Text(exam.rawTime.split(separator: " ")[1])
-                            .font(.subheadline)
                     }
+                    .font(.system(.subheadline, design: .monospaced))
                 }
                 Divider()
             }

@@ -92,6 +92,73 @@ struct CurriculumPreview: View {
                                      startPoint: .topLeading,
                                      endPoint: .bottomTrailing))
         }
+        .frame(height: 50)
+    }
+}
+
+struct CourseStackView: View {
+    @Binding var courses: [Course]
+    var body: some View {
+        VStack {
+            ForEach(courses) { course in
+                VStack {
+                    Spacer()
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(course.name)
+                                .fontWeight(.bold)
+                            Text(course.classPositionString)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Text(course.clockTime)
+                            .font(.system(.body, design: .monospaced))
+                    }
+                    .padding(.horizontal, 5)
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.accentColor)
+                        .frame(height: 5)
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(style: .init(lineWidth: 1))
+                        .fill(Color.gray.opacity(0.3))
+                }
+                .frame(height: 50)
+            }
+
+            if courses.isEmpty {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Image(systemName: "calendar")
+                            .symbolRenderingMode(.hierarchical)
+                            .fontWeight(.light)
+                            .font(.largeTitle)
+                            .foregroundColor(.orange)
+
+                        Spacer()
+
+                        Text("Nothing here")
+                            .foregroundColor(.orange)
+                            .opacity(0.6)
+                    }
+                    .padding(.horizontal, 10)
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.orange)
+                        .frame(height: 5)
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(style: .init(lineWidth: 1))
+                        .fill(Color.gray.opacity(0.3))
+                }
+                .frame(height: 50)
+            }
+        }
     }
 }
 
