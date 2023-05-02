@@ -32,7 +32,6 @@ struct FeedSettingView: View {
                 Text("Reader would generaly improve reading experience for web page that aren't optimized for mobile.")
             }
 
-
             Section {
                 ForEach(FeedSource.all.map(\.name), id: \.self) { name in
                     Button {

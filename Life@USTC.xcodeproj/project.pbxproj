@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; settings = {ATTRIBUTES = (Weak, ); }; };
-		299CC5634936A26A0F10C17F /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 327F6A0F98EF6EBD4399EE0D /* NotificationService.m */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -138,17 +137,14 @@
 		56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FA8E82297D7264000AC3A9 /* Assets.xcassets */; };
 		56FA8E85297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
 		56FA8E86297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
-		78D1F6FE39D9928EE99CAC44 /* XGMTACloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8374F92F03832B8097F86E2D /* XGMTACloud.framework */; };
 		7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */; };
 		813700120F84685D752015B2 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382E828813FA9C0554457CA /* CoreTelephony.framework */; };
 		902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A419DE96C0C3F0A443D9C8E7 /* libz.tbd */; };
 		905583363708B43FB93B6776 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55DDCF5537E65C2C916A8BC3 /* Security.framework */; };
 		9D77206865669A1F1F9075B0 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0022E5088450BB80383ABCB3 /* UserNotifications.framework */; };
 		A76F279A0A99FB2F21E2836F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56F1EC6CC15C289C92E2ECF /* CoreData.framework */; };
-		C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B766B60160E4B33F87B053CD /* TPNSService.appex */; platformFilter = ios; };
 		CC5FF768DE706F4BB623C17E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B238F82A27602447BBF1630E /* SystemConfiguration.framework */; };
 		D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */; };
-		D9670C867A7DEDB9BBBED157 /* libXGExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,13 +162,6 @@
 			remoteGlobalIDString = 561127FC298148E900BB66EE;
 			remoteInfo = "ExamWidgetExtension (macOS)";
 		};
-		6D885CC0272CA873CCFE52E9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56AC72F4294A012600A60F47 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86B22FE4CF1A3B007729F5D4;
-			remoteInfo = TPNSService;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -188,35 +177,12 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		565587DF294AF61E0010E060 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B93F358E78A48606EACA157C /* Embed Foundation Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				C56047D753670EA76ECF55B3 /* TPNSService.appex in Embed Foundation Extensions */,
-			);
-			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0022E5088450BB80383ABCB3 /* UserNotifications.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/UserNotifications.framework; sourceTree = "<group>"; };
-		12B90FF1CD0E87B07896B8A2 /* NotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Life@USTC-Bridging-Header.h"; sourceTree = "<group>"; };
 		31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libsqlite3.0.tbd; sourceTree = "<group>"; };
-		327F6A0F98EF6EBD4399EE0D /* NotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		3382E828813FA9C0554457CA /* CoreTelephony.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreTelephony.framework; sourceTree = "<group>"; };
 		55DDCF5537E65C2C916A8BC3 /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
 		561127FD298148E900BB66EE /* Widget macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Widget macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -303,23 +269,11 @@
 		A419DE96C0C3F0A443D9C8E7 /* libz.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libz.tbd; sourceTree = "<group>"; };
 		A5FC807DBEE87641A452BC5E /* XGPushPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGPushPrivate.h; sourceTree = "<group>"; };
 		B238F82A27602447BBF1630E /* SystemConfiguration.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<group>"; };
-		B766B60160E4B33F87B053CD /* TPNSService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TPNSService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = archive.ar; path = libXGExtension.a; sourceTree = "<group>"; };
-		C2446B2F1DC1CD08DF9BF47D /* XGExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGExtension.h; sourceTree = "<group>"; };
-		E2CB174781BB1213E91591A5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Info.plist; sourceTree = "<group>"; };
 		F56F1EC6CC15C289C92E2ECF /* CoreData.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = "<group>"; };
 		FAE8BC17C5C28641A56CC44E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1A690924AD42A013C1734648 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D9670C867A7DEDB9BBBED157 /* libXGExtension.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		561127FA298148E900BB66EE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -353,7 +307,6 @@
 				813700120F84685D752015B2 /* CoreTelephony.framework in Frameworks */,
 				905583363708B43FB93B6776 /* Security.framework in Frameworks */,
 				A76F279A0A99FB2F21E2836F /* CoreData.framework in Frameworks */,
-				78D1F6FE39D9928EE99CAC44 /* XGMTACloud.framework in Frameworks */,
 				9D77206865669A1F1F9075B0 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -392,17 +345,6 @@
 				2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */,
 			);
 			path = TPNS;
-			sourceTree = "<group>";
-		};
-		3169F6CDCAD06B0C5179F559 /* TPNSService */ = {
-			isa = PBXGroup;
-			children = (
-				E2CB174781BB1213E91591A5 /* Info.plist */,
-				12B90FF1CD0E87B07896B8A2 /* NotificationService.h */,
-				327F6A0F98EF6EBD4399EE0D /* NotificationService.m */,
-				6F7B48CC2B802B1041582133 /* TPNSExtensionLib */,
-			);
-			path = TPNSService;
 			sourceTree = "<group>";
 		};
 		56128F57298D44F30080A9F7 /* HealthCheck */ = {
@@ -546,7 +488,6 @@
 				565587F4294D632D0010E060 /* Views */,
 				56F3EAE2296EFC6C0095AEF4 /* Frameworks */,
 				2BBEA9FBFB8C9A607C68EB2F /* TPNS */,
-				3169F6CDCAD06B0C5179F559 /* TPNSService */,
 			);
 			sourceTree = "<group>";
 		};
@@ -556,7 +497,6 @@
 				56AC7300294A012F00A60F47 /* Life@USTC.app */,
 				56FA8E75297D7263000AC3A9 /* Widget iOS.appex */,
 				561127FD298148E900BB66EE /* Widget macOS.appex */,
-				B766B60160E4B33F87B053CD /* TPNSService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -715,15 +655,6 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
-		6F7B48CC2B802B1041582133 /* TPNSExtensionLib */ = {
-			isa = PBXGroup;
-			children = (
-				C2446B2F1DC1CD08DF9BF47D /* XGExtension.h */,
-				BE2D52E8281AE29E2F171EB6 /* libXGExtension.a */,
-			);
-			path = TPNSExtensionLib;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -759,16 +690,13 @@
 				56AC72FC294A012F00A60F47 /* Sources */,
 				56AC72FD294A012F00A60F47 /* Frameworks */,
 				56AC72FE294A012F00A60F47 /* Resources */,
-				565587DF294AF61E0010E060 /* Embed Frameworks */,
 				5611272629813AAC00BB66EE /* Embed Foundation Extensions */,
-				B93F358E78A48606EACA157C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5611272529813AAC00BB66EE /* PBXTargetDependency */,
 				5611282F29814CDA00BB66EE /* PBXTargetDependency */,
-				3A398E4BD52816676C149598 /* PBXTargetDependency */,
 			);
 			name = "Life@USTC";
 			packageProductDependencies = (
@@ -805,23 +733,6 @@
 			);
 			productName = ExamWidgetExtension;
 			productReference = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		86B22FE4CF1A3B007729F5D4 /* TPNSService */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CD760241AB469397A387050B /* Build configuration list for PBXNativeTarget "TPNSService" */;
-			buildPhases = (
-				43B046D0105C88187AB05B9D /* Sources */,
-				1A690924AD42A013C1734648 /* Frameworks */,
-				3CFC7C6F4D7FDF8E1A0339AA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = TPNSService;
-			productName = TPNSService;
-			productReference = B766B60160E4B33F87B053CD /* TPNSService.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -871,19 +782,11 @@
 				56AC72FF294A012F00A60F47 /* Life@USTC */,
 				56FA8E74297D7263000AC3A9 /* Widget iOS */,
 				561127FC298148E900BB66EE /* Widget macOS */,
-				86B22FE4CF1A3B007729F5D4 /* TPNSService */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3CFC7C6F4D7FDF8E1A0339AA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		561127FB298148E900BB66EE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -916,14 +819,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		43B046D0105C88187AB05B9D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				299CC5634936A26A0F10C17F /* NotificationService.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		561127F9298148E900BB66EE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1046,13 +941,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3A398E4BD52816676C149598 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = TPNSService;
-			platformFilter = ios;
-			target = 86B22FE4CF1A3B007729F5D4 /* TPNSService */;
-			targetProxy = 6D885CC0272CA873CCFE52E9 /* PBXContainerItemProxy */;
-		};
 		5611272529813AAC00BB66EE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
@@ -1091,62 +979,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		15E82F15D6A11ADFA59A3640 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = TPNSService/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
-				);
-				MARKETING_VERSION = 1.0.1;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		2AAD22D5232439D1C942778E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = TPNSService/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/TPNSService/TPNSExtensionLib",
-				);
-				MARKETING_VERSION = 1.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.TPNSService";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		5611280B298148EA00BB66EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1170,6 +1002,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1203,6 +1036,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1252,7 +1086,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1317,7 +1150,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1352,6 +1184,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_SOURCE_FILE_NAMES[sdk=iphonesimulator*]" = (
+					"libXG-SDK-Cloud.a",
+					"Life@USTC-Bridging-Header.h",
+					MTAConfig.o,
+				);
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -1368,7 +1205,9 @@
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
+				"OTHER_SWIFT_FLAGS[sdk=iphonesimulator*]" = "-D IOS_SIMULATOR";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
 				SDKROOT = iphoneos;
@@ -1452,6 +1291,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1484,6 +1324,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1530,15 +1371,6 @@
 			buildConfigurations = (
 				56FA8E8B297D7264000AC3A9 /* Debug */,
 				56FA8E8C297D7264000AC3A9 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CD760241AB469397A387050B /* Build configuration list for PBXNativeTarget "TPNSService" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				15E82F15D6A11ADFA59A3640 /* Release */,
-				2AAD22D5232439D1C942778E /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

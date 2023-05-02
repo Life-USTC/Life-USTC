@@ -38,7 +38,7 @@ struct CurriculumSettingView: View {
                         return try await CurriculumDelegate.shared.parseCache()
                     }
                 }
-                
+
                 DatePicker(selection: $date, displayedComponents: .date) {
                     Label("Pick a date", systemImage: "calendar")
                 }
@@ -158,7 +158,7 @@ struct CurriculumView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(Color.secondary)
                     }
-                
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {
                         ForEach(0 ..< 5) { index in

@@ -121,7 +121,7 @@ struct FeedViewV2: View {
 
 struct FeedViewV3: View {
     let feed: Feed
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -130,9 +130,9 @@ struct FeedViewV3: View {
             }
             .font(.system(.caption, design: .monospaced))
             .foregroundColor(.secondary)
-            
+
             Spacer(minLength: 2)
-            
+
             Text(feed.title)
                 .foregroundColor(.primary)
                 .font(.title3)

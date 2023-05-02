@@ -16,7 +16,7 @@ struct NotificationSettingView: View {
 
     var body: some View {
         List {
-#if DEBUG && arch(arm64)
+#if DEBUG && !IOS_SIMULATOR
             // ensure that this isn't shown on preview device
             // as it runs off rossetta (apple chips) so that it's always x86_64
             ScrollView {
@@ -37,8 +37,8 @@ struct NotificationSettingView: View {
                     }
 
                 Button {
-                    XGPush.defaultManager().clearTPNSCache()
-                    showingAlert = true
+//                    XGPush.defaultManager().clearTPNSCache()
+//                    showingAlert = true
                 } label: {
                     Text("Clear TPNS Cache")
                 }
@@ -53,7 +53,7 @@ struct NotificationSettingView: View {
 #if DEBUG
             Section {
                 Button {
-                    XGPushTokenManager.default().appendTags([])
+//                    XGPushTokenManager.default().appendTags([])
                 } label: {
                     Text("Update Labels")
                 }

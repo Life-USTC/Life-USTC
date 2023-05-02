@@ -24,7 +24,7 @@ struct WelcomeView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                 }
-                
+
                 Text("Everything you need in USTC")
                     .font(.caption)
                     .foregroundColor(.secondary)
