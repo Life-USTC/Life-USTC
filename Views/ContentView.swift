@@ -265,6 +265,11 @@ private struct ContentViewTabBarView: View {
             .foregroundColor(selection == tab ? tab.color : Color.gray)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
+            .onTapGesture {
+                withAnimation {
+                    selection = tab
+                }
+            }
             .background(
                 ZStack {
                     if selection == tab {
@@ -280,13 +285,6 @@ private struct ContentViewTabBarView: View {
         HStack {
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 tabView(tab: tab)
-                    .onTapGesture {
-                        // MARK: A bug is noticed here when switching tabs frequently, this might be related to the way GCD control UI rendering, holding the fix until there's a perfect solution.
-
-                        withAnimation(.spring()) {
-                            selection = tab
-                        }
-                    }
             }
         }
         .padding(6)

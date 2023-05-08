@@ -18,6 +18,8 @@ let imageURLRegex = try! Regex(#"(http[^\s]+(jpg|jpeg|png|tiff)\b)"#)
 let shortUstcLinkRegex = try! Regex(#"https?://www.ustc.edu.cn/info/\d+/\d+.htm"#)
 let httpRegex = try! Regex("^http[^s]//")
 
+let filteredImageURLList = [URL(string: "https://s.w.org/images/core/emoji/11/72x72/21a9.png")!]
+
 class Feed: Codable {
     static var all: [Feed] = []
     var id = UUID()
@@ -34,7 +36,8 @@ class Feed: Codable {
                               keywords: [Lorem.word, Lorem.word],
                               description: Lorem.sentences(2),
                               datePosted: Date(),
-                              url: exampleURL)
+                              url: exampleURL,
+                              imageURL: URL(string: "https://picsum.photos/300/300"))
 
     init(id: UUID = UUID(),
          title: String,
@@ -74,8 +77,13 @@ class Feed: Codable {
 //        }
 
         // Try find an image-URL inside content, if found, set it as the image preview
+//        debugPrint(item.description, item.content?.contentEncoded)
         if let match = item.content?.contentEncoded?.firstMatch(of: imageURLRegex) {
-            imageURL = URL(string: String(match.0))
+            debugPrint(String(match.0).urlEncoded)
+            imageURL = URL(string: String(match.0).urlEncoded!)!
+            if filteredImageURLList.contains(imageURL!) {
+                imageURL = nil
+            }
         } else {
             // TODO: Wrong usage of async functions. make variable lock and prevent being used until the imageURL is loaded
             // try load the content of URL:

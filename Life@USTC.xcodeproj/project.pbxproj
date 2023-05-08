@@ -49,6 +49,9 @@
 		562169222955BEDE00DF46BE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169212955BEDE00DF46BE /* ContentView.swift */; };
 		562169242955BEF900DF46BE /* UserTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169232955BEF900DF46BE /* UserTypeView.swift */; };
 		562169262956D49E00DF46BE /* FeedHScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169252956D49E00DF46BE /* FeedHScrollView.swift */; };
+		5627958B2A08F382009D398E /* JavascriptCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JavascriptCore.swift */; };
+		5627958C2A08F382009D398E /* JavascriptCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JavascriptCore.swift */; };
+		5627958D2A08F382009D398E /* JavascriptCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JavascriptCore.swift */; };
 		565587B3294ABE7C0010E060 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B2294ABE7B0010E060 /* Card.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
@@ -196,6 +199,7 @@
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		562169232955BEF900DF46BE /* UserTypeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeView.swift; sourceTree = "<group>"; };
 		562169252956D49E00DF46BE /* FeedHScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHScrollView.swift; sourceTree = "<group>"; };
+		5627958A2A08F382009D398E /* JavascriptCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptCore.swift; sourceTree = "<group>"; };
 		565587B2294ABE7B0010E060 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		565587B7294AE7910010E060 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
@@ -510,6 +514,7 @@
 				56BE91F62963EF1600822C98 /* ExceptionCalls.swift */,
 				56BE91FA296677A300822C98 /* SwiftExtension.swift */,
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
+				5627958A2A08F382009D398E /* JavascriptCore.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -824,6 +829,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5611281E29814B1300BB66EE /* UUIDExtension.swift in Sources */,
+				5627958D2A08F382009D398E /* JavascriptCore.swift in Sources */,
 				5611281929814AED00BB66EE /* Course.swift in Sources */,
 				56C3A72729BDA10500A5017A /* CurriculumWidget.swift in Sources */,
 				5611281B29814B1300BB66EE /* Constants.swift in Sources */,
@@ -879,6 +885,7 @@
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
 				56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				565A11B829FF565E00310C8B /* WelcomeView.swift in Sources */,
+				5627958B2A08F382009D398E /* JavascriptCore.swift in Sources */,
 				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
@@ -915,6 +922,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
+				5627958C2A08F382009D398E /* JavascriptCore.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
@@ -1050,6 +1058,7 @@
 		56AC730F294A012F00A60F47 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1114,6 +1123,7 @@
 		56AC7310294A012F00A60F47 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;

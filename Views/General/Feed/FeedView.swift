@@ -125,13 +125,25 @@ struct FeedViewV3: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(feed.datePosted.description)
+                Text(feed.datePosted.formatted())
                 Text(feed.source)
             }
             .font(.system(.caption, design: .monospaced))
             .foregroundColor(.secondary)
 
-            Spacer(minLength: 2)
+            if let imageURL = feed.imageURL {
+                AsyncImage(url: imageURL) {
+                    if let image = $0.image {
+                        $0.image?
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                    }
+                }
+            } else {
+                Spacer(minLength: 2)
+            }
 
             Text(feed.title)
                 .foregroundColor(.primary)
@@ -140,8 +152,8 @@ struct FeedViewV3: View {
                 .multilineTextAlignment(.leading)
                 .lineLimit(2)
         }
-        .padding(.vertical, 5)
         .hStackLeading()
+        .padding(.vertical, 5)
     }
 }
 
@@ -150,8 +162,10 @@ struct FeedView_Previews: PreviewProvider {
         VStack {
             FeedView(feedViewStyle: .V1, feed: .example)
             FeedView(feedViewStyle: .V2, feed: .example)
-            FeedView(feedViewStyle: .V3, feed: .example)
-                .frame(height: 80)
+            List {
+                FeedView(feedViewStyle: .V3, feed: .example)
+            }
+            .frame(height: 500)
         }
         .padding()
     }

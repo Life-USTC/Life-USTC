@@ -88,7 +88,7 @@ struct AsyncView<D>: View {
                 EmptyView()
             }
         }
-        .onAppear {
+        .task {
             if loadData != nil {
                 asyncBind($data, status: $status, loadData!)
             } else {
