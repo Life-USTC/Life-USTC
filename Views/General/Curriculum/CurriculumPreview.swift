@@ -162,15 +162,6 @@ struct CourseStackView: View {
     }
 }
 
-var exampleCourse: Course {
-    var result = Course.example
-
-//    result.startTime = 1
-//    result.endTime = 10
-
-    return result
-}
-
 struct CurriculumPreview_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
@@ -178,7 +169,7 @@ struct CurriculumPreview_Previews: PreviewProvider {
                 CurriculumPreview()
                     .happyView
                 CurriculumPreview()
-                    .makeView(with: [exampleCourse, exampleCourse])
+                    .makeView(with: [.example, .example])
             }
             .padding()
         }

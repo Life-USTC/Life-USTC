@@ -47,5 +47,5 @@ func run() {
     let webViewConfig = WKWebViewConfiguration()
     webViewConfig.userContentController = userContentController
 
-    let webView = WKWebView(frame: .zero, configuration: webViewConfig)
+    _ = WKWebView(frame: .zero, configuration: webViewConfig)
 }

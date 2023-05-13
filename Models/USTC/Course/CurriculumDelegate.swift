@@ -28,7 +28,8 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
             if classPositionString == "" {
                 classPositionString = subJson["customPlace"].stringValue
             }
-            var tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!,
+            // Course.init is expected to throw error for startTime/endTime OOB
+            let tmp = Course(dayOfWeek: Int(subJson["weekday"].stringValue)!,
                              startTime: Int(subJson["startUnit"].stringValue) ?? 1,
                              endTime: Int(subJson["endUnit"].stringValue) ?? 1,
                              name: subJson["courseName"].stringValue,
@@ -36,26 +37,8 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
                              classPositionString: classPositionString,
                              classTeacherName: subJson["teachers"][0].stringValue,
                              weekString: subJson["weeksStr"].stringValue)
-
-//            if tmp.startTime <= 0 {
-//                tmp.startTime = 1
-//            }
-//
-//            if tmp.startTime > Course.startTimes.count {
-//                tmp.startTime = Course.startTimes.count
-//            }
-//
-//            if tmp.endTime <= 0 {
-//                tmp.endTime = 1
-//            }
-//
-//            if tmp.endTime > Course.endTimes.count {
-//                tmp.endTime = Course.endTimes.count
-//            }
-
             result.append(tmp)
         }
-//        return Course.clean(result)
         return result
     }
 
@@ -74,7 +57,6 @@ class CurriculumDelegate: CacheAsyncDataDelegate {
         }
 
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(await UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
-//        debugPrint(String(data: data, encoding: .utf8))
         cache = try JSON(data: data)
         lastUpdate = Date()
         try saveCache()

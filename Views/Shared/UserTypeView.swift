@@ -30,9 +30,14 @@ struct UserTypeView: View {
                     }
                 } label: {
                     HStack {
-                        TitleAndSubTitle(title: String(describing: userType).capitalized,
-                                         subTitle: userType.caption,
-                                         style: .substring)
+                        VStack(alignment: .leading) {
+                            Text(String(describing: userType).capitalized)
+                                .font(.body)
+                                .bold()
+                                .padding(.bottom, 1)
+                            Text(userType.caption)
+                                .font(.caption)
+                        }
                         Spacer()
                         if showType == .sheet {
                             Image(systemName: "chevron.right")
@@ -52,9 +57,15 @@ struct UserTypeView: View {
         if showType == .sheet {
             NavigationStack {
                 VStack {
-                    TitleAndSubTitle(title: "Choose an identity",
-                                     subTitle: "You could modify this later in app settings",
-                                     style: .caption)
+                    VStack(alignment: .leading) {
+                        Text("Choose an identity")
+                            .font(.title2)
+                            .bold()
+                        Text("You could modify this later in app settings")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                            .bold()
+                    }
                     mainView
                         .listStyle(.plain)
                     Spacer()
@@ -62,8 +73,14 @@ struct UserTypeView: View {
                         userTypeSheet = false
                     } label: {
                         Text("Skip for now")
+                            .foregroundColor(.white)
+                            .background {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.accentColor)
+                                    .frame(width: 250, height: 50)
+                            }
+                            .padding()
                     }
-                    .buttonStyle(BigButtonStyle())
                 }
                 .padding()
                 .navigationBarTitle("Before we continue...", displayMode: .inline)

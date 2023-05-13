@@ -90,9 +90,7 @@ actor UstcCasClient {
         request.httpShouldHandleCookies = true
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        let (data, response) = try await session.data(for: request)
-//        debugPrint(session.configuration.httpCookieStorage?.cookies)
-//        debugPrint(String(data: data, encoding: .utf8), response)
+        let _ = try await session.data(for: request)
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
             lastLogined = .now
             return true

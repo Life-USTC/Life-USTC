@@ -134,7 +134,7 @@ struct FeedViewV3: View {
             if let imageURL = feed.imageURL {
                 AsyncImage(url: imageURL) {
                     if let image = $0.image {
-                        $0.image?
+                        image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 200)

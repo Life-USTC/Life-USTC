@@ -37,7 +37,15 @@ struct HomeView: View {
         ScrollView(showsIndicators: false) {
             ForEach(features, id: \.title) { feature in
                 HStack {
-                    TitleAndSubTitle(title: feature.title, subTitle: feature.subTitle, style: .reverse)
+                    VStack(alignment: .leading) {
+                        Text(feature.subTitle)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                        Text(feature.title)
+                            .font(.title2)
+                            .bold()
+                    }
+                    Spacer()
                     NavigationLinkAddon {
                         feature.destination
                     } label: {

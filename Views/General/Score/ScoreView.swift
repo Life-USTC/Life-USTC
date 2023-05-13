@@ -173,12 +173,15 @@ struct ScoreView: View {
     @ViewBuilder func makeView(with score: Score) -> some View {
         ScrollView(showsIndicators: false) {
             VStack {
-                HStack {
-                    TitleAndSubTitle(title: "GPA: " + String(score.gpa),
-                                     subTitle: score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount),
-                                     style: .reverse)
-                        .padding(.vertical, 5)
+                VStack(alignment: .leading) {
+                    Text(score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
+                        .foregroundColor(.secondary)
+                        .fontWeight(.semibold)
+                    Text("GPA: " + String(score.gpa)) // Double formatting problem noticed
+                        .font(.title2)
+                        .bold()
                 }
+                .padding(.vertical, 5)
                 ForEach(sort(score: score).sorted { $0.key > $1.key }, id: \.key) {
                     Text($0.key)
                         .fontWeight(.semibold)

@@ -38,6 +38,7 @@ extension View {
     }
 }
 
+@available(*, deprecated)
 enum TitleAndSubTitleStyle {
     case substring
     case reverse

@@ -162,7 +162,7 @@ struct RectangleProgressBar_Previews: PreviewProvider {
                 colors: [.black],
                 text: "!!!!!!"
             )
-            RectangleProgressBar(course: exampleCourse)
+            RectangleProgressBar(course: .example)
         }
     }
 }

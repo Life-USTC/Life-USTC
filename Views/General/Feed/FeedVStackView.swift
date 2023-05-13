@@ -82,7 +82,15 @@ struct FeedVStackView: View {
     @ViewBuilder func makeView(_ key: TimePeroid, _ value: [Feed]) -> some View {
         if !value.isEmpty {
             VStack {
-                TitleAndSubTitle(title: key.caption, subTitle: key.dateRangeCaption, style: .reverse)
+                VStack(alignment: .leading) {
+                    Text(key.dateRangeCaption)
+                        .foregroundColor(.secondary)
+                        .fontWeight(.semibold)
+                    Text(key.caption)
+                        .font(.title2)
+                        .bold()
+                }
+                .hStackLeading()
                 FeedListView(feeds: value, showFullPage: key == .day || key == .week)
             }
             .padding(.bottom, 40)
