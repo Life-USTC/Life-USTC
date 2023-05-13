@@ -148,15 +148,13 @@ struct AsyncButton: View {
     var body: some View {
         if bigStyle {
             mainView
-#if os(iOS)
-            .foregroundColor(.white)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(status == .inProgress ? Color.gray : Color.accentColor)
-                    .frame(width: 250, height: 50)
-            }
-            .padding()
-#endif
+                .foregroundColor(.white)
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(status == .inProgress ? Color.gray : Color.accentColor)
+                        .frame(width: 250, height: 50)
+                }
+                .padding()
         } else {
             mainView
         }

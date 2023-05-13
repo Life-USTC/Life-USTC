@@ -21,9 +21,7 @@ class GlobalNavigation: ObservableObject {
 struct NavigationLinkAddon: View {
     var destination: () -> AnyView
     var label: () -> AnyView
-#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-#endif
 
     init(_ label: LocalizedStringKey, destination: some View) {
         self.destination = { AnyView(destination) }
@@ -36,7 +34,6 @@ struct NavigationLinkAddon: View {
     }
 
     var body: some View {
-#if os(iOS)
         // No need to listen to state update as the view would be completely refreshed as horizontalSizeClass changes.
         if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
             Button {
@@ -51,38 +48,5 @@ struct NavigationLinkAddon: View {
                 label()
             }
         }
-#else
-        label()
-            .onTapGesture {
-                GlobalNavigation.main.updateDetailView(AnyView(destination()))
-            }
-#endif
-//        NavigationLink(destination: destination(), label: label)
-//            .simultaneousGesture(
-//                TapGesture()
-//                    .onEnded {
-//                        GlobalNavigation.main.updateDetailView(AnyView(destination()))
-//                    }
-//            )
     }
 }
-
-#if os(macOS)
-enum NavigationBarItem {
-    enum TitleDisplayMode {
-        case inline
-        case large
-        case automatic
-    }
-}
-
-extension View {
-    func navigationBarTitle(_ title: LocalizedStringKey, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
-        navigationTitle(Text(title))
-    }
-
-    func navigationBarTitle(_ title: String, displayMode _: NavigationBarItem.TitleDisplayMode) -> some View {
-        navigationTitle(Text(title))
-    }
-}
-#endif

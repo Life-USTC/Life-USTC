@@ -9,9 +9,7 @@ import SwiftUI
 
 @main
 struct Life_USTCApp: App {
-#if os(iOS)
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-#endif
 
     var body: some Scene {
         WindowGroup {
@@ -29,7 +27,6 @@ struct ContentView: View {
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var tabSelection: ContentViewTab = .position_1
-#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     var iPhoneView: some View {
         Group {
@@ -107,11 +104,9 @@ struct ContentView: View {
         }
         .navigationSplitViewStyle(.balanced)
     }
-#endif
 
     var body: some View {
         Group {
-#if os(iOS)
             if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                 // iPadOS:
                 iPadView
@@ -119,15 +114,6 @@ struct ContentView: View {
                 // iOS:
                 iPhoneView
             }
-#else
-            // macOS:
-            NavigationSplitView {
-                iPhoneView
-            } detail: {
-                globalNavigation.detailView
-            }
-            .navigationSplitViewStyle(.balanced)
-#endif
         }
         .sheet(isPresented: $casLoginSheet) {
             CASLoginView.sheet(isPresented: $casLoginSheet)

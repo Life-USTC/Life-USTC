@@ -47,9 +47,7 @@ struct CourseCardView: View {
         }
         .onTapGesture {}
         .onLongPressGesture(minimumDuration: 0.6) {
-#if os(iOS)
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-#endif
             showPopUp = true
         }
         .sheet(isPresented: $showPopUp) {

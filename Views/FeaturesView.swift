@@ -165,9 +165,7 @@ struct FeaturesView: View {
                 Label("Switch", systemImage: style.next().imageName)
             }
         }
-#if os(iOS)
         .searchable(text: $searchText, placement: .automatic)
-#endif
     }
 }
 

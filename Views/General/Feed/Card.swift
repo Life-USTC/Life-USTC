@@ -7,11 +7,7 @@
 
 import SwiftUI
 
-#if os(iOS)
 let cardHeight = 200.0
-#else
-let cardHeight = 150.0
-#endif
 
 @available(*, deprecated)
 struct Card: View {
@@ -104,8 +100,6 @@ struct Card: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .padding([.leading, .trailing], 2)
-#if os(iOS)
-            .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
-#endif
+        .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: cornerRadius))
     }
 }

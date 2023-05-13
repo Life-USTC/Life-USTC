@@ -63,9 +63,6 @@ struct FeedHScroll_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             FeedHScrollView()
-#if os(macOS)
-                .frame(width: 400, height: cardHeight)
-#endif
         }
     }
 }

@@ -18,7 +18,6 @@ import SwiftUI
     )
 }
 
-#if os(iOS)
 struct PushNotification: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var title: String = ""
@@ -81,4 +80,3 @@ struct PushNotification_Previews: PreviewProvider {
         }
     }
 }
-#endif

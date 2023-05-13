@@ -8,8 +8,6 @@
 import SwiftUI
 import UIKit
 
-#if os(iOS)
-
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject {
     @Published var tpnsLog: String = ""
 #if IOS_SIMULATOR
@@ -77,6 +75,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 #endif
 }
-#else
-
-#endif

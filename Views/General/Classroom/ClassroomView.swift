@@ -32,9 +32,7 @@ private struct LessonView: View {
             }
             .onTapGesture {}
             .onLongPressGesture {
-#if os(iOS)
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-#endif
                 showSheet = true
             }
             .sheet(isPresented: $showSheet) {

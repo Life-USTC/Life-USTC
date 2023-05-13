@@ -8,7 +8,6 @@
 import SwiftUI
 import UIKit
 
-#if os(iOS)
 struct NotificationSettingView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
@@ -76,4 +75,3 @@ struct NotificationSetting_Previews: PreviewProvider {
         }
     }
 }
-#endif

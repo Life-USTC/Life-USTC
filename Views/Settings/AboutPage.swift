@@ -36,15 +36,9 @@ struct AboutLifeAtUSTCView: View {
                 .resizable()
                 .frame(width: 200, height: 200)
                 .onTapGesture(count: 5) {
-#if os(macOS)
-                    NSPasteboard.general.setString(String(describing: Array(userDefaults.dictionaryRepresentation())), forType: .string)
-#else
                     UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
-#endif
                 }
-#if os(iOS)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-#endif
                 .contextMenu {
                     ShareLink(item: "Life@USTC") {
                         Label("Share this app", systemImage: "square.and.arrow.up")

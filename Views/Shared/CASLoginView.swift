@@ -38,9 +38,7 @@ struct CASLoginView: View {
         VStack {
             Form {
                 HStack {
-#if os(iOS)
                     Text("Username:")
-#endif
                     TextField("Username", text: $passportUsername)
                         .focused($foucusField, equals: .username)
                         .onSubmit {
@@ -50,15 +48,11 @@ struct CASLoginView: View {
                         }
                         .submitLabel(.next)
                         .autocorrectionDisabled(true)
-#if os(iOS)
                         .keyboardType(.asciiCapable)
-#endif
                     Spacer()
                 }
                 HStack {
-#if os(iOS)
                     Text("Password:")
-#endif
                     SecureField("Password", text: $passportPassword)
                         .focused($foucusField, equals: .password)
                         .submitLabel(.done)

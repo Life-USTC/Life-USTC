@@ -129,7 +129,6 @@ struct BigButtonStyle: ButtonStyle {
     var size: CGFloat = 1.0
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-#if os(iOS)
             .foregroundColor(.white)
             .background {
                 RoundedRectangle(cornerRadius: 10 * size)
@@ -137,7 +136,6 @@ struct BigButtonStyle: ButtonStyle {
                     .frame(width: 250 * size, height: 50 * size)
             }
             .padding()
-#endif
     }
 }
 
@@ -168,11 +166,7 @@ extension Color {
         } else {
             brightness = Double(hash % 10 + 75) / 100
         }
-#if os(iOS)
         self = Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
-#else
-        self = Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1))
-#endif
     }
 }
 
