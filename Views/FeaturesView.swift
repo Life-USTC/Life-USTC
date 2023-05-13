@@ -43,7 +43,7 @@ struct FeaturesView: View {
 
     @State var searchText = ""
     @AppStorage("userType") var userType: UserType?
-    @AppStorage("featureViewStyle") private var style: Style = .grid
+    @AppStorage("featureViewStyle") private var style: Style = .list
 
     let gridItemLayout = [GridItem(.adaptive(minimum: 110)),
                           GridItem(.adaptive(minimum: 110)),

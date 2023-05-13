@@ -22,7 +22,6 @@ struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-    @AppStorage("useNewUIForTabBar") var useNewUI = true
     @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -30,24 +29,11 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     var iPhoneView: some View {
         Group {
-            if useNewUI {
-                NavigationStack {
-                    ContentViewTabBarContainerView(selection: $tabSelection) {
-                        ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                            eachTab.view()
-                                .tabBarItem(tab: eachTab, selection: $tabSelection)
-                        }
-                    }
-                }
-            } else {
-                TabView {
+            NavigationStack {
+                ContentViewTabBarContainerView(selection: $tabSelection) {
                     ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                        NavigationStack {
-                            eachTab.view()
-                        }
-                        .tabItem {
-                            eachTab.label()
-                        }
+                        eachTab.view()
+                            .tabBarItem(tab: eachTab, selection: $tabSelection)
                     }
                 }
             }
@@ -148,24 +134,13 @@ private enum ContentViewTab: Int, CaseIterable {
     case position_3 = 3
 
     @ViewBuilder func view() -> some View {
-        if UserDefaults.standard.bool(forKey: "useNewUILayout") {
-            switch self {
-            case .position_1:
-                HomeViewV2()
-            case .position_2:
-                AllSourceView()
-            case .position_3:
-                FeaturesView()
-            }
-        } else {
-            switch self {
-            case .position_1:
-                HomeView()
-            case .position_2:
-                FeaturesView()
-            case .position_3:
-                SettingsView()
-            }
+        switch self {
+        case .position_1:
+            HomeView()
+        case .position_2:
+            AllSourceView()
+        case .position_3:
+            FeaturesView()
         }
     }
 
@@ -181,24 +156,13 @@ private enum ContentViewTab: Int, CaseIterable {
     }
 
     @ViewBuilder func label() -> some View {
-        if UserDefaults.standard.bool(forKey: "useNewUILayout") {
-            switch self {
-            case .position_1:
-                Label("Home", systemImage: "square.stack.3d.up")
-            case .position_2:
-                Label("Feed", systemImage: "doc.richtext.fill")
-            case .position_3:
-                Label("Features", systemImage: "square.grid.2x2")
-            }
-        } else {
-            switch self {
-            case .position_1:
-                Label("Home", systemImage: "square.stack.3d.up")
-            case .position_2:
-                Label("Features", systemImage: "square.grid.2x2")
-            case .position_3:
-                Label("Settings", systemImage: "gearshape")
-            }
+        switch self {
+        case .position_1:
+            Label("Home", systemImage: "square.stack.3d.up")
+        case .position_2:
+            Label("Feed", systemImage: "doc.richtext.fill")
+        case .position_3:
+            Label("Features", systemImage: "square.grid.2x2")
         }
     }
 }
@@ -298,7 +262,7 @@ struct ContentViewTabBarView_Preview: PreviewProvider {
         ContentView()
             .previewDisplayName("Main")
 
-        ContentView(useNewUI: false)
+        ContentView()
             .previewDisplayName("Main (old UI)")
     }
 }

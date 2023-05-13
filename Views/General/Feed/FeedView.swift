@@ -8,32 +8,12 @@
 import Reeeed
 import SwiftUI
 
-enum FeedViewStyle: String {
-    case V1
-    case V2
-    case V3
-}
-
 struct FeedView: View {
     @AppStorage("useReeed") var useReeed = true
-    @AppStorage("feedViewStyle") var feedViewStyle: FeedViewStyle = .V3
     let feed: Feed
 
     var preview: some View {
-        Group {
-            switch feedViewStyle {
-            case .V1:
-                Card(cardTitle: feed.title,
-                     cardDescription: feed.description,
-                     leadingPropertyList: feed.keywords.map { ($0, nil) },
-                     trailingPropertyList: [.init(feed.datePosted), feed.source],
-                     imageURL: feed.imageURL)
-            case .V2:
-                FeedViewV2(feed: feed)
-            case .V3:
-                FeedViewV3(feed: feed)
-            }
-        }
+        FeedViewPreview(feed: feed)
     }
 
     var destination: some View {
@@ -67,59 +47,7 @@ struct FeedView: View {
     }
 }
 
-struct FeedViewV2: View {
-    let feed: Feed
-
-    var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 5) {
-                Text(feed.title)
-                    .lineLimit(2, reservesSpace: true) // this is to fix frame size problem. might not look the best when met with single-line title
-                    .font(.title2)
-                    .bold()
-                    .multilineTextAlignment(.leading)
-                HStack {
-                    Text(feed.source)
-                        .bold()
-                    Text(String(feed.datePosted, long: true))
-                    Spacer()
-                }
-                .font(.caption)
-                .foregroundColor(.gray)
-            }
-            Divider()
-            HStack {
-                if let description = feed.description {
-                    Text(description)
-                        .font(.subheadline)
-                        .lineLimit(4)
-                        .multilineTextAlignment(.leading)
-                }
-                if let imageURL = feed.imageURL {
-                    Spacer()
-                    AsyncImage(url: imageURL) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: 80, maxHeight: 80)
-                    } placeholder: {
-                        ProgressView()
-                    }
-                }
-            }
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(style: .init(lineWidth: 1))
-                .fill(Color.accentColor)
-        }
-        .foregroundColor(.primary)
-        .padding(.horizontal, 4)
-    }
-}
-
-struct FeedViewV3: View {
+struct FeedViewPreview: View {
     let feed: Feed
 
     var body: some View {
@@ -160,10 +88,8 @@ struct FeedViewV3: View {
 struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            FeedView(feedViewStyle: .V1, feed: .example)
-            FeedView(feedViewStyle: .V2, feed: .example)
             List {
-                FeedView(feedViewStyle: .V3, feed: .example)
+                FeedView(feed: .example)
             }
             .frame(height: 500)
         }

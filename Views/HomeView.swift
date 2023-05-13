@@ -15,57 +15,6 @@ private struct HomeFeature {
 }
 
 struct HomeView: View {
-    private var features: [HomeFeature] =
-        [.init(title: "Feed",
-               subTitle: currentDateString,
-               destination: .init(AllSourceView()),
-               preview: .init(FeedHScrollView())),
-//         .init(title: "Health Check",
-//               subTitle: "",
-//               destination: .init(HealthCheckPage()),
-//               preview: .init(HealthCheckPreview())),
-         .init(title: "Curriculum",
-               subTitle: currentWeekDayString,
-               destination: .init(CurriculumView()),
-               preview: .init(CurriculumPreview())),
-         .init(title: "Exam",
-               subTitle: "",
-               destination: .init(ExamView()),
-               preview: .init(ExamPreview()))]
-
-    var body: some View {
-        ScrollView(showsIndicators: false) {
-            ForEach(features, id: \.title) { feature in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(feature.subTitle)
-                            .foregroundColor(.secondary)
-                            .fontWeight(.semibold)
-                        Text(feature.title)
-                            .font(.title2)
-                            .bold()
-                    }
-                    Spacer()
-                    NavigationLinkAddon {
-                        feature.destination
-                    } label: {
-                        Label("More", systemImage: "chevron.right.2")
-                            .labelStyle(.iconOnly)
-                    }
-                }
-                .padding(.bottom, 7)
-                .padding(.top, 15)
-
-                feature.preview
-            }
-            .padding(.bottom, 70)
-        }
-        .padding([.leading, .trailing])
-        .navigationTitle("Life@USTC")
-    }
-}
-
-struct HomeViewV2: View {
     @State var weekNumber = 0
     @State var date = Date()
     @State var courses: [Course] = []
@@ -179,9 +128,6 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             HomeView()
-        }
-        NavigationStack {
-            HomeViewV2()
         }
     }
 }
