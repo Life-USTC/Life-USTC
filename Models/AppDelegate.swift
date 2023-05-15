@@ -10,9 +10,24 @@ import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject {
     @Published var tpnsLog: String = ""
+
+    func startJSRuntime() {
+        let runtime = LUJSRuntime.shared
+        runtime.wkWebView.callAsyncJavaScript("""
+            await fetch('https://www.example.com', {
+                method: 'GET'
+            }).then(console.log);
+        """, in: nil, in: .page, completionHandler: { result in
+            print(result)
+        })
+
+    }
 #if IOS_SIMULATOR
+    // dummy definitions to avoid using TPNS service inside simulator
+    // as XCFramework lib isn't fully supported with Apple chips
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        true
+        startJSRuntime()
+        return true
     }
 
     func startTPNS() {}
@@ -20,6 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func stopTPNS() {}
 #else
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        startJSRuntime()
         if userDefaults.bool(forKey: "useNotification") {
             startTPNS()
         }

@@ -48,6 +48,8 @@
 		56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
 		56734CEF297D871500DBB45F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
+		567E6FA82A121CB50056BE5F /* console.js in Resources */ = {isa = PBXBuildFile; fileRef = 567E6FA72A121CB50056BE5F /* console.js */; };
+		567E6FA92A121CB50056BE5F /* console.js in Resources */ = {isa = PBXBuildFile; fileRef = 567E6FA72A121CB50056BE5F /* console.js */; };
 		567FA93129D083180003050F /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567FA93029D083180003050F /* AppPage.swift */; };
 		5694D91829668191009CFCDF /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91729668191009CFCDF /* Course.swift */; };
 		569CFE44297D87620072C094 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE43297D87620072C094 /* SwiftyJSON */; };
@@ -170,6 +172,7 @@
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
 		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		567E6FA72A121CB50056BE5F /* console.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = console.js; sourceTree = "<group>"; };
 		567FA93029D083180003050F /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5694D91729668191009CFCDF /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
@@ -320,8 +323,8 @@
 		565587F5294D635E0010E060 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				56C1425229F64886007D9BD4 /* PushNotification */,
 				56D175C9295438E80070778F /* Feed */,
+				56C1425229F64886007D9BD4 /* PushNotification */,
 				56BE91F52962FEA900822C98 /* Shared */,
 				56D175C4295411DA0070778F /* USTC */,
 				56DD03A7296D0924004C358C /* AppDelegate.swift */,
@@ -359,6 +362,7 @@
 				56AC72FB294A012F00A60F47 /* Assets.xcassets */,
 				565587EC294B46900010E060 /* Localizable.strings */,
 				56E8AD712973EC0F009006D0 /* UstcRooms.json */,
+				567E6FA72A121CB50056BE5F /* console.js */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -709,6 +713,7 @@
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56E8AD722973EC0F009006D0 /* UstcRooms.json in Resources */,
+				567E6FA82A121CB50056BE5F /* console.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -716,6 +721,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				567E6FA92A121CB50056BE5F /* console.js in Resources */,
 				56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */,
 				569CFE50297EBD240072C094 /* Localizable.strings in Resources */,
 			);
@@ -997,6 +1003,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -1045,6 +1052,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";

@@ -17,6 +17,8 @@
 	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>ustc.edu.cn</key>
@@ -27,13 +29,6 @@
 				<true/>
 			</dict>
 		</dict>
-	</dict>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
-		<key>UISceneConfigurations</key>
-		<dict/>
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>

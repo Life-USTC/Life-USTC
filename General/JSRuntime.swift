@@ -7,32 +7,33 @@
 
 import Foundation
 import WebKit
+import SwiftUI
 
-func run() {
-    let overrideConsole = """
-    function log(emoji, type, args) {
-      window.webkit.messageHandlers.logging.postMessage(
-        `${emoji} JS ${type}: ${Object.values(args)
-          .map(v => typeof(v) === "undefined" ? "undefined" : typeof(v) === "object" ? JSON.stringify(v) : v.toString())
-          .map(v => v.substring(0, 3000)) // Limit msg to 3000 chars
-          .join(", ")}`
-      )
+struct WebView: UIViewRepresentable {
+    typealias UIViewType = WKWebView
+    var wkWebView: WKWebView
+
+    func makeUIView(context: Context) -> WKWebView {
+        wkWebView
     }
 
-    let originalLog = console.log
-    let originalWarn = console.warn
-    let originalError = console.error
-    let originalDebug = console.debug
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
+}
 
-    console.log = function() { log("📗", "log", arguments); originalLog.apply(null, arguments) }
-    console.warn = function() { log("📙", "warning", arguments); originalWarn.apply(null, arguments) }
-    console.error = function() { log("📕", "error", arguments); originalError.apply(null, arguments) }
-    console.debug = function() { log("📘", "debug", arguments); originalDebug.apply(null, arguments) }
+class LUJSRuntime {
+    static let shared = LUJSRuntime()
+    let wkWebView: WKWebView
 
-    window.addEventListener("error", function(e) {
-       log("💥", "Uncaught", [`${e.message} at ${e.filename}:${e.lineno}:${e.colno}`])
-    })
-    """
+    // run given script on self
+    func run(script: String, completition: @escaping (Any) -> Void = {_ in}) {
+        self.wkWebView.evaluateJavaScript(script) { result, error in
+            if let error = error {
+                print(error)
+            } else if let result = result {
+                completition(result)
+            }
+        }
+    }
 
     class LoggingMessageHandler: NSObject, WKScriptMessageHandler {
         func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -40,12 +41,21 @@ func run() {
         }
     }
 
-    let userContentController = WKUserContentController()
-    userContentController.add(LoggingMessageHandler(), name: "logging")
-    userContentController.addUserScript(WKUserScript(source: overrideConsole, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+    init() {
+        debugPrint("LUJSRuntime init")
+        // load script with name console.jg
+        let overrideConsole = try! String(contentsOf: Bundle.main.url(forResource: "console", withExtension: "js")!)
+        let preferences = WKPreferences()
+        preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+        preferences.setValue(true, forKey: "developerExtrasEnabled")
+        let config = WKWebViewConfiguration()
+        config.preferences = preferences
+        wkWebView = WKWebView(frame: .zero, configuration: config)
 
-    let webViewConfig = WKWebViewConfiguration()
-    webViewConfig.userContentController = userContentController
+        wkWebView.configuration.userContentController.add(LoggingMessageHandler(), name: "logging")
+        wkWebView.evaluateJavaScript(overrideConsole)
 
-    _ = WKWebView(frame: .zero, configuration: webViewConfig)
+        wkWebView.load(URLRequest(url: URL(string: "https://www.example.com")!))
+        self.run(script: "console.log('LUJSRuntime init finished, calling init')")
+    }
 }

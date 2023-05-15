@@ -91,7 +91,7 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
+        ZStack {
             if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                 // iPadOS:
                 iPadView
@@ -99,6 +99,7 @@ struct ContentView: View {
                 // iOS:
                 iPhoneView
             }
+            WebView(wkWebView: LUJSRuntime.shared.wkWebView)
         }
         .sheet(isPresented: $casLoginSheet) {
             CASLoginView.sheet(isPresented: $casLoginSheet)
