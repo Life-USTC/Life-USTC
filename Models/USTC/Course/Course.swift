@@ -162,6 +162,7 @@ extension Course {
     }
 
     static func saveToCalendar(_ courses: [Course], name: String, startDate: Date) async throws {
+        // supporting week string
         let eventStore = EKEventStore()
         if try await !eventStore.requestAccess(to: .event) {
             throw BaseError.runtimeError("Calendar access problem")
@@ -182,13 +183,15 @@ extension Course {
             event.title = course.name
             event.location = course.classPositionString
             event.notes = "\(course.classIDString)@\(course.classTeacherName)"
-            event.startDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.startTimes[course.startTime - 1]
-            event.endDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.endTimes[course.endTime - 1]
-            let rule = EKRecurrenceRule(recurrenceWith: .weekly, interval: 1, end: .init(occurrenceCount: 18))
-            event.addRecurrenceRule(rule)
             event.calendar = calendar
-            try eventStore.save(event, span: .thisEvent, commit: false)
+
+            for weekRange in parseWeekStr(course.weekString) {
+                event.startDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.startTimes[course.startTime - 1] + .init(day: (weekRange.start - 1) * 7)
+                event.endDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.endTimes[course.endTime - 1] + .init(day: (weekRange.end - 1) * 7)
+                try eventStore.save(event, span: .thisEvent, commit: false)
+            }
         }
+
         try eventStore.commit()
     }
 

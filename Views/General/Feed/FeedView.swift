@@ -12,35 +12,26 @@ struct FeedView: View {
     @AppStorage("useReeed") var useReeed = true
     let feed: Feed
 
-    var preview: some View {
-        FeedViewPreview(feed: feed)
-    }
-
-    var destination: some View {
-        Group {
+    var body: some View {
+        NavigationLink {
             if useReeed {
                 ReeeederView(url: feed.url)
             } else {
                 Browser(url: feed.url)
             }
-        }
-    }
-
-    var body: some View {
-        NavigationLinkAddon {
-            destination
         } label: {
-            preview
+            FeedViewPreview(feed: feed)
                 .contextMenu {
                     ShareLink(item: feed.url) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                 } preview: {
-                    NavigationStack {
-                        GeometryReader { geo in
-                            destination
-                                .frame(height: geo.size.height)
-                        }
+                    if useReeed {
+                        ReeeederView(url: feed.url)
+                            .frame(minWidth: 400)
+                    } else {
+                        Browser(url: feed.url)
+                            .frame(minWidth: 400)
                     }
                 }
         }

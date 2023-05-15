@@ -22,7 +22,6 @@ struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
     @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
-    @StateObject var globalNavigation: GlobalNavigation = .main
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var tabSelection: ContentViewTab = .position_1
@@ -86,7 +85,7 @@ struct ContentView: View {
             tabSelection.view()
                 .navigationSplitViewColumnWidth(400)
         } detail: {
-            globalNavigation.detailView
+            EmptyView()
         }
         .navigationSplitViewStyle(.balanced)
     }

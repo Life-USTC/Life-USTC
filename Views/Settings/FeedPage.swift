@@ -21,7 +21,6 @@ struct FeedSettingView: View {
                     .textCase(.none)
             }
             Section {
-                FeedView(feed: .example).preview
                 Toggle("Use reader", isOn: $useReeed)
             } header: {
                 Text("UI Preference")

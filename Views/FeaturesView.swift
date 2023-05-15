@@ -111,7 +111,7 @@ struct FeaturesView: View {
                     .hStackLeading()
                 LazyVGrid(columns: gridItemLayout) {
                     ForEach(features, id: \.self) { feature in
-                        NavigationLinkAddon {
+                        NavigationLink {
                             feature.destinationView
                         } label: {
                             Label(feature.title.localized, systemImage: feature.image)
@@ -129,7 +129,7 @@ struct FeaturesView: View {
             ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                 Section {
                     ForEach(features, id: \.self) { feature in
-                        NavigationLinkAddon {
+                        NavigationLink {
                             feature.destinationView
                         } label: {
                             Label(feature.title.localized, systemImage: feature.image)

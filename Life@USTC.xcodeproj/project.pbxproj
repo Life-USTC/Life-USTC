@@ -55,7 +55,6 @@
 		569CFE48297D87660072C094 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE47297D87660072C094 /* SwiftSoup */; };
 		569CFE4A297D87690072C094 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE49297D87690072C094 /* Reeeed */; };
 		569CFE50297EBD240072C094 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 569CFE52297EBD240072C094 /* Localizable.strings */; };
-		56A3B86C29A889B500BFE64F /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B86B29A889B500BFE64F /* Navigation.swift */; };
 		56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B86D29A889D100BFE64F /* AsyncView.swift */; };
 		56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
 		56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* ExamDelegate.swift */; };
@@ -177,7 +176,6 @@
 		569CFE4B297E85F30072C094 /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
 		569CFE51297EBD240072C094 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		569CFE53297EBD2E0072C094 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		56A3B86B29A889B500BFE64F /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		56A3B86D29A889D100BFE64F /* AsyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncView.swift; sourceTree = "<group>"; };
 		56A3B87429A8B86700BFE64F /* ExamDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamDelegate.swift; sourceTree = "<group>"; };
 		56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumDelegate.swift; sourceTree = "<group>"; };
@@ -386,7 +384,6 @@
 			isa = PBXGroup;
 			children = (
 				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
-				56A3B86B29A889B500BFE64F /* Navigation.swift */,
 				56A3B86D29A889D100BFE64F /* AsyncView.swift */,
 				56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */,
 			);
@@ -764,7 +761,6 @@
 				56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */,
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				56E94E2B298AA3720085241B /* ExamPage.swift in Sources */,
-				56A3B86C29A889B500BFE64F /* Navigation.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
 				56E8AD702973D0DB009006D0 /* UstcCatalog.swift in Sources */,

@@ -12,19 +12,19 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                NavigationLinkAddon("App Settings", destination: AppSettingPage())
-                NavigationLinkAddon("Feed Source Settings", destination: FeedSettingView())
-                NavigationLinkAddon("CAS Settings", destination: CASLoginView.newPage)
+                NavigationLink("App Settings", destination: AppSettingPage())
+                NavigationLink("Feed Source Settings", destination: FeedSettingView())
+                NavigationLink("CAS Settings", destination: CASLoginView.newPage)
 #if DEBUG
-                NavigationLinkAddon("Change User Type", destination: UserTypeView())
+                NavigationLink("Change User Type", destination: UserTypeView())
 #endif
-                NavigationLinkAddon("Exam Settings", destination: ExamSettingView())
-                NavigationLinkAddon("Notification Settings", destination: NotificationSettingView())
+                NavigationLink("Exam Settings", destination: ExamSettingView())
+                NavigationLink("Notification Settings", destination: NotificationSettingView())
             }
 
             Section {
-                NavigationLinkAddon("About Life@USTC", destination: AboutLifeAtUSTCView())
-                NavigationLinkAddon("Legal Info", destination: LegalInfoView())
+                NavigationLink("About Life@USTC", destination: AboutLifeAtUSTCView())
+                NavigationLink("Legal Info", destination: LegalInfoView())
             }
         }
         .navigationTitle("Settings")
