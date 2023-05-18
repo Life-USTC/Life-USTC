@@ -13,14 +13,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func startJSRuntime() {
         let runtime = LUJSRuntime.shared
-        runtime.wkWebView.callAsyncJavaScript("""
-            await fetch('https://www.example.com', {
-                method: 'GET'
-            }).then(console.log);
-        """, in: nil, in: .page, completionHandler: { result in
-            print(result)
-        })
-
     }
 #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator

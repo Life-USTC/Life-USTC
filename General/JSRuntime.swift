@@ -20,20 +20,40 @@ struct WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
+// Network Bridge to override CORS behaviors,
+// The url format is: lu-bridge://proxy?url=ENCODED_URL&method=METHOD
+class LUNetworkBridge: NSObject, WKURLSchemeHandler {
+    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+        guard let originalURL = urlSchemeTask.request.url else {
+            return
+        }
+        print(originalURL.absoluteString)
+        let components = URLComponents(url: originalURL, resolvingAgainstBaseURL: false)!
+        let queryItems = components.queryItems!
+        let url = queryItems.first(where: { $0.name == "url" })!.value!
+        let method = queryItems.first(where: { $0.name == "method" })!.value!
+        let request = URLRequest(url: URL(string: url)!)
+        let task = URLSession.shared.dataTask(with: request) { data, _, _ in
+            let response = HTTPURLResponse(url: urlSchemeTask.request.url!,
+                                           statusCode: 200,
+                                           httpVersion: nil,
+                                           headerFields: nil)!
+            urlSchemeTask.didReceive(response)
+            urlSchemeTask.didReceive(data!)
+            urlSchemeTask.didFinish()
+        }
+        task.resume()
+
+        print(url, method)
+    }
+
+    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
+    }
+}
+
 class LUJSRuntime {
     static let shared = LUJSRuntime()
     let wkWebView: WKWebView
-
-    // run given script on self
-    func run(script: String, completition: @escaping (Any) -> Void = {_ in}) {
-        self.wkWebView.evaluateJavaScript(script) { result, error in
-            if let error = error {
-                print(error)
-            } else if let result = result {
-                completition(result)
-            }
-        }
-    }
 
     class LoggingMessageHandler: NSObject, WKScriptMessageHandler {
         func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -42,20 +62,33 @@ class LUJSRuntime {
     }
 
     init() {
-        debugPrint("LUJSRuntime init")
-        // load script with name console.jg
+        // load script with name console.js
         let overrideConsole = try! String(contentsOf: Bundle.main.url(forResource: "console", withExtension: "js")!)
-        let preferences = WKPreferences()
-        preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-        preferences.setValue(true, forKey: "developerExtrasEnabled")
-        let config = WKWebViewConfiguration()
-        config.preferences = preferences
-        wkWebView = WKWebView(frame: .zero, configuration: config)
+        let script = WKUserScript(source: overrideConsole, injectionTime: .atDocumentStart, forMainFrameOnly: true)
 
-        wkWebView.configuration.userContentController.add(LoggingMessageHandler(), name: "logging")
+        let config = WKWebViewConfiguration()
+        config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+//        config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
+        config.userContentController.addUserScript(script)
+        config.userContentController.add(LoggingMessageHandler(), name: "logging")
+        config.setURLSchemeHandler(LUNetworkBridge(), forURLScheme: "lu-bridge")
+
+        wkWebView = WKWebView(frame: .zero, configuration: config)
         wkWebView.evaluateJavaScript(overrideConsole)
 
-        wkWebView.load(URLRequest(url: URL(string: "https://www.example.com")!))
-        self.run(script: "console.log('LUJSRuntime init finished, calling init')")
+        let url = Bundle.main.url(forResource: "Runtime", withExtension: "html")!
+        wkWebView.loadFileURL(url, allowingReadAccessTo: url)
+        let request = URLRequest(url: url)
+        wkWebView.load(request)
+
+        wkWebView.evaluateJavaScript("""
+console.log("Init finished here");
+""")
+    }
+}
+
+struct LUJS_Runtime_Preview: PreviewProvider {
+    static var previews: some View {
+        WebView(wkWebView: LUJSRuntime.shared.wkWebView)
     }
 }

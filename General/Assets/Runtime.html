@@ -1,0 +1,20 @@
+<html>
+    <head>
+    </head>
+
+    <body>
+        <script>
+            function example_xhr_request() {
+                function reqListener() {
+                    console.log(this.responseText);
+                }
+
+                const req = new XMLHttpRequest();
+                req.addEventListener("load", reqListener);
+                req.open("GET", "https://jw.ustc.edu.cn/");
+                req.send();
+            }
+        </script>
+        <button onclick="example_xhr_request()"><h1>Test</h1></button>
+    </body>
+</html>

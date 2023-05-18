@@ -92,6 +92,9 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
+            #if !DEBUG
+            WebView(wkWebView: LUJSRuntime.shared.wkWebView)
+            #endif
             if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                 // iPadOS:
                 iPadView
@@ -99,7 +102,16 @@ struct ContentView: View {
                 // iOS:
                 iPhoneView
             }
+            #if DEBUG
             WebView(wkWebView: LUJSRuntime.shared.wkWebView)
+                .overlay(alignment: .topTrailing) {
+                    Button {
+                        LUJSRuntime.shared.wkWebView.evaluateJavaScript("example_xhr_request()")
+                    } label: {
+                        Image(systemName: "scribble")
+                    }
+                }
+            #endif
         }
         .sheet(isPresented: $casLoginSheet) {
             CASLoginView.sheet(isPresented: $casLoginSheet)
@@ -261,8 +273,5 @@ struct ContentViewTabBarView_Preview: PreviewProvider {
 
         ContentView()
             .previewDisplayName("Main")
-
-        ContentView()
-            .previewDisplayName("Main (old UI)")
     }
 }
