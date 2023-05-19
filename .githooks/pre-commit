@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "[!] Running swiftformat";
+git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
+  swiftformat "${line}";
+  git add "$line";
+done
