@@ -18,8 +18,7 @@ struct CurriculumProvider: IntentTimelineProvider {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
             let weekNumber = await UstcUgAASClient.shared.weekNumber()
-            let courseToShow = Course.nextCoursse(courses, week: weekNumber)
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber), courseToShow: courseToShow)
+            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
             completion(entry)
         }
     }
@@ -28,8 +27,7 @@ struct CurriculumProvider: IntentTimelineProvider {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
             let weekNumber = await UstcUgAASClient.shared.weekNumber()
-            let courseToShow = Course.nextCoursse(courses, week: weekNumber)
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber), courseToShow: courseToShow)
+            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(date))
@@ -41,11 +39,9 @@ struct CurriculumProvider: IntentTimelineProvider {
 struct CurriculumEntry: TimelineEntry {
     let date = Date()
     let courses: [Course]
-    let courseToShow: Course!
     var configuration = ConfigurationIntent()
 
     static let example = CurriculumEntry(courses: [Course].init(repeating: .example, count: 10),
-                                         courseToShow: .example,
                                          configuration: ConfigurationIntent())
 }
 
@@ -54,7 +50,7 @@ struct CurriculumWidgetEntryView: View {
     var entry: CurriculumProvider.Entry
 
     var courseToShow: Course! {
-        entry.courseToShow
+        entry.courses.filter { !$0.isFinished(at: Date()) }.first
     }
 
     var numberToShow: Int {
@@ -81,7 +77,7 @@ struct CurriculumWidgetEntryView: View {
                 .fontWeight(.regular)
                 .foregroundColor(.accentColor)
 
-            Text("Free today!")
+            Text("No more course today!")
 
             Spacer()
 
@@ -133,7 +129,7 @@ struct CurriculumWidgetEntryView: View {
         VStack(alignment: .leading, spacing: 5) {
             HStack {
                 Image(systemName: "moon.stars")
-                Text("Upcoming Course")
+                Text("Today's Course")
                     .bold()
             }
             .foregroundColor(.accentColor)
@@ -224,7 +220,7 @@ struct CurriculumWidget_Previews: PreviewProvider {
         }
 
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWidgetEntryView(entry: .init(courses: [], courseToShow: nil))
+            CurriculumWidgetEntryView(entry: .init(courses: []))
                 .previewContext(WidgetPreviewContext(family: family))
                 .previewDisplayName("\(family.description) [EMPTY]")
         }

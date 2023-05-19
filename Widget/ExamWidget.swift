@@ -24,7 +24,8 @@ struct Provider: IntentTimelineProvider {
 
     func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let exams = try await ExamDelegate.shared.retrive()
+            var exams = try await ExamDelegate.shared.retrive()
+            exams = Exam.show(exams)
             let entry = SimpleEntry(exams: exams)
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
@@ -181,8 +182,14 @@ struct ExamWidgetEntryView: View {
                 HStack {
                     Text(exam.className)
                         .bold()
+                        .strikethrough(exam.isFinished)
                     Spacer()
-                    Text("+\(String(exam.daysLeft))D")
+                    if !exam.isFinished {
+                        Text("+\(String(exam.daysLeft))D")
+                    } else {
+                        Text("Finished".localized)
+                            .bold()
+                    }
                 }
                 .foregroundColor(exam.daysLeft <= 7 ? .primary : .red)
             }

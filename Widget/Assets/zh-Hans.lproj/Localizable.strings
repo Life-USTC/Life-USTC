@@ -20,3 +20,7 @@
 "Show upcoming exam." = "显示接下来的考试安排";
 "Curriculum" = "课表";
 "Show today's curriculum." = "显示今天的课程表";
+"Finished" = "已完成";
+"%@ days left" = "%@天后";
+"Today's Course" = "今日课程";
+"No more course today!" = "今日无其他课程";
