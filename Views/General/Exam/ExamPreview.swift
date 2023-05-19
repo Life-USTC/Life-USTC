@@ -44,7 +44,6 @@ struct ExamPreview: View {
                 Divider()
             }
         }
-        
     }
 
     var happyView: some View {
@@ -57,11 +56,10 @@ struct ExamPreview: View {
                         .fontWeight(.light)
                         .font(.largeTitle)
                         .foregroundStyle(LinearGradient(colors: randomColor,
-                                                            startPoint: .topLeading,
-                                                            endPoint: .bottomTrailing))
-                    
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing))
                 }
-                
+
                 Spacer()
 
                 Text("No More Exam!")
@@ -81,5 +79,13 @@ struct ExamPreview: View {
                 .fill(Color.gray.opacity(0.3))
         }
         .frame(height: 60)
+    }
+}
+
+struct ExamPreview_Previews: PreviewProvider {
+    static var previews: some View {
+        ExamPreview()
+
+        ExamPreview().happyView
     }
 }

@@ -156,6 +156,7 @@ struct FeaturesView: View {
             }
         }
         .navigationTitle("Features")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button {
                 withAnimation {

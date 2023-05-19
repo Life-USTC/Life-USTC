@@ -226,7 +226,7 @@ private struct ContentViewTabBarView: View {
                         Spacer()
                         RoundedRectangle(cornerRadius: 15)
                             .fill(tab.color.opacity(0.2))
-                            .frame(width: 80,height: 5, alignment: .bottom)
+                            .frame(width: 80, height: 5, alignment: .bottom)
                             .clipped()
                             .matchedGeometryEffect(id: "background_rectangle", in: namespace)
                     }

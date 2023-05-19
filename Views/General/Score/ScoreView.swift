@@ -172,7 +172,7 @@ struct ScoreView: View {
 
     @ViewBuilder func makeView(with score: Score) -> some View {
         ScrollView(showsIndicators: false) {
-            VStack (alignment: .leading){
+            VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
                     HStack {
                         Text(score.majorName)

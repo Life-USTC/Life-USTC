@@ -20,8 +20,8 @@ struct HomeView: View {
     @State var courses: [Course] = []
     @State var tomorrow_course: [Course] = []
     @State var status: AsyncViewStatus = .inProgress
-    @State var navigationToCurriculumView = false
     @State var navigationToSettingsView = false
+    @State private var datePickerShown = false
 
     func update(with date: Date) {
         Task {
@@ -34,31 +34,31 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             // MARK: - Curriculum
 
             VStack(alignment: .leading) {
-                HStack (spacing:0){
+                HStack(spacing: 0) {
                     Text("Curriculum")
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.vertical, 2)
-                        .onLongPressGesture {
-                            navigationToCurriculumView.toggle()
-                        }
-                        .navigationDestination(isPresented: $navigationToCurriculumView) {
-                            CurriculumView()
-                        }
 
                     Spacer()
+
                     Text("Week \(weekNumber)")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(Color.secondary)
-                    DatePicker(selection: $date, displayedComponents: .date) {}
-                        .frame(width: 137, height: 35, alignment: .center)
-                        .clipped()
+                        .padding(.horizontal)
+
+                    NavigationLink {
+                        CurriculumView()
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
                 }
-                VStack (alignment: .leading) {
+
+                VStack(alignment: .leading) {
                     Text("Today")
                         .font(.headline)
                         .foregroundColor(Color.secondary)
@@ -67,7 +67,7 @@ struct HomeView: View {
 
                 Spacer(minLength: 30)
 
-                VStack (alignment: .leading) {
+                VStack(alignment: .leading) {
                     Text("Tomorrow")
                         .font(.headline)
                         .foregroundColor(Color.secondary)
@@ -80,31 +80,57 @@ struct HomeView: View {
             // MARK: - Exams
 
             VStack(alignment: .leading) {
-                Text("Exams")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .hStackLeading()
-                    .padding(.bottom, 2)
+                HStack {
+                    Text("Exams")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.bottom, 2)
+
+                    Spacer()
+
+                    NavigationLink {
+                        ExamView()
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
+                }
 
                 ExamPreview()
             }
         }
         .padding(.horizontal)
         .navigationTitle("Life@USTC")
-        .onAppear {
-            update(with: Date())
-        }
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { update(with: Date()) }
         .onChange(of: date, perform: update)
         .toolbar {
-            Button {
-                navigationToSettingsView.toggle()
-            } label: {
-                Label("Settings", systemImage: "gearshape")
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Button {
+                    navigationToSettingsView.toggle()
+                } label: {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                Button {
+                    datePickerShown = true
+                } label: {
+                    Label("Pick a date", systemImage: "calendar")
+                }
             }
         }
-        .navigationDestination(isPresented: $navigationToSettingsView) {
-            SettingsView()
-                .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $datePickerShown) {
+            DatePicker(
+                "Choose date",
+                selection: $date,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            .padding(.horizontal)
+            .presentationDetents([.fraction(0.45)])
+        }
+        .sheet(isPresented: $navigationToSettingsView) {
+            NavigationStack {
+                SettingsView()
+            }
         }
     }
 }

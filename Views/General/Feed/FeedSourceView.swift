@@ -18,7 +18,8 @@ struct FeedSourceView: View {
         } refreshData: {
             try await feedSource.forceUpdatePost()
         }
-        .navigationBarTitle(feedSource.name, displayMode: .inline)
+        .navigationTitle(feedSource.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -37,5 +38,6 @@ struct AllSourceView: View {
             return try await FeedSource.recentFeeds(number: nil)
         }
         .navigationTitle("Feed")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -28,6 +28,7 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
         .scrollContentBackground(.hidden)
     }
 }
