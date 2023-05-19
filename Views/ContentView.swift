@@ -92,9 +92,9 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            #if !DEBUG
+#if !DEBUG
             WebView(wkWebView: LUJSRuntime.shared.wkWebView)
-            #endif
+#endif
             if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                 // iPadOS:
                 iPadView
@@ -102,7 +102,7 @@ struct ContentView: View {
                 // iOS:
                 iPhoneView
             }
-            #if DEBUG
+#if DEBUG
             WebView(wkWebView: LUJSRuntime.shared.wkWebView)
                 .overlay(alignment: .topTrailing) {
                     Button {
@@ -111,7 +111,7 @@ struct ContentView: View {
                         Image(systemName: "scribble")
                     }
                 }
-            #endif
+#endif
         }
         .sheet(isPresented: $casLoginSheet) {
             CASLoginView.sheet(isPresented: $casLoginSheet)

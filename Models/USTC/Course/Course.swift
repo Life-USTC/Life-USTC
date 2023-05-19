@@ -82,12 +82,12 @@ func parseWeekStr(_ weekString: String) -> [(start: Int, end: Int)] {
         let weekStrRange = weekStr.split(separator: "-")
         if weekStrRange.count == 1 {
             // only one number
-            let week = Int(weekStrRange[0])!
+            let week = Int(weekStrRange[0]) ?? 1
             weekRanges.append((week, week))
         } else if weekStrRange.count == 2 {
             // two numbers
-            let start = Int(weekStrRange[0])!
-            let end = Int(weekStrRange[1])!
+            let start = Int(weekStrRange[0]) ?? 1
+            let end = Int(weekStrRange[1]) ?? 2
             weekRanges.append((start, end))
         } else {
             // invalid

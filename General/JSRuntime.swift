@@ -6,24 +6,24 @@
 //
 
 import Foundation
-import WebKit
 import SwiftUI
+import WebKit
 
 struct WebView: UIViewRepresentable {
     typealias UIViewType = WKWebView
     var wkWebView: WKWebView
 
-    func makeUIView(context: Context) -> WKWebView {
+    func makeUIView(context _: Context) -> WKWebView {
         wkWebView
     }
 
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
+    func updateUIView(_: WKWebView, context _: Context) {}
 }
 
 // Network Bridge to override CORS behaviors,
 // The url format is: lu-bridge://proxy?url=ENCODED_URL&method=METHOD
 class LUNetworkBridge: NSObject, WKURLSchemeHandler {
-    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+    func webView(_: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let originalURL = urlSchemeTask.request.url else {
             return
         }
@@ -47,8 +47,7 @@ class LUNetworkBridge: NSObject, WKURLSchemeHandler {
         print(url, method)
     }
 
-    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    }
+    func webView(_: WKWebView, stop _: WKURLSchemeTask) {}
 }
 
 class LUJSRuntime {
@@ -82,8 +81,8 @@ class LUJSRuntime {
         wkWebView.load(request)
 
         wkWebView.evaluateJavaScript("""
-console.log("Init finished here");
-""")
+        console.log("Init finished here");
+        """)
     }
 }
 

@@ -14,6 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func startJSRuntime() {
         let runtime = LUJSRuntime.shared
     }
+
 #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator
     // as XCFramework lib isn't fully supported with Apple chips
