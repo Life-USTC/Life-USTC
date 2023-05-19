@@ -152,12 +152,8 @@ struct CurriculumView: View {
         GeometryReader { geo in
             ScrollView(.vertical, showsIndicators: false) {
                 Text("Week \(weekNumber)")
-                    .foregroundColor(.white)
-                    .padding(3)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.secondary)
-                    }
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(Color.secondary)
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {

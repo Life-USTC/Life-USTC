@@ -37,55 +37,40 @@ struct HomeView: View {
         ScrollView {
             // MARK: - Curriculum
 
-            Group {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Week \(weekNumber)")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(Color.secondary)
-                        Text("Curriculum")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-                    .padding(.vertical, 2)
-                    .onLongPressGesture {
-                        navigationToCurriculumView.toggle()
-                    }
-                    .navigationDestination(isPresented: $navigationToCurriculumView) {
-                        CurriculumView()
-                    }
+            VStack(alignment: .leading) {
+                HStack (spacing:0){
+                    Text("Curriculum")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.vertical, 2)
+                        .onLongPressGesture {
+                            navigationToCurriculumView.toggle()
+                        }
+                        .navigationDestination(isPresented: $navigationToCurriculumView) {
+                            CurriculumView()
+                        }
 
                     Spacer()
-
+                    Text("Week \(weekNumber)")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(Color.secondary)
                     DatePicker(selection: $date, displayedComponents: .date) {}
+                        .frame(width: 137, height: 35, alignment: .center)
+                        .clipped()
                 }
-                .padding(.bottom, 2)
-
-                Group {
+                VStack (alignment: .leading) {
                     Text("Today")
-                        .font(.caption2)
-                        .padding(3)
-                        .foregroundColor(.white)
-                        .background {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color.secondary.opacity(0.6))
-                        }
-                        .hStackLeading()
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
                     CourseStackView(courses: $courses)
                 }
 
                 Spacer(minLength: 30)
 
-                Group {
+                VStack (alignment: .leading) {
                     Text("Tomorrow")
-                        .font(.caption2)
-                        .padding(3)
-                        .foregroundColor(.white)
-                        .background {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color.secondary.opacity(0.6))
-                        }
-                        .hStackLeading()
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
                     CourseStackView(courses: $tomorrow_course)
                 }
             }
@@ -94,7 +79,7 @@ struct HomeView: View {
 
             // MARK: - Exams
 
-            Group {
+            VStack(alignment: .leading) {
                 Text("Exams")
                     .font(.title2)
                     .fontWeight(.bold)

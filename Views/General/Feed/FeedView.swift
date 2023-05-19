@@ -44,8 +44,28 @@ struct FeedViewPreview: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(feed.datePosted.formatted())
                 Text(feed.source)
+                    .font(.caption2)
+                    .fontWeight(.heavy)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .foregroundColor(.white)
+                    .background {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill({ () -> Color in
+                                switch feed.source {
+                                case "校主页":
+                                    return (Color.blue.opacity(0.6))
+                                case "教务处":
+                                    return (Color.purple.opacity(0.6))
+                                case "应用通知":
+                                    return (Color.accentColor.opacity(0.6))
+                                default:
+                                    return (Color.secondary.opacity(0.6))
+                                }
+                            }())
+                    }
+                Text(feed.datePosted.formatted())
             }
             .font(.system(.caption, design: .monospaced))
             .foregroundColor(.secondary)

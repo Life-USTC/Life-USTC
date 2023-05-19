@@ -172,11 +172,17 @@ struct ScoreView: View {
 
     @ViewBuilder func makeView(with score: Score) -> some View {
         ScrollView(showsIndicators: false) {
-            VStack {
+            VStack (alignment: .leading){
                 VStack(alignment: .leading) {
-                    Text(score.majorName + "Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
-                        .foregroundColor(.secondary)
-                        .fontWeight(.semibold)
+                    HStack {
+                        Text(score.majorName)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                    }
                     Text("GPA: " + String(score.gpa)) // Double formatting problem noticed
                         .font(.title2)
                         .bold()

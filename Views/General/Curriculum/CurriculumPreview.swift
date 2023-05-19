@@ -115,7 +115,7 @@ struct CourseStackView: View {
                         Text(course.clockTime)
                             .font(.system(.body, design: .monospaced))
                     }
-                    .padding(.horizontal, 5)
+                    .padding(.horizontal, 8)
                     Spacer()
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color.accentColor)
@@ -126,7 +126,7 @@ struct CourseStackView: View {
                         .stroke(style: .init(lineWidth: 1))
                         .fill(Color.gray.opacity(0.3))
                 }
-                .frame(height: 50)
+                .frame(height: 60)
             }
 
             if courses.isEmpty {
@@ -142,10 +142,9 @@ struct CourseStackView: View {
                         Spacer()
 
                         Text("Nothing here")
-                            .foregroundColor(.orange)
-                            .opacity(0.6)
+                            .font(.system(.body, design: .monospaced))
                     }
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, 8)
                     Spacer()
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color.orange)
@@ -156,7 +155,7 @@ struct CourseStackView: View {
                         .stroke(style: .init(lineWidth: 1))
                         .fill(Color.gray.opacity(0.3))
                 }
-                .frame(height: 50)
+                .frame(height: 60)
             }
         }
     }
