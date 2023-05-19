@@ -22,12 +22,18 @@ func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>, _ functi
     status.wrappedValue = .inProgress
     Task {
         do {
-            status.wrappedValue = .inProgress
+            withAnimation {
+                status.wrappedValue = .inProgress
+            }
             data.wrappedValue = try await function()
-            status.wrappedValue = .success
+            withAnimation {
+                status.wrappedValue = .success
+            }
         } catch {
             print(error)
-            status.wrappedValue = .failure
+            withAnimation {
+                status.wrappedValue = .failure
+            }
         }
     }
 }
