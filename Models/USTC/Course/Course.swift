@@ -71,31 +71,42 @@ struct Course: Identifiable, Equatable {
     }
 }
 
-/// 1-4,6,8-9,10-15 -> [(1,4),(6,6),(8,9),(10,15)]
-func parseWeekStr(_ weekString: String) -> [(start: Int, end: Int)] {
-    // strip all spaces and split by ","
+/// 1-4,6,8-9,10-15 -> [1,2,3,4,6,8,9,10,11,12,13,14,15]
+func parseWeek(with weekString: String) -> [Int] {
     let weekStrs = weekString.replacingOccurrences(of: " ", with: "").split(separator: ",")
-
-    var weekRanges: [(start: Int, end: Int)] = []
+    var weeks: [Int] = []
     for weekStr in weekStrs {
-        // split by "-"
         let weekStrRange = weekStr.split(separator: "-")
         if weekStrRange.count == 1 {
-            // only one number
             let week = Int(weekStrRange[0]) ?? 1
-            weekRanges.append((week, week))
+            weeks.append(week)
         } else if weekStrRange.count == 2 {
-            // two numbers
             let start = Int(weekStrRange[0]) ?? 1
-            let end = Int(weekStrRange[1]) ?? 2
-            weekRanges.append((start, end))
+            if let end = Int(weekStrRange[1]) {
+                for week in start ... end {
+                    weeks.append(week)
+                }
+            } else {
+                // notice that in some case the representation of week is like "1-16单"
+                // so we need to remove the "单" or "双" part
+                let end = Int(weekStrRange[1].dropLast()) ?? 2
+                if weekStrRange[1].hasSuffix("单") {
+                    for week in start ... end where week % 2 == 1 {
+                        weeks.append(week)
+                    }
+                } else if weekStrRange[1].hasSuffix("双") {
+                    for week in start ... end where week % 2 == 0 {
+                        weeks.append(week)
+                    }
+                } else {
+                    fatalError("Invalid week string: \(weekString)")
+                }
+            }
         } else {
-            // invalid
             fatalError("Invalid week string: \(weekString)")
         }
     }
-
-    return weekRanges
+    return weeks
 }
 
 extension Course {
@@ -112,22 +123,13 @@ extension Course {
     }
 
     static func filter(_ courses: [Course], week: Int, weekday: Int? = weekday()) -> [Course] {
-        let course_filtered = courses.filter { course in
-            let weekRanges = parseWeekStr(course.weekString)
-            for weekRange in weekRanges {
-                if let weekday {
-                    if weekRange.start <= week, week <= weekRange.end, course.dayOfWeek == weekday {
-                        return true
-                    }
-                } else {
-                    if weekRange.start <= week, week <= weekRange.end {
-                        return true
-                    }
-                }
+        courses.filter { course in
+            if let weekday {
+                return parseWeek(with: course.weekString).contains(week) && course.dayOfWeek == weekday
+            } else {
+                return parseWeek(with: course.weekString).contains(week)
             }
-            return false
-        }
-        return course_filtered.sorted(by: { $0.startTime < $1.startTime })
+        }.sorted(by: { $0.startTime < $1.startTime })
     }
 
     static func filter(_ courses: [Course], week: Int, for date: Date) -> [Course] {
@@ -179,15 +181,14 @@ extension Course {
         }
 
         for course in courses {
-            let event = EKEvent(eventStore: eventStore)
-            event.title = course.name
-            event.location = course.classPositionString
-            event.notes = "\(course.classIDString)@\(course.classTeacherName)"
-            event.calendar = calendar
-
-            for weekRange in parseWeekStr(course.weekString) {
-                event.startDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.startTimes[course.startTime - 1] + .init(day: (weekRange.start - 1) * 7)
-                event.endDate = startDate.stripTime() + .init(day: course.dayOfWeek) + Course.endTimes[course.endTime - 1] + .init(day: (weekRange.end - 1) * 7)
+            for week in parseWeek(with: course.weekString) {
+                let event = EKEvent(eventStore: eventStore)
+                event.title = course.name
+                event.location = course.classPositionString
+                event.notes = "\(course.classIDString)@\(course.classTeacherName)"
+                event.calendar = calendar
+                event.startDate = startDate + .init(day: course.dayOfWeek + (week - 1) * 7) + Course.startTimes[course.startTime - 1]
+                event.endDate = startDate + .init(day: course.dayOfWeek + (week - 1) * 7) + Course.endTimes[course.endTime - 1]
                 try eventStore.save(event, span: .thisEvent, commit: false)
             }
         }
