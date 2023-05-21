@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "[!] Running swiftformat";
 git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
-  swiftformat "${line}";
+  swiftformat "${line}" --xcodeindentation enabled --ifdef outdent --swiftversion 5.7;
   git add "$line";
 done
