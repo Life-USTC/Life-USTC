@@ -4,6 +4,7 @@
 "Features" = "应用";
 "Settings" = "设置";
 "Today" = "今天";
+"Tomorrow" = "明天";
 "This Week" = "本周";
 "This Month" = "本月";
 "This Year" = "今年";
@@ -58,6 +59,17 @@
 
 "Classroom Status" = "教室情况";
 "UG AAS" = "本科生教务";
+"AAS(UG)" = "教务系统（本科）";
+"Public Query" = "公共查询";
+"Web Service" = "网络通服务";
+"Physics Experiment" = "大物预约选课平台";
+"E-Card" = "一卡通";
+"Work-integrated Learning" = "学工一体化";
+"Hanhai Platform" = "瀚海教学网";
+"Meeting Room Appointment" = "中区研讨室预约";
+
+
+
 "Curriculum" = "课程表";
 "Feed" = "通知";
 "Web" = "网页";
@@ -69,6 +81,7 @@
 "Sat" = "周六";
 "Sun" = "周日";
 "Free today!" = "今日无课~";
+"Nothing here" = "本日无课";
 
 "Sat&Sun" = "显示周六&周日";
 "Select time" = "选择课表";
@@ -80,6 +93,7 @@
 "Time: " = "时间: ";
 
 "Exam" = "考试";
+"Exams" = "考试";
 "Class Name" = "课程名";
 "Time" = "时间";
 "Classroom" = "教室";
@@ -90,6 +104,7 @@
 "Description" = "说明";
 "More" = "展开";
 "Less" = "收起";
+"No More Exam!" = "暂无考试！";
 
 "Score" = "成绩单";
 "Semester: %@" = "选择学期: %@";

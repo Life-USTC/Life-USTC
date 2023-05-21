@@ -19,7 +19,7 @@ let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 var currentWeekDay: Int {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
-    return (weekday + 6) % 7
+    return (weekday + 6) % 7 + 1
 }
 
 func weekday(for date: Date = Date()) -> Int {

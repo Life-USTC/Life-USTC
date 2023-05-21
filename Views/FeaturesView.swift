@@ -144,6 +144,7 @@ struct FeaturesView: View {
         .scrollIndicators(.hidden)
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
+        .padding(.bottom, 40)
     }
 
     var body: some View {
@@ -237,41 +238,41 @@ extension FeaturesView {
     }
 
     static let ustcWebFeatures: [USTCWebFeature] =
-        [.init(name: "教务系统(本科)",
+        [.init(name: "AAS(UG)",
                image: "person.2",
                description: "本科生教务系统",
                url: "https://jw.ustc.edu.cn/ucas-sso/login",
                markUp: true),
-         .init(name: "公共查询",
+         .init(name: "Public Query",
                image: "doc.text.magnifyingglass",
                description: "查询教室使用情况",
                url: "https://catalog.ustc.edu.cn/query/classroom"),
-         .init(name: "网络通服务",
+         .init(name: "Web Service",
                image: "globe.asia.australia",
                description: "申请/修改网络通、重置密码",
                url: "https://zczx.ustc.edu.cn/caslogin",
                markUp: true),
-         .init(name: "大物预约选课平台",
+         .init(name: "Physics Experiment",
                image: "chart.xyaxis.line",
                description: "预约/查看物理实验课程",
                url: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html",
                markUp: true),
-         .init(name: "中区教室预约",
+         .init(name: "Meeting Room Appointment",
                image: "clock.badge.checkmark",
                description: "预约中区研讨室/青年之家会议室",
                url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
                markUp: true),
-         .init(name: "一卡通",
+         .init(name: "E-Card",
                image: "creditcard",
                description: "遗失、查询记录、门禁权限等",
                url: "https://ecard.ustc.edu.cn/caslogin",
                markUp: true),
-         .init(name: "学工一体化",
+         .init(name: "Work-integrated Learning",
                image: "desktopcomputer",
                description: "奖学金、助学金、勤工助学等",
                url: "https://xgyth.ustc.edu.cn/usp/index.aspx",
                markUp: true),
-         .init(name: "瀚海教学网",
+         .init(name: "Hanhai Platform",
                image: "books.vertical",
                description: "本科教育提升计划-网络课程平台",
                url: "http://course.ustc.edu.cn/sso/ustc",

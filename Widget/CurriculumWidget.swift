@@ -50,7 +50,7 @@ struct CurriculumWidgetEntryView: View {
     var entry: CurriculumProvider.Entry
 
     var courseToShow: Course! {
-        entry.courses.filter { !$0.isFinished(at: Date()) }.first
+        entry.courses.filter { !$0.isFinished(at: Date()) }.first ?? Course.example
     }
 
     var numberToShow: Int {

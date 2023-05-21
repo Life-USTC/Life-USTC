@@ -73,7 +73,7 @@ struct ExamWidgetEntryView: View {
                 .font(.largeTitle)
                 .foregroundColor(.accentColor)
 
-            Text("No More Exam...")
+            Text("No Exam")
 
             Spacer()
 

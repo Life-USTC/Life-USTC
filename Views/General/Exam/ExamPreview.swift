@@ -40,7 +40,6 @@ struct ExamPreview: View {
                     }
                     .font(.system(.subheadline, design: .monospaced))
                 }
-                .frame(height: 60)
                 Divider()
             }
         }
@@ -85,7 +84,6 @@ struct ExamPreview: View {
 struct ExamPreview_Previews: PreviewProvider {
     static var previews: some View {
         ExamPreview()
-
         ExamPreview().happyView
     }
 }
