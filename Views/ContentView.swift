@@ -33,6 +33,7 @@ struct ContentView: View {
                     ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
                         eachTab.view()
                             .tabBarItem(tab: eachTab, selection: $tabSelection)
+                        Spacer()
                     }
                 }
             }
