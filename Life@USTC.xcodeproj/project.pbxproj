@@ -216,6 +216,9 @@
 		56E94E26298A77D00085241B /* NotificationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
 		56E94E2A298AA3720085241B /* ExamPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPage.swift; sourceTree = "<group>"; };
+		56F1734F2A1C871D00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		56F173502A1C881300C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		56F173512A1C892C00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC.entitlements"; sourceTree = "<group>"; };
 		56F3EAD5296EB3B70095AEF4 /* Exam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exam.swift; sourceTree = "<group>"; };
 		56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreview.swift; sourceTree = "<group>"; };
@@ -294,6 +297,7 @@
 				7099CF399AA3050A7B0A3914 /* XGPush.h */,
 				A5FC807DBEE87641A452BC5E /* XGPushPrivate.h */,
 				2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */,
+				56F173512A1C892C00C79E53 /* README.md */,
 			);
 			path = TPNS;
 			sourceTree = "<group>";
@@ -340,6 +344,7 @@
 				56BE91F52962FEA900822C98 /* Shared */,
 				56D175C4295411DA0070778F /* USTC */,
 				56DD03A7296D0924004C358C /* AppDelegate.swift */,
+				56F173502A1C881300C79E53 /* README.md */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -470,6 +475,7 @@
 				56BE91FA296677A300822C98 /* SwiftExtension.swift */,
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
 				5627958A2A08F382009D398E /* JSRuntime.swift */,
+				56F1734F2A1C871D00C79E53 /* README.md */,
 			);
 			path = General;
 			sourceTree = "<group>";
