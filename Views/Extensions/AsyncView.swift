@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+
 struct AsyncView<D>: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var data: D?
+
     var makeView: (D) -> AnyView
     var loadData: (() async throws -> D)?
     var refreshData: (() async throws -> D)?
@@ -43,33 +45,40 @@ struct AsyncView<D>: View {
         self.makeView = { AnyView(makeView($0)) }
     }
 
+    func forceDelegateUpdate() async throws {
+        if asyncDataDelegate != nil {
+            withAnimation {
+                status = .inProgress
+            }
+            try await asyncDataDelegate?.forceUpdate()
+            data = try await asyncDataDelegate?.parseCache() as? D
+            withAnimation {
+                status = .success
+            }
+        } else {
+            asyncBind($data, status: $status, refreshData!)
+        }
+    }
+
     func makeMainView(with providedData: D) -> some View {
-        if asyncDataDelegate != nil, showReloadButton {
-            return AnyView(makeView(providedData)
-                .toolbar {
+        AnyView(makeView(providedData)
+            .toolbar {
+                if showReloadButton {
                     Button {
-                        // TODO: Not fully testedprovidedData
                         Task {
-                            try await asyncDataDelegate?.forceUpdate()
-                            data = try await asyncDataDelegate?.parseCache() as? D
+                            try await forceDelegateUpdate()
                         }
                     } label: {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
-                })
-        }
-        if refreshData == nil || asyncDataDelegate != nil {
-            return makeView(providedData)
-        }
-        return AnyView(
-            makeView(providedData)
-                .toolbar {
-                    Button {
-                        asyncBind($data, status: $status, refreshData!)
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                })
+                }
+            }
+            .refreshable {
+                Task {
+                    try await forceDelegateUpdate()
+                }
+            }
+        )
     }
 
     var body: some View {
