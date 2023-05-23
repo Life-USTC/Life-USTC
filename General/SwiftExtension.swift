@@ -7,6 +7,7 @@
 
 import CryptoKit
 import Foundation
+import SwiftUI
 
 func doubleForEach<T: Equatable>(_ array: [T], _ function: @escaping (T, T) -> Void) {
     for element in array {
@@ -89,4 +90,19 @@ extension CaseIterable where Self: Equatable {
         let next = all.index(after: idx)
         return all[next == all.endIndex ? all.startIndex : next]
     }
+}
+
+// Optional Binding
+func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue ?? rhs },
+        set: { lhs.wrappedValue = $0 }
+    )
+}
+
+prefix func ! <T>(lhs: Binding<T?>) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue! },
+        set: { lhs.wrappedValue = $0 }
+    )
 }

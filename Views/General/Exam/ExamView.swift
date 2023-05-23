@@ -58,8 +58,7 @@ private struct SingleExamView: View {
 
 struct ExamView: View {
     var body: some View {
-        AsyncView(delegate: ExamDelegate.shared) {
-            exams in
+        AsyncView(delegate: ExamDelegate.shared) { $exams in
             ScrollView(showsIndicators: false) {
                 ForEach(exams) { exam in
                     SingleExamView(exam: exam)

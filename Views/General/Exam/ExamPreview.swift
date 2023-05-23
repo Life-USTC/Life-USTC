@@ -12,7 +12,7 @@ struct ExamPreview: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var randomColor = exampleGradientList.randomElement() ?? []
     var body: some View {
-        AsyncView(delegate: ExamDelegate.shared, showReloadButton: false) { exams in
+        AsyncView(delegate: ExamDelegate.shared, showReloadButton: false) { $exams in
             if exams.isEmpty {
                 return happyView
             } else {

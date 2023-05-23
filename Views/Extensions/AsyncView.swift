@@ -11,21 +11,21 @@ struct AsyncView<D>: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var data: D?
 
-    var makeView: (D) -> AnyView
+    var makeView: (Binding<D>) -> AnyView
     var loadData: (() async throws -> D)?
     var refreshData: (() async throws -> D)?
 
     var asyncDataDelegate: (any AsyncDataDelegate)?
     var showReloadButton: Bool = true
 
-    init(makeView: @escaping (D) -> any View,
+    init(makeView: @escaping (Binding<D>) -> any View,
          loadData: @escaping () async throws -> D)
     {
         self.makeView = { AnyView(makeView($0)) }
         self.loadData = loadData
     }
 
-    init(makeView: @escaping (D) -> any View,
+    init(makeView: @escaping (Binding<D>) -> any View,
          loadData: @escaping () async throws -> D,
          refreshData: @escaping () async throws -> D)
     {
@@ -37,7 +37,7 @@ struct AsyncView<D>: View {
     init<AsyncDataDelegateType: AsyncDataDelegate>
     (delegate: AsyncDataDelegateType,
      showReloadButton: Bool = true,
-     makeView: @escaping (D) -> any View) where
+     makeView: @escaping (Binding<D>) -> any View) where
         AsyncDataDelegateType.D == D
     {
         asyncDataDelegate = delegate
@@ -60,7 +60,7 @@ struct AsyncView<D>: View {
         }
     }
 
-    func makeMainView(with providedData: D) -> some View {
+    func makeMainView(with providedData: Binding<D>) -> some View {
         AnyView(makeView(providedData)
             .toolbar {
                 if showReloadButton {
@@ -88,9 +88,9 @@ struct AsyncView<D>: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .success:
-                makeMainView(with: data!)
+                makeMainView(with: !$data)
             case .cached:
-                makeMainView(with: data!)
+                makeMainView(with: !$data)
             case .failure:
                 FailureView()
             case .waiting:

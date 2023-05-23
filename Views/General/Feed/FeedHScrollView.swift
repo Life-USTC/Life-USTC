@@ -51,7 +51,7 @@ struct FeedHScrollView: View {
     }
 
     var body: some View {
-        AsyncView { feeds in
+        AsyncView { $feeds in
             makeView(with: feeds)
         } loadData: {
             try await FeedSource.recentFeeds(number: feedPostNumber)

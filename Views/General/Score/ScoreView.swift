@@ -207,7 +207,7 @@ struct ScoreView: View {
     }
 
     var body: some View {
-        AsyncView(delegate: ScoreDelegate.shared) { score in
+        AsyncView(delegate: ScoreDelegate.shared) { $score in
             makeView(with: score)
                 .toolbar {
                     Button {

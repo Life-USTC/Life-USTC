@@ -11,7 +11,7 @@ struct FeedSourceView: View {
     let feedSource: FeedSource
 
     var body: some View {
-        AsyncView { feeds in
+        AsyncView { $feeds in
             FeedVStackView(feeds: feeds)
         } loadData: {
             try await feedSource.fetchRecentPost()
@@ -28,7 +28,7 @@ struct AllSourceView: View {
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
 
     var body: some View {
-        AsyncView { feeds in
+        AsyncView { $feeds in
             FeedVStackView(feeds: feeds)
         } loadData: {
             appDelegate.clearBadgeNumber()
