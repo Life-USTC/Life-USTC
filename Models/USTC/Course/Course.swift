@@ -38,7 +38,7 @@ struct Course: Identifiable, Equatable {
 
     /// 1-4,6,8-9,10-15
     var weekString: String
-    static let example: Course = .init(dayOfWeek: currentWeekDay,
+    static let example: Course = .init(dayOfWeek: weekday(),
                                        startTime: 1,
                                        endTime: 10,
                                        name: "操作系统原理与设计(H)",

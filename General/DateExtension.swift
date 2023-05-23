@@ -16,6 +16,8 @@ var currentDateString: String {
 
 let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
+/// - Deprecated: call weekday() instead
+@available(*, deprecated)
 var currentWeekDay: Int {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: Date())
@@ -28,6 +30,7 @@ func weekday(for date: Date = Date()) -> Int {
     return (weekday + 6) % 7
 }
 
+@available(*, deprecated)
 var currentWeekDayString: String {
     daysOfWeek[(currentWeekDay + 6) % 7]
 }
