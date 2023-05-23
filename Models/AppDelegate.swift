@@ -26,6 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func startTPNS() {}
 
     func stopTPNS() {}
+
+    func clearBadgeNumber() {}
 #else
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
@@ -44,6 +46,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func stopTPNS() {
         XGPush.defaultManager().stopXGNotification()
+    }
+
+    func clearBadgeNumber() {
+        XGPush.defaultManager().setBadge(0)
+        XGPush.defaultManager().xgApplicationBadgeNumber = 0
     }
 
     func xgPushDidRegisteredDeviceToken(_: String?, xgToken _: String?, error _: Error?) {

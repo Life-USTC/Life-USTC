@@ -24,13 +24,15 @@ struct FeedSourceView: View {
 }
 
 struct AllSourceView: View {
+    @EnvironmentObject var appDelegate: AppDelegate
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
 
     var body: some View {
         AsyncView { feeds in
             FeedVStackView(feeds: feeds)
         } loadData: {
-            try await FeedSource.recentFeeds(number: nil)
+            appDelegate.clearBadgeNumber()
+            return try await FeedSource.recentFeeds(number: nil)
         } refreshData: {
             for source in FeedSource.allToShow {
                 _ = try await source.forceUpdatePost()
