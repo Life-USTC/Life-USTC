@@ -92,33 +92,27 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            WebView(wkWebView: LUJSRuntime.shared.wkWebView)
-            if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
-                // iPadOS:
-                iPadView
-            } else {
-                // iOS:
-                iPhoneView
+        if firstLogin {
+            CASLoginView.sheet(isPresented: $firstLogin)
+        } else {
+            ZStack {
+                WebView(wkWebView: LUJSRuntime.shared.wkWebView)
+                if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
+                    // iPadOS:
+                    iPadView
+                } else {
+                    // iOS:
+                    iPhoneView
+                }
             }
+            .onAppear(perform: onLoadFunction)
         }
-        .sheet(isPresented: $casLoginSheet) {
-            CASLoginView.sheet(isPresented: $casLoginSheet)
-        }
-        .onAppear(perform: onLoadFunction)
-#if DEBUG
-            .sheet(isPresented: $firstLogin) {
-                UserTypeView(userTypeSheet: $firstLogin)
-                    .interactiveDismissDisabled(true)
-            }
-#endif
     }
 
     func onLoadFunction() {
         Task {
             await UstcCasClient.shared.clearLoginStatus()
             await UstcUgAASClient.shared.clearLoginStatus()
-//            await URLSession.shared.reset()
 
             if await UstcCasClient.shared.precheckFails {
                 casLoginSheet = true
