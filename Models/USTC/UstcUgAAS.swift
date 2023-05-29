@@ -26,6 +26,7 @@ actor UstcUgAASClient {
     }
 
     private func login() async throws -> Bool {
+        print("network:UstcUgAAS login called")
         if try await !UstcCasClient.shared.requireLogin() {
             throw BaseError.runtimeError("UstcCAS Not logined")
         }
@@ -33,11 +34,14 @@ actor UstcUgAASClient {
         // jw.ustc.edu.cn login.
         let _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
 
-        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
-            lastLogined = .now
-            return true
-        }
-        return false
+//        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
+//            lastLogined = .now
+//            return true
+//        }
+//        return false
+        debugPrint(session.configuration.httpCookieStorage?.cookies)
+        lastLogined = .now
+        return true
     }
 
     func checkLogined() -> Bool {
@@ -59,16 +63,12 @@ actor UstcUgAASClient {
         }
 
         let task = Task {
-            do {
-                let result = try await self.login()
-                loginTask = nil
-                return result
-            } catch {
-                print(error)
-                return false
-            }
+            let result = try await self.login()
+            loginTask = nil
+            return result
         }
-        return await task.value
+        loginTask = task
+        return try await task.value
     }
 
     func clearLoginStatus() {

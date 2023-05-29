@@ -73,24 +73,33 @@ actor UstcCasClient {
         let session = URLSession.shared
         let (ltToken, cookies) = try await getLtTokenFromCAS()
 
+        // - For POST request, the query items should be in the body, here'e the correct way to do it
+
         var components = URLComponents(url: ustcLoginUrl, resolvingAgainstBaseURL: true)!
-        components.queryItems = [URLQueryItem(name: "model", value: "upload.jsp"),
+        components.queryItems = [URLQueryItem(name: "model", value: "uplogin.jsp"),
                                  URLQueryItem(name: "CAS_LT", value: ltToken),
-                                 URLQueryItem(name: "service", value: nil),
-                                 URLQueryItem(name: "warn", value: nil),
-                                 URLQueryItem(name: "showCode", value: nil),
-                                 URLQueryItem(name: "qrcode", value: nil),
+                                 URLQueryItem(name: "service", value: ""),
+                                 URLQueryItem(name: "warn", value: ""),
+                                 URLQueryItem(name: "showCode", value: ""),
+                                 URLQueryItem(name: "qrcode", value: ""),
                                  URLQueryItem(name: "username", value: username),
                                  URLQueryItem(name: "password", value: password),
-                                 URLQueryItem(name: "LT", value: nil),
-                                 URLQueryItem(name: "button", value: nil)]
+                                 URLQueryItem(name: "LT", value: ""),
+                                 URLQueryItem(name: "button", value: "")]
 
-        var request = URLRequest(url: components.url ?? exampleURL)
+        var request = URLRequest(url: ustcLoginUrl)
+        request.httpBody = components.query?.data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.setValue("https://passport.ustc.edu.cn/login", forHTTPHeaderField: "Referer")
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        let _ = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
+//        debugPrint(request.url?.absoluteString)
+//        debugPrint(String(data: request.httpBody!, encoding: .utf8))
+//        debugPrint(String(data: data, encoding: .utf8), response)
+//        debugPrint(session.configuration.httpCookieStorage?.cookies)
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
             lastLogined = .now
             return true
@@ -98,18 +107,21 @@ actor UstcCasClient {
         return false
     }
 
-    func login(undeterimined: Bool = false) async throws -> Bool {
-        while true {
-            do {
-                if try await loginToCAS() {
-                    return true
-                }
-            } catch {}
-            if undeterimined {
-                return false
-            }
-            try await Task.sleep(for: .seconds(2))
-        }
+    @available(*, deprecated)
+    func login(undeterimined _: Bool = false) async throws -> Bool {
+        print("network:UstcCAS login called")
+//        while true {
+//            do {
+//                if try await loginToCAS() {
+//                    return true
+//                }
+//            } catch {}
+//            if undeterimined {
+//                return false
+//            }
+//            try await Task.sleep(for: .seconds(2))
+//        }
+        return try await loginToCAS()
     }
 
     func checkLogined() -> Bool {
@@ -132,16 +144,12 @@ actor UstcCasClient {
         }
 
         let task = Task {
-            do {
-                let result = try await self.login()
-                loginTask = nil
-                return result
-            } catch {
-                print(error)
-                return false
-            }
+            let result = try await self.login()
+            loginTask = nil
+            return result
         }
-        return await task.value
+        loginTask = task
+        return try await task.value
     }
 
     func clearLoginStatus() {
