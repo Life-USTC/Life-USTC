@@ -78,6 +78,7 @@
 		56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425029F64618007D9BD4 /* PushNotification.swift */; };
 		56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425329F648A6007D9BD4 /* TPNSClient.swift */; };
 		56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
+		56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
@@ -253,6 +254,7 @@
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
+				56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */,
 				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
 				902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */,
 				D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */,
@@ -646,6 +648,7 @@
 				56E8AD66296F069E009006D0 /* Reeeed */,
 				56112706298126C100BB66EE /* Introspect */,
 				56A7D71729DD20AD00EE7880 /* LoremSwiftum */,
+				56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
@@ -711,6 +714,7 @@
 				56E8AD65296F069E009006D0 /* XCRemoteSwiftPackageReference "reeeed" */,
 				56112705298126C100BB66EE /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */,
+				56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
@@ -1222,6 +1226,14 @@
 				kind = branch;
 			};
 		};
+		56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yoxisem544/ScreenshotPreventing.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		56D175B6294F01EA0070778F /* XCRemoteSwiftPackageReference "FeedKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nmdias/FeedKit";
@@ -1291,6 +1303,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */;
 			productName = LoremSwiftum;
+		};
+		56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */;
+			productName = ScreenshotPreventingSwiftUI;
 		};
 		56D175B7294F01EA0070778F /* FeedKit */ = {
 			isa = XCSwiftPackageProductDependency;

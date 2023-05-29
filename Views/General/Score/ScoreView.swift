@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2023/1/12.
 //
 
+import ScreenshotPreventingSwiftUI
 import SwiftUI
 
 private enum SortPreference: String, CaseIterable {
@@ -16,6 +17,7 @@ struct ScoreView: View {
     @State var showSettings: Bool = false
     @AppStorage("scoreViewSemesterNameToRemove") var semesterNameToRemove: [String] = []
     @AppStorage("scoreViewSortPreference") private var sortPreference: SortPreference?
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
 
     private func sort(score: Score) -> [String: [CourseScore]] {
         var result = score.courseScores
@@ -202,6 +204,7 @@ struct ScoreView: View {
                 }
             }
         }
+        .screenshotProtected(isProtected: preventScreenShot)
         .sheet(isPresented: $showSettings) { sheet(score) }
         .padding([.leading, .trailing])
     }

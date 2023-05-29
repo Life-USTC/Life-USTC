@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct AppSettingPage: View {
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
     var body: some View {
         List {
-            Section {} header: {
+            Section {
+                Toggle("Prevent screenshot when showing score", isOn: $preventScreenShot)
+            } header: {
                 Text("General")
                     .textCase(.none)
             }
