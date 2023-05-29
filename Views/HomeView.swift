@@ -102,6 +102,7 @@ struct HomeView: View {
         .navigationTitle("Life@USTC")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { update(with: Date()) }
+        .refreshable { update(with: date) }
         .onChange(of: date, perform: update)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarLeading) {
