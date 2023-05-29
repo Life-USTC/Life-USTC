@@ -99,8 +99,7 @@ struct WelcomeView_2: View {
     var body: some View {
         CASLoginView(casLoginSheet: $isPresented,
                      isInSheet: true,
-                     title: "To get your course table...",
-                     displayMode: .large)
+                     title: "To get your course table...")
             .navigationDestination(isPresented: .init(get: { !isPresented }, set: { isPresented = !$0 })) {
                 WelcomeView_3()
             }

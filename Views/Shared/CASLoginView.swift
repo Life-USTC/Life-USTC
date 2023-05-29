@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CASLoginView: View {
     static func sheet(isPresented: Binding<Bool>) -> CASLoginView {
-        CASLoginView(casLoginSheet: isPresented, isInSheet: true, title: "One more step...", displayMode: .large)
+        CASLoginView(casLoginSheet: isPresented, isInSheet: true, title: "One more step...")
     }
 
     static var newPage = CASLoginView(casLoginSheet: .constant(false))
@@ -22,7 +22,6 @@ struct CASLoginView: View {
     var isInSheet = false
 
     var title: LocalizedStringKey = "CAS Settings"
-    var displayMode: NavigationBarItem.TitleDisplayMode = .inline
 
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
@@ -36,51 +35,43 @@ struct CASLoginView: View {
 
     var inputForm: some View {
         VStack {
-            Form {
-                HStack {
-                    Text("Username:")
-                    TextField("Username", text: $passportUsername)
-                        .focused($foucusField, equals: .username)
-                        .onSubmit {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                foucusField = .password
-                            }
-                        }
-                        .submitLabel(.next)
-                        .autocorrectionDisabled(true)
-                        .keyboardType(.asciiCapable)
-                    Spacer()
-                }
-                HStack {
-                    Text("Password:")
-                    SecureField("Password", text: $passportPassword)
-                        .focused($foucusField, equals: .password)
-                        .submitLabel(.done)
-                        .onSubmit {
-                            checkAndLogin()
-                        }
-                    Spacer()
-                }
-            }
-            .scrollContentBackground(.hidden)
-            .scrollDisabled(true)
+            Text("Login to USTC CAS")
+                .bold()
+                .foregroundColor(.accentColor)
+                .hStackLeading()
+            VStack {
+                Image("Icon.ustc")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: 70)
 
-            HStack(spacing: 45) {
-                if isInSheet {
-                    Button {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            casLoginSheet = false
+                Spacer()
+                    .frame(height: 30)
+
+                TextField("Username", text: $passportUsername)
+                    .focused($foucusField, equals: .username)
+                    .onSubmit {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            foucusField = .password
                         }
-                    } label: {
-                        Label("Skip for now", systemImage: "xmark")
-                            .padding()
-                            .labelStyle(.iconOnly)
-                            .background {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.25))
-                            }
                     }
-                }
+                    .submitLabel(.next)
+                    .autocorrectionDisabled(true)
+                    .keyboardType(.asciiCapable)
+
+                Divider()
+
+                SecureField("Password", text: $passportPassword)
+                    .focused($foucusField, equals: .password)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        checkAndLogin()
+                    }
+
+                Divider()
+
+                Spacer()
+                    .frame(height: 50)
 
                 Button {
                     checkAndLogin()
@@ -88,50 +79,58 @@ struct CASLoginView: View {
                     Text("Check & Login")
                         .foregroundColor(.white)
                         .padding()
-                        .padding([.leading, .trailing], 35)
+                        .frame(maxWidth: .infinity)
                         .background {
-                            RoundedRectangle(cornerRadius: 50)
+                            RoundedRectangle(cornerRadius: 25)
                                 .fill(Color.accentColor)
                         }
+                        .frame(maxWidth: .infinity)
                 }
                 .keyboardShortcut(.defaultAction)
-            }
-        }
-    }
 
-    var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading) {
-                Text("Input USTC CAS username & password")
-                    .font(.title2)
-                    .bold()
-                    .padding(.bottom, 1)
                 Text("casHint")
                     .font(.caption)
                     .bold()
                     .foregroundColor(.gray)
-
-                inputForm
+                    .padding(.top)
             }
-            .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
-                Text("Double check your username and password".localized)
-            })
-            .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
-                Text("You're good to go".localized)
-            })
             .padding()
-            .navigationBarTitle(title, displayMode: displayMode)
+            .padding(.top)
+            .clipShape(
+                RoundedRectangle(cornerRadius: 15)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.gray)
+                    .opacity(0.6)
+            )
+        }
+        .padding(.horizontal)
+        .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
+            Text("Double check your username and password".localized)
+        })
+        .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
+            Text("You're good to go".localized)
+        })
+    }
+
+    var body: some View {
+        NavigationStack {
+            inputForm
+                .navigationTitle(title)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 
     private func checkAndLogin() {
         Task {
+            await UstcCasClient.shared.clearLoginStatus()
+            await URLSession.shared.reset()
             let result = try await UstcCasClient.shared.login(undeterimined: true)
             if result {
                 if isInSheet {
                     showSuccessAlert = true
-                    // autoclose... dispatch within another dispatch
-                    // real fun...
+                    // close after 1 second
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                         showSuccessAlert = false
                         casLoginSheet = false
