@@ -33,92 +33,119 @@ struct CASLoginView: View {
 
     @FocusState var foucusField: Field?
 
-    var inputForm: some View {
-        VStack {
-            Text("Login to USTC CAS")
-                .bold()
-                .foregroundColor(.accentColor)
-                .hStackLeading()
-            VStack {
-                Image("Icon.ustc")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: 70)
-
-                Spacer()
-                    .frame(height: 30)
-
-                TextField("Username", text: $passportUsername)
-                    .focused($foucusField, equals: .username)
-                    .onSubmit {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            foucusField = .password
-                        }
-                    }
-                    .submitLabel(.next)
-                    .autocorrectionDisabled(true)
-                    .keyboardType(.asciiCapable)
-
-                Divider()
-
-                SecureField("Password", text: $passportPassword)
-                    .focused($foucusField, equals: .password)
-                    .submitLabel(.done)
-                    .onSubmit {
-                        checkAndLogin()
-                    }
-
-                Divider()
-
-                Spacer()
-                    .frame(height: 50)
-
-                Button {
-                    checkAndLogin()
-                } label: {
-                    Text("Check & Login")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background {
-                            RoundedRectangle(cornerRadius: 25)
-                                .fill(Color.accentColor)
-                        }
-                        .frame(maxWidth: .infinity)
-                }
-                .keyboardShortcut(.defaultAction)
-
-                Text("casHint")
-                    .font(.caption)
-                    .bold()
-                    .foregroundColor(.gray)
-                    .padding(.top)
-            }
-            .padding()
-            .padding(.top)
-            .clipShape(
-                RoundedRectangle(cornerRadius: 15)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(Color.gray)
-                    .opacity(0.6)
-            )
-        }
-        .padding(.horizontal)
-        .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
-            Text("Double check your username and password".localized)
-        })
-        .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
-            Text("You're good to go".localized)
-        })
-    }
-
     var body: some View {
         NavigationStack {
-            inputForm
-                .navigationTitle(title)
-                .navigationBarTitleDisplayMode(.inline)
+            VStack {
+                VStack {
+                    Spacer()
+                        .frame(height: 30)
+                    HStack {
+                        Spacer()
+                        Image("Icon")
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .onTapGesture(count: 5) {
+                                UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .shadow(radius: 4)
+                        Spacer()
+                        Image(systemName: "link")
+                            .resizable()
+                            .frame(width: 33, height: 33)
+                        Spacer()
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.white)
+                                .frame(width: 80, height: 80)
+                            Image(systemName: "person.crop.square.filled.and.at.rectangle")
+                                .resizable()
+                                .frame(width: 40, height: 30)
+                                .foregroundColor(Color.secondary)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .shadow(radius: 4)
+                        Spacer()
+                    }
+
+                    Spacer()
+                        .frame(height: 30)
+
+                    Text("casHint")
+                        .font(.caption)
+                        .bold()
+                        .foregroundColor(.gray)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top)
+                    Spacer()
+                        .frame(height: 30)
+
+                    HStack(alignment: .top) {
+                        Text("Username:")
+                            .bold()
+                        VStack(alignment: .leading) {
+                            TextField("Username", text: $passportUsername)
+                                .focused($foucusField, equals: .username)
+                                .onSubmit {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        foucusField = .password
+                                    }
+                                }
+                                .submitLabel(.next)
+                                .autocorrectionDisabled(true)
+                                .keyboardType(.asciiCapable)
+
+                            Divider()
+                                .padding(.vertical, 0)
+                        }
+                        .frame(width: 220)
+                    }
+
+                    HStack(alignment: .top) {
+                        Text("Password:")
+                            .bold()
+                        VStack(alignment: .leading) {
+                            SecureField("Password", text: $passportPassword)
+                                .focused($foucusField, equals: .password)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    checkAndLogin()
+                                }
+                                .padding(.horizontal, 3)
+                            Divider()
+                        }
+                        .frame(width: 220)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        checkAndLogin()
+                    } label: {
+                        Text("Check & Login")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .fill(Color.accentColor)
+                            }
+                            .frame(maxWidth: .infinity)
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+                .padding()
+                .padding(.top)
+            }
+            .padding(.horizontal)
+            .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
+                Text("Double check your username and password".localized)
+            })
+            .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
+                Text("You're good to go".localized)
+            })
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 

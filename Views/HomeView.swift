@@ -27,8 +27,8 @@ struct HomeView: View {
         Task {
             weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
             CurriculumDelegate.shared.asyncBind(status: $status) {
-                self.courses = Course.filter($0, week: weekNumber, for: date)
-                self.tomorrow_course = Course.filter($0, week: weekNumber, for: date.add(day: 1))
+                courses = Course.filter($0, week: weekNumber, for: date)
+                tomorrow_course = Course.filter($0, week: weekNumber, for: date.add(day: 1))
             }
         }
     }
@@ -105,12 +105,14 @@ struct HomeView: View {
         .refreshable { update(with: date) }
         .onChange(of: date, perform: update)
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading) {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
                     navigationToSettingsView.toggle()
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                 }
+            }
+            ToolbarItemGroup(placement: .navigationBarLeading) {
                 Button {
                     datePickerShown = true
                 } label: {
