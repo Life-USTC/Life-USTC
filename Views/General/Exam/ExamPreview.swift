@@ -5,18 +5,19 @@
 //  Created by TiankaiMa on 2023/1/11.
 //
 
+import Combine
 import SwiftUI
 
 struct ExamPreview: View {
-    @State var exams: [Exam] = []
-    @State var status: AsyncViewStatus = .inProgress
+    var exams: [Exam]
     @State var randomColor = exampleGradientList.randomElement() ?? []
+
     var body: some View {
-        AsyncView(delegate: ExamDelegate.shared, showReloadButton: false) { $exams in
+        Group {
             if exams.isEmpty {
-                return happyView
+                happyView
             } else {
-                return makeView(with: exams)
+                makeView(with: exams)
             }
         }
     }
@@ -83,7 +84,7 @@ struct ExamPreview: View {
 
 struct ExamPreview_Previews: PreviewProvider {
     static var previews: some View {
-        ExamPreview()
-        ExamPreview().happyView
+        ExamPreview(exams: [.example, .example])
+        ExamPreview(exams: [])
     }
 }

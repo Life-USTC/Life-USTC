@@ -19,16 +19,65 @@ struct HomeView: View {
     @State var date = Date()
     @State var courses: [Course] = []
     @State var tomorrow_course: [Course] = []
+    @State var exams: [Exam] = []
     @State var status: AsyncViewStatus = .inProgress
     @State var navigationToSettingsView = false
     @State private var datePickerShown = false
 
-    func update(with date: Date) {
+    var mmddFormatter: DateFormatter {
+        let tmp = DateFormatter()
+        tmp.dateStyle = .short
+        tmp.timeStyle = .none
+        return tmp
+    }
+
+    func update(forceUpdate: Bool = false) {
         Task {
+            status = .inProgress
+            courses = []
+            tomorrow_course = []
+            exams = []
             weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+            if forceUpdate {
+                try await CurriculumDelegate.shared.forceUpdate()
+                try await ExamDelegate.shared.forceUpdate()
+            }
             CurriculumDelegate.shared.asyncBind(status: $status) {
                 courses = Course.filter($0, week: weekNumber, for: date)
                 tomorrow_course = Course.filter($0, week: weekNumber, for: date.add(day: 1))
+            }
+            ExamDelegate.shared.asyncBind($exams, status: $status)
+        }
+    }
+
+    var curriculumView: some View {
+        VStack {
+            VStack(alignment: .leading) {
+                if date.stripTime() == Date().stripTime() {
+                    Text("Today")
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
+                } else {
+                    Text(mmddFormatter.string(from: date))
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
+                }
+                CourseStackView(courses: $courses)
+            }
+
+            Spacer(minLength: 30)
+
+            VStack(alignment: .leading) {
+                if date.stripTime() == Date().stripTime() {
+                    Text("Tomorrow")
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
+                } else {
+                    Text(mmddFormatter.string(from: date.add(day: 1)))
+                        .font(.headline)
+                        .foregroundColor(Color.secondary)
+                }
+                CourseStackView(courses: $tomorrow_course)
             }
         }
     }
@@ -37,8 +86,8 @@ struct HomeView: View {
         ScrollView(showsIndicators: false) {
             // MARK: - Curriculum
 
-            VStack(alignment: .leading) {
-                HStack(spacing: 0) {
+            VStack {
+                HStack {
                     Text("Curriculum")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -58,20 +107,10 @@ struct HomeView: View {
                     }
                 }
 
-                VStack(alignment: .leading) {
-                    Text("Today")
-                        .font(.headline)
-                        .foregroundColor(Color.secondary)
-                    CourseStackView(courses: $courses)
-                }
-
-                Spacer(minLength: 30)
-
-                VStack(alignment: .leading) {
-                    Text("Tomorrow")
-                        .font(.headline)
-                        .foregroundColor(Color.secondary)
-                    CourseStackView(courses: $tomorrow_course)
+                if status == .inProgress {
+                    ProgressView()
+                } else {
+                    curriculumView
                 }
             }
 
@@ -79,7 +118,7 @@ struct HomeView: View {
 
             // MARK: - Exams
 
-            VStack(alignment: .leading) {
+            VStack {
                 HStack {
                     Text("Exams")
                         .font(.title2)
@@ -95,15 +134,19 @@ struct HomeView: View {
                     }
                 }
 
-                ExamPreview()
+                if status == .inProgress {
+                    ProgressView()
+                } else {
+                    ExamPreview(exams: exams)
+                }
             }
         }
         .padding(.horizontal)
         .navigationTitle("Life@USTC")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { update(with: Date()) }
-        .refreshable { update(with: date) }
-        .onChange(of: date, perform: update)
+        .onAppear { update() }
+        .refreshable { update(forceUpdate: true) }
+        .onChange(of: date, perform: { _ in update() })
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
