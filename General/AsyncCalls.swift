@@ -74,6 +74,7 @@ extension AsyncDataDelegate {
         }
     }
 
+    @available(*, message: "Notice that sometimes the status failed to set to inProgress")
     func asyncBind<T>(status: Binding<AsyncViewStatus>, setData: @escaping (T) async throws -> Void) {
         status.wrappedValue = .inProgress
         Task {
