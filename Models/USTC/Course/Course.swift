@@ -56,25 +56,6 @@ struct Course: Identifiable, Equatable {
          classTeacherName: String,
          weekString: String)
     {
-        // testing:
-        assert(startTime <= endTime, "startTime should be less than or equal to endTime")
-        assert(Bool(1 ... 7 ~= dayOfWeek), "dayOfWeek should be in range 1-7")
-        assert(Bool(1 ... 13 ~= startTime), "startTime should be in range 1-13")
-        assert(Bool(1 ... 13 ~= endTime), "endTime should be in range 1-13")
-        // production:
-        if startTime > endTime {
-            startTime = 1
-            endTime = 1
-        }
-        if !(1 ... 7 ~= dayOfWeek) {
-            dayOfWeek = 1
-        }
-        if !(1 ... 13 ~= startTime) {
-            startTime = 1
-        }
-        if !(1 ... 13 ~= endTime) {
-            endTime = 1
-        }
         self.dayOfWeek = dayOfWeek
         self.startTime = startTime
         self.endTime = endTime
@@ -83,6 +64,26 @@ struct Course: Identifiable, Equatable {
         self.classPositionString = classPositionString
         self.classTeacherName = classTeacherName
         self.weekString = weekString
+
+        // testing:
+        assert(startTime <= endTime, "startTime should be less than or equal to endTime")
+        assert(Bool(1 ... 7 ~= dayOfWeek), "dayOfWeek should be in range 1-7")
+        assert(Bool(1 ... 13 ~= startTime), "startTime should be in range 1-13")
+        assert(Bool(1 ... 13 ~= endTime), "endTime should be in range 1-13")
+        // production:
+        if startTime > endTime {
+            self.startTime = 1
+            self.endTime = 1
+        }
+        if !(1 ... 7 ~= dayOfWeek) {
+            self.dayOfWeek = 1
+        }
+        if !(1 ... 13 ~= startTime) {
+            self.startTime = 1
+        }
+        if !(1 ... 13 ~= endTime) {
+            self.endTime = 1
+        }
     }
 }
 
