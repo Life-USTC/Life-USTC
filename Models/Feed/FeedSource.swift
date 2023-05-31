@@ -13,6 +13,7 @@ private let importantLabels: Set<String> = ["!!important", "Important", "!!notic
 class FeedSource {
     static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL, name: "教务处", image: "person.crop.square.fill.and.at.rectangle"),
                                     FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill"),
+                                    FeedSource(url: mp_ustc_official_URL, name: "中国科学技术大学公众号", image: "graduationcap"),
                                     FeedSource(url: appFeedURL, name: "应用通知", image: "apps.iphone")]
 
     static var allToShow: [FeedSource] {
