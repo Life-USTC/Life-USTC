@@ -117,7 +117,7 @@ extension AsyncDataDelegate {
                 }
             }
 
-            if requireUpdate || status == .failure || forced {
+            if forced || status == .failure || requireUpdate {
                 do {
                     withAnimation {
                         if status == .failure {

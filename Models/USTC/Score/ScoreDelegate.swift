@@ -80,6 +80,9 @@ class ScoreDelegate: UserDefaultsADD {
 
     init(_ client: UstcUgAASClient) {
         ustcUgAASClient = client
+        exceptionCall {
+            try self.loadCache()
+        }
         userTriggerRefresh(forced: false)
     }
 }
