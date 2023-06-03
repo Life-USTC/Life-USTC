@@ -11,14 +11,127 @@ import SwiftyJSON
 /// Instruct how the view should appear to user
 enum AsyncViewStatus {
     case inProgress
-    case cached
     case success
     case failure
+
+    /// In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date
+    case cached
+
+    @available(*, deprecated)
     case waiting
+
+    var canShowDate: Bool {
+        self == .success || self == .cached
+    }
+
+    var isRefreshing: Bool {
+        self == .inProgress || self == .cached
+    }
 }
 
+/// Generic protocol for  Model
+protocol AsyncDataDelegate: ObservableObject {
+    /// Type for return
+    associatedtype D
+
+    /// Whether or not the data should be refreshed before presenting to user.
+    /// Often times this is only related to the last time the data is refreshed
+    var requireUpdate: Bool { get }
+
+    /// Parse require data from cache.
+    /// - Warning: This function isn't supposed to be time-cosuming, but it's async anyway for convenice.
+    func parseCache() async throws -> D
+
+    /// Force update the data
+    /// - Description: You can wait for network request in this function
+    func forceUpdate() async throws
+
+    /// Bind the data to view
+    /// - Deprecated: Implement @Published instead
+    @available(*, deprecated)
+    func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>)
+    @available(*, deprecated)
+    func asyncBind<T>(status: Binding<AsyncViewStatus>, setData: @escaping (T) async throws -> Void)
+
+    /// Get wanted data asynchronously
+    func retrive() async throws -> D
+}
+
+/// Calculate requireUpdate according to last time data is updated
+protocol LastUpdateADD: AsyncDataDelegate {
+    /// Max time before refresh, this should be a constant definition in each model to avoid unnecessary troubles.
+    var timeInterval: Double? { get }
+    var timeCacheName: String { get }
+
+    /// Manually saving it to userDefaults.key(timeCacheName) is suggested when saving cache
+    var lastUpdate: Date? { get set }
+}
+
+/// Model that use UserDefaults to store, and implement async Models
+protocol UserDefaultsADD: LastUpdateADD where C: Codable {
+    /// Type for cache
+    associatedtype C
+
+    /// Name to store inside userDefaults.
+    /// - Warning: Avoid using same names between different instance to avoid conflicts
+    var cacheName: String { get }
+
+    /// What to be store and to be parsed.
+    /// - Warning: You should call loadCache() inside init, and saveCache() at the end of forceUpdate()
+    var cache: C { get set }
+}
+
+extension LastUpdateADD {
+    var requireUpdate: Bool {
+        let target = !(lastUpdate != nil && lastUpdate!.addingTimeInterval(timeInterval ?? 7200) > Date())
+        print("cache<TIME>:\(timeCacheName), last updated at:\(lastUpdate?.debugDescription ?? "nil"); \(target ? "[Refreshing]" : "[NOT Refreshing]")")
+        return target
+    }
+}
+
+extension UserDefaultsADD {
+    func saveCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.cache)
+            userDefaults.set(data, forKey: self.cacheName)
+        }
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.lastUpdate)
+            userDefaults.set(data, forKey: self.timeCacheName)
+        }
+
+        // record disk write event
+        print("cache<DISK>:\(cacheName) saved")
+    }
+
+    func loadCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.timeCacheName) {
+                self.lastUpdate = try JSONDecoder().decode(Date?.self, from: data)
+            }
+        }
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.cacheName) {
+                self.cache = try JSONDecoder().decode(C.self, from: data)
+            }
+        }
+
+        // record disk read event
+        print("cache<DISK>:\(cacheName) loaded")
+    }
+}
+
+// MARK: - Deprecated Defintions:
+
 /// Create an async task with given function, and pass the result to data, notify the View with status
-func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>, _ function: @escaping () async throws -> T) {
+/// - Deprecated: Avoid calling this function in most position, use @Published and @StateObject to listen to change in Model
+@available(*, deprecated)
+func asyncBind<T>(_ data: Binding<T>,
+                  status: Binding<AsyncViewStatus>,
+                  _ function: @escaping () async throws -> T)
+{
     status.wrappedValue = .inProgress
     Task {
         do {
@@ -36,17 +149,6 @@ func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>, _ functi
             }
         }
     }
-}
-
-protocol AsyncDataDelegate: AnyObject {
-    associatedtype D // return data type
-    var requireUpdate: Bool { get }
-    func parseCache() async throws -> D
-
-    /// - Warning: Manually save inside forceUpdate
-    func forceUpdate() async throws
-    func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>)
-    func retrive() async throws -> D
 }
 
 extension AsyncDataDelegate {
@@ -104,75 +206,5 @@ extension AsyncDataDelegate {
             try await forceUpdate()
         }
         return try await parseCache()
-    }
-}
-
-protocol LastUpdateAsyncDataDelegate: AsyncDataDelegate {
-    var timeCacheName: String { get }
-    var lastUpdate: Date? { get set }
-    var timeInterval: Double? { get }
-}
-
-extension LastUpdateAsyncDataDelegate {
-    var requireUpdate: Bool {
-        !(lastUpdate != nil && lastUpdate!.addingTimeInterval(timeInterval ?? 7200) > Date())
-    }
-}
-
-protocol BaseAsyncDataDelegate: LastUpdateAsyncDataDelegate where D: Codable {
-    var cacheName: String { get }
-    var cache: D { get set }
-}
-
-extension BaseAsyncDataDelegate {
-    func parseCache() async throws -> D {
-        cache
-    }
-
-    func saveCache() throws {
-        debugPrint("cache:\(cacheName) saved")
-        var data = try JSONEncoder().encode(cache)
-        userDefaults.set(data, forKey: cacheName)
-        data = try JSONEncoder().encode(lastUpdate)
-        userDefaults.set(data, forKey: timeCacheName)
-    }
-
-    func loadCache() throws {
-        debugPrint("cache:\(cacheName) loaded")
-        if let data = userDefaults.data(forKey: timeCacheName) {
-            lastUpdate = try JSONDecoder().decode(Date?.self, from: data)
-        }
-        if let data = userDefaults.data(forKey: cacheName) {
-            cache = try JSONDecoder().decode(D.self, from: data)
-        }
-    }
-}
-
-protocol CacheAsyncDataDelegate: LastUpdateAsyncDataDelegate {
-    var cacheName: String { get }
-    var cache: JSON { get set }
-}
-
-extension CacheAsyncDataDelegate {
-    func saveCache() throws {
-        debugPrint("cache:\(cacheName) saved")
-        var data = try cache.rawData()
-        userDefaults.set(data, forKey: cacheName)
-        data = try JSONEncoder().encode(lastUpdate)
-        userDefaults.set(data, forKey: timeCacheName)
-    }
-
-    func loadCache() throws {
-        debugPrint("cache:\(cacheName) loaded")
-        if let data = userDefaults.data(forKey: timeCacheName) {
-            lastUpdate = try JSONDecoder().decode(Date?.self, from: data)
-        }
-        if let data = userDefaults.data(forKey: cacheName) {
-            cache = try JSON(data: data)
-        } else {
-            Task {
-                try await forceUpdate()
-            }
-        }
     }
 }

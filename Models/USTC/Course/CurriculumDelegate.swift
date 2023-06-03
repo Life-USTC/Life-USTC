@@ -9,7 +9,7 @@ import EventKit
 import SwiftUI
 import SwiftyJSON
 
-class CurriculumDelegate: CacheAsyncDataDelegate {
+class CurriculumDelegate: UserDefaultsADD {
     typealias D = [Course]
 
     var lastUpdate: Date?

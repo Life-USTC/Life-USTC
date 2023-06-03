@@ -10,16 +10,28 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-class ExamDelegate: BaseAsyncDataDelegate {
+class ExamDelegate: UserDefaultsADD {
+    // Protocol requirements
     typealias D = [Exam]
-
-    var lastUpdate: Date?
-    var timeInterval: Double?
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
-    var ustcUgAASClient: UstcUgAASClient
+    var lastUpdate: Date?
+    var timeInterval: Double?
     var cache: [Exam] = []
-    static var shared = ExamDelegate(.shared)
+
+    // Parent
+    var ustcUgAASClient: UstcUgAASClient
+
+    // Shared class that shall be used throughout the app
+    // You should call function with ExamDelegate.shared.function()
+    // instead of ExamDelegate().function()
+    // The benifit of this, instead of just using enum for definition
+    // is that the lifecycle could be easily managed and checked when debugging.
+    //
+    // Notice that all ExamDelegate() share the same cache,
+    // and there aren't supposed to be two instance running at the same time to avoid conflict
+    // TODO: Add support for multiple instance with different cache position
+    static var shared = ExamDelegate()
 
     func parseCache() async throws -> [Exam] {
         let hiddenExamName = (
@@ -78,7 +90,7 @@ class ExamDelegate: BaseAsyncDataDelegate {
         try saveCache()
     }
 
-    init(_ client: UstcUgAASClient) {
+    init(_ client: UstcUgAASClient = .shared) {
         ustcUgAASClient = client
         exceptionCall {
             try self.loadCache()

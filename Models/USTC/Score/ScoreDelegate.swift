@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-class ScoreDelegate: CacheAsyncDataDelegate {
+class ScoreDelegate: UserDefaultsADD {
     typealias D = Score
 
     var lastUpdate: Date?
