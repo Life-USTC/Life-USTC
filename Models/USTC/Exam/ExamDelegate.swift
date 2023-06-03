@@ -17,7 +17,10 @@ class ExamDelegate: UserDefaultsADD {
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
     var lastUpdate: Date?
     var timeInterval: Double?
+
     var cache: [Exam] = []
+    var data: [Exam] = []
+    var status: AsyncViewStatus = .inProgress
 
     // Parent
     var ustcUgAASClient: UstcUgAASClient

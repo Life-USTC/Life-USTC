@@ -10,13 +10,28 @@ import SwiftyJSON
 
 class ScoreDelegate: UserDefaultsADD {
     typealias D = Score
-
     var lastUpdate: Date?
     var timeInterval: Double?
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
 
     var cache = JSON()
+    var data: Score = .init() {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    var status: AsyncViewStatus = .inProgress {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
     var ustcUgAASClient: UstcUgAASClient
     static var shared = ScoreDelegate(.shared)
 
@@ -54,15 +69,17 @@ class ScoreDelegate: UserDefaultsADD {
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
 
         let (data, _) = try await session.data(for: request)
+
+        // MARK: END OF FUNCTION DEFINITION
+
         cache = try JSON(data: data)
         lastUpdate = Date()
         try saveCache()
+        self.data = try await retrive()
     }
 
     init(_ client: UstcUgAASClient) {
         ustcUgAASClient = client
-        exceptionCall {
-            try self.loadCache()
-        }
+        userTriggerRefresh(forced: false)
     }
 }

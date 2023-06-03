@@ -11,14 +11,16 @@ import SwiftyJSON
 
 class CurriculumDelegate: UserDefaultsADD {
     typealias D = [Course]
-
     var lastUpdate: Date?
     var timeInterval: Double?
     var cacheName: String = "UstcUgAASCurriculumCache"
     var timeCacheName: String = "UstcUgAASLastUpdatedCurriculum"
 
-    var ustcUgAASClient: UstcUgAASClient
     var cache = JSON()
+    var data: [Course] = []
+    var status: AsyncViewStatus = .inProgress
+
+    var ustcUgAASClient: UstcUgAASClient
     static var shared = CurriculumDelegate(.shared)
 
     func parseCache() async throws -> [Course] {

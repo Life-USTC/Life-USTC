@@ -20,7 +20,7 @@ enum AsyncViewStatus {
     @available(*, deprecated)
     case waiting
 
-    var canShowDate: Bool {
+    var canShowData: Bool {
         self == .success || self == .cached
     }
 
@@ -34,6 +34,11 @@ protocol AsyncDataDelegate: ObservableObject {
     /// Type for return
     associatedtype D
 
+    var data: D { get set }
+    var status: AsyncViewStatus { get set }
+
+    // MARK: - Functions to implement
+
     /// Whether or not the data should be refreshed before presenting to user.
     /// Often times this is only related to the last time the data is refreshed
     var requireUpdate: Bool { get }
@@ -46,6 +51,8 @@ protocol AsyncDataDelegate: ObservableObject {
     /// - Description: You can wait for network request in this function
     func forceUpdate() async throws
 
+    // MARK: - Functions to call
+
     /// Bind the data to view
     /// - Deprecated: Implement @Published instead
     @available(*, deprecated)
@@ -55,6 +62,11 @@ protocol AsyncDataDelegate: ObservableObject {
 
     /// Get wanted data asynchronously
     func retrive() async throws -> D
+
+    // MARK: - Functions to call in View
+
+    // When user trigger refresh
+    func userTriggerRefresh(forced: Bool)
 }
 
 /// Calculate requireUpdate according to last time data is updated
@@ -86,6 +98,47 @@ extension LastUpdateADD {
         let target = !(lastUpdate != nil && lastUpdate!.addingTimeInterval(timeInterval ?? 7200) > Date())
         print("cache<TIME>:\(timeCacheName), last updated at:\(lastUpdate?.debugDescription ?? "nil"); \(target ? "[Refreshing]" : "[NOT Refreshing]")")
         return target
+    }
+}
+
+extension AsyncDataDelegate {
+    func userTriggerRefresh(forced: Bool = true) {
+        Task {
+            withAnimation {
+                status = .inProgress
+            }
+            do {
+                data = try await parseCache()
+            } catch {
+                print(error)
+
+                withAnimation {
+                    status = .failure
+                }
+            }
+
+            if requireUpdate || status == .failure || forced {
+                do {
+                    withAnimation {
+                        if status == .failure {
+                            status = .inProgress
+                        } else {
+                            status = .cached
+                        }
+                    }
+
+                    try await forceUpdate()
+                    data = try await parseCache()
+                } catch {
+                    print(error)
+                    return
+                }
+            }
+
+            withAnimation {
+                status = .success
+            }
+        }
     }
 }
 

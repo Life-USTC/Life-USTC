@@ -13,52 +13,11 @@ private enum SortPreference: String, CaseIterable {
     case code = "Course Code"
 }
 
-struct ScoreView: View {
-    @State var showSettings: Bool = false
-    @AppStorage("scoreViewSemesterNameToRemove") var semesterNameToRemove: [String] = []
-    @AppStorage("scoreViewSortPreference") private var sortPreference: SortPreference?
-    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
+struct SingleScoreView: View {
+    var courseScore: CourseScore
+    var gpa: Double
 
-    private func sort(score: Score) -> [String: [CourseScore]] {
-        var result = score.courseScores
-        for name in semesterNameToRemove {
-            result.removeAll(where: { $0.semesterName == name })
-        }
-
-        result.sort(by: { $0.semesterID < $1.semesterID })
-        switch sortPreference {
-        case .none:
-            break
-        case let .some(wrapped):
-            switch wrapped {
-            case .gpa:
-                result.sort(by: { ($0.gpa ?? 0) > ($1.gpa ?? 0) })
-            case .code:
-                result.sort(by: { $0.lessonCode < $1.lessonCode })
-            }
-        }
-        var semesterDividedResult: [String: [CourseScore]] = [:]
-        for _result in result {
-            if semesterDividedResult.keys.contains(_result.semesterName) {
-                semesterDividedResult[_result.semesterName]?.append(_result)
-            } else {
-                semesterDividedResult[_result.semesterName] = [_result]
-            }
-        }
-        return semesterDividedResult
-    }
-
-    private func semesterList(_ score: Score) -> [String] {
-        var result: [String] = []
-        for name in score.courseScores.map(\.semesterName) {
-            if !result.contains(name) {
-                result.append(name)
-            }
-        }
-        return result
-    }
-
-    func makeView(with courseScore: CourseScore, score: Score) -> some View {
+    var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Text(courseScore.courseName)
@@ -99,7 +58,7 @@ struct ScoreView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill({ () -> Color in
                                 if courseScore.gpa! >= 1.0 {
-                                    return courseScore.gpa! >= score.gpa ? Color.accentColor.opacity(0.7) : Color.orange.opacity(0.7)
+                                    return courseScore.gpa! >= gpa ? Color.accentColor.opacity(0.7) : Color.orange.opacity(0.7)
                                 } else {
                                     return Color.red.opacity(0.6)
                                 }
@@ -109,12 +68,110 @@ struct ScoreView: View {
             }
         }
     }
+}
 
-    @ViewBuilder func sheet(_ score: Score) -> some View {
+struct ScoreView: View {
+    @AppStorage("scoreViewSemesterNameToRemove") var semesterNameToRemove: [String] = []
+    @AppStorage("scoreViewSortPreference") private var sortPreference: SortPreference?
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
+    @StateObject var scoreDelegate = ScoreDelegate.shared
+    var score: Score {
+        scoreDelegate.data
+    }
+
+    var status: AsyncViewStatus {
+        scoreDelegate.status
+    }
+
+    @State var showSettings: Bool = false
+
+    var sortedScore: [(name: String, courses: [CourseScore])] {
+        var result = score.courseScores
+        for name in semesterNameToRemove {
+            result.removeAll(where: { $0.semesterName == name })
+        }
+        result.sort(by: { $0.semesterID < $1.semesterID })
+
+        switch sortPreference {
+        case .none:
+            break
+        case let .some(wrapped):
+            switch wrapped {
+            case .gpa:
+                result.sort(by: { ($0.gpa ?? 0) > ($1.gpa ?? 0) })
+            case .code:
+                result.sort(by: { $0.lessonCode < $1.lessonCode })
+            }
+        }
+
+        // map to dictionary
+        return Dictionary(grouping: result, by: { $0.semesterName })
+            .sorted(by: { $0.value[0].semesterID > $1.value[0].semesterID })
+            .map { ($0.key, $0.value) }
+    }
+
+    var semesterList: [String] {
+        Array(Set(score.courseScores.map(\.semesterName)))
+    }
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading) {
+                // Title
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(score.majorName)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                    }
+                    Text("GPA: " + String(score.gpa)) // Double formatting problem noticed
+                        .font(.title2)
+                        .bold()
+                }
+                .padding(.vertical, 5)
+
+                // Score:
+                ForEach(sortedScore, id: \.name) {
+                    Text($0.name)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.gray)
+                    ForEach($0.courses) { course in
+                        Divider()
+                        SingleScoreView(courseScore: course, gpa: score.gpa)
+                            .padding(.vertical, 5)
+                    }
+                    Divider()
+                        .padding(.bottom, 45)
+                }
+            }
+        }
+        .refreshable {
+            scoreDelegate.userTriggerRefresh()
+        }
+        .screenshotProtected(isProtected: preventScreenShot)
+        .sheet(isPresented: $showSettings) { sheet }
+        .padding([.leading, .trailing])
+        .asyncViewStatusMask(status: status)
+        .toolbar {
+            Button {
+                showSettings.toggle()
+            } label: {
+                Label("Settings", systemImage: "gearshape")
+            }
+        }
+        .navigationTitle("Score")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    var sheet: some View {
         NavigationStack {
             List {
                 Menu {
-                    ForEach(semesterList(score), id: \.self) { semester in
+                    ForEach(semesterList, id: \.self) { semester in
                         Button {
                             if semesterNameToRemove.contains(semester) {
                                 semesterNameToRemove.removeAll(where: { $0 == semester })
@@ -132,7 +189,7 @@ struct ScoreView: View {
                         }
                     }
                 } label: {
-                    Label("Semester: \(String(semesterList(score).filter { !semesterNameToRemove.contains($0) }.map { $0.prefix(6) }.joined(separator: ",")))",
+                    Label("Semester: \(String(semesterList.filter { !semesterNameToRemove.contains($0) }.map { $0.prefix(6) }.joined(separator: ",")))",
                           systemImage: "square.dashed.inset.filled")
                         .lineLimit(1)
                         .hStackLeading()
@@ -170,57 +227,6 @@ struct ScoreView: View {
             .navigationBarTitle("Settings", displayMode: .inline)
         }
         .presentationDetents([.fraction(0.2)])
-    }
-
-    @ViewBuilder func makeView(with score: Score) -> some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(score.majorName)
-                            .foregroundColor(.secondary)
-                            .fontWeight(.semibold)
-                        Spacer()
-                        Text("Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
-                            .foregroundColor(.secondary)
-                            .fontWeight(.semibold)
-                    }
-                    Text("GPA: " + String(score.gpa)) // Double formatting problem noticed
-                        .font(.title2)
-                        .bold()
-                }
-                .padding(.vertical, 5)
-                ForEach(sort(score: score).sorted { $0.key > $1.key }, id: \.key) {
-                    Text($0.key)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.gray)
-                    ForEach($0.value) { course in
-                        Divider()
-                        makeView(with: course, score: score)
-                            .padding(.vertical, 5)
-                    }
-                    Divider()
-                        .padding(.bottom, 45)
-                }
-            }
-        }
-        .screenshotProtected(isProtected: preventScreenShot)
-        .sheet(isPresented: $showSettings) { sheet(score) }
-        .padding([.leading, .trailing])
-    }
-
-    var body: some View {
-        AsyncView(delegate: ScoreDelegate.shared) { $score in
-            makeView(with: score)
-                .toolbar {
-                    Button {
-                        showSettings.toggle()
-                    } label: {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-                }
-        }
-        .navigationBarTitle("Score", displayMode: .inline)
     }
 }
 

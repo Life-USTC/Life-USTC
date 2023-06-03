@@ -169,3 +169,33 @@ struct AsyncButton: View {
         }
     }
 }
+
+struct AsyncViewStatusMask: ViewModifier {
+    var status: AsyncViewStatus
+
+    func body(content: Content) -> some View {
+        ZStack {
+            if status.canShowData {
+                content
+                    .opacity(status.isRefreshing ? 0.5 : 1.0)
+            } else {
+                Color.white
+            }
+
+            if status.isRefreshing {
+                ProgressView()
+            }
+
+            if status == .failure {
+                Image(systemName: "xmark.octagon.fill")
+                    .foregroundColor(.red)
+            }
+        }
+    }
+}
+
+extension View {
+    func asyncViewStatusMask(status: AsyncViewStatus) -> some View {
+        modifier(AsyncViewStatusMask(status: status))
+    }
+}
