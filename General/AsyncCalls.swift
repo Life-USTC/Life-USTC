@@ -143,6 +143,10 @@ extension AsyncDataDelegate {
 }
 
 extension UserDefaultsADD {
+    var timeInterval: Double? {
+        nil
+    }
+
     func saveCache() throws {
         // using two exceptionCall to isolate fatal error
         exceptionCall {

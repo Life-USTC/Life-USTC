@@ -12,7 +12,6 @@ import SwiftyJSON
 class CurriculumDelegate: UserDefaultsADD {
     typealias D = [Course]
     var lastUpdate: Date?
-    var timeInterval: Double?
     var cacheName: String = "UstcUgAASCurriculumCache"
     var timeCacheName: String = "UstcUgAASLastUpdatedCurriculum"
 

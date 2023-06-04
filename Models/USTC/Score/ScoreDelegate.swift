@@ -11,7 +11,6 @@ import SwiftyJSON
 class ScoreDelegate: UserDefaultsADD {
     typealias D = Score
     var lastUpdate: Date?
-    var timeInterval: Double?
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
 

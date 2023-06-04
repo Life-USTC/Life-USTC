@@ -13,10 +13,9 @@ import WidgetKit
 class ExamDelegate: UserDefaultsADD {
     // Protocol requirements
     typealias D = [Exam]
+    var lastUpdate: Date?
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
-    var lastUpdate: Date?
-    var timeInterval: Double?
 
     var cache: [Exam] = []
     var data: [Exam] = []
