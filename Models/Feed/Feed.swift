@@ -39,6 +39,10 @@ class Feed: Codable {
                               url: exampleURL,
                               imageURL: URL(string: "https://picsum.photos/300/300"))
 
+    var feedSource: FeedSource? {
+        FeedSource.find(source)
+    }
+
     init(id: UUID = UUID(),
          title: String,
          source: String,

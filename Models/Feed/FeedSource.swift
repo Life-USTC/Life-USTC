@@ -11,10 +11,22 @@ import SwiftUI
 private let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
 
 class FeedSource {
-    static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL, name: "教务处", image: "person.crop.square.fill.and.at.rectangle"),
-                                    FeedSource(url: ustcHomePageFeedURL, name: "校主页", image: "icloud.square.fill"),
-                                    FeedSource(url: mp_ustc_official_URL, name: "中国科学技术大学公众号", image: "graduationcap"),
-                                    FeedSource(url: appFeedURL, name: "应用通知", image: "apps.iphone")]
+    static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL,
+                                               name: "教务处",
+                                               image: "person.crop.square.fill.and.at.rectangle",
+                                               color: .purple),
+                                    FeedSource(url: ustcHomePageFeedURL,
+                                               name: "校主页",
+                                               image: "icloud.square.fill",
+                                               color: .blue),
+                                    FeedSource(url: mp_ustc_official_URL,
+                                               name: "中国科学技术大学公众号",
+                                               image: "graduationcap",
+                                               color: .green),
+                                    FeedSource(url: appFeedURL,
+                                               name: "应用通知",
+                                               image: "apps.iphone",
+                                               color: .accentColor)]
 
     static var allToShow: [FeedSource] {
         let namesToRemove: [String] = .init(rawValue: UserDefaults().string(forKey: "feedSourceNameListToRemove") ?? "") ?? []
@@ -26,11 +38,16 @@ class FeedSource {
         return result
     }
 
+    static func find(_ name: String) -> FeedSource? {
+        all.first(where: { $0.name == name })
+    }
+
     var url: URL
     var name: String
     var id: UUID
     var description: String?
     var image: String? // system image
+    var color: Color?
 
     func fetchRecentPost() async throws -> [Feed] {
         let cache = FeedCache.feedSourceCache(using: id)
@@ -65,7 +82,7 @@ class FeedSource {
         }
     }
 
-    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil) {
+    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil, color: Color? = nil) {
         self.url = url
         self.name = name
         if let id {
@@ -75,6 +92,7 @@ class FeedSource {
         }
         self.description = description
         self.image = image
+        self.color = color
     }
 
     /// Return a given amount of Feed from cache, which should contain all posts

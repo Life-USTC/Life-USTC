@@ -52,20 +52,7 @@ struct FeedViewPreview: View {
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill({ () -> Color in
-                                switch feed.source {
-                                case "校主页":
-                                    return (Color.blue.opacity(0.6))
-                                case "教务处":
-                                    return (Color.purple.opacity(0.6))
-                                case "应用通知":
-                                    return (Color.accentColor.opacity(0.6))
-                                case "中国科学技术大学公众号":
-                                    return (Color.green.opacity(0.6))
-                                default:
-                                    return (Color.secondary.opacity(0.6))
-                                }
-                            }())
+                            .fill((feed.feedSource?.color ?? .secondary).opacity(0.6))
                     }
                 Text(feed.datePosted.formatted())
                     .font(.system(.caption2, design: .monospaced))
