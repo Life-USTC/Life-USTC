@@ -12,49 +12,59 @@ import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
 actor UstcUgAASClient {
-    static var shared = UstcUgAASClient(session: .shared)
+    static var shared = UstcUgAASClient()
 
-    var session: URLSession
+    var session: URLSession = .shared
     var semesterID: String {
         userDefaults.string(forKey: "semesterID") ?? "301"
     }
 
     var lastLogined: Date?
 
-    init(session: URLSession) {
-        self.session = session
-    }
-
     private func login() async throws -> Bool {
-        print("network:UstcUgAAS login called")
-        if try await !UstcCasClient.shared.requireLogin() {
-            throw BaseError.runtimeError("UstcCAS Not logined")
-        }
+        let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
+        print("network<UstcUgAAS>: login called")
 
         // jw.ustc.edu.cn login.
-        let _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!.ustcCASLoginMarkup())
+        _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!)
 
-//        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "SESSION" }) ?? false {
-//            lastLogined = .now
-//            return true
-//        }
-//        return false
-//        debugPrint(session.configuration.httpCookieStorage?.cookies)
-        lastLogined = .now
-        return true
+        // handle CAS with casClient
+        let tmpCASSession = UstcCasClient(session: session)
+        _ = try await tmpCASSession.loginToCAS(url: UgAASCASLoginURL)
+
+        // now try login url, see if that directs to home page
+        var request = URLRequest(url: UgAASCASLoginURL)
+        request.httpMethod = "GET"
+        let (_, response) = try await session.data(for: request)
+
+        print("network<UstcUgAAS>: Login finished, Cookies:")
+
+        for cookie in session.configuration.httpCookieStorage?.cookies ?? [] {
+            print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
+        }
+
+        let result = (response.url == URL(string: "https://jw.ustc.edu.cn/home")!)
+        if result {
+            lastLogined = .now
+        }
+
+        return result
     }
 
     func checkLogined() -> Bool {
-        if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
+        if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 5) {
+            print("network<UstcUgAAS>: Not logged in, [REQUIRE LOGIN]")
             return false
         }
-        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "fine_auth_token" }) ?? false
+        print("network<UstcUgAAS>: Already logged in, passing")
+        return true
     }
 
     var loginTask: Task<Bool, Error>?
 
     func requireLogin() async throws -> Bool {
         if let loginTask {
+            print("network<UstcUgAAS>: login task already running, [CREATE NEW ONE]")
             return try await loginTask.value
         }
 
@@ -63,8 +73,10 @@ actor UstcUgAASClient {
         }
 
         let task = Task {
+            print("network<UstcUgAAS>: No login task running, [CREATING NEW ONE]")
             let result = try await self.login()
             loginTask = nil
+            print("network<UstcUgAAS>: login task finished, result:\(result)")
             return result
         }
         loginTask = task

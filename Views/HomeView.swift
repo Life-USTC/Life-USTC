@@ -17,10 +17,29 @@ private struct HomeFeature {
 struct HomeView: View {
     @State var weekNumber = 0
     @State var date = Date()
-    @State var courses: [Course] = []
-    @State var tomorrow_course: [Course] = []
-    @State var exams: [Exam] = []
-    @State var status: AsyncViewStatus = .inProgress
+
+    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    var today_courses: [Course] {
+        Course.filter(curriculumDelegate.data, week: weekNumber, for: date)
+    }
+
+    var tomorrow_courses: [Course] {
+        Course.filter(curriculumDelegate.data, week: weekNumber, for: date.add(day: 1))
+    }
+
+    var curriculumStatus: AsyncViewStatus {
+        curriculumDelegate.status
+    }
+
+    @StateObject var examDelegate = ExamDelegate.shared
+    var exams: [Exam] {
+        examDelegate.data
+    }
+
+    var examStatus: AsyncViewStatus {
+        examDelegate.status
+    }
+
     @State var navigationToSettingsView = false
     @State private var datePickerShown = false
 
@@ -33,21 +52,10 @@ struct HomeView: View {
 
     func update(forceUpdate: Bool = false) {
         Task {
-            status = .inProgress
-            courses = []
-            tomorrow_course = []
-            exams = []
             weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
-            if forceUpdate {
-                try await CurriculumDelegate.shared.forceUpdate()
-                try await ExamDelegate.shared.forceUpdate()
-            }
-            CurriculumDelegate.shared.asyncBind(status: $status) {
-                courses = Course.filter($0, week: weekNumber, for: date)
-                tomorrow_course = Course.filter($0, week: weekNumber, for: date.add(day: 1))
-            }
-            ExamDelegate.shared.asyncBind($exams, status: $status)
         }
+        curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
+        examDelegate.userTriggerRefresh(forced: forceUpdate)
     }
 
     var curriculumView: some View {
@@ -62,7 +70,7 @@ struct HomeView: View {
                         .font(.headline)
                         .foregroundColor(Color.secondary)
                 }
-                CourseStackView(courses: $courses)
+                CourseStackView(courses: today_courses)
             }
 
             Spacer(minLength: 30)
@@ -77,7 +85,7 @@ struct HomeView: View {
                         .font(.headline)
                         .foregroundColor(Color.secondary)
                 }
-                CourseStackView(courses: $tomorrow_course)
+                CourseStackView(courses: tomorrow_courses)
             }
         }
     }
@@ -107,11 +115,8 @@ struct HomeView: View {
                     }
                 }
 
-                if status == .inProgress {
-                    ProgressView()
-                } else {
-                    curriculumView
-                }
+                curriculumView
+                    .asyncViewStatusMask(status: curriculumStatus)
             }
 
             Spacer(minLength: 30)
@@ -134,11 +139,8 @@ struct HomeView: View {
                     }
                 }
 
-                if status == .inProgress {
-                    ProgressView()
-                } else {
-                    ExamPreview(exams: exams)
-                }
+                ExamPreview(exams: examDelegate.data)
+                    .asyncViewStatusMask(status: examStatus)
             }
         }
         .padding(.horizontal)

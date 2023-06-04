@@ -13,8 +13,16 @@ let paddingWidth = 2.0
 struct CurriculumSettingView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
     @AppStorage("semesterID", store: userDefaults) var semesterID = "301"
-    @Binding var courses: [Course]
-    @Binding var status: AsyncViewStatus
+
+    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    var courses: [Course] {
+        curriculumDelegate.data
+    }
+
+    var status: AsyncViewStatus {
+        curriculumDelegate.status
+    }
+
     @Binding var date: Date
     @State var saveCalendarStatus = AsyncViewStatus.inProgress
     var body: some View {
@@ -33,10 +41,7 @@ struct CurriculumSettingView: View {
                     Label("Select time", systemImage: "square.3.stack.3d")
                 }
                 .onChange(of: semesterID) { _ in
-                    asyncBind($courses, status: $status) {
-                        try await CurriculumDelegate.shared.forceUpdate()
-                        return try await CurriculumDelegate.shared.parseCache()
-                    }
+                    curriculumDelegate.userTriggerRefresh()
                 }
 
                 DatePicker(selection: $date, displayedComponents: .date) {
@@ -80,9 +85,24 @@ struct CurriculumView: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
     @State var weekNumber = 0
     @State var date = Date()
-    @State var courses: [Course] = []
-    @State var status: AsyncViewStatus = .inProgress
+
+    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    var courses: [Course] {
+        Course.filter(curriculumDelegate.data, week: weekNumber, weekday: nil)
+    }
+
+    var status: AsyncViewStatus {
+        curriculumDelegate.status
+    }
+
     @State var showSettingSheet = false
+
+    func update(forceUpdate: Bool = false) {
+        Task {
+            weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+        }
+        curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
+    }
 
     var body: some View {
         mainView
@@ -99,23 +119,13 @@ struct CurriculumView: View {
                     Label("Show settings", systemImage: "gearshape")
                 }
             }
-            .navigationBarTitle("Curriculum", displayMode: .inline)
-            .task {
-                weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
-                CurriculumDelegate.shared.asyncBind(status: $status) {
-                    self.courses = Course.filter($0, week: weekNumber, weekday: nil)
-                }
-            }
-            .onChange(of: date) { newDate in
-                Task {
-                    weekNumber = await UstcUgAASClient.shared.weekNumber(for: newDate)
-                    CurriculumDelegate.shared.asyncBind(status: $status) {
-                        self.courses = Course.filter($0, week: weekNumber, weekday: nil)
-                    }
-                }
-            }
+            .navigationTitle("Curriculum")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear { update() }
+            .refreshable { update(forceUpdate: true) }
+            .onChange(of: date, perform: { _ in update() })
             .sheet(isPresented: $showSettingSheet) {
-                CurriculumSettingView(courses: $courses, status: $status, date: $date)
+                CurriculumSettingView(date: $date)
             }
     }
 
@@ -191,7 +201,7 @@ struct CurriculumView_Previews: PreviewProvider {
             CurriculumView()
         }
 
-        CurriculumSettingView(courses: .constant([]), status: .constant(.cached), date: .constant(Date()))
-            .previewDisplayName("Settings")
+//        CurriculumSettingView(courses: .constant([]), status: .constant(.cached), date: .constant(Date()))
+//            .previewDisplayName("Settings")
     }
 }

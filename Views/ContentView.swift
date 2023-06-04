@@ -118,7 +118,7 @@ struct ContentView: View {
                 casLoginSheet = true
             }
             // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.shared.login()
+            casLoginSheet = try await !UstcCasClient.shared.requireLogin()
         }
     }
 }

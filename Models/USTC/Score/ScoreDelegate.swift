@@ -9,10 +9,26 @@ import Foundation
 import SwiftyJSON
 
 class ScoreDelegate: UserDefaultsADD {
+    // Protocol requirements
     typealias D = Score
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
+    var status: AsyncViewStatus = .inProgress {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    // Parent
+    var ustcUgAASClient: UstcUgAASClient
+
+    // See ExamDelegate.shared
+    static var shared = ScoreDelegate(.shared)
+
+    // MARK: - Manually update these and saveCache()
 
     var cache = JSON()
     var data: Score = .init() {
@@ -22,17 +38,6 @@ class ScoreDelegate: UserDefaultsADD {
             }
         }
     }
-
-    var status: AsyncViewStatus = .inProgress {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    var ustcUgAASClient: UstcUgAASClient
-    static var shared = ScoreDelegate(.shared)
 
     func parseCache() async throws -> Score {
         var result = Score()
@@ -68,20 +73,14 @@ class ScoreDelegate: UserDefaultsADD {
         let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
 
         let (data, _) = try await session.data(for: request)
-
-        // MARK: END OF FUNCTION DEFINITION
-
         cache = try JSON(data: data)
-        lastUpdate = Date()
-        try saveCache()
-        self.data = try await retrive()
+
+        try await afterForceUpdate()
     }
 
     init(_ client: UstcUgAASClient) {
         ustcUgAASClient = client
-        exceptionCall {
-            try self.loadCache()
-        }
-        userTriggerRefresh(forced: false)
+
+        afterInit()
     }
 }

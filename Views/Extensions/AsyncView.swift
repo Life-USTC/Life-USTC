@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated)
 struct AsyncView<D>: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var data: D?

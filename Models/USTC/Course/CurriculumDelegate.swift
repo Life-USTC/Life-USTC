@@ -10,17 +10,35 @@ import SwiftUI
 import SwiftyJSON
 
 class CurriculumDelegate: UserDefaultsADD {
+    // Protocol requirements
     typealias D = [Course]
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASCurriculumCache"
     var timeCacheName: String = "UstcUgAASLastUpdatedCurriculum"
+    var status: AsyncViewStatus = .inProgress {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    // Parent
+    var ustcUgAASClient: UstcUgAASClient
+
+    // See ExamDelegate.shared
+    static var shared = CurriculumDelegate(.shared)
+
+    // MARK: - Manually update these and saveCache()
 
     var cache = JSON()
-    var data: [Course] = []
-    var status: AsyncViewStatus = .inProgress
-
-    var ustcUgAASClient: UstcUgAASClient
-    static var shared = CurriculumDelegate(.shared)
+    var data: [Course] = [] {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
 
     func parseCache() async throws -> [Course] {
         var result: [Course] = []
@@ -59,8 +77,8 @@ class CurriculumDelegate: UserDefaultsADD {
 
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(await UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
         cache = try JSON(data: data)
-        lastUpdate = Date()
-        try saveCache()
+
+        try await afterForceUpdate()
     }
 
     func saveToCalendar() async throws {
@@ -72,8 +90,7 @@ class CurriculumDelegate: UserDefaultsADD {
 
     init(_ client: UstcUgAASClient) {
         ustcUgAASClient = client
-        exceptionCall {
-            try self.loadCache()
-        }
+
+        afterInit()
     }
 }

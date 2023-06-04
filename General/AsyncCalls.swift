@@ -104,9 +104,10 @@ extension LastUpdateADD {
 extension AsyncDataDelegate {
     func userTriggerRefresh(forced: Bool = true) {
         Task {
-            withAnimation {
-                status = .inProgress
-            }
+            // This is disabled to continue show previous data
+//            withAnimation {
+//                status = .inProgress
+//            }
             do {
                 data = try await parseCache()
             } catch {
@@ -131,6 +132,9 @@ extension AsyncDataDelegate {
                     data = try await parseCache()
                 } catch {
                     print(error)
+                    withAnimation {
+                        status = .failure
+                    }
                     return
                 }
             }
@@ -177,6 +181,20 @@ extension UserDefaultsADD {
 
         // record disk read event
         print("cache<DISK>:\(cacheName) loaded")
+    }
+
+    func afterForceUpdate() async throws {
+        lastUpdate = Date()
+        try saveCache()
+        data = try await parseCache()
+    }
+
+    func afterInit() {
+        exceptionCall {
+            try self.loadCache()
+        }
+
+        userTriggerRefresh(forced: false)
     }
 }
 

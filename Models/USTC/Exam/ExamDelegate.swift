@@ -16,10 +16,13 @@ class ExamDelegate: UserDefaultsADD {
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
-
-    var cache: [Exam] = []
-    var data: [Exam] = []
-    var status: AsyncViewStatus = .inProgress
+    var status: AsyncViewStatus = .inProgress {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
 
     // Parent
     var ustcUgAASClient: UstcUgAASClient
@@ -34,6 +37,15 @@ class ExamDelegate: UserDefaultsADD {
     // and there aren't supposed to be two instance running at the same time to avoid conflict
     // TODO: Add support for multiple instance with different cache position
     static var shared = ExamDelegate()
+
+    var cache: [Exam] = []
+    var data: [Exam] = [] {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
 
     func parseCache() async throws -> [Exam] {
         let hiddenExamName = (
@@ -85,17 +97,15 @@ class ExamDelegate: UserDefaultsADD {
                                      classRoomDistrict: textList[6],
                                      description: textList[7]))
         }
-
-        lastUpdate = Date()
         cache = fetchedExams
+
+        try await afterForceUpdate()
         WidgetCenter.shared.reloadAllTimelines()
-        try saveCache()
     }
 
     init(_ client: UstcUgAASClient = .shared) {
         ustcUgAASClient = client
-        exceptionCall {
-            try self.loadCache()
-        }
+
+        afterInit()
     }
 }

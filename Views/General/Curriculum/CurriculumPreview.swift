@@ -97,7 +97,7 @@ struct CurriculumPreview: View {
 }
 
 struct CourseStackView: View {
-    @Binding var courses: [Course]
+    var courses: [Course]
     var body: some View {
         VStack {
             ForEach(courses) { course in

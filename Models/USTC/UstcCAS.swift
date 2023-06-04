@@ -49,11 +49,11 @@ actor UstcCasClient {
         username.isEmpty || password.isEmpty
     }
 
-    func getLtTokenFromCAS() async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    func getLtTokenFromCAS(url: URL? = nil) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
-        let (data, response) = try await session.data(from: ustcLoginUrl)
+        let (data, _) = try await session.data(from: url ?? ustcLoginUrl)
         guard let dataString = String(data: data, encoding: .utf8) else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
@@ -62,19 +62,22 @@ actor UstcCasClient {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
 
-        let httpRes: HTTPURLResponse = (response as? HTTPURLResponse)!
-        return (String(match.0), HTTPCookie.cookies(withResponseHeaderFields: httpRes.allHeaderFields as! [String: String], for: httpRes.url!))
+        let ltToken = String(match.0)
+
+        print("network<UstcCAS>: LT-TOKEN GET: \(ltToken)")
+
+        return (ltToken, session.configuration.httpCookieStorage?.cookies ?? [])
     }
 
-    private func loginToCAS() async throws -> Bool {
+    func loginToCAS(url: URL? = nil) async throws -> Bool {
         if precheckFails {
-            throw BaseError.runtimeError("precheck fails")
+            throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
         }
-        let session = URLSession.shared
-        let (ltToken, cookies) = try await getLtTokenFromCAS()
+        print("network<UstcCAS>: login called")
+
+        let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
         // - For POST request, the query items should be in the body, here'e the correct way to do it
-
         var components = URLComponents(url: ustcLoginUrl, resolvingAgainstBaseURL: true)!
         components.queryItems = [URLQueryItem(name: "model", value: "uplogin.jsp"),
                                  URLQueryItem(name: "CAS_LT", value: ltToken),
@@ -95,11 +98,14 @@ actor UstcCasClient {
         request.setValue("https://passport.ustc.edu.cn/login", forHTTPHeaderField: "Referer")
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        let (data, response) = try await session.data(for: request)
-//        debugPrint(request.url?.absoluteString)
-//        debugPrint(String(data: request.httpBody!, encoding: .utf8))
-//        debugPrint(String(data: data, encoding: .utf8), response)
-//        debugPrint(session.configuration.httpCookieStorage?.cookies)
+        let _ = try await session.data(for: request)
+
+        print("network<UstcCAS>: Login To CAS Finished, Cookies:")
+
+        for cookie in session.configuration.httpCookieStorage?.cookies ?? [] {
+            print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
+        }
+
         if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
             lastLogined = .now
             return true
@@ -109,23 +115,11 @@ actor UstcCasClient {
 
     @available(*, deprecated)
     func login(undeterimined _: Bool = false) async throws -> Bool {
-        print("network:UstcCAS login called")
-//        while true {
-//            do {
-//                if try await loginToCAS() {
-//                    return true
-//                }
-//            } catch {}
-//            if undeterimined {
-//                return false
-//            }
-//            try await Task.sleep(for: .seconds(2))
-//        }
-        return try await loginToCAS()
+        try await loginToCAS()
     }
 
     func checkLogined() -> Bool {
-        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 15) {
+        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 5) {
             return false
         }
         let session = URLSession.shared
@@ -136,16 +130,20 @@ actor UstcCasClient {
 
     func requireLogin() async throws -> Bool {
         if let loginTask {
+            print("network<UstcCAS>: login task already running, [CREATE NEW ONE]")
             return try await loginTask.value
         }
 
         if checkLogined() {
+            print("network<UstcCAS>: Already logged in, passing")
             return true
         }
 
         let task = Task {
-            let result = try await self.login()
+            print("network<UstcCAS>: No login task running, [CREATING NEW ONE]")
+            let result = try await self.loginToCAS()
             loginTask = nil
+            print("network<UstcCAS>: login task finished, result: \(result)")
             return result
         }
         loginTask = task

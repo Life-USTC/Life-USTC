@@ -57,25 +57,37 @@ private struct SingleExamView: View {
 }
 
 struct ExamView: View {
+    @StateObject var examDelegate = ExamDelegate.shared
+    var exams: [Exam] {
+        examDelegate.data
+    }
+
+    var status: AsyncViewStatus {
+        examDelegate.status
+    }
+
     var body: some View {
-        AsyncView(delegate: ExamDelegate.shared) { $exams in
-            ScrollView(showsIndicators: false) {
-                ForEach(exams) { exam in
-                    SingleExamView(exam: exam)
-                    Divider()
-                }
-                .padding(.top, 25)
+        ScrollView(showsIndicators: false) {
+            ForEach(exams) { exam in
+                SingleExamView(exam: exam)
+                Divider()
             }
-            .padding(.horizontal, 25)
-            .toolbar {
-                AsyncButton(bigStyle: false) {
-                    try await Exam.saveToCalendar(exams)
-                } label: { _ in
-                    Image(systemName: "square.and.arrow.down")
-                }
+            .padding(.top, 25)
+        }
+        .padding(.horizontal, 25)
+        .asyncViewStatusMask(status: status)
+        .refreshable {
+            examDelegate.userTriggerRefresh()
+        }
+        .toolbar {
+            AsyncButton(bigStyle: false) {
+                try await Exam.saveToCalendar(exams)
+            } label: { _ in
+                Image(systemName: "square.and.arrow.down")
             }
         }
-        .navigationBarTitle("Exam", displayMode: .inline)
+        .navigationTitle("Exam")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
