@@ -67,12 +67,24 @@ struct ExamView: View {
     }
 
     var body: some View {
+        makeView(with: exams)
+    }
+    
+    func makeView(with exams: [Exam]) -> some View {
         ScrollView(showsIndicators: false) {
-            ForEach(exams) { exam in
-                SingleExamView(exam: exam)
-                Divider()
+            if exams.isEmpty {
+                VStack {
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                        .padding(.vertical, 10)
+                }
+            } else {
+                ForEach(exams) { exam in
+                    SingleExamView(exam: exam)
+                    Divider()
+                }
+                .padding(.top, 25)
             }
-            .padding(.top, 25)
         }
         .padding(.horizontal, 25)
         .asyncViewStatusMask(status: status)

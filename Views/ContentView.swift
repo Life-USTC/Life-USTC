@@ -211,9 +211,7 @@ private struct ContentViewTabBarView: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
             .onTapGesture {
-                withAnimation {
-                    selection = tab
-                }
+                selection = tab
             }
             .background(
                 VStack {

@@ -135,7 +135,7 @@ extension Course {
     }
 
     var clockTime: String {
-        _startTime.clockTime + " - " + _endTime.clockTime
+        _startTime.clockTime + "/" + _endTime.clockTime
     }
 
     static func filter(_ courses: [Course], week: Int, weekday: Int? = weekday()) -> [Course] {

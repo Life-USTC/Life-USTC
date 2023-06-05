@@ -25,23 +25,40 @@ struct ExamPreview: View {
     func makeView(with exams: [Exam]) -> some View {
         VStack {
             ForEach(exams) { exam in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(exam.className)
-                            .strikethrough(exam.isFinished)
-                        Text(exam.classRoomName)
-                            .font(.subheadline)
-                            .foregroundColor(Color.gray)
-                    }
+                VStack {
                     Spacer()
-                    VStack(alignment: .trailing) {
-                        Text(exam.rawTime.split(separator: " ")[0])
-                            .fontWeight(.bold)
-                        Text(exam.rawTime.split(separator: " ")[1])
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(exam.className)
+                                .fontWeight(.bold)
+                                .strikethrough(exam.isFinished)
+                            Text(exam.classRoomName)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing) {
+                            Text(exam.rawTime.split(separator: " ")[0])
+                            Text(exam.rawTime.split(separator: " ")[1])
+                                .font(.caption)
+                                .foregroundColor(Color.secondary)
+                        }
+                        .font(.system(.body, design: .monospaced))
                     }
-                    .font(.system(.subheadline, design: .monospaced))
+                    .padding(.horizontal, 8)
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(LinearGradient(colors: randomColor,
+                                             startPoint: .topLeading,
+                                             endPoint: .bottomTrailing))
+                        .frame(height: 5)
                 }
-                Divider()
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(style: .init(lineWidth: 1))
+                        .fill(Color.gray.opacity(0.3))
+                }
+                .frame(height: 60)
             }
         }
     }
@@ -55,9 +72,7 @@ struct ExamPreview: View {
                         .symbolRenderingMode(.hierarchical)
                         .fontWeight(.light)
                         .font(.largeTitle)
-                        .foregroundStyle(LinearGradient(colors: randomColor,
-                                                        startPoint: .topLeading,
-                                                        endPoint: .bottomTrailing))
+                        .foregroundStyle(Color.orange)
                 }
 
                 Spacer()
@@ -68,9 +83,7 @@ struct ExamPreview: View {
             .padding(.horizontal, 8)
             Spacer()
             RoundedRectangle(cornerRadius: 2)
-                .fill(LinearGradient(colors: randomColor,
-                                     startPoint: .topLeading,
-                                     endPoint: .bottomTrailing))
+                .fill(Color.orange)
                 .frame(height: 5)
         }
         .background {

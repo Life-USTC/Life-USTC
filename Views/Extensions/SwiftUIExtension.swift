@@ -181,6 +181,17 @@ extension WidgetFamily: CaseIterable {
     }
 }
 
+extension String {
+    func truncated(length: Int) -> String {
+        if self.count > length {
+            let endIndex = self.index(self.startIndex, offsetBy: length)
+            return String(self[..<endIndex]) + "..." // Add an ellipsis at the end
+        } else {
+            return self
+        }
+    }
+}
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)

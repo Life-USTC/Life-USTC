@@ -22,8 +22,8 @@ private struct LessonView: View {
     let lesson: Lesson
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 10)
-            .fill(lesson.color ?? .red)
+        RoundedRectangle(cornerRadius: 5)
+            .fill(lesson.color ?? .red.opacity(0.7))
             .opacity(0.5)
             .overlay {
                 Text(lesson.courseName)
@@ -65,8 +65,8 @@ private struct SingleClassroomView: View {
 
         return GeometryReader { geo in
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(.gray.opacity(0.5))
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(.gray.opacity(0.4))
                     .opacity(isUp ? 0.7 : 0.3)
                 ForEach(filteredClass) { lesson in
                     LessonView(lesson: lesson)
@@ -96,6 +96,7 @@ private struct SingleClassroomView: View {
                 roomText
                 makeView(with: lessons, isUp: currentTimeInt <= baseMiddle)
             }
+            .padding(.horizontal, 3)
         } else {
             VStack(spacing: 2) {
                 HStack {
@@ -104,6 +105,7 @@ private struct SingleClassroomView: View {
                 }
                 makeView(with: lessons, isUp: false)
             }
+            .padding(.horizontal, 3)
         }
     }
 }
@@ -214,3 +216,4 @@ struct ClassroomView: View {
         .sheet(isPresented: $showSheet, content: settingSheet)
     }
 }
+

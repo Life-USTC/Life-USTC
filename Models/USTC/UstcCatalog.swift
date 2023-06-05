@@ -113,7 +113,7 @@ class UstcCatalogClient {
                              courseName: subJson["courseName"].stringValue,
                              startTime: subJson["start"].stringValue,
                              endTime: subJson["end"].stringValue,
-                             color: .blue)
+                             color: .blue.opacity(0.7))
             result.append(tmp)
         }
 
@@ -122,7 +122,7 @@ class UstcCatalogClient {
                              courseName: subJson["courseName"].stringValue,
                              startTime: subJson["start"].stringValue,
                              endTime: subJson["end"].stringValue,
-                             color: .green)
+                             color: .green.opacity(0.7))
             result.append(tmp)
         }
 

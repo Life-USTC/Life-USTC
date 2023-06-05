@@ -12,6 +12,7 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
     func next() -> UInt64 { UInt64(drand48() * Double(UInt64.max)) }
 }
 
+
 struct CurriculumPreview: View {
     @State var courses: [Course]? = nil
     @State var status: AsyncViewStatus = .inProgress
@@ -88,9 +89,7 @@ struct CurriculumPreview: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 10)
-                .fill(LinearGradient(colors: exampleGradientList.randomElement() ?? [],
-                                     startPoint: .topLeading,
-                                     endPoint: .bottomTrailing))
+                .fill(Color.orange)
         }
         .frame(height: 50)
     }
@@ -98,6 +97,7 @@ struct CurriculumPreview: View {
 
 struct CourseStackView: View {
     var courses: [Course]
+    @State var randomColor = exampleGradientList.randomElement() ?? []
     var body: some View {
         VStack {
             ForEach(courses) { course in
@@ -105,10 +105,13 @@ struct CourseStackView: View {
                     Spacer()
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(course.name)
+                            Text(course.name.truncated(length: 10))
                                 .fontWeight(.bold)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                
                             Text(course.classPositionString)
-                                .font(.caption2)
+                                .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
@@ -118,7 +121,9 @@ struct CourseStackView: View {
                     .padding(.horizontal, 8)
                     Spacer()
                     RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.accentColor)
+                        .fill(LinearGradient(colors: randomColor,
+                                             startPoint: .topLeading,
+                                             endPoint: .bottomTrailing))
                         .frame(height: 5)
                 }
                 .background {
