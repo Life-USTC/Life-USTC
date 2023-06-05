@@ -1,0 +1,103 @@
+{
+    "sources": [
+        {
+            "id": "ustc_home",
+            "locales": {
+                "zh": "校主页"
+            },
+            "url": "https://www.ustc.edu.cn/system/resource/code/rss/rssfeedg.jsp?type=list&treeid=1002&viewid=249541&mode=10&dbname=vsb&owner=1585251974&contentid=221571,221572,221573,221574",
+            "icons": {
+                "sf-symbols": "icloud.square.fill"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "ustc_oaa",
+            "locales": {
+                "zh": "教务处"
+            },
+            "url": "https://www.teach.ustc.edu.cn/category/notice/feed",
+            "icons": {
+                "sf-symbols": "person.crop.square.fill.and.at.rectangle"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "life_ustc",
+            "locales": {
+                "zh": "应用通知"
+            },
+            "url": "https://life-ustc.tiankaima.dev/notices/index.xml",
+            "icons": {
+                "sf-symbols": "apps.iphone"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_official",
+            "locales": {
+                "zh": "中国科学技术大学（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_main.xml",
+            "icons": {
+                "sf-symbols": "graduationcap"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_graduate_student_union",
+            "locales": {
+                "zh": "研究生会（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_graduate_student_union.xml",
+            "icons": {
+                "sf-symbols": "message"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_youth_league_committee",
+            "locales": {
+                "zh": "青春科大（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_youth_league_committee.xml",
+            "icons": {
+                "sf-symbols": "message"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_undergraduate_admission_office",
+            "locales": {
+                "zh": "本科招生（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_undergraduate_admission_office.xml",
+            "icons": {
+                "sf-symbols": "message"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_sgy",
+            "locales": {
+                "zh": "少年班学院（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_sgy.xml",
+            "icons": {
+                "sf-symbols": "message"
+            },
+            "color": "#ff0000"
+        },
+        {
+            "id": "mp_ustc_undergraduate_student_union",
+            "locales": {
+                "zh": "校学生会（公众号）"
+            },
+            "url": "https://rss-cdn.tiankaima.dev/xml/mp_ustc_undergraduate_student_union.xml",
+            "icons": {
+                "sf-symbols": "message"
+            },
+            "color": "#ff0000"
+        }
+    ]
+}

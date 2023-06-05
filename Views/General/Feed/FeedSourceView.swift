@@ -34,6 +34,7 @@ struct AllSourceView: View {
             appDelegate.clearBadgeNumber()
             return try await FeedSource.recentFeeds(number: nil)
         } refreshData: {
+            try await AutoUpdateDelegate.feedList.update()
             for source in FeedSource.allToShow {
                 _ = try await source.forceUpdatePost()
             }

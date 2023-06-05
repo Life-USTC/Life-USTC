@@ -65,6 +65,7 @@
 		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
 		56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */ = {isa = PBXBuildFile; productRef = 56A7D71729DD20AD00EE7880 /* LoremSwiftum */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
+		56B9F3152A2E028A00DE8838 /* feed_source.json in Resources */ = {isa = PBXBuildFile; fileRef = 56B9F3142A2E028A00DE8838 /* feed_source.json */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionCalls.swift */; };
 		56BE91F92965D05A00822C98 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 56BE91F82965D05A00822C98 /* README.md */; };
@@ -186,6 +187,7 @@
 		56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWidget.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		56B9F3142A2E028A00DE8838 /* feed_source.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = feed_source.json; sourceTree = "<group>"; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
 		56BE91F62963EF1600822C98 /* ExceptionCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionCalls.swift; sourceTree = "<group>"; };
 		56BE91F82965D05A00822C98 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -374,6 +376,7 @@
 		56558802294D75100010E060 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				56B9F3142A2E028A00DE8838 /* feed_source.json */,
 				56AC72FB294A012F00A60F47 /* Assets.xcassets */,
 				565587EC294B46900010E060 /* Localizable.strings */,
 				56E8AD712973EC0F009006D0 /* UstcRooms.json */,
@@ -727,6 +730,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56B9F3152A2E028A00DE8838 /* feed_source.json in Resources */,
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
@@ -1030,7 +1034,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				"OTHER_SWIFT_FLAGS[sdk=iphonesimulator*]" = "-D IOS_SIMULATOR";
@@ -1079,7 +1083,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
@@ -1116,7 +1120,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1148,7 +1152,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";

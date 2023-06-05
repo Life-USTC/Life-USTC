@@ -7,46 +7,45 @@
 
 import FeedKit
 import SwiftUI
+import SwiftyJSON
 
 private let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
 
 class FeedSource {
-    static var all: [FeedSource] = [FeedSource(url: ustcOAAFeedURL,
-                                               name: "教务处",
-                                               image: "person.crop.square.fill.and.at.rectangle",
-                                               color: .purple),
-                                    FeedSource(url: ustcHomePageFeedURL,
-                                               name: "校主页",
-                                               image: "icloud.square.fill",
-                                               color: .blue),
-                                    FeedSource(url: mp_ustc_official_URL,
-                                               name: "中国科学技术大学公众号",
-                                               image: "graduationcap",
-                                               color: .green),
-                                    FeedSource(url: mp_ustc_graduate_student_union_URL,
-                                               name: "研究生会公众号",
-                                               image: "person.2.square.stack.fill",
-                                               color: .green),
-                                    FeedSource(url: mp_ustc_youth_league_committee_URL,
-                                               name: "青春科大公众号",
-                                               image: "person.2.square.stack.fill",
-                                               color: .green),
-                                    FeedSource(url: mp_ustc_undergraduate_admission_office_URL,
-                                               name: "本招公众号",
-                                               image: "person.2.square.stack.fill",
-                                               color: .green),
-                                    FeedSource(url: mp_ustc_sgy_URL,
-                                               name: "少年班学院公众号",
-                                               image: "person.2.square.stack.fill",
-                                               color: .green),
-                                    FeedSource(url: mp_ustc_undergraduate_student_union_URL,
-                                               name: "校学生会公众号",
-                                               image: "person.2.square.stack.fill",
-                                               color: .green),
-                                    FeedSource(url: appFeedURL,
-                                               name: "应用通知",
-                                               image: "apps.iphone",
-                                               color: .accentColor)]
+    static var all: [FeedSource] {
+        do {
+            let data = try AutoUpdateDelegate.feedList.retriveLocal()
+            var data_json: JSON?
+            if let data {
+                data_json = try JSON(data: data)
+            } else {
+                if let path = Bundle.main.path(forResource: "feed_source", ofType: "json") {
+                    let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                    data_json = try JSON(data: data)
+                }
+            }
+
+            guard let data_json else {
+                return []
+            }
+
+            var result: [FeedSource] = []
+            for (_, source) in data_json["sources"] {
+                let url = URL(string: source["url"].stringValue)!
+                let name = source["locales"]["zh"].stringValue
+                let description = source["description"].stringValue
+                let image = source["icons"]["sf-symbols"].string ?? "newspaper"
+                let colorString = source["color"].string // hex string with "#"
+                let color = colorString != nil ? Color(hex: colorString!) : nil
+                result.append(FeedSource(url: url, name: name, description: description, image: image, color: color))
+            }
+
+            return result
+        } catch {
+            print(error)
+            return []
+        }
+    }
 
     static var allToShow: [FeedSource] {
         let namesToRemove: [String] = .init(rawValue: UserDefaults().string(forKey: "feedSourceNameListToRemove") ?? "") ?? []
@@ -150,6 +149,70 @@ class FeedSource {
             return Array(result.prefix(number))
         } else {
             return result
+        }
+    }
+}
+
+// Delegate to update a given file from URL, and store it locally in the app's document directory
+// also provides method to retrive data from local file, asynchronizely
+class AutoUpdateDelegate {
+    var name: String
+    var remoteURL: URL
+    var localURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(name)
+    }
+
+    init(name: String, remoteURL: URL) {
+        self.name = name
+        self.remoteURL = remoteURL
+    }
+
+    func update() async throws {
+        print("network<\(name)>: updating from url \(remoteURL)")
+        let data = try await URLSession.shared.data(from: remoteURL)
+        try data.0.write(to: localURL)
+    }
+
+    func isAvailable() -> Bool {
+        FileManager.default.fileExists(atPath: localURL.path)
+    }
+
+    func retrive() async throws -> Data {
+        if isAvailable() {
+            print("network<\(name)>: local cache found, using it")
+            return try Data(contentsOf: localURL)
+        } else {
+            print("network<\(name)>: local cache not found, updating")
+            try await update()
+            return try await retrive()
+        }
+    }
+
+    func retriveLocal() throws -> Data? {
+        if isAvailable() {
+            print("network<\(name)>: local cache found, using it")
+            return try Data(contentsOf: localURL)
+        } else {
+            print("network<\(name)>: local cache not found, updating for next time")
+            Task {
+                try? await update()
+            }
+            return nil
+        }
+    }
+}
+
+let feedListURL = URL(string: "https://life-ustc.tiankaima.dev/feed_source.json")!
+extension AutoUpdateDelegate {
+    static var feedList: AutoUpdateDelegate = .init(name: "feed_source.json", remoteURL: feedListURL)
+
+    static var allFiles: [AutoUpdateDelegate] {
+        [feedList]
+    }
+
+    static func updateAll() async throws {
+        for file in allFiles {
+            try await file.update()
         }
     }
 }
