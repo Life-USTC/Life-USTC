@@ -15,11 +15,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let _ = LUJSRuntime.shared
     }
 
+    /// What to execute after 1.0.2 update
+    func version1_0_2Update() {
+        // if inside userDefaults, key version is greater than 1.0.2, then return
+        if let version = userDefaults.string(forKey: "version"), version > "1.0.2" {
+            return
+        }
+
+        // if inside userDefaults, key feedSourceCache exists, then delete it
+        if userDefaults.object(forKey: "feedSourceCache") != nil {
+            userDefaults.removeObject(forKey: "feedSourceCache")
+        }
+
+        // set version to 1.0.2
+        userDefaults.set("1.0.2", forKey: "version")
+    }
+
 #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator
     // as XCFramework lib isn't fully supported with Apple chips
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
+        version1_0_2Update()
         return true
     }
 
@@ -31,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 #else
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
+        version1_0_2Update()
         if userDefaults.bool(forKey: "useNotification") {
             startTPNS()
         }

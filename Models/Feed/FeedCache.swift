@@ -8,7 +8,8 @@
 import SwiftUI
 
 /// Abstract about Feed cache process
-class FeedCache {
+// After v1.0.2, use document/FeedSourceCache.json to store FeedSourceCache
+enum FeedCache {
     /// Maintain an array of Feed, id linked with single FeedSource
     struct FeedSourceCache: Codable {
         var id: UUID
@@ -16,12 +17,17 @@ class FeedCache {
         var lastUpdated: Date
     }
 
+    static var fileURL: URL {
+        try! FileManager.default
+            .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            .appendingPathComponent("FeedSourceCache.json")
+    }
+
     private static var feedSourceCaches: [FeedSourceCache] = {
         do {
             let decoder = JSONDecoder()
-            if let feedSourceCacheData = userDefaults.data(forKey: "feedSourceCache") {
-                return try decoder.decode([FeedSourceCache].self, from: feedSourceCacheData)
-            }
+            let feedSourceCacheData = try Data(contentsOf: fileURL)
+            return try decoder.decode([FeedSourceCache].self, from: feedSourceCacheData)
         } catch {}
         return []
     }()
@@ -29,15 +35,17 @@ class FeedCache {
     /// Load everything from disk
     static func load() throws {
         let decoder = JSONDecoder()
-        if let feedSourceCacheData = userDefaults.data(forKey: "feedSourceCache") {
-            feedSourceCaches = try decoder.decode([FeedSourceCache].self, from: feedSourceCacheData)
-        }
+        let feedSourceCacheData = try Data(contentsOf: fileURL)
+        feedSourceCaches = try decoder.decode([FeedSourceCache].self, from: feedSourceCacheData)
     }
 
     static func save() throws {
         let encoder = JSONEncoder()
         let feedSourceCacheData = try encoder.encode(feedSourceCaches)
-        userDefaults.set(feedSourceCacheData, forKey: "feedSourceCache")
+        let fileURL = try FileManager.default
+            .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            .appendingPathComponent("FeedSourceCache.json")
+        try feedSourceCacheData.write(to: fileURL)
     }
 
     static func update(using id: UUID, with: [Feed]) {
