@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(*, deprecated)
 struct AsyncView<D>: View {
     @State var status: AsyncViewStatus = .inProgress
     @State var data: D?
@@ -35,6 +34,7 @@ struct AsyncView<D>: View {
         self.refreshData = refreshData
     }
 
+    @available(*, deprecated)
     init<AsyncDataDelegateType: AsyncDataDelegate>
     (delegate: AsyncDataDelegateType,
      showReloadButton: Bool = true,
@@ -110,47 +110,46 @@ struct AsyncView<D>: View {
 
 struct AsyncButton: View {
     var function: () async throws -> Void
-    var makeView: (AsyncViewStatus) -> AnyView
-    @State var status = AsyncViewStatus.waiting
-    var bigStyle = true
+    var makeView: () -> AnyView
+    var bigStyle = false
 
-    init(bigStyle: Bool = true, function: @escaping () async throws -> Void, label: @escaping (AsyncViewStatus) -> any View) {
+    @State var status: AsyncViewStatus? = nil
+
+    @available(*, deprecated)
+    init(bigStyle: Bool = true,
+         function: @escaping () async throws -> Void,
+         label: @escaping () -> any View)
+    {
         self.function = function
-        makeView = { AnyView(label($0)) }
+        makeView = { AnyView(label()) }
         self.bigStyle = bigStyle
+    }
+
+    init(function: @escaping () async throws -> Void,
+         label: @escaping () -> any View)
+    {
+        self.function = function
+        makeView = { AnyView(label()) }
     }
 
     var mainView: some View {
         Button {
-            asyncBind(.constant(()), status: $status) {
+            asyncBind(.constant(()), status: $status ?? .inProgress) {
                 try await function()
             }
         } label: {
-            switch status {
-            case .waiting:
-                // Idle mode:
-                makeView(.waiting)
-            case .cached:
-                // TODO: Why should a button have a status of cached??
-                if bigStyle {
-                    makeView(.success)
-                } else {
-                    Image(systemName: "checkmark")
-                }
-            case .success:
-                if bigStyle {
-                    makeView(.success)
-                } else {
-                    Image(systemName: "checkmark")
-                }
-            case .inProgress:
-                if bigStyle {
-                    makeView(.inProgress)
-                } else {
+            if bigStyle {
+                makeView()
+                    .asyncViewStatusMask(status: status)
+            } else {
+                if status?.isRefreshing ?? false {
                     ProgressView()
+                } else if status == .failure {
+                    Image(systemName: "xmark.octagon.fill")
+                        .foregroundColor(.red)
+                } else {
+                    makeView()
                 }
-            case .failure:
-                FailureView(bigStyle: bigStyle)
             }
         }
     }
@@ -172,18 +171,18 @@ struct AsyncButton: View {
 }
 
 struct AsyncViewStatusMask: ViewModifier {
-    var status: AsyncViewStatus
+    var status: AsyncViewStatus?
 
     func body(content: Content) -> some View {
         ZStack {
-            if status.canShowData {
+            if status?.canShowData ?? true {
                 content
-                    .opacity(status.isRefreshing ? 0.5 : 1.0)
+                    .opacity(status?.isRefreshing ?? false ? 0.5 : 1.0)
             } else {
                 Color.white
             }
 
-            if status.isRefreshing {
+            if status?.isRefreshing ?? false {
                 ProgressView()
             }
 
@@ -196,7 +195,7 @@ struct AsyncViewStatusMask: ViewModifier {
 }
 
 extension View {
-    func asyncViewStatusMask(status: AsyncViewStatus) -> some View {
+    func asyncViewStatusMask(status: AsyncViewStatus?) -> some View {
         modifier(AsyncViewStatusMask(status: status))
     }
 }

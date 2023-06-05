@@ -119,7 +119,7 @@ struct CASLoginView: View {
 
                     Spacer()
 
-                    Button {
+                    AsyncButton {
                         checkAndLogin()
                     } label: {
                         Text("Check & Login")
@@ -153,7 +153,7 @@ struct CASLoginView: View {
         Task {
             await UstcCasClient.shared.clearLoginStatus()
             await URLSession.shared.reset()
-            let result = try await UstcCasClient.shared.login(undeterimined: true)
+            let result = try await UstcCasClient.shared.loginToCAS()
             if result {
                 if isInSheet {
                     showSuccessAlert = true

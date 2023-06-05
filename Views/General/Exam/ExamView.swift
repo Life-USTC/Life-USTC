@@ -82,7 +82,7 @@ struct ExamView: View {
         .toolbar {
             AsyncButton(bigStyle: false) {
                 try await Exam.saveToCalendar(exams)
-            } label: { _ in
+            } label: {
                 Image(systemName: "square.and.arrow.down")
             }
         }

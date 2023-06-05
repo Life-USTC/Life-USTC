@@ -202,7 +202,6 @@ extension UserDefaultsADD {
 
 /// Create an async task with given function, and pass the result to data, notify the View with status
 /// - Deprecated: Avoid calling this function in most position, use @Published and @StateObject to listen to change in Model
-@available(*, deprecated)
 func asyncBind<T>(_ data: Binding<T>,
                   status: Binding<AsyncViewStatus>,
                   _ function: @escaping () async throws -> T)

@@ -12,7 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @Published var tpnsLog: String = ""
 
     func startJSRuntime() {
-        let runtime = LUJSRuntime.shared
+        let _ = LUJSRuntime.shared
     }
 
 #if IOS_SIMULATOR

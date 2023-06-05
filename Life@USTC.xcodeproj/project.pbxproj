@@ -11,10 +11,6 @@
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
-		56128F51298D38FE0080A9F7 /* UstcWeixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F4F298D38FE0080A9F7 /* UstcWeixin.swift */; };
-		56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F53298D3D2D0080A9F7 /* HealthCheck.swift */; };
-		56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56128F58298D45030080A9F7 /* HealthCheckPreview.swift */; };
 		56143F6B295EDEA5008CE454 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6C295EE47A008CE454 /* AsyncCalls.swift */; };
 		5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
@@ -784,7 +780,6 @@
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
 				56BE91FB296677A300822C98 /* SwiftExtension.swift in Sources */,
-				56128F59298D45030080A9F7 /* HealthCheckPreview.swift in Sources */,
 				565A11B829FF565E00310C8B /* WelcomeView.swift in Sources */,
 				5627958B2A08F382009D398E /* JSRuntime.swift in Sources */,
 				56E8AD6A296FE880009006D0 /* CourseScore.swift in Sources */,
@@ -802,14 +797,12 @@
 				56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
 				56E94E27298A77D00085241B /* NotificationPage.swift in Sources */,
-				56128F50298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */,
 				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
 				56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */,
 				56E94E23298A77790085241B /* AboutPage.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSource.swift in Sources */,
-				56128F54298D3D2D0080A9F7 /* HealthCheck.swift in Sources */,
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				56E94E29298A77F80085241B /* FeedPage.swift in Sources */,
 				56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */,
@@ -837,7 +830,6 @@
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				56734CE9297D86F200DBB45F /* UstcCatalog.swift in Sources */,
 				56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */,
-				56128F51298D38FE0080A9F7 /* UstcWeixin.swift in Sources */,
 				56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */,
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
