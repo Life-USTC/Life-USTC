@@ -69,7 +69,7 @@ struct ExamView: View {
     var body: some View {
         makeView(with: exams)
     }
-    
+
     func makeView(with exams: [Exam]) -> some View {
         ScrollView(showsIndicators: false) {
             if exams.isEmpty {

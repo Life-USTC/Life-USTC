@@ -12,7 +12,6 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
     func next() -> UInt64 { UInt64(drand48() * Double(UInt64.max)) }
 }
 
-
 struct CurriculumPreview: View {
     @State var courses: [Course]? = nil
     @State var status: AsyncViewStatus = .inProgress
@@ -50,7 +49,7 @@ struct CurriculumPreview: View {
             }
         }
 #if DEBUG
-            .toolbar {
+        .toolbar {
                 DatePicker(selection: $date, displayedComponents: .date) {}
             }
 #endif
@@ -109,7 +108,7 @@ struct CourseStackView: View {
                                 .fontWeight(.bold)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
-                                
+
                             Text(course.classPositionString)
                                 .font(.caption)
                                 .foregroundColor(.secondary)

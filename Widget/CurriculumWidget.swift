@@ -58,63 +58,70 @@ struct CurriculumWidgetEntryView: View {
         case .systemSmall:
             return 1
         case .systemMedium:
-            return 4
+            return 2
         case .systemLarge:
-            return 7
+            return 5
         case .systemExtraLarge:
-            return 7
+            return 5
         default:
             return 0
         }
     }
 
     var noMoreCurriculumView: some View {
-        VStack {
-            Spacer()
-
+        VStack(alignment: .center, spacing: 20) {
             Image(systemName: "moon.stars")
-                .font(.largeTitle)
+                .font(.system(size: 30))
                 .fontWeight(.regular)
-                .foregroundColor(.accentColor)
-
+                .frame(width: 40, height: 40)
+                .padding(5)
+                .fontWeight(.heavy)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.mint)
+                )
             Text("No more course today!")
-
-            Spacer()
-
-            Text("Open the app to make sure though...")
-                .font(.caption2)
-                .foregroundColor(.gray)
+                .font(.system(.subheadline, design: .monospaced))
         }
         .padding()
     }
 
     var mainView: some View {
-        VStack(alignment: .center, spacing: 7) {
+        VStack(alignment: .leading, spacing: 7) {
+            Text("Next")
+                .padding(.horizontal, 5)
+                .fontWeight(.heavy)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.mint)
+                )
             Text(courseToShow.name)
                 .lineLimit(2)
                 .font(.headline)
-            VStack(alignment: .center, spacing: -3) {
+            Spacer(minLength: 3)
+            VStack(alignment: .leading) {
                 HStack {
                     Text(courseToShow._startTime.clockTime)
-                        .font(.headline)
-                        .foregroundColor(.accentColor)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.mint)
+                    Spacer()
+                    Text(courseToShow.classTeacherName)
+                        .font(.subheadline)
+                        .foregroundColor(.gray.opacity(0.8))
                 }
                 HStack {
                     Text(courseToShow._endTime.clockTime)
                         .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray.opacity(0.8))
+                    Spacer()
+                    Text(courseToShow.classPositionString)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.mint)
                 }
             }
-            VStack {
-                Text(courseToShow.classPositionString)
-                    .lineLimit(1)
-                    .font(.callout)
-                    .foregroundColor(.accentColor)
-                Text(courseToShow.classTeacherName)
-                    .lineLimit(1)
-                    .foregroundColor(.gray)
-                    .font(.caption2)
-            }
+            .lineLimit(1)
         }
         .padding()
     }
@@ -127,22 +134,39 @@ struct CurriculumWidgetEntryView: View {
 
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Image(systemName: "moon.stars")
-                Text("Today's Course")
-                    .bold()
-            }
-            .foregroundColor(.accentColor)
-
+            Text("Next")
+                .padding(.horizontal, 5)
+                .fontWeight(.heavy)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.mint)
+                )
+                .foregroundColor(.accentColor)
             ForEach(entry.courses.prefix(numberToShow)) { course in
                 Divider()
+                    .padding(.vertical, 2)
                 HStack {
-                    Text(course.name.limitShow(1))
-                        .bold()
+                    VStack(alignment: .leading) {
+                        Text(course.name)
+                            .bold()
+                        Text("\(course.classPositionString)")
+                            .font(.caption)
+                            .foregroundColor(.gray.opacity(0.8))
+                    }
                     Spacer()
-                    Text("@\(course.classPositionString)")
-                        .foregroundColor(.gray)
-                    Text(course._startTime.clockTime + " - " + course._endTime.clockTime)
+
+                            .font(.caption)
+                            .foregroundColor(.gray.opacity(0.8))
+                    VStack(alignment: .trailing) {
+                        Text(course._startTime.clockTime)
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.mint)
+                        Text(course._endTime.clockTime)
+                            .font(.caption)
+                            .foregroundColor(.gray.opacity(0.8))
+                    }
                 }
             }
 
@@ -152,10 +176,7 @@ struct CurriculumWidgetEntryView: View {
                 Text("+\(String(entry.courses.count - numberToShow)) More Courses...")
                     .foregroundColor(.accentColor)
             }
-
-            if entry.courses.count < numberToShow {
-                Spacer()
-            }
+            Spacer()
         }
         .font(.footnote)
         .padding()
