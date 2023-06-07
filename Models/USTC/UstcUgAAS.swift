@@ -10,27 +10,34 @@ import SwiftUI
 import SwiftyJSON
 import WidgetKit
 
+let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
+
 /// USTC Undergraduate Academic Affairs System
 actor UstcUgAASClient {
-    static var shared = UstcUgAASClient()
+    static var shared = UstcUgAASClient(session: .shared)
 
-    var session: URLSession = .shared
+    var session: URLSession
     var semesterID: String {
         userDefaults.string(forKey: "semesterID") ?? "301"
     }
 
     var lastLogined: Date?
 
+    init(session: URLSession) {
+        self.session = session
+    }
+
     private func login() async throws -> Bool {
-        let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
         print("network<UstcUgAAS>: login called")
 
-        // jw.ustc.edu.cn login.
-        _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!)
+        for _ in 0 ..< 3 {
+            // handle CAS with casClient
+            let tmpCASSession = UstcCasClient(session: session)
+            _ = try await tmpCASSession.loginToCAS(url: UgAASCASLoginURL)
 
-        // handle CAS with casClient
-        let tmpCASSession = UstcCasClient(session: session)
-        _ = try await tmpCASSession.loginToCAS(url: UgAASCASLoginURL)
+            // jw.ustc.edu.cn login.
+            _ = try await session.data(from: UgAASCASLoginURL)
+        }
 
         // now try login url, see if that directs to home page
         var request = URLRequest(url: UgAASCASLoginURL)
