@@ -17,7 +17,7 @@ struct CurriculumProvider: IntentTimelineProvider {
     func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let weekNumber = UstcUgAASClient.shared.weekNumber()
             let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
             completion(entry)
         }
@@ -26,7 +26,7 @@ struct CurriculumProvider: IntentTimelineProvider {
     func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let weekNumber = UstcUgAASClient.shared.weekNumber()
             let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
 
             let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!

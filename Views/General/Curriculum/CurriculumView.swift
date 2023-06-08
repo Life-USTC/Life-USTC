@@ -49,28 +49,18 @@ struct CurriculumSettingView: View {
                 }
 
                 Button {
-                    asyncBind(.constant(()), status: $saveCalendarStatus) {
-                        try await CurriculumDelegate.shared.saveToCalendar()
+                    Task {
+                        saveCalendarStatus = .inProgress
+                        do {
+                            try await CurriculumDelegate.shared.saveToCalendar()
+                            saveCalendarStatus = .success
+                        } catch {
+                            saveCalendarStatus = .failure
+                        }
                     }
                 } label: {
-                    HStack {
-                        Label("Save to Calendar", systemImage: "square.and.arrow.down")
-                        Spacer()
-                        if saveCalendarStatus == .success {
-                            HStack {
-                                Text("Saved")
-                                Image(systemName: "checkmark.seal")
-                            }
-                            .foregroundColor(.accentColor)
-                        }
-                        if saveCalendarStatus == .failure {
-                            HStack {
-                                Text("Something went wrong")
-                                Image(systemName: "questionmark.diamond.fill")
-                            }
-                            .foregroundColor(.red)
-                        }
-                    }
+                    Label("Save to Calendar", systemImage: "square.and.arrow.down")
+                        .asyncViewStatusMask(status: saveCalendarStatus)
                 }
             }
             .listStyle(.plain)
@@ -99,7 +89,7 @@ struct CurriculumView: View {
 
     func update(forceUpdate: Bool = false) {
         Task {
-            weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+            weekNumber = UstcUgAASClient.shared.weekNumber(for: date)
         }
         curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
     }

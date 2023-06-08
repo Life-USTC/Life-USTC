@@ -10,7 +10,7 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-class ExamDelegate: UserDefaultsADD {
+class ExamDelegate: UserDefaultsADD, LastUpdateADD {
     // Protocol requirements
     typealias D = [Exam]
     var lastUpdate: Date?

@@ -55,7 +55,7 @@ struct HomeView: View {
 
     func update(forceUpdate: Bool = false) {
         Task {
-            weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
+            weekNumber = UstcUgAASClient.shared.weekNumber(for: date)
         }
         curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
         examDelegate.userTriggerRefresh(forced: forceUpdate)

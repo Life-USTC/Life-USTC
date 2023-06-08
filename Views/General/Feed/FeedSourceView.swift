@@ -8,39 +8,53 @@
 import SwiftUI
 
 struct FeedSourceView: View {
-    let feedSource: FeedSource
+    @StateObject var feedSource: FeedSource
+    var feeds: [Feed] {
+        feedSource.data
+    }
 
     var body: some View {
-        AsyncView { $feeds in
-            FeedVStackView(feeds: feeds)
-        } loadData: {
-            try await feedSource.fetchRecentPost()
-        } refreshData: {
-            try await feedSource.forceUpdatePost()
-        }
-        .navigationTitle(feedSource.name)
-        .navigationBarTitleDisplayMode(.inline)
+        FeedVStackView(feeds: feeds)
+            .asyncViewStatusMask(status: feedSource.status)
+            .refreshable {
+                feedSource.userTriggerRefresh()
+            }
+            .navigationTitle(feedSource.name)
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct AllSourceView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @AppStorage("useNotification", store: userDefaults) var useNotification = true
+    @State var feeds: [Feed] = []
+    @State var status: AsyncViewStatus = .inProgress
 
     var body: some View {
-        AsyncView { $feeds in
-            FeedVStackView(feeds: feeds)
-        } loadData: {
-            appDelegate.clearBadgeNumber()
-            return try await FeedSource.recentFeeds(number: nil)
-        } refreshData: {
-            try await AutoUpdateDelegate.feedList.update()
-            for source in FeedSource.allToShow {
-                _ = try await source.forceUpdatePost()
+        FeedVStackView(feeds: feeds)
+            .task {
+                appDelegate.clearBadgeNumber()
+                do {
+                    self.feeds = try await FeedSource.recentFeeds(number: nil)
+                    self.status = .success
+                } catch {
+                    self.status = .failure
+                }
             }
-            return try await FeedSource.recentFeeds(number: nil)
-        }
-        .navigationTitle("Feed")
-        .navigationBarTitleDisplayMode(.inline)
+            .refreshable {
+                self.status = .cached
+                do {
+                    try await AutoUpdateDelegate.feedList.update()
+                    for source in FeedSource.allToShow {
+                        _ = try await source.forceUpdate()
+                    }
+                    self.feeds = try await FeedSource.recentFeeds(number: nil)
+                    self.status = .success
+                } catch {
+                    self.status = .failure
+                }
+            }
+            .navigationTitle("Feed")
+            .navigationBarTitleDisplayMode(.inline)
     }
 }

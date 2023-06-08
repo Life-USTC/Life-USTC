@@ -13,46 +13,25 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
 }
 
 struct CurriculumPreview: View {
-    @State var courses: [Course]? = nil
-    @State var status: AsyncViewStatus = .inProgress
+    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    var weekNumber: Int {
+        UstcUgAASClient.shared.weekNumber()
+    }
+
+    var courses: [Course] {
+        Course.filter(curriculumDelegate.data, week: weekNumber, weekday: weekday(for: date))
+    }
+
     @State var date = Date()
     var body: some View {
         Group {
-            if courses != nil {
-                if courses!.isEmpty {
-                    happyView
-                } else {
-                    makeView(with: courses!)
-                }
+            if courses.isEmpty {
+                happyView
             } else {
-                ProgressView()
+                makeView(with: courses)
             }
         }
-        .onAppear {
-            Task {
-                let weekNumber = await UstcUgAASClient.shared.weekNumber()
-                // try await CurriculumDelegate.shared.forceUpdate()
-                // courses = Course.filter((try await CurriculumDelegate.shared.parseCache()), week: weekNumber)
-                CurriculumDelegate.shared.asyncBind(status: $status) {
-                    self.courses = Course.filter($0, week: weekNumber)
-                }
-            }
-        }
-        .onChange(of: date) { _ in
-            Task {
-                let weekNumber = await UstcUgAASClient.shared.weekNumber(for: date)
-                // try await CurriculumDelegate.shared.forceUpdate()
-                // courses = Course.filter((try await CurriculumDelegate.shared.parseCache()), week: weekNumber)
-                CurriculumDelegate.shared.asyncBind(status: $status) {
-                    self.courses = Course.filter($0, week: weekNumber, weekday: weekday(for: date))
-                }
-            }
-        }
-#if DEBUG
-        .toolbar {
-                DatePicker(selection: $date, displayedComponents: .date) {}
-            }
-#endif
+        .asyncViewStatusMask(status: curriculumDelegate.status)
     }
 
     func makeView(with courses: [Course]) -> some View {

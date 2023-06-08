@@ -70,6 +70,7 @@ struct ExamView: View {
         makeView(with: exams)
     }
 
+    @State var saveToCalendarStatus: AsyncViewStatus = .inProgress
     func makeView(with exams: [Exam]) -> some View {
         ScrollView(showsIndicators: false) {
             if exams.isEmpty {
@@ -92,10 +93,19 @@ struct ExamView: View {
             examDelegate.userTriggerRefresh()
         }
         .toolbar {
-            AsyncButton(bigStyle: false) {
-                try await Exam.saveToCalendar(exams)
+            Button {
+                Task {
+                    saveToCalendarStatus = .inProgress
+                    do {
+                        try await Exam.saveToCalendar(exams)
+                        saveToCalendarStatus = .success
+                    } catch {
+                        saveToCalendarStatus = .failure
+                    }
+                }
             } label: {
                 Image(systemName: "square.and.arrow.down")
+                    .asyncViewStatusMask(status: saveToCalendarStatus)
             }
         }
         .navigationTitle("Exam")
