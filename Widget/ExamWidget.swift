@@ -57,7 +57,7 @@ struct ExamWidgetEntryView: View {
         case .systemMedium:
             return 2
         case .systemLarge:
-            return 6
+            return 4
         case .systemExtraLarge:
             return 6
         default:
@@ -86,40 +86,48 @@ struct ExamWidgetEntryView: View {
 
     var mainView: some View {
         VStack(alignment: .leading) {
-            Text(exam.className)
-                .lineLimit(1)
-                .font(.caption)
-
-            HStack(alignment: .lastTextBaseline) {
-                Text(String(exam.daysLeft))
-                    .lineLimit(1)
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-                Text("Days Left")
-                    .font(.caption2)
+            VStack (alignment: .leading) {
+                HStack {
+                    Text("Exam")
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .font(.callout)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(.blue.opacity(0.8))
+                    )
+                    Text(exam.startTime, format: .dateTime.day().month())
+                        .font(.callout)
+                        .fontWeight(.heavy)
+                        .lineLimit(1)
+                        .foregroundColor(.blue.opacity(0.8))
+                }
+                Text(exam.className)
+                    .lineLimit(2)
+                    .fontWeight(.bold)
             }
-
             Spacer()
-
-            Text("Time: \(exam.timeDescription)")
+            VStack (alignment: .leading){
+                HStack (alignment: .lastTextBaseline) {
+                    Text(String(exam.daysLeft) + " Days Left")
+                        .font(.title3)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.blue.opacity(0.8))
+                }
+                HStack {
+                    Text(exam.startTime, format: .dateTime.hour().minute())
+                    Spacer()
+                    Text(exam.classRoomName)
+                }
                 .lineLimit(1)
-                .foregroundColor(.gray)
-                .font(.caption2)
-
-            Text("Location: \(exam.classRoomName)")
-                .lineLimit(1)
-                .foregroundColor(.gray)
-                .font(.caption2)
-
-            Spacer()
-
-            Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
-                .lineLimit(1)
-                .font(.caption)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.gray.opacity(0.8))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            }
         }
-        .hStackLeading()
-        .padding()
+        .padding(15)
     }
 
     var oneLine: some View {
@@ -130,48 +138,58 @@ struct ExamWidgetEntryView: View {
 
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Image(systemName: "sparkles")
-                Text("Upcoming Exams")
-                    .bold()
-            }
-            .foregroundColor(.accentColor)
-
+            Text("Exam")
+                .padding(.horizontal, 5)
+                .padding(.vertical, 3)
+                .font(.callout)
+                .fontWeight(.heavy)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(.blue.opacity(0.8))
+                )
             ForEach(entry.exams.prefix(numberToShow)) { exam in
                 Divider()
-                Text(exam.className)
-                    .strikethrough(exam.isFinished)
-                    .bold()
-                HStack {
-                    Text("\(exam.rawTime) @ \(exam.classRoomName)")
+                    .padding(.vertical, 2)
+                HStack (alignment: .bottom) {
+                    VStack (alignment: .leading) {
+                        Text(exam.className)
+                            .font(.headline)
+                            .strikethrough(exam.isFinished)
+                            .bold()
+                        HStack {
+                            Text(exam.startTime, format: .dateTime.day().month())
+                                .fontWeight(.heavy)
+                                .foregroundColor(.blue.opacity(0.8))
+                            Text(exam.timeDescription)
+                                .font(.caption)
+                                .foregroundColor(.gray.opacity(0.8))
+                            Text("@\(exam.classRoomName)")
+                                .font(.caption)
+                                .foregroundColor(.gray.opacity(0.8))
+                        }
+                    }
                     Spacer()
                     if exam.isFinished {
                         Text("Finished".localized)
                             .foregroundColor(.gray)
-                            .fontWeight(.bold)
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
                     } else {
                         Text(exam.daysLeft == 1 ?
                             "1 day left".localized :
                             String(format: "%@ days left".localized, String(exam.daysLeft)))
-                            .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
-                            .fontWeight(.bold)
+                            .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
                     }
                 }
             }
-
-            Divider()
-
-            if entry.exams.count > numberToShow {
-                Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
-                    .foregroundColor(.accentColor)
-            }
-
-            if entry.exams.count < numberToShow {
-                Spacer()
-            }
+            Spacer()
         }
         .font(.footnote)
-        .padding()
+        .padding(.horizontal, 15)
+        .padding(.vertical, 20)
     }
 
     var shortListView: some View {
