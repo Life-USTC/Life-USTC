@@ -24,7 +24,7 @@ struct CurriculumSettingView: View {
     }
 
     @Binding var date: Date
-    @State var saveCalendarStatus = AsyncViewStatus.inProgress
+    @State var saveCalendarStatus: AsyncViewStatus? = nil
     var body: some View {
         NavigationStack {
             List {

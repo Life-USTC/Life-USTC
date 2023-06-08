@@ -70,7 +70,7 @@ struct ExamView: View {
         makeView(with: exams)
     }
 
-    @State var saveToCalendarStatus: AsyncViewStatus = .inProgress
+    @State var saveToCalendarStatus: AsyncViewStatus? = nil
     func makeView(with exams: [Exam]) -> some View {
         ScrollView(showsIndicators: false) {
             if exams.isEmpty {
