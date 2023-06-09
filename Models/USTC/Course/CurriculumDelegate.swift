@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftyJSON
 import WidgetKit
 
-class CurriculumDelegate: UserDefaultsADD, LastUpdateADD {
+class CurriculumDelegate: UserDefaultsADD & LastUpdateADD {
     // Protocol requirements
     typealias D = [Course]
     var lastUpdate: Date?

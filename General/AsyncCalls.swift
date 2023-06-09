@@ -151,15 +151,6 @@ extension UserDefaultsADD {
             userDefaults.set(data, forKey: self.cacheName)
         }
 
-        exceptionCall {
-            if let lastUpdate = (self as? any LastUpdateADD)?.lastUpdate,
-               let timeCacheName = (self as? any LastUpdateADD)?.timeCacheName
-            {
-                let data = try JSONEncoder().encode(lastUpdate)
-                userDefaults.set(data, forKey: timeCacheName)
-            }
-        }
-
         // record disk write event
         print("cache<DISK>:\(cacheName) saved")
     }
@@ -169,14 +160,6 @@ extension UserDefaultsADD {
         exceptionCall {
             if let data = userDefaults.data(forKey: self.cacheName) {
                 self.cache = try JSONDecoder().decode(C.self, from: data)
-            }
-        }
-
-        exceptionCall {
-            if let timeCacheName = (self as? any LastUpdateADD)?.timeCacheName {
-                if let data = userDefaults.data(forKey: timeCacheName) {
-                    (self as? any LastUpdateADD)?.lastUpdate = try JSONDecoder().decode(Date.self, from: data)
-                }
             }
         }
 
@@ -199,8 +182,40 @@ extension UserDefaultsADD {
     }
 }
 
-// [!!!] Overloading the function doesn't work.
-// So stop trying like this, this clearly isn't working.
+// Overloading the function
 // Question posted: https://stackoverflow.com/questions/76431531/how-can-i-check-in-protocol-as-extension-that-whether-or-not-self-follows-pr
-// extension UserDefaultsADD where Self: LastUpdateADD {
-// }
+extension UserDefaultsADD where Self: LastUpdateADD {
+    func saveCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.cache)
+            userDefaults.set(data, forKey: self.cacheName)
+        }
+
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.lastUpdate)
+            userDefaults.set(data, forKey: self.timeCacheName)
+        }
+
+        // record disk write event
+        print("cache<DISK>:\(cacheName) saved")
+    }
+
+    func loadCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.cacheName) {
+                self.cache = try JSONDecoder().decode(C.self, from: data)
+            }
+        }
+
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.timeCacheName) {
+                self.lastUpdate = try JSONDecoder().decode(Date.self, from: data)
+            }
+        }
+
+        // record disk read event
+        print("cache<DISK>:\(cacheName) loaded")
+    }
+}

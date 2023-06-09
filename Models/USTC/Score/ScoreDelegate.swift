@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-class ScoreDelegate: UserDefaultsADD, LastUpdateADD {
+class ScoreDelegate: UserDefaultsADD & LastUpdateADD {
     // Protocol requirements
     typealias D = Score
     var lastUpdate: Date?
