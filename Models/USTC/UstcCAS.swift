@@ -96,7 +96,7 @@ class UstcCasClient: ObservableObject {
                                  URLQueryItem(name: "LT", value: ""),
                                  URLQueryItem(name: "button", value: "")]
 
-        var request = URLRequest(url: ustcLoginUrl)
+        var request = URLRequest(url: url ?? ustcLoginUrl)
         request.httpBody = components.query?.data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
