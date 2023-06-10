@@ -47,11 +47,17 @@ struct ExamPreview: View {
                     }
                     .padding(.horizontal, 8)
                     Spacer()
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(LinearGradient(colors: randomColor,
-                                             startPoint: .topLeading,
-                                             endPoint: .bottomTrailing))
-                        .frame(height: 5)
+                    if exam.isFinished {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(Color.gray)
+                            .frame(height: 5)
+                    } else {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(LinearGradient(colors: randomColor,
+                                                 startPoint: .topLeading,
+                                                 endPoint: .bottomTrailing))
+                            .frame(height: 5)
+                    }
                 }
                 .background {
                     RoundedRectangle(cornerRadius: 5)
