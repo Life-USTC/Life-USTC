@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /// What to execute after 1.0.2 update
     func version1_0_2Update() {
         // if inside userDefaults, key version is greater than 1.0.2, then return
-        if let version = userDefaults.string(forKey: "version"), version > "1.0.2" {
+        if let version = userDefaults.string(forKey: "version"), version.versionCompare("1.0.2") == .orderedAscending {
             return
         }
 
