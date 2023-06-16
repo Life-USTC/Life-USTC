@@ -105,8 +105,6 @@
 		56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */; };
 		56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */; };
 		56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FA8E82297D7264000AC3A9 /* Assets.xcassets */; };
-		56FA8E85297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
-		56FA8E86297D7264000AC3A9 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */; };
 		7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */; };
 		813700120F84685D752015B2 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382E828813FA9C0554457CA /* CoreTelephony.framework */; };
 		902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A419DE96C0C3F0A443D9C8E7 /* libz.tbd */; };
@@ -222,7 +220,6 @@
 		56FA8E78297D7263000AC3A9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBundle.swift; sourceTree = "<group>"; };
 		56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamWidget.swift; sourceTree = "<group>"; };
-		56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Widget.intentdefinition; sourceTree = "<group>"; };
 		56FA8E82297D7264000AC3A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56FA8E84297D7264000AC3A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		597AF30F8CD7EBFEF689D01B /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = "<group>"; };
@@ -599,7 +596,6 @@
 				56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */,
 				56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */,
 				56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */,
-				56FA8E81297D7264000AC3A9 /* Widget.intentdefinition */,
 				56FA8E84297D7264000AC3A9 /* Info.plist */,
 			);
 			path = Widget;
@@ -760,7 +756,6 @@
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
 				5694D91829668191009CFCDF /* Course.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
-				56FA8E86297D7264000AC3A9 /* Widget.intentdefinition in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */,
@@ -820,7 +815,6 @@
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
-				56FA8E85297D7264000AC3A9 /* Widget.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

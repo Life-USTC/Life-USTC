@@ -9,12 +9,12 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-struct Provider: IntentTimelineProvider {
+struct ExamProvider: TimelineProvider {
     func placeholder(in _: Context) -> SimpleEntry {
         SimpleEntry.example
     }
 
-    func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (SimpleEntry) -> Void) {
+    func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
             let exams = try await ExamDelegate.shared.retrive()
             let entry = SimpleEntry(exams: exams)
@@ -22,7 +22,7 @@ struct Provider: IntentTimelineProvider {
         }
     }
 
-    func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
             var exams = try await ExamDelegate.shared.retrive()
             exams = Exam.show(exams)
@@ -38,15 +38,13 @@ struct Provider: IntentTimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date = Date()
     let exams: [Exam]
-    var configuration = ConfigurationIntent()
 
-    static let example = SimpleEntry(exams: [Exam].init(repeating: .example, count: 10),
-                                     configuration: ConfigurationIntent())
+    static let example = SimpleEntry(exams: [Exam].init(repeating: .example, count: 10))
 }
 
 struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
-    var entry: Provider.Entry
+    var entry: ExamProvider.Entry
 
     var exam: Exam {
         entry.exams.first ?? Exam.example
@@ -225,7 +223,7 @@ struct ExamWidget: Widget {
     let kind: String = "ExamWidget"
 
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: ExamProvider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Exams")
