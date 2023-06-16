@@ -41,8 +41,8 @@ struct SingleScoreView: View {
                             .padding(4)
                             .frame(width: 85, height: 30)
                             .background(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(Color.gray.opacity(0.4))
+                                Stripes(config: .init(background: .gray, foreground: .white.opacity(0.4)))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
                             )
                     } else {
                         Text("\(String(courseScore.score))")
@@ -51,8 +51,8 @@ struct SingleScoreView: View {
                             .padding(4)
                             .frame(width: 85, height: 30)
                             .background(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(Color.accentColor.opacity(0.7))
+                                Stripes(config: .init(background: .accentColor, foreground: .white.opacity(0.4)))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
                             )
                     }
                 } else {

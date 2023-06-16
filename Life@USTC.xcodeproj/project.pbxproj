@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5606AE5C2A3C5D6A00E1132B /* Strips.swift */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -146,6 +147,7 @@
 		31A12D0A8ED351CBE8B39C7A /* libsqlite3.0.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libsqlite3.0.tbd; sourceTree = "<group>"; };
 		3382E828813FA9C0554457CA /* CoreTelephony.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreTelephony.framework; sourceTree = "<group>"; };
 		55DDCF5537E65C2C916A8BC3 /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
+		5606AE5C2A3C5D6A00E1132B /* Strips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strips.swift; sourceTree = "<group>"; };
 		56143F6A295EDEA5008CE454 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		56143F6C295EE47A008CE454 /* AsyncCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCalls.swift; sourceTree = "<group>"; };
 		5621691B2955BEC500DF46BE /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
 				56A3B86D29A889D100BFE64F /* AsyncView.swift */,
 				56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */,
+				5606AE5C2A3C5D6A00E1132B /* Strips.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -738,6 +741,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */,
 				56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */,
 				56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
