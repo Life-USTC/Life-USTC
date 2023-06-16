@@ -80,7 +80,6 @@ class CurriculumDelegate: UserDefaultsADD & LastUpdateADD {
         cache = try JSON(data: data)
 
         try await afterForceUpdate()
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func saveToCalendar() async throws {

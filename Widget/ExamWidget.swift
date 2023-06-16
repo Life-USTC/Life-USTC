@@ -28,8 +28,7 @@ struct ExamProvider: TimelineProvider {
             exams = Exam.show(exams)
             let entry = SimpleEntry(exams: exams)
 
-            let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
-            let timeline = Timeline(entries: [entry], policy: .after(date))
+            let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
         }
     }
@@ -39,7 +38,7 @@ struct SimpleEntry: TimelineEntry {
     let date = Date()
     let exams: [Exam]
 
-    static let example = SimpleEntry(exams: [Exam].init(repeating: .example, count: 10))
+    static let example = SimpleEntry(exams: [Exam.example])
 }
 
 struct ExamWidgetEntryView: View {

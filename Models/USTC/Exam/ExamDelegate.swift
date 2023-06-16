@@ -100,7 +100,6 @@ class ExamDelegate: UserDefaultsADD & LastUpdateADD {
         cache = fetchedExams
 
         try await afterForceUpdate()
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     init(_ client: UstcUgAASClient = .shared) {

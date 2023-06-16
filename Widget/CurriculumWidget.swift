@@ -29,8 +29,7 @@ struct CurriculumProvider: TimelineProvider {
             let weekNumber = UstcUgAASClient.shared.weekNumber()
             let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
 
-            let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
-            let timeline = Timeline(entries: [entry], policy: .after(date))
+            let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
         }
     }
@@ -40,7 +39,7 @@ struct CurriculumEntry: TimelineEntry {
     let date = Date()
     let courses: [Course]
 
-    static let example = CurriculumEntry(courses: [Course].init(repeating: .example, count: 10))
+    static let example = CurriculumEntry(courses: [Course.example])
 }
 
 struct CurriculumWidgetEntryView: View {
