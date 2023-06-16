@@ -71,18 +71,15 @@ struct CurriculumWidgetEntryView: View {
     var noMoreCurriculumView: some View {
         VStack(alignment: .center, spacing: 20) {
             Image(systemName: "moon.stars")
-                .font(.system(size: 30))
+                .font(.system(size: 50))
                 .fontWeight(.regular)
-                .frame(width: 40, height: 40)
+                .frame(width: 60, height: 60)
                 .padding(5)
                 .fontWeight(.heavy)
-                .foregroundColor(.white)
-                .background(
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(.mint)
-                )
-            Text("No more course today!")
-                .font(.system(.headline, design: .monospaced))
+                .foregroundColor(.mint.opacity(0.8))
+            Text("No courses today!")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.secondary)
         }
         .padding()
     }
@@ -95,7 +92,7 @@ struct CurriculumWidgetEntryView: View {
                         .padding(.horizontal, 5)
                         .padding(.vertical, 3)
                         .font(.callout)
-                        .fontWeight(.heavy)
+                        .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
@@ -103,7 +100,7 @@ struct CurriculumWidgetEntryView: View {
                         )
                     Text(courseToShow.classPositionString)
                         .font(.callout)
-                        .fontWeight(.heavy)
+                        .fontWeight(.semibold)
                         .lineLimit(1)
                         .foregroundColor(.mint)
                 }
@@ -115,7 +112,7 @@ struct CurriculumWidgetEntryView: View {
             VStack(alignment: .leading) {
                 Text(courseToShow._startTime.clockTime)
                     .font(.title3)
-                    .fontWeight(.heavy)
+                    .fontWeight(.semibold)
                     .foregroundColor(.mint)
                 HStack {
                     Text(courseToShow._endTime.clockTime)
@@ -123,7 +120,7 @@ struct CurriculumWidgetEntryView: View {
                     Text(courseToShow.classTeacherName)
                 }
                 .font(.subheadline)
-                .fontWeight(.semibold)
+                .fontWeight(.regular)
                 .foregroundColor(.gray.opacity(0.8))
             }
         }
@@ -142,7 +139,7 @@ struct CurriculumWidgetEntryView: View {
                 .padding(.horizontal, 5)
                 .padding(.vertical, 3)
                 .font(.callout)
-                .fontWeight(.heavy)
+                .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
@@ -183,8 +180,10 @@ struct CurriculumWidgetEntryView: View {
 
     var smallView: some View {
         VStack(alignment: .leading) {
-            Text(courseToShow.name.limitShow(1))
-            Text(courseToShow.clockTime)
+            Text(courseToShow.name.truncated(length: 4))
+                .font(.body)
+                .fontWeight(.semibold)
+            Text(courseToShow._startTime.clockTime)
             Text(courseToShow.classPositionString)
         }
         .padding(1)

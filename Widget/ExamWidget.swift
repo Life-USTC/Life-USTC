@@ -66,20 +66,17 @@ struct ExamWidgetEntryView: View {
     }
 
     var noMoreExamView: some View {
-        VStack {
-            Spacer()
-
+        VStack(alignment: .center, spacing: 20) {
             Image(systemName: "sparkles")
-                .font(.largeTitle)
-                .foregroundColor(.accentColor)
-
-            Text("No Exam")
-
-            Spacer()
-
-            Text("Open the app to make sure though...")
-                .font(.caption2)
-                .foregroundColor(.gray)
+                .font(.system(size: 50))
+                .fontWeight(.regular)
+                .frame(width: 60, height: 60)
+                .padding(5)
+                .fontWeight(.heavy)
+                .foregroundColor(.blue.opacity(0.8))
+            Text("No Exams!")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.secondary)
         }
         .padding()
     }
@@ -92,7 +89,7 @@ struct ExamWidgetEntryView: View {
                         .padding(.horizontal, 5)
                         .padding(.vertical, 3)
                         .font(.callout)
-                        .fontWeight(.heavy)
+                        .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
@@ -100,7 +97,7 @@ struct ExamWidgetEntryView: View {
                     )
                     Text(exam.startTime, format: .dateTime.day().month())
                         .font(.callout)
-                        .fontWeight(.heavy)
+                        .fontWeight(.semibold)
                         .lineLimit(1)
                         .foregroundColor(.blue.opacity(0.8))
                 }
@@ -111,10 +108,12 @@ struct ExamWidgetEntryView: View {
             Spacer()
             VStack (alignment: .leading){
                 HStack (alignment: .lastTextBaseline) {
-                    Text(String(exam.daysLeft) + " Days Left")
+                    Text(exam.daysLeft == 1 ?
+                        "1 day left".localized :
+                        String(format: "%@ days left".localized, String(exam.daysLeft)))
+                        .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
                         .font(.title3)
-                        .fontWeight(.heavy)
-                        .foregroundColor(.blue.opacity(0.8))
+                        .fontWeight(.semibold)
                 }
                 HStack {
                     Text(exam.startTime, format: .dateTime.hour().minute())
@@ -124,7 +123,7 @@ struct ExamWidgetEntryView: View {
                 .lineLimit(1)
                 .foregroundColor(.gray.opacity(0.8))
                 .font(.subheadline)
-                .fontWeight(.semibold)
+                .fontWeight(.regular)
             }
         }
         .padding(15)
@@ -142,7 +141,7 @@ struct ExamWidgetEntryView: View {
                 .padding(.horizontal, 5)
                 .padding(.vertical, 3)
                 .font(.callout)
-                .fontWeight(.heavy)
+                .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
@@ -195,24 +194,21 @@ struct ExamWidgetEntryView: View {
     var shortListView: some View {
         VStack(alignment: .leading) {
             Text("Exams:")
-                .bold()
+                .font(.body)
+                .fontWeight(.semibold)
             ForEach(entry.exams.prefix(2)) { exam in
                 HStack {
                     Text(exam.className)
-                        .bold()
                         .strikethrough(exam.isFinished)
-                    Spacer()
                     if !exam.isFinished {
                         Text("+\(String(exam.daysLeft))D")
                     } else {
                         Text("Finished".localized)
-                            .bold()
                     }
                 }
-                .foregroundColor(exam.daysLeft <= 7 ? .primary : .red)
             }
-            Spacer()
         }
+        .font(.caption)
     }
 
     var body: some View {
