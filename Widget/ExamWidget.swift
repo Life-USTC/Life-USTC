@@ -63,60 +63,67 @@ struct ExamWidgetEntryView: View {
     }
 
     var noMoreExamView: some View {
-        VStack {
-            Spacer()
-
+        VStack(alignment: .center, spacing: 20) {
             Image(systemName: "sparkles")
-                .font(.largeTitle)
-                .foregroundColor(.accentColor)
-
-            Text("No Exam")
-
-            Spacer()
-
-            Text("Open the app to make sure though...")
-                .font(.caption2)
-                .foregroundColor(.gray)
+                .font(.system(size: 50))
+                .fontWeight(.regular)
+                .frame(width: 60, height: 60)
+                .padding(5)
+                .fontWeight(.heavy)
+                .foregroundColor(.blue.opacity(0.8))
+            Text("No Exams!")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.secondary)
         }
         .padding()
     }
 
     var mainView: some View {
         VStack(alignment: .leading) {
-            Text(exam.className)
-                .lineLimit(1)
-                .font(.caption)
-
-            HStack(alignment: .lastTextBaseline) {
-                Text(String(exam.daysLeft))
-                    .lineLimit(1)
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-                Text("Days Left")
-                    .font(.caption2)
+            VStack (alignment: .leading) {
+                HStack {
+                    Text("Exam")
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(.blue.opacity(0.8))
+                    )
+                    Text(exam.startTime, format: .dateTime.day().month())
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                        .foregroundColor(.blue.opacity(0.8))
+                }
+                Text(exam.className)
+                    .lineLimit(2)
+                    .fontWeight(.bold)
             }
-
             Spacer()
-
-            Text("Time: \(exam.timeDescription)")
+            VStack (alignment: .leading){
+                HStack (alignment: .lastTextBaseline) {
+                    Text(exam.daysLeft == 1 ?
+                        "1 day left".localized :
+                        String(format: "%@ days left".localized, String(exam.daysLeft)))
+                        .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                }
+                HStack {
+                    Text(exam.startTime, format: .dateTime.hour().minute())
+                    Spacer()
+                    Text(exam.classRoomName)
+                }
                 .lineLimit(1)
-                .foregroundColor(.gray)
-                .font(.caption2)
-
-            Text("Location: \(exam.classRoomName)")
-                .lineLimit(1)
-                .foregroundColor(.gray)
-                .font(.caption2)
-
-            Spacer()
-
-            Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
-                .lineLimit(1)
-                .font(.caption)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.gray.opacity(0.8))
+                .font(.subheadline)
+                .fontWeight(.regular)
+            }
         }
-        .hStackLeading()
-        .padding()
+        .padding(15)
     }
 
     var oneLine: some View {
@@ -127,71 +134,78 @@ struct ExamWidgetEntryView: View {
 
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Image(systemName: "sparkles")
-                Text("Upcoming Exams")
-                    .bold()
-            }
-            .foregroundColor(.accentColor)
-
+            Text("Exam")
+                .padding(.horizontal, 5)
+                .padding(.vertical, 3)
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(.blue.opacity(0.8))
+                )
             ForEach(entry.exams.prefix(numberToShow)) { exam in
                 Divider()
-                Text(exam.className)
-                    .strikethrough(exam.isFinished)
-                    .bold()
-                HStack {
-                    Text("\(exam.rawTime) @ \(exam.classRoomName)")
+                    .padding(.vertical, 2)
+                HStack (alignment: .bottom) {
+                    VStack (alignment: .leading) {
+                        Text(exam.className)
+                            .font(.headline)
+                            .strikethrough(exam.isFinished)
+                            .bold()
+                        HStack {
+                            Text(exam.startTime, format: .dateTime.day().month())
+                                .fontWeight(.heavy)
+                                .foregroundColor(.blue.opacity(0.8))
+                            Text(exam.timeDescription)
+                                .font(.caption)
+                                .foregroundColor(.gray.opacity(0.8))
+                            Text("@\(exam.classRoomName)")
+                                .font(.caption)
+                                .foregroundColor(.gray.opacity(0.8))
+                        }
+                    }
                     Spacer()
                     if exam.isFinished {
                         Text("Finished".localized)
                             .foregroundColor(.gray)
-                            .fontWeight(.bold)
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
                     } else {
                         Text(exam.daysLeft == 1 ?
                             "1 day left".localized :
                             String(format: "%@ days left".localized, String(exam.daysLeft)))
-                            .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
-                            .fontWeight(.bold)
+                            .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
                     }
                 }
             }
-
-            Divider()
-
-            if entry.exams.count > numberToShow {
-                Text("+\(String(entry.exams.count - numberToShow)) More Exam...")
-                    .foregroundColor(.accentColor)
-            }
-
-            if entry.exams.count < numberToShow {
-                Spacer()
-            }
+            Spacer()
         }
         .font(.footnote)
-        .padding()
+        .padding(.horizontal, 15)
+        .padding(.vertical, 20)
     }
 
     var shortListView: some View {
         VStack(alignment: .leading) {
             Text("Exams:")
-                .bold()
+                .font(.body)
+                .fontWeight(.semibold)
             ForEach(entry.exams.prefix(2)) { exam in
                 HStack {
                     Text(exam.className)
-                        .bold()
                         .strikethrough(exam.isFinished)
-                    Spacer()
                     if !exam.isFinished {
                         Text("+\(String(exam.daysLeft))D")
                     } else {
                         Text("Finished".localized)
-                            .bold()
                     }
                 }
-                .foregroundColor(exam.daysLeft <= 7 ? .primary : .red)
             }
-            Spacer()
         }
+        .font(.caption)
     }
 
     var body: some View {

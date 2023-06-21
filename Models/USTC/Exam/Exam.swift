@@ -24,7 +24,7 @@ struct Exam: Codable, Identifiable {
     static let example: Exam = .init(classIDString: "MATH10001.01",
                                      typeName: "期末考试",
                                      className: "数学分析B1",
-                                     rawTime: "2023-02-28 14:30~16:30",
+                                     rawTime: "2023-06-28 14:30~16:30",
                                      classRoomName: "5401",
                                      classRoomBuildingName: "第五教学楼",
                                      classRoomDistrict: "东区",
