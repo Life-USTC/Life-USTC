@@ -76,12 +76,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "_XCWidgetDefaultView"
-            value = "snapshot"
+            value = "timeline"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "_XCWidgetFamily"
-            value = "medium"
+            value = "systemLarge"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

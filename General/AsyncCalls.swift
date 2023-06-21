@@ -17,9 +17,6 @@ enum AsyncViewStatus {
     /// In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date
     case cached
 
-    @available(*, deprecated)
-    case waiting
-
     var canShowData: Bool {
         self == .success || self == .cached
     }
@@ -53,13 +50,6 @@ protocol AsyncDataDelegate: ObservableObject {
 
     // MARK: - Functions to call
 
-    /// Bind the data to view
-    /// - Deprecated: Implement @Published instead
-    @available(*, deprecated)
-    func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>)
-    @available(*, deprecated)
-    func asyncBind<T>(status: Binding<AsyncViewStatus>, setData: @escaping (T) async throws -> Void)
-
     /// Get wanted data asynchronously
     func retrive() async throws -> D
 
@@ -80,7 +70,7 @@ protocol LastUpdateADD: AsyncDataDelegate {
 }
 
 /// Model that use UserDefaults to store, and implement async Models
-protocol UserDefaultsADD: LastUpdateADD where C: Codable {
+protocol UserDefaultsADD: AsyncDataDelegate where C: Codable {
     /// Type for cache
     associatedtype C
 
@@ -93,21 +83,16 @@ protocol UserDefaultsADD: LastUpdateADD where C: Codable {
     var cache: C { get set }
 }
 
-extension LastUpdateADD {
-    var requireUpdate: Bool {
-        let target = !(lastUpdate != nil && lastUpdate!.addingTimeInterval(timeInterval ?? 7200) > Date())
-        print("cache<TIME>:\(timeCacheName), last updated at:\(lastUpdate?.debugDescription ?? "nil"); \(target ? "[Refreshing]" : "[NOT Refreshing]")")
-        return target
-    }
-}
-
 extension AsyncDataDelegate {
+    func retrive() async throws -> D {
+        if requireUpdate {
+            try await forceUpdate()
+        }
+        return try await parseCache()
+    }
+
     func userTriggerRefresh(forced: Bool = true) {
         Task {
-            // This is disabled to continue show previous data
-//            withAnimation {
-//                status = .inProgress
-//            }
             do {
                 data = try await parseCache()
             } catch {
@@ -146,6 +131,14 @@ extension AsyncDataDelegate {
     }
 }
 
+extension LastUpdateADD {
+    var requireUpdate: Bool {
+        let target = !(lastUpdate != nil && lastUpdate!.addingTimeInterval(timeInterval ?? 7200) > Date())
+        print("cache<TIME>:\(timeCacheName), last updated at:\(lastUpdate?.debugDescription ?? "nil"); \(target ? "[Refreshing]" : "[NOT Refreshing]")")
+        return target
+    }
+}
+
 extension UserDefaultsADD {
     var timeInterval: Double? {
         nil
@@ -157,10 +150,6 @@ extension UserDefaultsADD {
             let data = try JSONEncoder().encode(self.cache)
             userDefaults.set(data, forKey: self.cacheName)
         }
-        exceptionCall {
-            let data = try JSONEncoder().encode(self.lastUpdate)
-            userDefaults.set(data, forKey: self.timeCacheName)
-        }
 
         // record disk write event
         print("cache<DISK>:\(cacheName) saved")
@@ -168,11 +157,6 @@ extension UserDefaultsADD {
 
     func loadCache() throws {
         // using two exceptionCall to isolate fatal error
-        exceptionCall {
-            if let data = userDefaults.data(forKey: self.timeCacheName) {
-                self.lastUpdate = try JSONDecoder().decode(Date?.self, from: data)
-            }
-        }
         exceptionCall {
             if let data = userDefaults.data(forKey: self.cacheName) {
                 self.cache = try JSONDecoder().decode(C.self, from: data)
@@ -184,7 +168,7 @@ extension UserDefaultsADD {
     }
 
     func afterForceUpdate() async throws {
-        lastUpdate = Date()
+        (self as? any LastUpdateADD)?.lastUpdate = Date()
         try saveCache()
         data = try await parseCache()
     }
@@ -198,87 +182,40 @@ extension UserDefaultsADD {
     }
 }
 
-// MARK: - Deprecated Defintions:
-
-/// Create an async task with given function, and pass the result to data, notify the View with status
-/// - Deprecated: Avoid calling this function in most position, use @Published and @StateObject to listen to change in Model
-func asyncBind<T>(_ data: Binding<T>,
-                  status: Binding<AsyncViewStatus>,
-                  _ function: @escaping () async throws -> T)
-{
-    status.wrappedValue = .inProgress
-    Task {
-        do {
-            withAnimation {
-                status.wrappedValue = .inProgress
-            }
-            data.wrappedValue = try await function()
-            withAnimation {
-                status.wrappedValue = .success
-            }
-        } catch {
-            print(error)
-            withAnimation {
-                status.wrappedValue = .failure
-            }
+// Overloading the function
+// Question posted: https://stackoverflow.com/questions/76431531/how-can-i-check-in-protocol-as-extension-that-whether-or-not-self-follows-pr
+extension UserDefaultsADD where Self: LastUpdateADD {
+    func saveCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.cache)
+            userDefaults.set(data, forKey: self.cacheName)
         }
-    }
-}
 
-extension AsyncDataDelegate {
-    func asyncBind<T>(_ data: Binding<T>, status: Binding<AsyncViewStatus>) {
-        status.wrappedValue = .inProgress
-        Task {
-            do {
-                data.wrappedValue = try await parseCache() as! T
-            } catch {
-                print(error)
-                status.wrappedValue = .failure
-            }
-
-            if requireUpdate || status.wrappedValue == .failure {
-                do {
-                    status.wrappedValue = .cached
-                    try await forceUpdate()
-                    data.wrappedValue = try await parseCache() as! T
-                } catch {
-                    print(error)
-                    return
-                }
-            }
-            status.wrappedValue = .success
+        exceptionCall {
+            let data = try JSONEncoder().encode(self.lastUpdate)
+            userDefaults.set(data, forKey: self.timeCacheName)
         }
+
+        // record disk write event
+        print("cache<DISK>:\(cacheName) saved")
     }
 
-    @available(*, message: "Notice that sometimes the status failed to set to inProgress")
-    func asyncBind<T>(status: Binding<AsyncViewStatus>, setData: @escaping (T) async throws -> Void) {
-        status.wrappedValue = .inProgress
-        Task {
-            do {
-                try await setData(try await parseCache() as! T)
-            } catch {
-                print(error)
-                status.wrappedValue = .failure
+    func loadCache() throws {
+        // using two exceptionCall to isolate fatal error
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.cacheName) {
+                self.cache = try JSONDecoder().decode(C.self, from: data)
             }
+        }
 
-            if requireUpdate || status.wrappedValue == .failure {
-                do {
-                    status.wrappedValue = .cached
-                    try await forceUpdate()
-                    try await setData(try await parseCache() as! T)
-                } catch {
-                    print(error)
-                    return
-                }
+        exceptionCall {
+            if let data = userDefaults.data(forKey: self.timeCacheName) {
+                self.lastUpdate = try JSONDecoder().decode(Date.self, from: data)
             }
-            status.wrappedValue = .success
         }
-    }
 
-    func retrive() async throws -> D {
-        if requireUpdate {
-            try await forceUpdate()
-        }
-        return try await parseCache()
+        // record disk read event
+        print("cache<DISK>:\(cacheName) loaded")
     }
 }

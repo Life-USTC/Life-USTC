@@ -11,7 +11,7 @@ import SwiftyJSON
 import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
-actor UstcUgAASClient {
+class UstcUgAASClient: ObservableObject {
     static var shared = UstcUgAASClient()
 
     var session: URLSession = .shared
@@ -19,9 +19,15 @@ actor UstcUgAASClient {
         userDefaults.string(forKey: "semesterID") ?? "301"
     }
 
-    var lastLogined: Date?
+    var lastLogined: Date? {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
 
-    private func login() async throws -> Bool {
+    func login() async throws -> Bool {
         let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
         print("network<UstcUgAAS>: login called")
 

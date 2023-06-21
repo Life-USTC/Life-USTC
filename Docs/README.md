@@ -11,7 +11,7 @@
 
 在Life@USTC中，我们通过以下的办法来实现`URLSession`和`WKWebView`的无感登陆流程：
 
-### `CasClient`类：
+### `CasClient`类
 
 [文件位置](/Models/USTC/UstcCAS.swift)
 
@@ -20,21 +20,21 @@ Source of Truth: 由于用户名和密码需要提供给`View`来更改，`usern
 客户端的登录逻辑是：
 
 * 获得LT-Token，
-    * 请求地址：[https://passport.ustc.edu.cn/login]
-    * GET请求
-    * 临时 URLSession
-    
+  * 请求地址：[https://passport.ustc.edu.cn/login]
+  * GET请求
+  * 临时 URLSession
+
     此结果返回值是网页，从中Parse出`"LT-[0-9a-z]+"`的LT-Token，并缓存这部分Cookie
 * 模拟登录过程
-    * 请求地址同上
-    * POST请求 httpBody附带LT-Token，用户名，密码
-    * URLSession.shared
+  * 请求地址同上
+  * POST请求 httpBody附带LT-Token，用户名，密码
+  * URLSession.shared
 
 * 如果Cookie中包含`logins`即为成功登录
 
 此后，在不大于15分钟的间隔时，其余请求可直接以URLSession.shared进行。请求前请确保当前登陆状态
 
-### `Service` 包装：
+### `Service` 包装
 
 使用`URL.ustcCASLoginMarkup()`包装一个URL，会以`https://passport.ustc.edu.cn/login?service=url.self`对这个URL进行包装。
 

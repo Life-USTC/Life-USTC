@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /// What to execute after 1.0.2 update
     func version1_0_2Update() {
         // if inside userDefaults, key version is greater than 1.0.2, then return
-        if let version = userDefaults.string(forKey: "version"), version > "1.0.2" {
+        if let version = userDefaults.string(forKey: "version"), version.versionCompare("1.0.2") == .orderedAscending {
             return
         }
 
@@ -83,21 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         1
     }
 
-    func xgPushDidRequestNotificationPermission(_ isEnable: Bool, error: Error?) {
-#if DEBUG
-        if !isEnable || error != nil {
-            print("Request Notification failed")
-
-            DispatchQueue.main.async {
-                // sadly this isn't working as the startup page have multiple sheet before alert could show up
-                let controller = UIApplication.shared.windows.first?.rootViewController as? UIViewController
-                let alert = UIAlertController(title: "Alert", message: "Message", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Click", style: .default, handler: nil))
-                controller?.present(alert, animated: true)
-            }
-        }
-#endif
-    }
+    func xgPushDidRequestNotificationPermission(_: Bool, error _: Error?) {}
 
     func xgPushLog(_ logInfo: String?) {
         if let logInfo {

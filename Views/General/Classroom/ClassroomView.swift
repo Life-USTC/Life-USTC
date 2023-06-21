@@ -111,10 +111,17 @@ private struct SingleClassroomView: View {
 }
 
 struct ClassroomView: View {
-    @State var allLessons: [String: [Lesson]] = [:]
-    @State var status: AsyncViewStatus = .inProgress
+    @StateObject var ustcCatalogDelegate = UstcCatalogClient.shared
+    var allLessons: [String: [Lesson]] {
+        ustcCatalogDelegate.data
+    }
+
+    var status: AsyncViewStatus {
+        ustcCatalogDelegate.status
+    }
+
     @State var showSheet: Bool = false
-    @State var date: Date = .init()
+    @State var date = Date()
     @AppStorage("showOneLine") var showOneLine = true
     @AppStorage("showEmptyRoomOnly") var showEmptyRoomOnly = false
     @AppStorage("filteredBuildingList") var filteredBuildingList: [String] = []
@@ -141,10 +148,7 @@ struct ClassroomView: View {
                 Section {
                     DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
                         .onChange(of: date) { newDate in
-                            print("Updated")
-                            asyncBind($allLessons, status: $status) {
-                                try await UstcCatalogClient.main.queryAllClassrooms(date: newDate)
-                            }
+                            ustcCatalogDelegate.date = newDate
                         }
                     Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
                     Toggle("Show one line", isOn: $showOneLine)
@@ -181,26 +185,18 @@ struct ClassroomView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            ZStack {
-                VStack(spacing: 2) {
-                    ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
-                        if !filteredBuildingList.contains(building) {
-                            Text(UstcCatalogClient.buildingName(with: building))
-                                .font(.title3)
-                                .padding()
-                                .hStackLeading()
-                            makeView(with: building)
-                        }
-                    }
+            ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+                if !filteredBuildingList.contains(building) {
+                    Text(UstcCatalogClient.buildingName(with: building))
+                        .font(.title3)
+                        .padding()
+                        .hStackLeading()
+                    makeView(with: building)
                 }
             }
         }
-        .onAppear {
-            asyncBind($allLessons, status: $status) {
-                try await UstcCatalogClient.main.queryAllClassrooms()
-            }
-        }
-        .padding([.leading, .trailing], 2)
+        .asyncViewStatusMask(status: status)
+        .padding(.horizontal, 2)
         .navigationBarTitle("Classroom List", displayMode: .inline)
         .toolbar {
             if status == .inProgress {
@@ -216,4 +212,3 @@ struct ClassroomView: View {
         .sheet(isPresented: $showSheet, content: settingSheet)
     }
 }
-

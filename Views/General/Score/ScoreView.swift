@@ -34,15 +34,27 @@ struct SingleScoreView: View {
             Spacer()
             HStack(alignment: .bottom) {
                 if courseScore.gpa == nil {
-                    Text("\(String(courseScore.score))")
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(4)
-                        .frame(width: 85, height: 30)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color.accentColor.opacity(0.7))
-                        )
+                    if courseScore.score.isEmpty {
+                        Image(systemName: "xmark")
+                            .font(.body)
+                            .foregroundColor(.white)
+                            .padding(4)
+                            .frame(width: 85, height: 30)
+                            .background(
+                                Stripes(config: .init(background: .gray, foreground: .white.opacity(0.4)))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                            )
+                    } else {
+                        Text("\(String(courseScore.score))")
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(4)
+                            .frame(width: 85, height: 30)
+                            .background(
+                                Stripes(config: .init(background: .accentColor, foreground: .white.opacity(0.4)))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                            )
+                    }
                 } else {
                     HStack(alignment: .center, spacing: 5) {
                         Text("\(courseScore.score)")

@@ -111,10 +111,10 @@ struct ContentView: View {
 
     func onLoadFunction() {
         Task {
-            await UstcCasClient.shared.clearLoginStatus()
-            await UstcUgAASClient.shared.clearLoginStatus()
+            UstcCasClient.shared.clearLoginStatus()
+            UstcUgAASClient.shared.clearLoginStatus()
 
-            if await UstcCasClient.shared.precheckFails {
+            if UstcCasClient.shared.precheckFails {
                 casLoginSheet = true
             }
             // if the login result fails, present the user with the sheet.
@@ -193,6 +193,7 @@ private struct ContentViewTabBarContainerView<Content: View>: View {
     var body: some View {
         ZStack {
             content
+                .padding(.bottom, 70)
         }
         .overlay(alignment: .bottom) {
             ContentViewTabBarView(selection: $selection)

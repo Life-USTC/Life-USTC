@@ -10,7 +10,7 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-class ExamDelegate: UserDefaultsADD {
+class ExamDelegate: UserDefaultsADD & LastUpdateADD {
     // Protocol requirements
     typealias D = [Exam]
     var lastUpdate: Date?
@@ -100,7 +100,6 @@ class ExamDelegate: UserDefaultsADD {
         cache = fetchedExams
 
         try await afterForceUpdate()
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     init(_ client: UstcUgAASClient = .shared) {

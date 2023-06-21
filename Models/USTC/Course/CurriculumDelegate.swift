@@ -8,8 +8,9 @@
 import EventKit
 import SwiftUI
 import SwiftyJSON
+import WidgetKit
 
-class CurriculumDelegate: UserDefaultsADD {
+class CurriculumDelegate: UserDefaultsADD & LastUpdateADD {
     // Protocol requirements
     typealias D = [Course]
     var lastUpdate: Date?
@@ -75,7 +76,7 @@ class CurriculumDelegate: UserDefaultsADD {
             }
         }
 
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(await UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
+        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
         cache = try JSON(data: data)
 
         try await afterForceUpdate()
@@ -84,8 +85,8 @@ class CurriculumDelegate: UserDefaultsADD {
     func saveToCalendar() async throws {
         let courses = try await retrive()
         try await Course.saveToCalendar(courses,
-                                        name: await UstcUgAASClient.shared.semesterName,
-                                        startDate: await UstcUgAASClient.shared.semesterStartDate)
+                                        name: UstcUgAASClient.shared.semesterName,
+                                        startDate: UstcUgAASClient.shared.semesterStartDate)
     }
 
     init(_ client: UstcUgAASClient) {

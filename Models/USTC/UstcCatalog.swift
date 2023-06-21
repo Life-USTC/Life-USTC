@@ -43,8 +43,105 @@ func timeToInt(_ time: String) -> Int {
     return Int(tmp[0])! * 60 + Int(tmp[1])!
 }
 
-class UstcCatalogClient {
-    static var main = UstcCatalogClient()
+class UstcCatalogClient: AsyncDataDelegate {
+    var requireUpdate: Bool = true
+    var cache: [String: JSON] = [:]
+
+    var date = Date() {
+        willSet {
+            Task {
+                self.userTriggerRefresh(forced: true)
+            }
+        }
+    }
+
+    var data: [String: [Lesson]] = [:] {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    var status: AsyncViewStatus = .inProgress {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    func parseCache() async throws -> [String: [Lesson]] {
+        var result: [String: [Lesson]] = [:]
+        for building in UstcCatalogClient.allBuildings {
+            if let json = cache[building] {
+                for (_, subJson) in json["timetable"]["lessons"] {
+                    let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
+                                     courseName: subJson["courseName"].stringValue,
+                                     startTime: subJson["start"].stringValue,
+                                     endTime: subJson["end"].stringValue,
+                                     color: .blue.opacity(0.7))
+                    if result.keys.contains(building) {
+                        result[building]?.append(tmp)
+                    } else {
+                        result[building] = [tmp]
+                    }
+                }
+
+                for (_, subJson) in json["timetable"]["tmpLessons"] {
+                    let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
+                                     courseName: subJson["courseName"].stringValue,
+                                     startTime: subJson["start"].stringValue,
+                                     endTime: subJson["end"].stringValue,
+                                     color: .green.opacity(0.7))
+                    if result.keys.contains(building) {
+                        result[building]?.append(tmp)
+                    } else {
+                        result[building] = [tmp]
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    func forceUpdate() async throws {
+        for building in UstcCatalogClient.allBuildings {
+            let validToken = try await validToken()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let dateString = dateFormatter.string(from: date)
+
+            let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)")!)
+            cache[building] = try JSON(data: data)
+        }
+    }
+
+    var token = ""
+    var lastUpdated: Date?
+
+    func updateToken() async throws {
+        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/get_token")!)
+        token = try JSON(data: data)["access_token"].stringValue
+        lastUpdated = Date()
+    }
+
+    func validToken() async throws -> String {
+        if lastUpdated != nil, lastUpdated! + DateComponents(second: 3600) > Date() {
+            return token
+        } else {
+            try await updateToken()
+            return token
+        }
+    }
+
+    init() {
+        userTriggerRefresh(forced: false)
+    }
+}
+
+extension UstcCatalogClient {
+    static var shared = UstcCatalogClient()
     static var allBuildings = ["1", "2", "3", "5", "17", "11", "12", "13", "14", "22"]
     static var buildingNames: [String: String] = ["1": "第一教学楼", "2": "第二教学楼",
                                                   "3": "第三教学楼", "5": "第五教学楼",
@@ -77,63 +174,5 @@ class UstcCatalogClient {
 
     static func buildingName(with id: String) -> String {
         buildingNames.first(where: { $0.key == id })?.value ?? "Error"
-    }
-
-    var token = ""
-    var lastUpdated: Date?
-
-    func updateToken() async throws {
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/get_token")!)
-        token = try JSON(data: data)["access_token"].stringValue
-        lastUpdated = Date()
-    }
-
-    func validToken() async throws -> String {
-        if lastUpdated != nil, lastUpdated! + DateComponents(second: 3600) > Date() {
-            return token
-        } else {
-            try await updateToken()
-            return token
-        }
-    }
-
-    func queryClassrooms(building: String, date: Date = Date()) async throws -> [Lesson] {
-        let validToken = try await validToken()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: date)
-
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)")!)
-        let json = try JSON(data: data)
-
-        var result: [Lesson] = []
-
-        for (_, subJson) in json["timetable"]["lessons"] {
-            let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
-                             courseName: subJson["courseName"].stringValue,
-                             startTime: subJson["start"].stringValue,
-                             endTime: subJson["end"].stringValue,
-                             color: .blue.opacity(0.7))
-            result.append(tmp)
-        }
-
-        for (_, subJson) in json["timetable"]["tmpLessons"] {
-            let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
-                             courseName: subJson["courseName"].stringValue,
-                             startTime: subJson["start"].stringValue,
-                             endTime: subJson["end"].stringValue,
-                             color: .green.opacity(0.7))
-            result.append(tmp)
-        }
-
-        return result
-    }
-
-    func queryAllClassrooms(date: Date = Date()) async throws -> [String: [Lesson]] {
-        var result: [String: [Lesson]] = [:]
-        for building in UstcCatalogClient.allBuildings {
-            result[building] = try await queryClassrooms(building: building, date: date)
-        }
-        return result
     }
 }

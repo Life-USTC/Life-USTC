@@ -11,7 +11,115 @@ import SwiftyJSON
 
 private let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
 
-class FeedSource {
+class FeedSource: AsyncDataDelegate {
+    typealias D = [Feed]
+    var status: AsyncViewStatus = .cached { // setting default to .cached to avoid loading at startup
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    var data: [Feed] = [] {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    var requireUpdate: Bool {
+        guard let cache = FeedCache.feedSourceCache(using: id) else {
+            return false
+        }
+        return cache.feeds.isEmpty || cache.lastUpdated.addingTimeInterval(7200) < Date()
+    }
+
+    var url: URL
+    var name: String
+    var id: UUID
+    var description: String?
+    var image: String? // system image
+    var color: Color?
+
+    func parseCache() async throws -> D {
+        guard let cache = FeedCache.feedSourceCache(using: id) else {
+            throw BaseError.runtimeError("No id found inside cache for \(name)")
+        }
+
+        return cache.feeds
+    }
+
+    func forceUpdate() async throws {
+        print("!!! Refresh \(name) RSSFeedPost")
+        let result = FeedParser(URL: url).parse()
+        switch result {
+        case let .success(fetch):
+            if let feeds = fetch.rssFeed?.items?.map({ Feed(item: $0, source: self.name) }) {
+                FeedCache.update(using: id, with: feeds)
+                return
+            }
+        case let .failure(error):
+            throw error
+        }
+    }
+
+    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil, color: Color? = nil) {
+        self.url = url
+        self.name = name
+        if let id {
+            self.id = id
+        } else {
+            self.id = UUID(name: name, nameSpace: .oid)
+        }
+        self.description = description
+        self.image = image
+        self.color = color
+
+        userTriggerRefresh(forced: false)
+    }
+}
+
+extension FeedSource {
+    /// Return a given amount of Feed from cache, which should contain all posts
+    static func recentFeeds(number: Int?) async throws -> [Feed] {
+        var result: [Feed] = []
+        var important: [Feed] = []
+        for source in FeedSource.allToShow {
+            let feeds = try await source.retrive()
+            for feed in feeds {
+                if feed.keywords.isDisjoint(with: importantLabels) {
+                    result.append(feed)
+                } else {
+                    important.append(feed)
+                }
+            }
+        }
+
+        result.sort(by: { $0.datePosted > $1.datePosted })
+        important.sort(by: { $0.datePosted > $1.datePosted })
+        result.insert(contentsOf: important, at: 0)
+
+//        if (number ?? 0) > result.count {
+//            for source in FeedSource.allToShow {
+//                _ = try await source.retrive()
+//            }
+//            return try await recentFeeds(number: number)
+//        }
+
+        // TODO: (BUG) if we don't "force" this function to be async, it seems to run off main thread,
+        // and since sorting this feeds might take a while, this could lead to UI unresponsiveness.
+        // adding a sleep here to show a progressview
+        try await Task.sleep(for: .microseconds(300))
+
+        if let number {
+            return Array(result.prefix(number))
+        } else {
+            return result
+        }
+    }
+
     static var all: [FeedSource] {
         do {
             let data = try AutoUpdateDelegate.feedList.retriveLocal()
@@ -59,97 +167,6 @@ class FeedSource {
 
     static func find(_ name: String) -> FeedSource? {
         all.first(where: { $0.name == name })
-    }
-
-    var url: URL
-    var name: String
-    var id: UUID
-    var description: String?
-    var image: String? // system image
-    var color: Color?
-
-    func fetchRecentPost() async throws -> [Feed] {
-        let cache = FeedCache.feedSourceCache(using: id)
-        if cache != nil, !cache!.feeds.isEmpty, cache!.lastUpdated.addingTimeInterval(7200) > Date() {
-            return cache!.feeds
-        }
-
-        let data = try await forceUpdatePost()
-        return data
-    }
-
-    func forceUpdatePost(loopCount: Int = 0) async throws -> [Feed] {
-        do {
-            print("!!! Refresh \(name) RSSFeedPost")
-            let result = FeedParser(URL: url).parse()
-            switch result {
-            case let .success(fetch):
-                if let feeds = fetch.rssFeed?.items?.map({ Feed(item: $0, source: self.name) }) {
-                    FeedCache.update(using: id, with: feeds)
-                    return feeds
-                }
-            case let .failure(error):
-                throw error
-            }
-        } catch {}
-
-        try await Task.sleep(for: .seconds(5))
-        if loopCount < 10 {
-            return try await forceUpdatePost(loopCount: loopCount + 1)
-        } else {
-            throw BaseError.runtimeError("Error when parsing posts")
-        }
-    }
-
-    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil, color: Color? = nil) {
-        self.url = url
-        self.name = name
-        if let id {
-            self.id = id
-        } else {
-            self.id = UUID(name: name, nameSpace: .oid)
-        }
-        self.description = description
-        self.image = image
-        self.color = color
-    }
-
-    /// Return a given amount of Feed from cache, which should contain all posts
-    static func recentFeeds(number: Int?) async throws -> [Feed] {
-        var result: [Feed] = []
-        var important: [Feed] = []
-        for source in FeedSource.allToShow {
-            let feeds = try await source.fetchRecentPost()
-            for feed in feeds {
-                if feed.keywords.isDisjoint(with: importantLabels) {
-                    result.append(feed)
-                } else {
-                    important.append(feed)
-                }
-            }
-        }
-
-        result.sort(by: { $0.datePosted > $1.datePosted })
-        important.sort(by: { $0.datePosted > $1.datePosted })
-        result.insert(contentsOf: important, at: 0)
-
-        if (number ?? 1) > result.count {
-            for source in FeedSource.allToShow {
-                _ = try await source.forceUpdatePost()
-            }
-            return try await recentFeeds(number: number)
-        }
-
-        // TODO: (BUG) if we don't "force" this function to be async, it seems to run off main thread,
-        // and since sorting this feeds might take a while, this could lead to UI unresponsiveness.
-        // adding a sleep here to show a progressview
-        try await Task.sleep(for: .microseconds(300))
-
-        if let number {
-            return Array(result.prefix(number))
-        } else {
-            return result
-        }
     }
 }
 

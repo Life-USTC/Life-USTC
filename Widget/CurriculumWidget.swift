@@ -9,28 +9,27 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-struct CurriculumProvider: IntentTimelineProvider {
+struct CurriculumProvider: TimelineProvider {
     func placeholder(in _: Context) -> CurriculumEntry {
         CurriculumEntry.example
     }
 
-    func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
+    func getSnapshot(in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let weekNumber = UstcUgAASClient.shared.weekNumber()
             let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
             completion(entry)
         }
     }
 
-    func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
             let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = await UstcUgAASClient.shared.weekNumber()
+            let weekNumber = UstcUgAASClient.shared.weekNumber()
             let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
 
-            let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
-            let timeline = Timeline(entries: [entry], policy: .after(date))
+            let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
         }
     }
@@ -39,10 +38,8 @@ struct CurriculumProvider: IntentTimelineProvider {
 struct CurriculumEntry: TimelineEntry {
     let date = Date()
     let courses: [Course]
-    var configuration = ConfigurationIntent()
 
-    static let example = CurriculumEntry(courses: [Course].init(repeating: .example, count: 10),
-                                         configuration: ConfigurationIntent())
+    static let example = CurriculumEntry(courses: [Course.example])
 }
 
 struct CurriculumWidgetEntryView: View {
@@ -60,9 +57,9 @@ struct CurriculumWidgetEntryView: View {
         case .systemMedium:
             return 2
         case .systemLarge:
-            return 5
+            return 6
         case .systemExtraLarge:
-            return 5
+            return 6
         default:
             return 0
         }
@@ -221,7 +218,7 @@ struct CurriculumWidget: Widget {
     let kind: String = "CurriculumWidget"
 
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: CurriculumProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: CurriculumProvider()) { entry in
             CurriculumWidgetEntryView(entry: entry)
         }
         .supportedFamilies(WidgetFamily.allCases)

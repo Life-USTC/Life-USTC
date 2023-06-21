@@ -27,7 +27,7 @@ extension URL {
 }
 
 /// A cas client to login to https://passport.ustc.edu.cn/
-actor UstcCasClient {
+class UstcCasClient: ObservableObject {
     static var shared = UstcCasClient(session: .shared)
 
     var session: URLSession
@@ -39,7 +39,13 @@ actor UstcCasClient {
         userDefaults.string(forKey: "passportPassword") ?? ""
     }
 
-    var lastLogined: Date?
+    var lastLogined: Date? {
+        willSet {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+        }
+    }
 
     init(session: URLSession, lastLogined _: Date? = nil) {
         self.session = session
@@ -90,7 +96,7 @@ actor UstcCasClient {
                                  URLQueryItem(name: "LT", value: ""),
                                  URLQueryItem(name: "button", value: "")]
 
-        var request = URLRequest(url: ustcLoginUrl)
+        var request = URLRequest(url: url ?? ustcLoginUrl)
         request.httpBody = components.query?.data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true

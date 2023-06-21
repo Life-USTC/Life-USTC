@@ -187,14 +187,15 @@ extension Course {
         }
 
         var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: { $0.title == name })
-        // try remove everything with that name in it
-        if calendar == nil {
-            calendar = EKCalendar(for: .event, eventStore: eventStore)
-            calendar!.title = name
-            calendar!.cgColor = Color.accentColor.cgColor
-            calendar!.source = eventStore.defaultCalendarForNewEvents?.source
-            try! eventStore.saveCalendar(calendar!, commit: true)
+        if calendar != nil {
+            try eventStore.removeCalendar(calendar!, commit: true)
         }
+
+        calendar = EKCalendar(for: .event, eventStore: eventStore)
+        calendar!.title = name
+        calendar!.cgColor = Color.accentColor.cgColor
+        calendar!.source = eventStore.defaultCalendarForNewEvents?.source
+        try! eventStore.saveCalendar(calendar!, commit: true)
 
         for course in courses {
             for week in parseWeek(with: course.weekString) {

@@ -144,7 +144,6 @@ struct FeaturesView: View {
         .scrollIndicators(.hidden)
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
-        .padding(.bottom, 40)
     }
 
     var body: some View {

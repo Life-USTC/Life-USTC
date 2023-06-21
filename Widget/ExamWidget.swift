@@ -9,12 +9,12 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-struct Provider: IntentTimelineProvider {
+struct ExamProvider: TimelineProvider {
     func placeholder(in _: Context) -> SimpleEntry {
         SimpleEntry.example
     }
 
-    func getSnapshot(for _: ConfigurationIntent, in _: Context, completion: @escaping (SimpleEntry) -> Void) {
+    func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
             let exams = try await ExamDelegate.shared.retrive()
             let entry = SimpleEntry(exams: exams)
@@ -22,14 +22,13 @@ struct Provider: IntentTimelineProvider {
         }
     }
 
-    func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
             var exams = try await ExamDelegate.shared.retrive()
             exams = Exam.show(exams)
             let entry = SimpleEntry(exams: exams)
 
-            let date = Calendar.current.date(byAdding: .minute, value: 10, to: Date())!
-            let timeline = Timeline(entries: [entry], policy: .after(date))
+            let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
         }
     }
@@ -38,15 +37,13 @@ struct Provider: IntentTimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date = Date()
     let exams: [Exam]
-    var configuration = ConfigurationIntent()
 
-    static let example = SimpleEntry(exams: [Exam].init(repeating: .example, count: 10),
-                                     configuration: ConfigurationIntent())
+    static let example = SimpleEntry(exams: [Exam.example])
 }
 
 struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
-    var entry: Provider.Entry
+    var entry: ExamProvider.Entry
 
     var exam: Exam {
         entry.exams.first ?? Exam.example
@@ -57,7 +54,7 @@ struct ExamWidgetEntryView: View {
         case .systemMedium:
             return 2
         case .systemLarge:
-            return 4
+            return 6
         case .systemExtraLarge:
             return 6
         default:
@@ -239,7 +236,7 @@ struct ExamWidget: Widget {
     let kind: String = "ExamWidget"
 
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: ExamProvider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Exams")
