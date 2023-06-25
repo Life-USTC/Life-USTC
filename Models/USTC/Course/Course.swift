@@ -45,7 +45,7 @@ struct Course: Identifiable, Equatable {
                                        classIDString: "011705",
                                        classPositionString: "3A407",
                                        classTeacherName: "刑凯",
-                                       weekString: "1-15")
+                                       weekString: "1-100")
 
     init(dayOfWeek: Int,
          startTime: Int,

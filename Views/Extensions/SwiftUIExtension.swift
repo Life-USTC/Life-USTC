@@ -183,8 +183,8 @@ extension WidgetFamily: CaseIterable {
 
 extension String {
     func truncated(length: Int) -> String {
-        if self.count > length {
-            let endIndex = self.index(self.startIndex, offsetBy: length)
+        if count > length {
+            let endIndex = index(startIndex, offsetBy: length)
             return String(self[..<endIndex]) + "..." // Add an ellipsis at the end
         } else {
             return self
@@ -228,3 +228,18 @@ let exampleGradientList: [[Color]] = [
     [.init(hex: "#3D6585"), .init(hex: "#99D587")],
     [.init(hex: "#D5AF8D"), .init(hex: "#6FA3A3")],
 ]
+
+extension View {
+    /// Applies the given transform if the given condition evaluates to `true`.
+    /// - Parameters:
+    ///   - condition: The condition to evaluate.
+    ///   - transform: The transform to apply to the source `View`.
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    @ViewBuilder func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}

@@ -7,32 +7,10 @@
 
 import SwiftUI
 
-var currentDateString: String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateStyle = .medium
-    dateFormatter.timeStyle = .none
-    return dateFormatter.string(from: Date())
-}
-
 let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-/// - Deprecated: call weekday() instead
-@available(*, deprecated)
-var currentWeekDay: Int {
-    let calendar = Calendar.current
-    let weekday = calendar.component(.weekday, from: Date())
-    return (weekday + 6) % 7 + 1
-}
-
 func weekday(for date: Date = Date()) -> Int {
-    let calendar = Calendar.current
-    let weekday = calendar.component(.weekday, from: date)
-    return (weekday + 6) % 7
-}
-
-@available(*, deprecated)
-var currentWeekDayString: String {
-    daysOfWeek[(currentWeekDay + 6) % 7]
+    (Calendar.current.component(.weekday, from: date) - Calendar.current.firstWeekday) % 7 + 1
 }
 
 var defaultDateFormatter: DateFormatter {

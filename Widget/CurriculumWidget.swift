@@ -46,8 +46,12 @@ struct CurriculumWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumProvider.Entry
 
-    var courseToShow: Course! {
-        entry.courses.filter { !$0.isFinished(at: Date()) }.first ?? Course.example
+    var course: Course {
+        entry.courses.filter { !$0.isFinished(at: Date()) }.first ?? .example
+    }
+
+    var courses: [Course] {
+        entry.courses.isEmpty ? [.example] : entry.courses
     }
 
     var numberToShow: Int {
@@ -66,94 +70,83 @@ struct CurriculumWidgetEntryView: View {
     }
 
     var noMoreCurriculumView: some View {
-        VStack(alignment: .center, spacing: 20) {
-            Image(systemName: "moon.stars")
+        VStack(spacing: 10) {
+            Image(systemName: "sparkles.square.filled.on.square")
                 .font(.system(size: 50))
-                .fontWeight(.regular)
-                .frame(width: 60, height: 60)
-                .padding(5)
-                .fontWeight(.heavy)
                 .foregroundColor(.mint.opacity(0.8))
             Text("No courses today!")
-                .font(.system(.body, design: .monospaced))
+                .font(.system(.body, design: .rounded))
                 .foregroundColor(.secondary)
         }
-        .padding()
+    }
+
+    var allFinishedToday: Bool {
+        entry.courses.filter { !$0.isFinished(at: Date()) }.isEmpty
+    }
+
+    var courseSymbolView: some View {
+        Text("Class")
+            .padding(.horizontal, 5)
+            .padding(.vertical, 3)
+            .font(.callout)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .background(
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(.mint.opacity(0.8))
+            )
     }
 
     var mainView: some View {
         VStack(alignment: .leading) {
-            VStack (alignment: .leading) {
-                HStack {
-                    Text("Class")
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 3)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(.mint.opacity(0.8))
-                        )
-                    Text(courseToShow.classPositionString)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                        .foregroundColor(.mint)
-                }
-                Text(courseToShow.name)
-                    .lineLimit(2)
-                    .fontWeight(.bold)
-            }
-            Spacer()
-            VStack(alignment: .leading) {
-                Text(courseToShow._startTime.clockTime)
-                    .font(.title3)
+            HStack {
+                courseSymbolView
+                Text(course.classPositionString)
+                    .font(.callout)
                     .fontWeight(.semibold)
+                    .lineLimit(1)
                     .foregroundColor(.mint)
-                HStack {
-                    Text(courseToShow._endTime.clockTime)
-                    Spacer()
-                    Text(courseToShow.classTeacherName)
-                }
-                .font(.subheadline)
-                .fontWeight(.regular)
-                .foregroundColor(.gray.opacity(0.8))
             }
+            Text(course.name)
+                .lineLimit(2)
+                .fontWeight(.bold)
+            Spacer()
+            Text(course._startTime.clockTime)
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundColor(.mint)
+            HStack {
+                Text(course._endTime.clockTime)
+                Spacer()
+                Text(course.classTeacherName)
+            }
+            .font(.subheadline)
+            .fontWeight(.regular)
+            .foregroundColor(.secondary)
         }
-        .padding(15)
+        .scenePadding()
     }
 
     var oneLine: some View {
         Text(String(format: "%@ - %@".localized,
-                    courseToShow.name.limitShow(1),
-                    courseToShow._startTime.clockTime))
+                    course.name.limitShow(1),
+                    course._startTime.clockTime))
     }
 
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text("Class")
-                .padding(.horizontal, 5)
-                .padding(.vertical, 3)
-                .font(.callout)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(.mint)
-            )
-            ForEach(entry.courses.prefix(numberToShow)) { course in
+            courseSymbolView
+            ForEach(courses.prefix(numberToShow)) { course in
                 Divider()
-                    .padding(.vertical, 2)
                 HStack {
                     VStack(alignment: .leading) {
                         Text(course.name)
                             .font(.headline)
                             .fontWeight(.bold)
                         HStack {
-                            Text("\(course.classTeacherName) @ \(course.classPositionString)")
+                            Text(course.detailString)
                                 .font(.caption)
-                                .foregroundColor(.gray.opacity(0.8))
+                                .foregroundColor(.secondary)
                         }
                     }
                     Spacer()
@@ -164,39 +157,39 @@ struct CurriculumWidgetEntryView: View {
                             .foregroundColor(.mint)
                         Text(course._endTime.clockTime)
                             .font(.caption)
-                            .foregroundColor(.gray.opacity(0.8))
+                            .foregroundColor(.secondary)
                     }
                 }
             }
             Spacer()
         }
-        .font(.footnote)
-        .padding(.horizontal, 15)
-        .padding(.vertical, 20)
+        .scenePadding()
     }
 
     var smallView: some View {
         VStack(alignment: .leading) {
-            Text(courseToShow.name.truncated(length: 4))
+            Text(course.name.truncated(length: 4))
                 .font(.body)
                 .fontWeight(.semibold)
-            Text(courseToShow._startTime.clockTime)
-            Text(courseToShow.classPositionString)
+            Text(course._startTime.clockTime)
+            Text(course.classPositionString)
         }
-        .padding(1)
+        .scenePadding()
     }
 
     var body: some View {
-        if entry.courses.isEmpty {
-            noMoreCurriculumView
-        } else {
+        Group {
             switch widgetFamily {
             case .systemSmall:
-                if entry.courses.first(where: { !$0.isFinished(at: Date()) }) == nil {
-                    noMoreCurriculumView
-                } else {
-                    mainView
-                }
+                mainView
+                    .if(allFinishedToday) { view in
+                        view
+                            .redacted(reason: .placeholder)
+                            .blur(radius: 10)
+                            .overlay {
+                                noMoreCurriculumView
+                            }
+                    }
             case .systemMedium:
                 listView
             case .systemLarge:
@@ -211,6 +204,20 @@ struct CurriculumWidgetEntryView: View {
                 oneLine
             }
         }
+        .if(entry.courses.isEmpty) { view in
+            view
+                .redacted(reason: .placeholder)
+                .blur(radius: 10)
+                .overlay {
+                    noMoreCurriculumView
+                }
+        }
+    }
+}
+
+private extension Course {
+    var detailString: String {
+        "\(classTeacherName) @ \(classPositionString)"
     }
 }
 
