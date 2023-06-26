@@ -23,7 +23,7 @@ private struct LessonView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 5)
-            .fill(lesson.color ?? .red.opacity(0.7))
+            .fill(lesson.color)
             .opacity(0.5)
             .overlay {
                 Text(lesson.courseName)
@@ -185,6 +185,33 @@ struct ClassroomView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
+            HStack {
+                Spacer()
+                Text("Lesson")
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.blue.opacity(0.7))
+                    )
+                Text("Temp")
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.green.opacity(0.7))
+                    )
+                Text("Exam")
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.red.opacity(0.7))
+                    )
+            }
             ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
                 if !filteredBuildingList.contains(building) {
                     Text(UstcCatalogClient.buildingName(with: building))

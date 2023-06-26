@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftyJSON
 
-struct Lesson: Identifiable {
+struct Lesson: Identifiable, Equatable {
     var id: UUID {
         UUID(name: "\(classroomName):\(courseName),\(startTime)->\(endTime)", nameSpace: .oid)
     }
@@ -17,9 +17,37 @@ struct Lesson: Identifiable {
     var courseName: String
     var startTime: String // hh:mm
     var endTime: String // hh:mm
-    var color: Color?
+    var color: Color
+
+    func overlapping(_ other: Lesson) -> Bool {
+        if classroomName != other.classroomName {
+            return false
+        }
+        if timeToInt(other.endTime) <= timeToInt(startTime) || timeToInt(endTime) <= timeToInt(other.startTime) {
+            return false
+        }
+        return true
+    }
+
+    func containedIn(_ other: Lesson) -> Bool {
+        if classroomName != other.classroomName {
+            return false
+        }
+        if timeToInt(startTime) < timeToInt(other.startTime) {
+            return false
+        }
+        if timeToInt(endTime) > timeToInt(other.endTime) {
+            return false
+        }
+        return true
+    }
 
     static func clean(_ lessons: [Lesson]) -> [Lesson] {
+        // cleaning rules:
+        // 1. same classroom and course name, results start time is the earliest start time, end time is the latest end time, color is the same
+        // 2. same classroom and different course name: (time overlap)
+        // 2.2. if two are not contained in each other, keep both, change course name to "course1, course2", start time is the earliest start time, end time is the latest end time, color is set to YELLOW
+        // 2.1. if one is contained in the other, remove the contained one
         var result = lessons
         for lesson in result {
             let tmp = result.filter { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName }
@@ -28,7 +56,29 @@ struct Lesson: Identifiable {
                 let endTime = tmp.map(\.endTime).sorted(by: { timeToInt($0) < timeToInt($1) }).last ?? "0"
 
                 result.removeAll(where: { $0.classroomName == lesson.classroomName && $0.courseName == lesson.courseName })
-                result.append(Lesson(classroomName: lesson.classroomName, courseName: lesson.courseName, startTime: startTime, endTime: endTime))
+                result.append(Lesson(classroomName: lesson.classroomName, courseName: lesson.courseName, startTime: startTime, endTime: endTime, color: lesson.color))
+            }
+        }
+
+        for lesson in result {
+            let tmp = result.filter { $0.overlapping(lesson) }
+            for subLesson in tmp {
+                if subLesson == lesson {
+                    continue
+                }
+
+                if lesson.containedIn(subLesson) {
+                    result.removeAll(where: { $0 == lesson })
+                    continue
+                }
+
+                if subLesson.containedIn(lesson) {
+                    result.removeAll(where: { $0 == subLesson })
+                    continue
+                }
+
+                result.removeAll(where: { $0 == lesson || $0 == subLesson })
+                result.append(max(lesson, subLesson))
             }
         }
         return result
@@ -41,6 +91,20 @@ func timeToInt(_ time: String) -> Int {
         return 0
     }
     return Int(tmp[0])! * 60 + Int(tmp[1])!
+}
+
+func max(_ lhs: Lesson, _ rhs: Lesson) -> Lesson {
+    var result = lhs
+    if timeToInt(lhs.startTime) > timeToInt(rhs.startTime) {
+        result.startTime = rhs.startTime
+    }
+
+    if timeToInt(lhs.endTime) < timeToInt(rhs.endTime) {
+        result.endTime = rhs.endTime
+    }
+    result.courseName = "\(lhs.courseName), \(rhs.courseName)"
+    result.color = .yellow
+    return result
 }
 
 class UstcCatalogClient: AsyncDataDelegate {
@@ -80,7 +144,7 @@ class UstcCatalogClient: AsyncDataDelegate {
                                      courseName: subJson["courseName"].stringValue,
                                      startTime: subJson["start"].stringValue,
                                      endTime: subJson["end"].stringValue,
-                                     color: .blue.opacity(0.7))
+                                     color: .blue)
                     if result.keys.contains(building) {
                         result[building]?.append(tmp)
                     } else {
@@ -93,7 +157,20 @@ class UstcCatalogClient: AsyncDataDelegate {
                                      courseName: subJson["courseName"].stringValue,
                                      startTime: subJson["start"].stringValue,
                                      endTime: subJson["end"].stringValue,
-                                     color: .green.opacity(0.7))
+                                     color: .green)
+                    if result.keys.contains(building) {
+                        result[building]?.append(tmp)
+                    } else {
+                        result[building] = [tmp]
+                    }
+                }
+
+                for (_, subJson) in json["timetable"]["exams"] {
+                    let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
+                                     courseName: subJson["lessons"][0]["nameZh"].stringValue,
+                                     startTime: subJson["start"].stringValue,
+                                     endTime: subJson["end"].stringValue,
+                                     color: .red)
                     if result.keys.contains(building) {
                         result[building]?.append(tmp)
                     } else {
@@ -148,8 +225,10 @@ extension UstcCatalogClient {
                                                   "17": "先研院未来中心", "11": "高新校区图书教育中心A楼",
                                                   "12": "高新校区图书教育中心B楼", "13": "高新校区图书教育中心C楼",
                                                   "14": "高新校区师生活动中心", "22": "高新校区信智楼"]
+    static var buildingRooms: [String: [String]] = parseRoomJson()
+
     static var buildingRoomJsonCache: JSON?
-    static var buildingRooms: [String: [String]] {
+    static func parseRoomJson() -> [String: [String]] {
         if buildingRoomJsonCache == nil {
             if let path = Bundle.main.path(forResource: "UstcRooms", ofType: "json") {
                 let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
