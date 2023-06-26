@@ -30,6 +30,11 @@ private struct LessonView: View {
                     .font(.system(size: 10))
                     .foregroundColor(.white)
             }
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(lineWidth: 0.3)
+                    .fill(Color.secondary)
+            )
             .onTapGesture {}
             .onLongPressGesture {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
@@ -68,14 +73,18 @@ private struct SingleClassroomView: View {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(.gray.opacity(0.4))
                     .opacity(isUp ? 0.7 : 0.3)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(lineWidth: 0.5)
+                            .fill(Color.secondary)
+                    )
                 ForEach(filteredClass) { lesson in
                     LessonView(lesson: lesson)
                         .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start))
                         .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
                 }
                 Rectangle()
-                    .fill(.green)
-                    .opacity(0.5)
+                    .fill(.background)
                     .frame(width: 5, height: geo.size.height)
                     .offset(x: Double(currentTimeInt - (end + start) / 2) / Double(end - start) * geo.size.width)
             }
@@ -96,7 +105,6 @@ private struct SingleClassroomView: View {
                 roomText
                 makeView(with: lessons, isUp: currentTimeInt <= baseMiddle)
             }
-            .padding(.horizontal, 3)
         } else {
             VStack(spacing: 2) {
                 HStack {
@@ -105,7 +113,6 @@ private struct SingleClassroomView: View {
                 }
                 makeView(with: lessons, isUp: false)
             }
-            .padding(.horizontal, 3)
         }
     }
 }
@@ -135,9 +142,11 @@ struct ClassroomView: View {
     }
 
     func makeView(with building: String) -> some View {
-        ForEach(UstcCatalogClient.buildingRooms[building] ?? [], id: \.self) { room in
-            if !showEmptyRoomOnly || statusFor(building: building, room: room) {
-                SingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
+        VStack(spacing: showOneLine ? 2 : 5) {
+            ForEach(UstcCatalogClient.buildingRooms[building] ?? [], id: \.self) { room in
+                if !showEmptyRoomOnly || statusFor(building: building, room: room) {
+                    SingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
+                }
             }
         }
     }
@@ -183,34 +192,29 @@ struct ClassroomView: View {
         }
     }
 
+    private let labels: [(text: String, color: Color)] = [("Lesson", .blue),
+                                                          ("Temp", .green),
+                                                          ("Exam", .red)]
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             HStack {
                 Spacer()
-                Text("Lesson")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.blue.opacity(0.7))
-                    )
-                Text("Temp")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.green.opacity(0.7))
-                    )
-                Text("Exam")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.red.opacity(0.7))
-                    )
+                ForEach(labels, id: \.text) { label in
+                    Text(label.text.localized)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(label.color.opacity(0.7))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(lineWidth: 0.3)
+                                        .fill(Color.secondary)
+                                )
+                        )
+                }
             }
             ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
                 if !filteredBuildingList.contains(building) {
@@ -223,7 +227,7 @@ struct ClassroomView: View {
             }
         }
         .asyncViewStatusMask(status: status)
-        .padding(.horizontal, 2)
+        .padding(.horizontal, 5)
         .navigationBarTitle("Classroom List", displayMode: .inline)
         .toolbar {
             if status == .inProgress {
