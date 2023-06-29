@@ -8,18 +8,11 @@
 import SwiftUI
 
 struct FeedSettingView: View {
-    @AppStorage("homeShowPostNumbers") var feedPostNumber = 4
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     @AppStorage("useReeed") var useReeed = true
 
     var body: some View {
         List {
-            Section {
-                Stepper("Front page post numbers: ".localized + String(feedPostNumber), value: $feedPostNumber)
-            } header: {
-                Text("General")
-                    .textCase(.none)
-            }
             Section {
                 Toggle("Use reader", isOn: $useReeed)
             } header: {

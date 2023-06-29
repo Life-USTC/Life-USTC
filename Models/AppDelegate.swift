@@ -27,6 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userDefaults.removeObject(forKey: "feedSourceCache")
         }
 
+        if UserDefaults.standard.object(forKey: "homeShowPostNumbers") != nil {
+            UserDefaults.standard.removeObject(forKey: "homeShowPostNumbers")
+        }
+
         // set version to 1.0.2
         userDefaults.set("1.0.2", forKey: "version")
     }
