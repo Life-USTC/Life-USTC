@@ -43,6 +43,17 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "56EF851E2A4AF9BD005A0AAE"
+               BuildableName = "USTC_APITests.xctest"
+               BlueprintName = "USTC_APITests"
+               ReferencedContainer = "container:Life@USTC.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

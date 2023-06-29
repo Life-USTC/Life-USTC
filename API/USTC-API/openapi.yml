@@ -1,0 +1,96 @@
+# USTC APIs
+openapi: '3.0.3'
+info:
+  title: GreetingService
+  version: 1.0.0
+servers:
+  - url: https://passport.usst.edu.cn
+    description: USTC SSO
+
+paths:
+  /login:
+    post:
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username
+        password:
+          type: string
+          description: Password
+      required:
+        - username
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Status Code
+        message:
+          type: string
+          description: Message
+        data:
+          type: object
+          description: Data
+          properties:
+            token:
+              type: string
+              description: Token
+      required:
+        - code
+        - message
+        - data
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Status Code
+        message:
+          type: string
+          description: Message
+      required:
+        - code
+        - message
