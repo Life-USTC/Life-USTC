@@ -18,11 +18,15 @@ enum AsyncViewStatus {
     case cached
 
     var canShowData: Bool {
-        self == .success || self == .cached
+        self == .success || self == .cached || self == .failure
     }
 
     var isRefreshing: Bool {
         self == .inProgress || self == .cached
+    }
+
+    var hasError: Bool {
+        self == .failure
     }
 }
 

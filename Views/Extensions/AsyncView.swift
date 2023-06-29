@@ -15,17 +15,36 @@ struct AsyncViewStatusMask: ViewModifier {
             if status?.canShowData ?? true {
                 content
                     .opacity(status?.isRefreshing ?? false ? 0.5 : 1.0)
+                    .if(status?.hasError ?? false) { view in
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack {
+                                Spacer()
+                                    .frame(width: 5)
+                                Image(systemName: "xmark.square.fill")
+                                    .foregroundColor(.red)
+                                Text("Error Message To be added")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(lineWidth: 2)
+                                    .fill(Color.red.opacity(0.5))
+                                    .padding(1)
+                                view
+                                    .padding(5)
+                            }
+                        }
+                    }
             } else {
-                Color.white
+                content
+                    .redacted(reason: .placeholder)
+                    .foregroundColor(.secondary)
+                    .blur(radius: 2.0)
             }
 
             if status?.isRefreshing ?? false {
                 ProgressView()
-            }
-
-            if status == .failure {
-                Image(systemName: "xmark.octagon.fill")
-                    .foregroundColor(.red)
             }
         }
     }

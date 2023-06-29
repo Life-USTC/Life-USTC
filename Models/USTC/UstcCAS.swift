@@ -76,6 +76,7 @@ class UstcCasClient: ObservableObject {
     }
 
     func loginToCAS(url: URL? = nil) async throws -> Bool {
+        throw BaseError.runtimeError("REMOVE THIS")
         if precheckFails {
             throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
         }
