@@ -70,7 +70,7 @@ class UstcUgAASClient: ObservableObject {
 
     func requireLogin() async throws -> Bool {
         if let loginTask {
-            print("network<UstcUgAAS>: login task already running, [CREATE NEW ONE]")
+            print("network<UstcUgAAS>: login task already running, [WAITING RESULT]")
             return try await loginTask.value
         }
 
