@@ -172,7 +172,6 @@ extension UserDefaultsADD {
     }
 
     func afterForceUpdate() async throws {
-        (self as? any LastUpdateADD)?.lastUpdate = Date()
         try saveCache()
         data = try await parseCache()
     }
@@ -221,5 +220,19 @@ extension UserDefaultsADD where Self: LastUpdateADD {
 
         // record disk read event
         print("cache<DISK>:\(cacheName) loaded")
+    }
+
+    func afterForceUpdate() async throws {
+        lastUpdate = Date()
+        try saveCache()
+        data = try await parseCache()
+    }
+
+    func afterInit() {
+        exceptionCall {
+            try self.loadCache()
+        }
+
+        userTriggerRefresh(forced: false)
     }
 }
