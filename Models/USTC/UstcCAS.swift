@@ -76,7 +76,6 @@ class UstcCasClient: ObservableObject {
     }
 
     func loginToCAS(url: URL? = nil) async throws -> Bool {
-        throw BaseError.runtimeError("REMOVE THIS")
         if precheckFails {
             throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
         }
@@ -147,7 +146,7 @@ class UstcCasClient: ObservableObject {
         }
 
         let task = Task {
-            print("network<UstcCAS>: No login task running, [CREATING NEW ONE]")
+            print("network<UstcCAS>: No login task running, [WAITING RESULT]")
             let result = try await self.loginToCAS()
             loginTask = nil
             print("network<UstcCAS>: login task finished, result: \(result)")
