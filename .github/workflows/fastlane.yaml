@@ -1,6 +1,9 @@
 name: iOS binary build & upload
 
 on:
+    push:
+        branches:
+            - "*"
     workflow_dispatch:
 
 jobs:
