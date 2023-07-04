@@ -1,0 +1,23 @@
+name: build-ios-app
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Export secrets
+        run: |
+          mkdir -p ./build
+          touch ./build/AuthKey.p8
+          echo "$AUTH_KEY" > ./build/AuthKey.p8
+        env:
+          AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      - run: fastlane beta
+        env:
+          APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
+          APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+          CERTIFICATE_ID: ${{ secrets.CERTIFICATE_ID }}
+          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
