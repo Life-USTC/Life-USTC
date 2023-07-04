@@ -12,7 +12,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build & upload iOS binary
-              run: fastlane build_upload_testflight
+              run: fastlane ios build_upload_testflight
               env:
                   ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
                   ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
