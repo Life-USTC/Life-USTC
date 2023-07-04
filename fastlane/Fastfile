@@ -1,14 +1,12 @@
-platform :ios do
-  desc "Load ASC API Key information to use in subsequent lanes"
-  lane :load_asc_api_key do
-    app_store_connect_api_key(
-      key_id: ENV["ASC_KEY_ID"],
-      issuer_id: ENV["ASC_ISSUER_ID"],
-      key_content: ENV["ASC_KEY"],
-      is_key_content_base64: true,
-      in_house: false, # detecting this via ASC private key not currently supported
-    )
-  end
+desc "Load ASC API Key information to use in subsequent lanes"
+lane :load_asc_api_key do
+  app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_content: ENV["ASC_KEY"],
+    is_key_content_base64: true,
+    in_house: false, # detecting this via ASC private key not currently supported
+  )
 end
 
 desc "Bump build number based on most recent TestFlight build number"
@@ -29,7 +27,6 @@ lane :fetch_and_increment_build_number do
   increment_build_number(
     build_number: (latest_build_number + 1),
   )
-
 end
 
 desc "Installs signing certificate in the keychain and downloads provisioning profiles from App Store Connect"
@@ -59,7 +56,7 @@ lane :prepare_signing do |options|
   #   keychain_password: keychain_password,
   # )
 
-  match(type: 'appstore')
+  match(type: "appstore")
 
   # fetches and installs provisioning profiles from ASC
   sigh(
@@ -97,7 +94,7 @@ lane :build_release do |options|
       provisioningProfiles: {
         app_identifier => profile_name, # here you can add any additional bundle identifiers and their associated provisioning profiles if you’re also building an app extension or other bundle identifier
       },
-      "dev.tiankaima.Life-USTC.Widget" => "dev.tiankaima.Life-USTC.Widget AppStore"
+      "dev.tiankaima.Life-USTC.Widget" => "dev.tiankaima.Life-USTC.Widget AppStore",
     },
   )
 end
