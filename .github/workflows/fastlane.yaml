@@ -1,23 +1,37 @@
-name: build-ios-app
+name: iOS binary build & upload
+
 on:
-  push:
-    branches:
-      - '*'
+    workflow_dispatch:
+
 jobs:
-  build:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Export secrets
-        run: |
-          mkdir -p ./build
-          touch ./build/AuthKey.p8
-          echo "$AUTH_KEY" > ./build/AuthKey.p8
-        env:
-          AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      - run: fastlane beta
-        env:
-          APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
-          APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-          CERTIFICATE_ID: ${{ secrets.CERTIFICATE_ID }}
-          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
+    deploy:
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up ruby env
+              uses: ruby/setup-ruby@v1.138.0
+              with:
+                  ruby-version: 3.2.1
+                  bundler-cache: true
+            - name: Decode signing certificate into a file
+              env:
+                  CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
+              run: |
+                  echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+
+            - name: Build & upload iOS binary
+              run: bundle exec fastlane ios build_upload_testflight
+              env:
+                  ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
+                  ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+                  ASC_KEY: ${{ secrets.AUTH_KEY }}
+                  # SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
+                  # SIGNING_KEY_FILE_PATH: signing-cert.p12
+
+            - name: Upload app-store ipa and dsyms to artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                  name: app-store ipa & dsyms
+                  path: |
+                      ${{ github.workspace }}/example-iOS.ipa
+                      ${{ github.workspace }}/*.app.dSYM.zip

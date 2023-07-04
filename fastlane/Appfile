@@ -1,5 +1,1 @@
 app_identifier("dev.tiankaima.Life-USTC")
-apple_id("tiankaima@163.com")
-
-itc_team_id(ENV["ITC_TEAM_ID"])
-team_id("VUW8FV5HN5")
