@@ -59,6 +59,8 @@ lane :prepare_signing do |options|
   #   keychain_password: keychain_password,
   # )
 
+  match(type: 'appstore')
+
   # fetches and installs provisioning profiles from ASC
   sigh(
     adhoc: options[:adhoc],

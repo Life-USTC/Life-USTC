@@ -11,25 +11,13 @@ jobs:
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@v2
-            - name: Set up ruby env
-              uses: ruby/setup-ruby@v1.138.0
-              with:
-                  ruby-version: 3.2.1
-                  bundler-cache: true
-            - name: Decode signing certificate into a file
-              env:
-                  CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
-              run: |
-                  echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
-
             - name: Build & upload iOS binary
               run: bundle exec fastlane ios build_upload_testflight
               env:
                   ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
                   ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
                   ASC_KEY: ${{ secrets.AUTH_KEY }}
-                  # SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
-                  # SIGNING_KEY_FILE_PATH: signing-cert.p12
+                  MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
             - name: Upload app-store ipa and dsyms to artifacts
               uses: actions/upload-artifact@v2
