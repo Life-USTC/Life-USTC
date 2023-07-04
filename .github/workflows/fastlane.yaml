@@ -8,22 +8,22 @@ on:
 
 jobs:
     deploy:
-        runs-on: macos-latest
+        runs-on: macos-13
         steps:
-            - uses: actions/checkout@v2
-            - name: Build & upload iOS binary
-              run: fastlane ios build_upload_testflight
-              env:
-                  ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
-                  ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-                  ASC_KEY: ${{ secrets.AUTH_KEY }}
-                  MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-                  MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          - uses: actions/checkout@v2
+          - name: Build & upload iOS binary
+            run: fastlane ios build_upload_testflight
+            env:
+                ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
+                ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+                ASC_KEY: ${{ secrets.AUTH_KEY }}
+                MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+                MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
 
-            - name: Upload app-store ipa and dsyms to artifacts
-              uses: actions/upload-artifact@v2
-              with:
-                  name: app-store ipa & dsyms
-                  path: |
-                      ${{ github.workspace }}/Life@USTC.ipa
-                      ${{ github.workspace }}/*.app.dSYM.zip
+          - name: Upload app-store ipa and dsyms to artifacts
+            uses: actions/upload-artifact@v2
+            with:
+                name: app-store ipa & dsyms
+                path: |
+                    ${{ github.workspace }}/Life@USTC.ipa
+                    ${{ github.workspace }}/*.app.dSYM.zip
