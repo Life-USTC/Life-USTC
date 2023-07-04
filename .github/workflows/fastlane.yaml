@@ -10,6 +10,9 @@ jobs:
     deploy:
         runs-on: macos-13
         steps:
+          - uses: maxim-lobanov/setup-xcode@v1
+            with:
+              xcode-version: '14.3'
           - uses: actions/checkout@v2
           - name: Build & upload iOS binary
             run: fastlane ios build_upload_testflight
