@@ -83,7 +83,7 @@ platform :ios do
     #   build_configurations: ["Release"], # only toggle code signing settings for Release configurations
     # )
 
-    xcode_select("/Applications/Xcode_15.0.app")
+    xcode_select("/Applications/Xcode_14.3.1.app")
 
     # build the app
     gym(
