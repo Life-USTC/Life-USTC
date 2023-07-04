@@ -1,4 +1,4 @@
-name: iOS binary build & upload
+name: Build only
 
 on:
     push:
@@ -10,11 +10,8 @@ jobs:
     deploy:
         runs-on: macos-13
         steps:
-          - uses: maxim-lobanov/setup-xcode@v1
-            with:
-              xcode-version: '15.0-beta'
           - uses: actions/checkout@v2
-          - name: Build & upload iOS binary
+          - name: Build
             run: fastlane ios build_only
             env:
                 ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}

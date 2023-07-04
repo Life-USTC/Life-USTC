@@ -83,6 +83,8 @@ platform :ios do
     #   build_configurations: ["Release"], # only toggle code signing settings for Release configurations
     # )
 
+    xcode_select("/Applications/Xcode_15.0.app")
+
     # build the app
     gym(
       scheme: "Life@USTC", # replace with name of your project’s scheme
