@@ -11,7 +11,7 @@ jobs:
         steps:
           - uses: actions/checkout@v2
           - name: Build
-            run: fastlane ios update_version_number > /dev/null
+            run: fastlane ios update_version_number
             env:
               GITHUB_TAG: ${{ github.ref_name }}
           - name: Commit and push to main branch
