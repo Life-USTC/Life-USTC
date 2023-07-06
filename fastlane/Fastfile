@@ -37,12 +37,8 @@ platform :ios do
     team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-    keychain_name = "signing"
+    keychain_name = "github-action-signing"
     keychain_password = "temp"
-
-    delete_keychain(
-      name: keychain_name,
-    ) if File.exist? File.expand_path("~/Library/Keychains/#{keychain_name}-db")
 
     create_keychain(
       name: keychain_name,
@@ -63,6 +59,15 @@ platform :ios do
       readonly: true,
       keychain_name: keychain_name,
       keychain_password: keychain_password,
+      profile_name: "dev.tiankaima.Life-USTC AppStore",
+    )
+
+    match(
+      type: "appstore",
+      readonly: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+      profile_name: "dev.tiankaima.Life-USTC.Widget AppStore",
     )
   end
 
@@ -70,19 +75,28 @@ platform :ios do
   lane :build_release do |options|
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
 
-    profile_name = "dev.tiankaima.Life-USTC AppStore" # replace with the name of the profile to use for the build
     output_name = "Life@USTC" # specify the name of the .ipa file to generate
     export_method = "app-store" # specify the export method
 
     update_code_signing_settings(
       use_automatic_signing: false,
-      targets: ["Life@USTC", "Widget iOS"], # specify which targets to update code signing settings for
+      targets: ["Life@USTC"], # specify which targets to update code signing settings for
       code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
       bundle_identifier: app_identifier,
-      profile_name: profile_name,
+      profile_name: "dev.tiankaima.Life-USTC AppStore",
       build_configurations: ["Release"], # only toggle code signing settings for Release configurations
     )
 
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      targets: ["Widget iOS"], # specify which targets to update code signing settings for
+      code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
+      bundle_identifier: "dev.tiankaima.Life-USTC.Widget",
+      profile_name: "dev.tiankaima.Life-USTC.Widget AppStore",
+      build_configurations: ["Release"], # only toggle code signing settings for Release configurations
+    )
+
+    # use Xcode 14.2
     xcode_select("/Applications/Xcode_14.2.app")
 
     # build the app
@@ -94,8 +108,8 @@ platform :ios do
         method: export_method,
         provisioningProfiles: {
           app_identifier => profile_name, # here you can add any additional bundle identifiers and their associated provisioning profiles if you’re also building an app extension or other bundle identifier
+          "dev.tiankaima.Life-USTC.Widget" => "dev.tiankaima.Life-USTC.Widget AppStore",
         },
-        "dev.tiankaima.Life-USTC.Widget" => "dev.tiankaima.Life-USTC.Widget AppStore",
       },
     )
   end
