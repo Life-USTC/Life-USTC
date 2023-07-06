@@ -81,7 +81,7 @@ platform :ios do
     )
   end
 
-  desc "deploy"
+  desc "Deploy to Testflight"
   lane :deploy do
     setup_ci
     load_asc_api_key
@@ -89,6 +89,35 @@ platform :ios do
 
     fetch_and_increment_build_number
     build_app(scheme: "Life@USTC")
+
+    # upload_to_app_store(
+    #   force: true,
+    #   run_precheck_before_submit: false,
+    #   submit_for_review: false,
+    # )
+
+    upload_to_testflight
+  end
+
+  desc "Update version number (if env['GITHUB-TAG'] contains tag in format v1.2.3)"
+  lane :update_version_number do
+    tag = ENV["GITHUB_TAG"]
+    if tag.start_with?("v")
+      increment_version_number(
+        version_number: tag[1..],
+      )
+    end
+  end
+
+  desc "Deploy to App Store"
+  lane :deploy_to_app_store do
+    setup_ci
+    load_asc_api_key
+    certificates
+
+    update_version_number
+    build_app(scheme: "Life@USTC")
+
     upload_to_app_store(
       force: true,
       run_precheck_before_submit: false,
