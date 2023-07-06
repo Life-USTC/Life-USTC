@@ -61,13 +61,8 @@ platform :ios do
     )
   end
 
-  desc "Build the iOS app for release"
+  desc "Build the iOS app"
   lane :build_release do |options|
-    # update_code_signing_settings(
-    #   use_automatic_signing: true,
-    #   team_id: "VUW8FV5HN5",
-    # )
-
     # use Xcode 14.2
     xcode_select("/Applications/Xcode_14.2.app")
 
@@ -76,10 +71,16 @@ platform :ios do
       scheme: "Life@USTC",
       output_name: "Life@USTC",
       configuration: "Release",
-      export_options: {
-        method: "app-store",
-      },
+      export_method: "development",
     )
+  end
+
+  desc "Build only"
+  lane :build_only do
+    load_asc_api_key
+    prepare_signing
+    fetch_and_increment_build_number
+    build_release
   end
 
   desc "Upload to TestFlight / ASC"
@@ -103,13 +104,5 @@ platform :ios do
     fetch_and_increment_build_number
     build_release
     upload_release
-  end
-
-  desc "Build only"
-  lane :build_only do
-    load_asc_api_key
-    prepare_signing
-    fetch_and_increment_build_number
-    build_release
   end
 end
