@@ -79,7 +79,7 @@ struct RectangleProgressBar: View {
         return path
     }
 
-    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineViewDefaultContext, progress: Double) {
+    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineView<EveryMinuteTimelineSchedule, Never>.Context, progress: Double) {
         context.fill(
             drawPath(in: size,
                      time: timeline.date.timeIntervalSince1970 * 4.8 + 1.2,

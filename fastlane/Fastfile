@@ -16,6 +16,7 @@ platform :ios do
     )
   end
 
+  #! Local testings:
   desc "Build"
   lane :build do
     certificates
