@@ -79,7 +79,8 @@ struct RectangleProgressBar: View {
         return path
     }
 
-    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineView<EveryMinuteTimelineSchedule, Never>.Context, progress: Double) {
+#if swift(<5.8) // Before Xcode 15
+    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineView<PeriodicTimelineSchedule, some View>.Context, progress: Double) {
         context.fill(
             drawPath(in: size,
                      time: timeline.date.timeIntervalSince1970 * 4.8 + 1.2,
@@ -100,6 +101,29 @@ struct RectangleProgressBar: View {
             style: .init(antialiased: true)
         )
     }
+#else
+    func draw(context: GraphicsContext, size: CGSize, timeline: TimelineViewDefaultContext, progress: Double) {
+        context.fill(
+            drawPath(in: size,
+                     time: timeline.date.timeIntervalSince1970 * 4.8 + 1.2,
+                     progress: progress + 0.01),
+            with: .linearGradient(Gradient(colors: colors.map { $0.opacity(0.25) }),
+                                  startPoint: .zero,
+                                  endPoint: .init(x: size.width, y: size.height)),
+            style: .init(antialiased: true)
+        )
+
+        context.fill(
+            drawPath(in: size,
+                     time: timeline.date.timeIntervalSince1970 * 2.4,
+                     progress: progress),
+            with: .linearGradient(Gradient(colors: colors),
+                                  startPoint: .zero,
+                                  endPoint: .init(x: size.width, y: size.height)),
+            style: .init(antialiased: true)
+        )
+    }
+#endif
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1 / 60)) { timeline in
