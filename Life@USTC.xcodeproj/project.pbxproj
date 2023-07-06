@@ -22,13 +22,9 @@
 		5627958C2A08F382009D398E /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		56311A6F2A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
 		56311A702A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
-		563542C32A4B018000C5BD7A /* USTC_API.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563542BD2A4B018000C5BD7A /* USTC_API.framework */; };
-		563542C42A4B018000C5BD7A /* USTC_API.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 563542BD2A4B018000C5BD7A /* USTC_API.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		563542CA2A4B021500C5BD7A /* openapi-generator-config.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 563542B62A4B000900C5BD7A /* openapi-generator-config.yaml */; };
 		563542CB2A4B021800C5BD7A /* openapi.yml in Resources */ = {isa = PBXBuildFile; fileRef = 563542B42A4AFFF800C5BD7A /* openapi.yml */; };
 		563542CD2A4B02D700C5BD7A /* CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563542CC2A4B02D700C5BD7A /* CAS.swift */; };
-		563542D12A4B03B300C5BD7A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 563542D02A4B03B300C5BD7A /* OpenAPIURLSession */; };
-		563542D32A4B03B900C5BD7A /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 563542D22A4B03B900C5BD7A /* OpenAPIRuntime */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
@@ -68,8 +64,6 @@
 		56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
 		56A3B87C29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
 		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
-		56A44BB02A4AF31A00B47CE2 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */; };
-		56A44BB32A4AF35E00B47CE2 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */; };
 		56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */ = {isa = PBXBuildFile; productRef = 56A7D71729DD20AD00EE7880 /* LoremSwiftum */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56B9F3152A2E028A00DE8838 /* feed_source.json in Resources */ = {isa = PBXBuildFile; fileRef = 56B9F3142A2E028A00DE8838 /* feed_source.json */; };
@@ -132,13 +126,6 @@
 			remoteGlobalIDString = 56FA8E74297D7263000AC3A9;
 			remoteInfo = ExamWidgetExtension;
 		};
-		563542C12A4B018000C5BD7A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56AC72F4294A012600A60F47 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 563542BC2A4B018000C5BD7A;
-			remoteInfo = "USTC-API";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -151,17 +138,6 @@
 				5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		56EF85302A4AF9BD005A0AAE /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				563542C42A4B018000C5BD7A /* USTC_API.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -271,8 +247,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				563542D32A4B03B900C5BD7A /* OpenAPIRuntime in Frameworks */,
-				563542D12A4B03B300C5BD7A /* OpenAPIURLSession in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,11 +260,8 @@
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
-				563542C32A4B018000C5BD7A /* USTC_API.framework in Frameworks */,
 				56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */,
-				56A44BB32A4AF35E00B47CE2 /* OpenAPIURLSession in Frameworks */,
 				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
-				56A44BB02A4AF31A00B47CE2 /* OpenAPIRuntime in Frameworks */,
 				902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */,
 				D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */,
 				7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */,
@@ -697,8 +668,6 @@
 			);
 			name = "USTC-API";
 			packageProductDependencies = (
-				563542D02A4B03B300C5BD7A /* OpenAPIURLSession */,
-				563542D22A4B03B900C5BD7A /* OpenAPIRuntime */,
 			);
 			productName = "USTC-API";
 			productReference = 563542BD2A4B018000C5BD7A /* USTC_API.framework */;
@@ -712,13 +681,11 @@
 				56AC72FD294A012F00A60F47 /* Frameworks */,
 				56AC72FE294A012F00A60F47 /* Resources */,
 				5611272629813AAC00BB66EE /* Embed Foundation Extensions */,
-				56EF85302A4AF9BD005A0AAE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5611272529813AAC00BB66EE /* PBXTargetDependency */,
-				563542C22A4B018000C5BD7A /* PBXTargetDependency */,
 			);
 			name = "Life@USTC";
 			packageProductDependencies = (
@@ -729,8 +696,6 @@
 				56112706298126C100BB66EE /* Introspect */,
 				56A7D71729DD20AD00EE7880 /* LoremSwiftum */,
 				56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */,
-				56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */,
-				56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
@@ -799,9 +764,6 @@
 				56112705298126C100BB66EE /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */,
 				56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */,
-				56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
-				56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
-				56EF85362A4AFB24005A0AAE /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
@@ -952,11 +914,6 @@
 			isa = PBXTargetDependency;
 			target = 56FA8E74297D7263000AC3A9 /* Widget iOS */;
 			targetProxy = 5611272429813AAC00BB66EE /* PBXContainerItemProxy */;
-		};
-		563542C22A4B018000C5BD7A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 563542BC2A4B018000C5BD7A /* USTC-API */;
-			targetProxy = 563542C12A4B018000C5BD7A /* PBXContainerItemProxy */;
 		};
 		563542C92A4B01F900C5BD7A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1432,22 +1389,6 @@
 				minimumVersion = 0.1.4;
 			};
 		};
-		56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-openapi-runtime";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.4;
-			};
-		};
-		56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.1;
-			};
-		};
 		56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/lukaskubanek/LoremSwiftum";
@@ -1522,16 +1463,6 @@
 			package = 56EF85362A4AFB24005A0AAE /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
 			productName = "plugin:OpenAPIGenerator";
 		};
-		563542D02A4B03B300C5BD7A /* OpenAPIURLSession */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
-			productName = OpenAPIURLSession;
-		};
-		563542D22A4B03B900C5BD7A /* OpenAPIRuntime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
-			productName = OpenAPIRuntime;
-		};
 		569CFE43297D87620072C094 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 56D175BB295044FF0070778F /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
@@ -1546,16 +1477,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56E8AD65296F069E009006D0 /* XCRemoteSwiftPackageReference "reeeed" */;
 			productName = Reeeed;
-		};
-		56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
-			productName = OpenAPIRuntime;
-		};
-		56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
-			productName = OpenAPIURLSession;
 		};
 		56A7D71729DD20AD00EE7880 /* LoremSwiftum */ = {
 			isa = XCSwiftPackageProductDependency;

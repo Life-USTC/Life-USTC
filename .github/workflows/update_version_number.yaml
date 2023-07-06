@@ -3,30 +3,35 @@ name: Update version number
 on:
     push:
         tags:
-            - 'v*'
+            - "v*"
+
+permissions:
+    contents: write
 
 jobs:
     deploy:
         runs-on: macos-12
         steps:
-          - uses: actions/checkout@v2
-          - name: Build
-            run: fastlane ios update_version_number
-            env:
-              GITHUB_TAG: ${{ github.ref_name }}
-          - name: Commit and push to main branch
-            run: |
-              git config --global user.email "github-actions[bot]@users.noreply.github.com"
-              git config --global user.name "github-actions[bot]"
-              git add .
-              git commit -m "Update version number to ${{ github.ref_name }}"
-              git push origin main
-          - name: Create new branch off main
-            run: |
-              sh version-update.sh
-              git add .
-              git checkout -b ${{ github.ref_name }}-pre-appstore
-              git commit -m "Info for ${{ github.ref_name }}-pre-appstore"
-              git push origin ${{ github.ref_name }}-pre-appstore
-            env:
-              GITHUB-TAG: ${{ github.ref_name }}
+            - uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.WORKFLOW_GIT_ACCESS_TOKEN }}
+            - name: Build
+              run: fastlane ios update_version_number
+              env:
+                  GITHUB_TAG: ${{ github.ref_name }}
+            - name: Commit and push to main branch
+              run: |
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --global user.name "github-actions[bot]"
+                  git add .
+                  git commit -m "Update version number to ${{ github.ref_name }}"
+                  git push origin main
+            - name: Create new branch off main
+              run: |
+                  sh version-update.sh
+                  git add .
+                  git checkout -b ${{ github.ref_name }}-pre-appstore
+                  git commit -m "Info for ${{ github.ref_name }}-pre-appstore"
+                  git push origin ${{ github.ref_name }}-pre-appstore
+              env:
+                  GITHUB-TAG: ${{ github.ref_name }}
