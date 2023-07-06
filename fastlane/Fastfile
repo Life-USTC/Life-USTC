@@ -6,18 +6,17 @@ platform :ios do
       issuer_id: ENV["ASC_ISSUER_ID"],
       key_content: ENV["ASC_KEY"],
       is_key_content_base64: true,
-      in_house: false, # detecting this via ASC private key not currently supported
+      in_house: false,
     )
   end
 
   desc "Bump build number based on most recent TestFlight build number"
   lane :fetch_and_increment_build_number do
-    # fetch read your app identifier defined in your Appfile
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     current_version = get_version_number(
-      target: "Life@USTC", # replace with your main target, required if you have more than one non-test target
+      target: "Life@USTC",
     )
 
     latest_build_number = latest_testflight_build_number(
@@ -32,6 +31,9 @@ platform :ios do
 
   desc "Installs signing certificate in the keychain and downloads provisioning profiles from App Store Connect"
   lane :prepare_signing do |options|
+    apple_intermediate_certificate_path = "/tmp/AppleWWDRCAG3.cer"
+    `curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer --output #{apple_intermediate_certificate_path}`
+
     team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
@@ -50,12 +52,11 @@ platform :ios do
       timeout: 3600,
     )
 
-    # import_certificate(
-    #   certificate_path: ENV["SIGNING_KEY_FILE_PATH"],
-    #   certificate_password: ENV["SIGNING_KEY_PASSWORD"],
-    #   keychain_name: keychain_name,
-    #   keychain_password: keychain_password,
-    # )
+    import_certificate(
+      certificate_path: apple_intermediate_certificate_path,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+    )
 
     match(
       type: "appstore",
@@ -63,11 +64,6 @@ platform :ios do
       keychain_name: keychain_name,
       keychain_password: keychain_password,
     )
-
-    # fetches and installs provisioning profiles from ASC
-    # sigh(
-    #   api_key: api_key,
-    # )
   end
 
   desc "Build the iOS app for release"
@@ -78,15 +74,14 @@ platform :ios do
     output_name = "Life@USTC" # specify the name of the .ipa file to generate
     export_method = "app-store" # specify the export method
 
-    # turn off automatic signing during build so correct code signing identity is guaranteed to be used
-    # update_code_signing_settings(
-    #   use_automatic_signing: false,
-    #   targets: ["Life@USTC", "Widget iOS"], # specify which targets to update code signing settings for
-    #   code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
-    #   bundle_identifier: app_identifier,
-    #   profile_name: profile_name,
-    #   build_configurations: ["Release"], # only toggle code signing settings for Release configurations
-    # )
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      targets: ["Life@USTC", "Widget iOS"], # specify which targets to update code signing settings for
+      code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
+      bundle_identifier: app_identifier,
+      profile_name: profile_name,
+      build_configurations: ["Release"], # only toggle code signing settings for Release configurations
+    )
 
     xcode_select("/Applications/Xcode_14.2.app")
 
