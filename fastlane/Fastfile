@@ -12,7 +12,7 @@ platform :ios do
 
   desc "Bump build number based on most recent TestFlight build number"
   lane :fetch_and_increment_build_number do
-    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    app_identifier = "dev.tiankaima.Life-USTC"
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     current_version = get_version_number(
@@ -24,6 +24,7 @@ platform :ios do
       version: current_version,
       app_identifier: app_identifier,
     )
+
     increment_build_number(
       build_number: (latest_build_number + 1),
     )
@@ -34,9 +35,8 @@ platform :ios do
     apple_intermediate_certificate_path = "/tmp/AppleWWDRCAG3.cer"
     `curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer --output #{apple_intermediate_certificate_path}`
 
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+    team_id = "VUW8FV5HN5"
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-
     keychain_name = "github-action-signing"
     keychain_password = "temp"
 
@@ -59,57 +59,26 @@ platform :ios do
       readonly: true,
       keychain_name: keychain_name,
       keychain_password: keychain_password,
-      profile_name: "dev.tiankaima.Life-USTC AppStore",
-    )
-
-    match(
-      type: "appstore",
-      readonly: true,
-      keychain_name: keychain_name,
-      keychain_password: keychain_password,
-      profile_name: "dev.tiankaima.Life-USTC.Widget AppStore",
     )
   end
 
   desc "Build the iOS app for release"
   lane :build_release do |options|
-    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-
-    output_name = "Life@USTC" # specify the name of the .ipa file to generate
-    export_method = "app-store" # specify the export method
-
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["Life@USTC"], # specify which targets to update code signing settings for
-      code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
-      bundle_identifier: app_identifier,
-      profile_name: "dev.tiankaima.Life-USTC AppStore",
-      build_configurations: ["Release"], # only toggle code signing settings for Release configurations
-    )
-
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["Widget iOS"], # specify which targets to update code signing settings for
-      code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
-      bundle_identifier: "dev.tiankaima.Life-USTC.Widget",
-      profile_name: "dev.tiankaima.Life-USTC.Widget AppStore",
-      build_configurations: ["Release"], # only toggle code signing settings for Release configurations
-    )
+    # update_code_signing_settings(
+    #   use_automatic_signing: true,
+    #   team_id: "VUW8FV5HN5",
+    # )
 
     # use Xcode 14.2
     xcode_select("/Applications/Xcode_14.2.app")
 
     # build the app
     gym(
-      scheme: "Life@USTC", # replace with name of your project’s scheme
-      output_name: output_name,
+      scheme: "Life@USTC",
+      output_name: "Life@USTC",
       configuration: "Release",
       export_options: {
-        method: export_method,
-        provisioningProfiles: {
-          app_identifier => profile_name, # here you can add any additional bundle identifiers and their associated provisioning profiles if you’re also building an app extension or other bundle identifier
-          "dev.tiankaima.Life-USTC.Widget" => "dev.tiankaima.Life-USTC.Widget AppStore",
-        },
+        method: "app-store"
       },
     )
   end
@@ -123,8 +92,8 @@ platform :ios do
       skip_screenshots: true,
       skip_metadata: true,
       skip_app_version_update: true,
-      force: true, # skips verification of HTML preview file (since this will be run from a CI machine)
-      run_precheck_before_submit: false, # not supported through ASC API yet
+      force: true,
+      run_precheck_before_submit: false,
     )
   end
 
