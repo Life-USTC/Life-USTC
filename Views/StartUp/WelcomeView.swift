@@ -97,13 +97,15 @@ struct WelcomeView_1: View {
 struct WelcomeView_2: View {
     @State var isPresented = true
     var body: some View {
-        CASLoginView(casLoginSheet: $isPresented,
-                     isInSheet: true,
-                     title: "To get your course table...")
-            .navigationDestination(isPresented: .init(get: { !isPresented }, set: { isPresented = !$0 })) {
-                WelcomeView_3()
-            }
-            .navigationBarBackButtonHidden()
+        CASLoginView(
+            title: "To get your course table...",
+            isInSheet: true,
+            casLoginSheet: $isPresented
+        )
+        .navigationDestination(isPresented: .init(get: { !isPresented }, set: { isPresented = !$0 })) {
+            WelcomeView_3()
+        }
+        .navigationBarBackButtonHidden()
     }
 }
 
