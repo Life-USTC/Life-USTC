@@ -15,10 +15,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let _ = LUJSRuntime.shared
     }
 
+    func shouldRunUpdate(on version: String) -> Bool {
+#if DEBUG
+        // Update on developing: if previousVersion <= version
+        if let previousVersion = userDefaults.string(forKey: "version"),
+           previousVersion.versionCompare(version) == .orderedAscending
+        {
+            return false
+        }
+#else
+        // Update on release: if previousVersion < version
+        if let previousVersion = userDefaults.string(forKey: "version"),
+           previousVersion.versionCompare(version) == .orderedAscending ||
+           previousVersion.versionCompare(version) == .orderedSame
+        {
+            return false
+        }
+#endif
+
+        print("Version <= \(version); Updating to version \(version)")
+        return true
+    }
+
     /// What to execute after 1.0.2 update
     func version1_0_2Update() {
-        // if inside userDefaults, key version is greater than 1.0.2, then return
-        if let version = userDefaults.string(forKey: "version"), version.versionCompare("1.0.2") == .orderedAscending {
+        if !shouldRunUpdate(on: "1.0.2") {
             return
         }
 
@@ -29,6 +50,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if UserDefaults.standard.object(forKey: "homeShowPostNumbers") != nil {
             UserDefaults.standard.removeObject(forKey: "homeShowPostNumbers")
+        }
+
+        if userDefaults.object(forKey: "passportUsername") != nil {
+            userDefaults.removeObject(forKey: "passportUsername")
+        }
+
+        if userDefaults.object(forKey: "passportPassword") != nil {
+            userDefaults.removeObject(forKey: "passportPassword")
         }
 
         // set version to 1.0.2

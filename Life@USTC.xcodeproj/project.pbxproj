@@ -98,6 +98,10 @@
 		56E94E27298A77D00085241B /* NotificationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E26298A77D00085241B /* NotificationPage.swift */; };
 		56E94E29298A77F80085241B /* FeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E28298A77F80085241B /* FeedPage.swift */; };
 		56E94E2B298AA3720085241B /* ExamPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E2A298AA3720085241B /* ExamPage.swift */; };
+		56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */; };
+		56EBAEF52A597F1F00B23862 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */; };
+		56EBAEF72A597F5300B23862 /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */; };
+		56EBAEF82A597F7800B23862 /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */; };
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
@@ -215,6 +219,8 @@
 		56E94E26298A77D00085241B /* NotificationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
 		56E94E2A298AA3720085241B /* ExamPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPage.swift; sourceTree = "<group>"; };
+		56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
+		56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainItemAccessibility.swift; sourceTree = "<group>"; };
 		56F1734F2A1C871D00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173502A1C881300C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173512A1C892C00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -488,6 +494,8 @@
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
 				5627958A2A08F382009D398E /* JSRuntime.swift */,
 				56F1734F2A1C871D00C79E53 /* README.md */,
+				56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */,
+				56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -844,6 +852,7 @@
 				56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */,
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
 				5694D91829668191009CFCDF /* Course.swift in Sources */,
+				56EBAEF72A597F5300B23862 /* KeychainItemAccessibility.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
@@ -863,6 +872,7 @@
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
 				56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
+				56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */,
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
 				56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
@@ -887,6 +897,7 @@
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
 				5627958C2A08F382009D398E /* JSRuntime.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
+				56EBAEF52A597F1F00B23862 /* KeychainWrapper.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
 				56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
@@ -904,6 +915,7 @@
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
+				56EBAEF82A597F7800B23862 /* KeychainItemAccessibility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

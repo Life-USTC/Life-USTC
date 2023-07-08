@@ -9,28 +9,27 @@ import SwiftUI
 
 struct CASLoginView: View {
     static func sheet(isPresented: Binding<Bool>) -> CASLoginView {
-        CASLoginView(casLoginSheet: isPresented, isInSheet: true, title: "One more step...")
+        CASLoginView(
+            title: "One more step...",
+            isInSheet: true,
+            casLoginSheet: isPresented
+        )
     }
 
     static var newPage = CASLoginView(casLoginSheet: .constant(false))
 
-    // abstract from LoginSheet, some variables are subject to change though
-    @AppStorage("passportUsername", store: userDefaults) var passportUsername: String = ""
-    @AppStorage("passportPassword", store: userDefaults) var passportPassword: String = ""
-
-    @Binding var casLoginSheet: Bool // used to signal the sheet to close
-    var isInSheet = false
-
     var title: LocalizedStringKey = "CAS Settings"
-
-    @State var showFailedAlert = false
-    @State var showSuccessAlert = false
+    var isInSheet = false
 
     enum Field: Int, Hashable {
         case username
         case password
     }
 
+    @StateObject var ustcCASClient = UstcCasClient.shared
+    @Binding var casLoginSheet: Bool // used to signal the sheet to close
+    @State var showFailedAlert = false
+    @State var showSuccessAlert = false
     @FocusState var foucusField: Field?
 
     var body: some View {
@@ -84,7 +83,7 @@ struct CASLoginView: View {
                         Text("Username:")
                             .bold()
                         VStack(alignment: .leading) {
-                            TextField("Username", text: $passportUsername)
+                            TextField("Username", text: $ustcCASClient.inputUsername)
                                 .focused($foucusField, equals: .username)
                                 .onSubmit {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -105,7 +104,7 @@ struct CASLoginView: View {
                         Text("Password:")
                             .bold()
                         VStack(alignment: .leading) {
-                            SecureField("Password", text: $passportPassword)
+                            SecureField("Password", text: $ustcCASClient.inputPassword)
                                 .focused($foucusField, equals: .password)
                                 .submitLabel(.done)
                                 .onSubmit {
@@ -151,21 +150,24 @@ struct CASLoginView: View {
 
     private func checkAndLogin() {
         Task {
-            UstcCasClient.shared.clearLoginStatus()
-            await URLSession.shared.reset()
-            let result = try await UstcCasClient.shared.loginToCAS()
-            if result {
-                if isInSheet {
+            do {
+                let result = try await ustcCASClient.checkAndLogin()
+                if result, isInSheet {
                     showSuccessAlert = true
+
                     // close after 1 second
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                         showSuccessAlert = false
                         casLoginSheet = false
                     }
-                } else {
+                    return
+                } else if result {
                     showSuccessAlert = true
+                    return
                 }
-            } else {
+
+                showFailedAlert = true
+            } catch {
                 showFailedAlert = true
             }
         }
