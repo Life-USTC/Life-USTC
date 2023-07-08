@@ -1,0 +1,42 @@
+name: Build To TestFlight
+
+on:
+    push:
+        branches:
+            - "*"
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: macos-12
+        steps:
+          - uses: actions/checkout@v2
+          - name: Build
+            run: fastlane ios deploy > build.log
+            env:
+                ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_API_KEY_ID }}
+                ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+                ASC_KEY: ${{ secrets.AUTH_KEY }}
+                MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+                MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+
+          - name: Upload app-store ipa and dsyms to artifacts
+            uses: actions/upload-artifact@v2
+            with:
+                name: app-store ipa & dsyms
+                path: |
+                    ${{ github.workspace }}/Life@USTC.ipa
+                    ${{ github.workspace }}/*.app.dSYM.zip
+
+          - name: Encrypt build.log with password
+            run: |
+                zip -P ${{ secrets.BUILD_LOG_PASSWORD }} build_log.zip build.log
+                rm build.log
+            if: always()
+
+          - name: Upload build_log.zip to artifacts
+            uses: actions/upload-artifact@v2
+            with:
+                name: build_log
+                path: ${{ github.workspace }}/build_log.zip
+            if: always()

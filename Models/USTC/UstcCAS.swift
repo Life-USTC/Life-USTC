@@ -31,13 +31,12 @@ class UstcCasClient: ObservableObject {
     static var shared = UstcCasClient(session: .shared)
 
     var session: URLSession
-    var username: String {
-        userDefaults.string(forKey: "passportUsername") ?? ""
-    }
 
-    var password: String {
-        userDefaults.string(forKey: "passportPassword") ?? ""
-    }
+    @AppSecureStorage("passportUsername") private var username: String?
+    @AppSecureStorage("passportPassword") private var password: String?
+
+    @Published public var inputUsername: String = ""
+    @Published public var inputPassword: String = ""
 
     var lastLogined: Date? {
         willSet {
@@ -49,10 +48,12 @@ class UstcCasClient: ObservableObject {
 
     init(session: URLSession, lastLogined _: Date? = nil) {
         self.session = session
+        inputUsername = username ?? ""
+        inputPassword = password ?? ""
     }
 
     var precheckFails: Bool {
-        username.isEmpty || password.isEmpty
+        (username?.isEmpty ?? false) || (password?.isEmpty ?? false)
     }
 
     func getLtTokenFromCAS(url: URL? = nil) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
@@ -136,7 +137,7 @@ class UstcCasClient: ObservableObject {
 
     func requireLogin() async throws -> Bool {
         if let loginTask {
-            print("network<UstcCAS>: login task already running, [CREATE NEW ONE]")
+            print("network<UstcCAS>: login task already running, [WAITING RESULT]")
             return try await loginTask.value
         }
 
@@ -158,5 +159,21 @@ class UstcCasClient: ObservableObject {
 
     func clearLoginStatus() {
         lastLogined = nil
+    }
+
+    func checkAndLogin() async throws -> Bool {
+        guard !inputUsername.isEmpty else {
+            return false
+        }
+        guard !inputPassword.isEmpty else {
+            return false
+        }
+
+        username = inputUsername
+        password = inputPassword
+
+        clearLoginStatus()
+        await URLSession.shared.reset()
+        return try await loginToCAS()
     }
 }

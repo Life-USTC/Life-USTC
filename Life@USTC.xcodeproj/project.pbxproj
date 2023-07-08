@@ -22,13 +22,9 @@
 		5627958C2A08F382009D398E /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		56311A6F2A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
 		56311A702A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
-		563542C32A4B018000C5BD7A /* USTC_API.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563542BD2A4B018000C5BD7A /* USTC_API.framework */; };
-		563542C42A4B018000C5BD7A /* USTC_API.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 563542BD2A4B018000C5BD7A /* USTC_API.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		563542CA2A4B021500C5BD7A /* openapi-generator-config.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 563542B62A4B000900C5BD7A /* openapi-generator-config.yaml */; };
 		563542CB2A4B021800C5BD7A /* openapi.yml in Resources */ = {isa = PBXBuildFile; fileRef = 563542B42A4AFFF800C5BD7A /* openapi.yml */; };
 		563542CD2A4B02D700C5BD7A /* CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563542CC2A4B02D700C5BD7A /* CAS.swift */; };
-		563542D12A4B03B300C5BD7A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 563542D02A4B03B300C5BD7A /* OpenAPIURLSession */; };
-		563542D32A4B03B900C5BD7A /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 563542D22A4B03B900C5BD7A /* OpenAPIRuntime */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
@@ -68,8 +64,6 @@
 		56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
 		56A3B87C29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* ScoreDelegate.swift */; };
 		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
-		56A44BB02A4AF31A00B47CE2 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */; };
-		56A44BB32A4AF35E00B47CE2 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */; };
 		56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */ = {isa = PBXBuildFile; productRef = 56A7D71729DD20AD00EE7880 /* LoremSwiftum */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56B9F3152A2E028A00DE8838 /* feed_source.json in Resources */ = {isa = PBXBuildFile; fileRef = 56B9F3142A2E028A00DE8838 /* feed_source.json */; };
@@ -104,6 +98,10 @@
 		56E94E27298A77D00085241B /* NotificationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E26298A77D00085241B /* NotificationPage.swift */; };
 		56E94E29298A77F80085241B /* FeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E28298A77F80085241B /* FeedPage.swift */; };
 		56E94E2B298AA3720085241B /* ExamPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E2A298AA3720085241B /* ExamPage.swift */; };
+		56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */; };
+		56EBAEF52A597F1F00B23862 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */; };
+		56EBAEF72A597F5300B23862 /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */; };
+		56EBAEF82A597F7800B23862 /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */; };
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
@@ -132,13 +130,6 @@
 			remoteGlobalIDString = 56FA8E74297D7263000AC3A9;
 			remoteInfo = ExamWidgetExtension;
 		};
-		563542C12A4B018000C5BD7A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56AC72F4294A012600A60F47 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 563542BC2A4B018000C5BD7A;
-			remoteInfo = "USTC-API";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -151,17 +142,6 @@
 				5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		56EF85302A4AF9BD005A0AAE /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				563542C42A4B018000C5BD7A /* USTC_API.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -239,6 +219,8 @@
 		56E94E26298A77D00085241B /* NotificationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
 		56E94E2A298AA3720085241B /* ExamPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPage.swift; sourceTree = "<group>"; };
+		56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
+		56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainItemAccessibility.swift; sourceTree = "<group>"; };
 		56F1734F2A1C871D00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173502A1C881300C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173512A1C892C00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -271,8 +253,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				563542D32A4B03B900C5BD7A /* OpenAPIRuntime in Frameworks */,
-				563542D12A4B03B300C5BD7A /* OpenAPIURLSession in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,11 +266,8 @@
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
-				563542C32A4B018000C5BD7A /* USTC_API.framework in Frameworks */,
 				56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */,
-				56A44BB32A4AF35E00B47CE2 /* OpenAPIURLSession in Frameworks */,
 				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
-				56A44BB02A4AF31A00B47CE2 /* OpenAPIRuntime in Frameworks */,
 				902278CCDD7343F0D9B10F1B /* libz.tbd in Frameworks */,
 				D2EF018C0EEA4A4342EAB279 /* libsqlite3.0.tbd in Frameworks */,
 				7DD1D836EE09B1408B7E6C3C /* CFNetwork.framework in Frameworks */,
@@ -517,6 +494,8 @@
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
 				5627958A2A08F382009D398E /* JSRuntime.swift */,
 				56F1734F2A1C871D00C79E53 /* README.md */,
+				56EBAEF32A597F1B00B23862 /* KeychainWrapper.swift */,
+				56EBAEF62A597F5300B23862 /* KeychainItemAccessibility.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -697,8 +676,6 @@
 			);
 			name = "USTC-API";
 			packageProductDependencies = (
-				563542D02A4B03B300C5BD7A /* OpenAPIURLSession */,
-				563542D22A4B03B900C5BD7A /* OpenAPIRuntime */,
 			);
 			productName = "USTC-API";
 			productReference = 563542BD2A4B018000C5BD7A /* USTC_API.framework */;
@@ -712,13 +689,11 @@
 				56AC72FD294A012F00A60F47 /* Frameworks */,
 				56AC72FE294A012F00A60F47 /* Resources */,
 				5611272629813AAC00BB66EE /* Embed Foundation Extensions */,
-				56EF85302A4AF9BD005A0AAE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5611272529813AAC00BB66EE /* PBXTargetDependency */,
-				563542C22A4B018000C5BD7A /* PBXTargetDependency */,
 			);
 			name = "Life@USTC";
 			packageProductDependencies = (
@@ -729,8 +704,6 @@
 				56112706298126C100BB66EE /* Introspect */,
 				56A7D71729DD20AD00EE7880 /* LoremSwiftum */,
 				56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */,
-				56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */,
-				56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
@@ -799,9 +772,6 @@
 				56112705298126C100BB66EE /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */,
 				56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */,
-				56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
-				56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
-				56EF85362A4AFB24005A0AAE /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
@@ -882,6 +852,7 @@
 				56143F6D295EE47A008CE454 /* AsyncCalls.swift in Sources */,
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
 				5694D91829668191009CFCDF /* Course.swift in Sources */,
+				56EBAEF72A597F5300B23862 /* KeychainItemAccessibility.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
@@ -901,6 +872,7 @@
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
 				56A3B87B29A8B8C600BFE64F /* ScoreDelegate.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
+				56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */,
 				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
 				56A3B87529A8B86700BFE64F /* ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
@@ -925,6 +897,7 @@
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
 				5627958C2A08F382009D398E /* JSRuntime.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
+				56EBAEF52A597F1F00B23862 /* KeychainWrapper.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
 				56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
@@ -942,6 +915,7 @@
 				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
+				56EBAEF82A597F7800B23862 /* KeychainItemAccessibility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -952,11 +926,6 @@
 			isa = PBXTargetDependency;
 			target = 56FA8E74297D7263000AC3A9 /* Widget iOS */;
 			targetProxy = 5611272429813AAC00BB66EE /* PBXContainerItemProxy */;
-		};
-		563542C22A4B018000C5BD7A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 563542BC2A4B018000C5BD7A /* USTC-API */;
-			targetProxy = 563542C12A4B018000C5BD7A /* PBXContainerItemProxy */;
 		};
 		563542C92A4B01F900C5BD7A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1210,9 +1179,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
 				"EXCLUDED_SOURCE_FILE_NAMES[sdk=iphonesimulator*]" = (
 					"libXG-SDK-Cloud.a",
@@ -1241,6 +1212,8 @@
 				"OTHER_SWIFT_FLAGS[sdk=iphonesimulator*]" = "-D IOS_SIMULATOR";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development dev.tiankaima.Life-USTC";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1264,9 +1237,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1289,6 +1264,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC";
 				PRODUCT_NAME = "Life@USTC";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development dev.tiankaima.Life-USTC";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1308,9 +1285,11 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widget;
@@ -1325,6 +1304,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development dev.tiankaima.Life-USTC.Widget";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1340,9 +1321,11 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VUW8FV5HN5;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widget;
@@ -1357,6 +1340,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.tiankaima.Life-USTC.Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development dev.tiankaima.Life-USTC.Widget";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1414,22 +1399,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.1.4;
-			};
-		};
-		56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-openapi-runtime";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.4;
-			};
-		};
-		56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.1;
 			};
 		};
 		56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */ = {
@@ -1506,16 +1475,6 @@
 			package = 56EF85362A4AFB24005A0AAE /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
 			productName = "plugin:OpenAPIGenerator";
 		};
-		563542D02A4B03B300C5BD7A /* OpenAPIURLSession */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
-			productName = OpenAPIURLSession;
-		};
-		563542D22A4B03B900C5BD7A /* OpenAPIRuntime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
-			productName = OpenAPIRuntime;
-		};
 		569CFE43297D87620072C094 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 56D175BB295044FF0070778F /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
@@ -1530,16 +1489,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56E8AD65296F069E009006D0 /* XCRemoteSwiftPackageReference "reeeed" */;
 			productName = Reeeed;
-		};
-		56A44BAF2A4AF31A00B47CE2 /* OpenAPIRuntime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BAE2A4AF31A00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
-			productName = OpenAPIRuntime;
-		};
-		56A44BB22A4AF35E00B47CE2 /* OpenAPIURLSession */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 56A44BB12A4AF35E00B47CE2 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
-			productName = OpenAPIURLSession;
 		};
 		56A7D71729DD20AD00EE7880 /* LoremSwiftum */ = {
 			isa = XCSwiftPackageProductDependency;
