@@ -9,7 +9,11 @@ import SwiftUI
 
 struct CASLoginView: View {
     static func sheet(isPresented: Binding<Bool>) -> CASLoginView {
-        CASLoginView(title: "One more step...", isInSheet: true, casLoginSheet: isPresented)
+        CASLoginView(
+            title: "One more step...",
+            isInSheet: true,
+            casLoginSheet: isPresented
+        )
     }
 
     static var newPage = CASLoginView(casLoginSheet: .constant(false))
