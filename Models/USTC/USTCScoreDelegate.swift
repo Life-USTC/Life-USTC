@@ -1,5 +1,5 @@
 //
-//  ScoreDelegate.swift
+//  USTCScoreDelegate.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/2/24.
@@ -8,8 +8,9 @@
 import Foundation
 import SwiftyJSON
 
-class ScoreDelegate: UserDefaultsADD & LastUpdateADD {
-    // Protocol requirements
+class USTCScoreDelegate: ScoreDelegateProtocol {
+    // MARK: - Protocol requirements
+
     typealias D = Score
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASScoreCache"
@@ -22,14 +23,8 @@ class ScoreDelegate: UserDefaultsADD & LastUpdateADD {
         }
     }
 
-    // Parent
     var ustcUgAASClient: UstcUgAASClient
-
-    // See ExamDelegate.shared
-    static var shared = ScoreDelegate(.shared)
-
-    // MARK: - Manually update these and saveCache()
-
+    static var shared = USTCScoreDelegate(.shared)
     var cache = JSON()
     var data: Score = .init() {
         willSet {
@@ -39,6 +34,8 @@ class ScoreDelegate: UserDefaultsADD & LastUpdateADD {
         }
     }
 
+    // MARK: - Start reading from here:
+
     func parseCache() async throws -> Score {
         var result = Score()
         let subJson = cache["stdGradeRank"]
@@ -46,21 +43,19 @@ class ScoreDelegate: UserDefaultsADD & LastUpdateADD {
         result.majorName = subJson["majorName"].string ?? "Error"
         result.majorRank = subJson["majorRank"].int ?? 0
         result.majorStdCount = subJson["majorStdCount"].int ?? 0
-
-        var courseScoreList: [CourseScore] = []
-        for (_, semesterJson): (String, JSON) in cache["semesters"] {
-            for (_, courseScoreJson): (String, JSON) in semesterJson["scores"] {
-                courseScoreList.append(CourseScore(courseName: courseScoreJson["courseNameCh"].stringValue,
-                                                   courseCode: courseScoreJson["courseCode"].stringValue,
-                                                   credit: Double(courseScoreJson["credits"].stringValue)!,
-                                                   gpa: Double(courseScoreJson["gp"].stringValue),
-                                                   lessonCode: courseScoreJson["lessonCode"].stringValue,
-                                                   score: courseScoreJson["scoreCh"].stringValue,
-                                                   semesterID: Int(courseScoreJson["semesterAssoc"].stringValue)!,
-                                                   semesterName: courseScoreJson["semesterCh"].stringValue))
+        result.courses = cache["semesters"].flatMap { _, semesterJSON in
+            semesterJSON["scores"].map { _, courseJSON in
+                CourseScore(courseName: courseJSON["courseNameCh"].stringValue,
+                            courseCode: courseJSON["courseCode"].stringValue,
+                            lessonCode: courseJSON["lessonCode"].stringValue,
+                            semesterID: Int(courseJSON["semesterAssoc"].stringValue)!,
+                            semesterName: courseJSON["semesterCh"].stringValue,
+                            credit: Double(courseJSON["credits"].stringValue)!,
+                            gpa: Double(courseJSON["gp"].stringValue),
+                            score: courseJSON["scoreCh"].stringValue)
             }
         }
-        result.courseScores = courseScoreList
+
         return result
     }
 
