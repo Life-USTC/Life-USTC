@@ -19,3 +19,4 @@ let mp_ustc_youth_league_committee_URL = URL(string: "https://rss-cdn.tiankaima.
 let mp_ustc_undergraduate_admission_office_URL = URL(string: "https://rss-cdn.tiankaima.dev/xml/mp_ustc_undergraduate_admission_office.xml")!
 let mp_ustc_sgy_URL = URL(string: "https://rss-cdn.tiankaima.dev/xml/mp_ustc_sgy.xml")!
 let mp_ustc_undergraduate_student_union_URL = URL(string: "https://rss-cdn.tiankaima.dev/xml/mp_ustc_undergraduate_student_union.xml")!
+let ustcFeedListURL = URL(string: "https://life-ustc.tiankaima.dev/feed_source.json")!

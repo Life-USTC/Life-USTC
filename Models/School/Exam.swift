@@ -82,9 +82,3 @@ extension ExamDelegateProtocol {
         foregroundUpdateData(with: Exam.merge(data, with: try await parseCache()))
     }
 }
-
-extension Exam {
-    static var sharedDelegate: any ExamDelegateProtocol {
-        USTCExamDelegate.shared
-    }
-}

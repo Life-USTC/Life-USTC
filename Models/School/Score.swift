@@ -134,9 +134,3 @@ extension CourseScore {
                                      gpa: 4.3,
                                      score: "95")
 }
-
-extension Score {
-    static var sharedDelegate: any ScoreDelegateProtocol {
-        USTCScoreDelegate.shared
-    }
-}

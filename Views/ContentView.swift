@@ -93,7 +93,7 @@ struct ContentView: View {
 
     var body: some View {
         if firstLogin {
-            CASLoginView.sheet(isPresented: $firstLogin)
+            USTCCASLoginView.sheet(isPresented: $firstLogin)
         } else {
             ZStack {
                 WebView(wkWebView: LUJSRuntime.shared.wkWebView)

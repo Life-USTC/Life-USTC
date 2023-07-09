@@ -141,9 +141,3 @@ protocol TimeListBasedCDP: CurriculumDelegateProtocol {
     var startTimes: [String] { get }
     var endTimes: [String] { get }
 }
-
-extension Curriculum {
-    static var sharedDelegate: any CurriculumDelegateProtocol {
-        USTCCurriculumDelegate.shared
-    }
-}

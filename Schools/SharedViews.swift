@@ -23,3 +23,29 @@ var SharedHomeView: some View {
 var SharedCurriculumView: some View {
     CurriculumView(curriculumDelegate: USTCCurriculumDelegate.shared)
 }
+
+extension FeaturesView {
+    static var availableFeatures: [FeatureWithView] {
+        USTCExports.features
+    }
+}
+
+extension FeedSource {
+    static var feedURLs: [URL] {
+        USTCExports.feedURLs
+    }
+
+    static var remoteURL: URL {
+        USTCExports.remoteFeedURL
+    }
+
+    static var localFeedJSONName: String {
+        USTCExports.localFeedJSOName
+    }
+}
+
+extension SettingsView {
+    static var availableSettings: [SettingWithView] {
+        USTCExports.settings
+    }
+}

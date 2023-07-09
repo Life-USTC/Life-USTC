@@ -97,7 +97,7 @@ struct WelcomeView_1: View {
 struct WelcomeView_2: View {
     @State var isPresented = true
     var body: some View {
-        CASLoginView(
+        USTCCASLoginView(
             title: "To get your course table...",
             isInSheet: true,
             casLoginSheet: $isPresented
