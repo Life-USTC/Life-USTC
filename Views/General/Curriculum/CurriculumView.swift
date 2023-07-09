@@ -10,13 +10,13 @@ import SwiftUI
 let heightPerClass = 60.0
 let paddingWidth = 2.0
 
-struct CurriculumSettingView: View {
+struct CurriculumSettingView<CurriculumDelegate: CurriculumDelegateProtocol>: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
-    @AppStorage("semesterID", store: userDefaults) var semesterID = "301"
+    @AppStorage("semesterIDInt", store: userDefaults) var semesterID: Int = 301
 
-    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    @ObservedObject var curriculumDelegate: CurriculumDelegate
     var courses: [Course] {
-        curriculumDelegate.data
+        curriculumDelegate.data.courses
     }
 
     var status: AsyncViewStatus {
@@ -33,9 +33,9 @@ struct CurriculumSettingView: View {
                 }
 
                 Picker(selection: $semesterID) {
-                    ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.value < $1.value }), id: \.key) { key, id in
-                        Text(key)
-                            .tag(id)
+                    ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                        Text(value)
+                            .tag(key)
                     }
                 } label: {
                     Label("Select time", systemImage: "square.3.stack.3d")
@@ -52,7 +52,7 @@ struct CurriculumSettingView: View {
                     Task {
                         saveCalendarStatus = .inProgress
                         do {
-                            try await CurriculumDelegate.shared.saveToCalendar()
+                            try await curriculumDelegate.saveToCalendar()
                             saveCalendarStatus = .success
                         } catch {
                             saveCalendarStatus = .failure
@@ -71,52 +71,21 @@ struct CurriculumSettingView: View {
     }
 }
 
-struct CurriculumView: View {
+struct CurriculumView<CurriculumDelegate: CurriculumDelegateProtocol>: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
     @State var weekNumber = 0
     @State var date = Date()
-
-    @StateObject var curriculumDelegate = CurriculumDelegate.shared
-    var courses: [Course] {
-        Course.filter(curriculumDelegate.data, week: weekNumber, weekday: nil)
-    }
-
-    var status: AsyncViewStatus {
-        curriculumDelegate.status
-    }
-
     @State var showSettingSheet = false
+    @StateObject var curriculumDelegate: CurriculumDelegate
+    var courses: [Course] {
+        curriculumDelegate.data.getCourses(week: weekNumber, weekday: nil)
+    }
 
     func update(forceUpdate: Bool = false) {
         Task {
-            weekNumber = UstcUgAASClient.shared.weekNumber(for: date)
+            weekNumber = curriculumDelegate.data.weekNumber(for: date)
         }
         curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
-    }
-
-    var body: some View {
-        mainView
-            .padding(paddingWidth)
-            .toolbar {
-                if status == .inProgress {
-                    ProgressView()
-                }
-                Button {
-                    withAnimation {
-                        showSettingSheet.toggle()
-                    }
-                } label: {
-                    Label("Show settings", systemImage: "gearshape")
-                }
-            }
-            .navigationTitle("Curriculum")
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear { update() }
-            .refreshable { update(forceUpdate: true) }
-            .onChange(of: date, perform: { _ in update() })
-            .sheet(isPresented: $showSettingSheet) {
-                CurriculumSettingView(date: $date)
-            }
     }
 
     func makeVStack(index: Int) -> some View {
@@ -148,7 +117,7 @@ struct CurriculumView: View {
         }
     }
 
-    var loadedView: some View {
+    var body: some View {
         GeometryReader { geo in
             ScrollView(.vertical, showsIndicators: false) {
                 Text("Week \(weekNumber)")
@@ -172,15 +141,25 @@ struct CurriculumView: View {
                 .scrollDisabled(!showSatAndSun)
             }
         }
-    }
-
-    var mainView: some View {
-        Group {
-            if status == .inProgress {
-                ProgressView()
-            } else {
-                loadedView
+        .asyncViewStatusMask(status: curriculumDelegate.status)
+        .padding(paddingWidth)
+        .toolbar {
+            Button {
+                withAnimation {
+                    showSettingSheet.toggle()
+                }
+            } label: {
+                Label("Show settings", systemImage: "gearshape")
             }
+        }
+        .navigationTitle("Curriculum")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { update() }
+        .refreshable { update(forceUpdate: true) }
+        .onChange(of: date, perform: { _ in update() })
+        .sheet(isPresented: $showSettingSheet) {
+            CurriculumSettingView(curriculumDelegate: curriculumDelegate,
+                                  date: $date)
         }
     }
 }
@@ -188,10 +167,7 @@ struct CurriculumView: View {
 struct CurriculumView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            CurriculumView()
+            SharedCurriculumView
         }
-
-//        CurriculumSettingView(courses: .constant([]), status: .constant(.cached), date: .constant(Date()))
-//            .previewDisplayName("Settings")
     }
 }

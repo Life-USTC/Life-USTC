@@ -12,14 +12,11 @@ struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
     func next() -> UInt64 { UInt64(drand48() * Double(UInt64.max)) }
 }
 
-struct CurriculumPreview: View {
-    @StateObject var curriculumDelegate = CurriculumDelegate.shared
-    var weekNumber: Int {
-        UstcUgAASClient.shared.weekNumber()
-    }
-
+@available(*, deprecated, message: "HomeView now manage lifecycle by itself")
+struct CurriculumPreview<CurriculumDelegate: CurriculumDelegateProtocol>: View {
+    @ObservedObject var curriculumDelegate: CurriculumDelegate
     var courses: [Course] {
-        Course.filter(curriculumDelegate.data, week: weekNumber, weekday: weekday(for: date))
+        curriculumDelegate.data.getCourses()
     }
 
     @State var date = Date()
@@ -148,9 +145,12 @@ struct CurriculumPreview_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             VStack {
-                CurriculumPreview()
+                CurriculumPreview(curriculumDelegate: USTCCurriculumDelegate.shared,
+                                  date: .now)
                     .happyView
-                CurriculumPreview()
+
+                CurriculumPreview(curriculumDelegate: USTCCurriculumDelegate.shared,
+                                  date: .now)
                     .makeView(with: [.example, .example])
             }
             .padding()

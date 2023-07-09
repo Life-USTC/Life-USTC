@@ -16,18 +16,14 @@ struct CurriculumProvider: TimelineProvider {
 
     func getSnapshot(in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
         Task {
-            let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = UstcUgAASClient.shared.weekNumber()
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
+            let entry = CurriculumEntry(courses: try await Curriculum.sharedDelegate.retrive().todaysCourse)
             completion(entry)
         }
     }
 
     func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = UstcUgAASClient.shared.weekNumber()
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
+            let entry = CurriculumEntry(courses: try await Curriculum.sharedDelegate.retrive().todaysCourse)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)

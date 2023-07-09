@@ -14,3 +14,12 @@ var SharedScoreView: some View {
 var SharedExamView: some View {
     ExamView(examDelegate: USTCExamDelegate.shared)
 }
+
+var SharedHomeView: some View {
+    HomeView(curriculumDelegate: USTCCurriculumDelegate.shared,
+             examDelegate: USTCExamDelegate.shared)
+}
+
+var SharedCurriculumView: some View {
+    CurriculumView(curriculumDelegate: USTCCurriculumDelegate.shared)
+}

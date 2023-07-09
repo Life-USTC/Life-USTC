@@ -201,6 +201,6 @@ extension ScoreView {
 
 struct ScoreView_Previews: PreviewProvider {
     static var previews: some View {
-        ScoreView(scoreDeleage: USTCScoreDelegate.shared)
+        SharedScoreView
     }
 }

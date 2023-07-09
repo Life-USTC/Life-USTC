@@ -62,7 +62,7 @@ struct FeaturesView: View {
         tmp = [.init(image: "doc.text.magnifyingglass", title: "Classroom Status".localized, subTitle: "", destinationView: ClassroomView())]
         results["Public"] = tmp
 
-        tmp = [.init(image: "book", title: "Curriculum".localized, subTitle: "", destinationView: CurriculumView()),
+        tmp = [.init(image: "book", title: "Curriculum".localized, subTitle: "", destinationView: SharedCurriculumView),
                .init(image: "calendar.badge.clock", title: "Exam".localized, subTitle: "", destinationView: SharedExamView),
                .init(image: "graduationcap", title: "Score".localized, subTitle: "", destinationView: SharedScoreView)]
         results["UG AAS"] = tmp

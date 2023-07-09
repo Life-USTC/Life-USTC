@@ -114,7 +114,7 @@ extension Exam {
     static func merge(_ original: [Exam], with new: [Exam]) -> [Exam] {
         var result = original
         for exam in new {
-            if !result.filter { $0 == exam }.isEmpty {
+            if !result.filter({ $0 == exam }).isEmpty {
                 continue
             }
             result.append(exam)

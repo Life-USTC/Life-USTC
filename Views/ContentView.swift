@@ -131,7 +131,7 @@ private enum ContentViewTab: Int, CaseIterable {
     @ViewBuilder func view() -> some View {
         switch self {
         case .position_1:
-            HomeView()
+            SharedHomeView
         case .position_2:
             AllSourceView()
         case .position_3:
