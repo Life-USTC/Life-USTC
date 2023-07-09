@@ -46,7 +46,7 @@ enum USTCExports {
     }
 
     static var localFeedJSOName: String {
-        "ustc_feed_source.json"
+        "ustc_feed_source"
     }
 
     static var examDelegate: some ExamDelegateProtocol {
