@@ -10,3 +10,7 @@ import SwiftUI
 var SharedScoreView: some View {
     ScoreView(scoreDeleage: USTCScoreDelegate.shared)
 }
+
+var SharedExamView: some View {
+    ExamView(examDelegate: USTCExamDelegate.shared)
+}

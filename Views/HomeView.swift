@@ -31,7 +31,7 @@ struct HomeView: View {
         curriculumDelegate.status
     }
 
-    @StateObject var examDelegate = ExamDelegate.shared
+    @StateObject var examDelegate = USTCExamDelegate.shared
     var exams: [Exam] {
         examDelegate.data
     }
@@ -184,7 +184,7 @@ struct HomeView: View {
                     Spacer()
 
                     NavigationLink {
-                        ExamView()
+                        SharedExamView
                     } label: {
                         Image(systemName: "chevron.right")
                     }

@@ -8,31 +8,19 @@
 import Foundation
 import SwiftyJSON
 
-class USTCScoreDelegate: ScoreDelegateProtocol {
+final class USTCScoreDelegate: ScoreDelegateProtocol {
+    static var shared = USTCScoreDelegate(.shared)
+
     // MARK: - Protocol requirements
 
     typealias D = Score
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
-    var status: AsyncViewStatus = .inProgress {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
+    @Published var status: AsyncViewStatus = .inProgress
     var ustcUgAASClient: UstcUgAASClient
-    static var shared = USTCScoreDelegate(.shared)
     var cache = JSON()
-    var data: Score = .init() {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var data: Score = .init()
 
     // MARK: - Start reading from here:
 

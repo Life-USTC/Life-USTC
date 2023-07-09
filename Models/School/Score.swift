@@ -18,13 +18,13 @@ struct CourseScore: Identifiable {
     /// You are supposed to localize this, see documents on localization.
     var courseName: String
 
-    /// Code that could be reused/shared, like MATH3007
+    /// Code that could be reused/shared, like MATH10001
     ///
     /// - Important:
     /// Shown on UI, please set a limit to length.
     var courseCode: String
 
-    /// Code to indicate which exact lesson the student is taking, like MATH3007.01
+    /// Code to indicate which exact lesson the student is taking, like MATH10001.01
     ///
     /// - Description:
     /// When user receives upgrade on this course, the server will get notified,
@@ -38,12 +38,15 @@ struct CourseScore: Identifiable {
     /// Used to group semesters, smaller id comes first in time
     ///
     /// - Description:
+    /// In USTC, this looks like this (you don't have to match this), however you do have to match with the IDs you provide in Course.
     /// 221: 2021 Fall
     /// 241: 2022 Spring
     var semesterID: Int
 
     /// - Important: Shown on UI
     var semesterName: String
+
+    // MARK: - Information about the score
 
     /// How much the course is valued, like 2.0 / 0.5
     var credit: Double
@@ -61,26 +64,62 @@ struct CourseScore: Identifiable {
     /// If this is identical to GPA, or other reason you don't want to present on UI, simply leave empty.
     ///
     /// ## Localizations
-    /// Some notations are localized, such as 通过 <=> Passed，未通过 <=>Failed
+    /// Some notations are localized, such as 通过 <=> Passed, 未通过 <=>Failed
     /// Meaning that you don't have to localization on your own
     /// Try convert to this standard, or file issue on GitHub.
     var score: String
+
+    init(id: UUID = UUID(),
+         courseName: String,
+         courseCode: String,
+         lessonCode: String,
+         semesterID: Int,
+         semesterName: String,
+         credit: Double,
+         gpa: Double? = nil,
+         score: String)
+    {
+        self.id = id
+        self.courseName = courseName
+        self.courseCode = courseCode
+        self.lessonCode = lessonCode
+        self.semesterID = semesterID
+        self.semesterName = semesterName
+        self.credit = credit
+        self.gpa = gpa
+        self.score = score
+    }
 }
 
 struct Score {
     /// List of course, default order matters for UI.
-    var courses: [CourseScore] = []
+    var courses: [CourseScore]
 
     /// Total GPA
-    var gpa: Double = 0.0
+    var gpa: Double
 
     // MARK: - Ranking Information
 
-    var majorRank: Int = 0
-    var majorStdCount: Int = 0
-    var majorName: String = ""
+    var majorRank: Int
+    var majorStdCount: Int
+    var majorName: String
 
     var additionalMessage: String?
+
+    init(courses: [CourseScore] = [],
+         gpa: Double = 0.0,
+         majorRank: Int = 0,
+         majorStdCount: Int = 0,
+         majorName: String = "",
+         additionalMessage: String? = nil)
+    {
+        self.courses = courses
+        self.gpa = gpa
+        self.majorRank = majorRank
+        self.majorStdCount = majorStdCount
+        self.majorName = majorName
+        self.additionalMessage = additionalMessage
+    }
 }
 
 protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == Score.Type {}
