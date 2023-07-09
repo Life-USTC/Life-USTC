@@ -91,54 +91,48 @@ extension AsyncDataDelegate {
         return try await parseCache()
     }
 
+    func foregroundUpdateStatus(with status: AsyncViewStatus) {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.status = status
+            }
+        }
+    }
+
+    func foregroundUpdateData(with data: D) {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.data = data
+            }
+        }
+    }
+
     func userTriggerRefresh(forced: Bool = true) {
         Task {
             do {
-                let result = try await parseCache()
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.data = result
-                    }
-                }
+                foregroundUpdateData(with: try await parseCache())
             } catch {
                 print(error)
-
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.status = .failure
-                    }
-                }
+                foregroundUpdateStatus(with: .failure)
             }
 
             if forced || status == .failure || requireUpdate {
                 do {
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            if self.status == .failure {
-                                self.status = .inProgress
-                            } else {
-                                self.status = .cached
-                            }
-                        }
+                    if self.status == .failure {
+                        foregroundUpdateStatus(with: .inProgress)
+                    } else {
+                        foregroundUpdateStatus(with: .cached)
                     }
 
                     try await forceUpdate()
                 } catch {
                     print(error)
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self.status = .failure
-                        }
-                    }
+                    foregroundUpdateStatus(with: .failure)
                     return
                 }
             }
 
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.status = .success
-                }
-            }
+            foregroundUpdateStatus(with: .success)
         }
     }
 }
@@ -181,12 +175,7 @@ extension UserDefaultsADD {
 
     func afterForceUpdate() async throws {
         try saveCache()
-        let result = try await parseCache()
-        DispatchQueue.main.async {
-            withAnimation {
-                self.data = result
-            }
-        }
+        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {
@@ -238,12 +227,7 @@ extension UserDefaultsADD where Self: LastUpdateADD {
     func afterForceUpdate() async throws {
         lastUpdate = Date()
         try saveCache()
-        let result = try await parseCache()
-        DispatchQueue.main.async {
-            withAnimation {
-                self.data = result
-            }
-        }
+        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {

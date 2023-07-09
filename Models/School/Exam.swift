@@ -75,6 +75,14 @@ struct Exam: Codable, Identifiable {
 
 protocol ExamDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == [Exam].Type {}
 
+extension ExamDelegateProtocol {
+    func afterForceUpdate() async throws {
+        lastUpdate = Date()
+        try saveCache()
+        foregroundUpdateData(with: Exam.merge(data, with: try await parseCache()))
+    }
+}
+
 extension Exam {
     static var sharedDelegate: any ExamDelegateProtocol {
         USTCExamDelegate.shared

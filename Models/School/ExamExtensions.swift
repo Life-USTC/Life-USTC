@@ -8,6 +8,13 @@
 import EventKit
 import SwiftUI
 
+extension Exam: Equatable {
+    /// two exams are considered equal if they have the same lesson code and type name
+    static func == (lhs: Exam, rhs: Exam) -> Bool {
+        lhs.lessonCode == rhs.lessonCode && lhs.typeName == rhs.typeName
+    }
+}
+
 extension Exam {
     static let example: Exam = .init(lessonCode: "MATH10001.01",
                                      typeName: "期末考试",
@@ -101,5 +108,17 @@ extension Exam {
             + exams
             .filter(\.isFinished)
             .sorted { $0.startTime > $1.startTime }
+    }
+
+    /// Merge two list of exam (addition only)
+    static func merge(_ original: [Exam], with new: [Exam]) -> [Exam] {
+        var result = original
+        for exam in new {
+            if !result.filter { $0 == exam }.isEmpty {
+                continue
+            }
+            result.append(exam)
+        }
+        return result
     }
 }
