@@ -15,9 +15,10 @@ extension Course {
                                        startHHMM: "07:50",
                                        endHHMM: "21:55",
                                        name: "操作系统原理与设计(H)",
-                                       classIDString: "011705",
-                                       classPositionString: "3A407",
-                                       classTeacherName: "刑凯",
+                                       lessonCode: "011705",
+                                       roomName: "3A407",
+                                       buildingName: "第三教学楼",
+                                       teacherName: "刑凯",
                                        weekString: "1-100")
 
     var _startTime: DateComponents {
@@ -144,8 +145,8 @@ extension CurriculumDelegateProtocol {
             for week in parseWeek(with: course.weekString) {
                 let event = EKEvent(eventStore: eventStore)
                 event.title = course.name
-                event.location = course.classPositionString
-                event.notes = "\(course.classIDString)@\(course.classTeacherName)"
+                event.location = course.roomName
+                event.notes = "\(course.lessonCode)@\(course.teacherName)"
                 event.calendar = calendar
                 event.startDate = curriclum.semesterStartDate + .init(day: course.dayOfWeek + (week - 1) * 7) + course._startTime
                 event.endDate = curriclum.semesterStartDate + .init(day: course.dayOfWeek + (week - 1) * 7) + course._endTime

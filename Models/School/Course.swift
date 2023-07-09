@@ -34,9 +34,10 @@ struct Course: Identifiable, Equatable {
     var endHHMM: String
 
     var name: String
-    var classIDString: String
-    var classPositionString: String
-    var classTeacherName: String
+    var lessonCode: String
+    var roomName: String
+    var buildingName: String
+    var teacherName: String
 
     /// 1-4,6,8-9,10-15
     var weekString: String
@@ -47,9 +48,10 @@ struct Course: Identifiable, Equatable {
          startHHMM: String,
          endHHMM: String,
          name: String,
-         classIDString: String,
-         classPositionString: String,
-         classTeacherName: String,
+         lessonCode: String,
+         roomName: String,
+         buildingName: String,
+         teacherName: String,
          weekString: String)
     {
         self.dayOfWeek = dayOfWeek
@@ -58,9 +60,10 @@ struct Course: Identifiable, Equatable {
         self.startHHMM = startHHMM
         self.endHHMM = endHHMM
         self.name = name
-        self.classIDString = classIDString
-        self.classPositionString = classPositionString
-        self.classTeacherName = classTeacherName
+        self.lessonCode = lessonCode
+        self.roomName = roomName
+        self.buildingName = buildingName
+        self.teacherName = teacherName
         self.weekString = weekString
 
         // testing:

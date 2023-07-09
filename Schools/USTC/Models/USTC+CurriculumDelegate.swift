@@ -47,9 +47,10 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
                              startHHMM: subJson["startDate"].stringValue,
                              endHHMM: subJson["endDate"].stringValue,
                              name: subJson["courseName"].stringValue,
-                             classIDString: subJson["courseCode"].stringValue,
-                             classPositionString: classPositionString,
-                             classTeacherName: subJson["teachers"][0].stringValue,
+                             lessonCode: subJson["courseCode"].stringValue,
+                             roomName: classPositionString,
+                             buildingName: subJson["building"].stringValue,
+                             teacherName: subJson["teachers"][0].stringValue,
                              weekString: subJson["weeksStr"].stringValue)
             result.append(tmp)
         }

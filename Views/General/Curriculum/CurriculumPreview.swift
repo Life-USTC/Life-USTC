@@ -85,7 +85,7 @@ struct CourseStackView: View {
                                 .lineLimit(1)
                                 .truncationMode(.tail)
 
-                            Text(course.classPositionString)
+                            Text(course.roomName)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
