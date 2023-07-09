@@ -34,16 +34,16 @@
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
 		565587EA294B46900010E060 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 565587EC294B46900010E060 /* Localizable.strings */; };
-		565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* UstcUgAAS.swift */; };
+		565587F1294C4E5E0010E060 /* USTC+UgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */; };
 		565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
 		56558801294D74BB0010E060 /* CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* CASLoginView.swift */; };
 		56558804294D93810010E060 /* FeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558803294D93810010E060 /* FeaturesView.swift */; };
 		56558809294DC9D40010E060 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558808294DC9D40010E060 /* SettingsView.swift */; };
 		565A11B829FF565E00310C8B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565A11B729FF565E00310C8B /* WelcomeView.swift */; };
-		56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
-		56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* UstcCAS.swift */; };
-		56734CE9297D86F200DBB45F /* UstcCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */; };
-		56734CEA297D86F200DBB45F /* UstcUgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* UstcUgAAS.swift */; };
+		56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* USTC+CAS.swift */; };
+		56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* USTC+CAS.swift */; };
+		56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */; };
+		56734CEA297D86F200DBB45F /* USTC+UgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */; };
 		56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* SwiftExtension.swift */; };
 		56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6C295EE47A008CE454 /* AsyncCalls.swift */; };
 		56734CED297D871500DBB45F /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
@@ -51,6 +51,8 @@
 		56734CEF297D871500DBB45F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		5677E1152A5A83FC00EDCB53 /* SingleExamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */; };
+		5677E1172A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */; };
+		5677E1182A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */; };
 		567E6FA82A121CB50056BE5F /* console.js in Resources */ = {isa = PBXBuildFile; fileRef = 567E6FA72A121CB50056BE5F /* console.js */; };
 		567E6FA92A121CB50056BE5F /* console.js in Resources */ = {isa = PBXBuildFile; fileRef = 567E6FA72A121CB50056BE5F /* console.js */; };
 		567FA93129D083180003050F /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567FA93029D083180003050F /* AppPage.swift */; };
@@ -61,12 +63,12 @@
 		569CFE50297EBD240072C094 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 569CFE52297EBD240072C094 /* Localizable.strings */; };
 		56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B86D29A889D100BFE64F /* AsyncView.swift */; };
 		56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
-		56A3B87529A8B86700BFE64F /* USTCExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* USTCExamDelegate.swift */; };
-		56A3B87629A8B88400BFE64F /* USTCExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* USTCExamDelegate.swift */; };
-		56A3B87929A8B8A400BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
-		56A3B87B29A8B8C600BFE64F /* USTCScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* USTCScoreDelegate.swift */; };
-		56A3B87C29A8B8C600BFE64F /* USTCScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* USTCScoreDelegate.swift */; };
-		56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */; };
+		56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */; };
+		56A3B87629A8B88400BFE64F /* USTC+ExamDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */; };
+		56A3B87929A8B8A400BFE64F /* USTC+CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */; };
+		56A3B87B29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */; };
+		56A3B87C29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */; };
+		56A3B87E29A8B8EC00BFE64F /* USTC+CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */; };
 		56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */ = {isa = PBXBuildFile; productRef = 56A7D71729DD20AD00EE7880 /* LoremSwiftum */; };
 		56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56B9F3152A2E028A00DE8838 /* feed_source.json in Resources */ = {isa = PBXBuildFile; fileRef = 56B9F3142A2E028A00DE8838 /* feed_source.json */; };
@@ -95,7 +97,7 @@
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
-		56E8AD702973D0DB009006D0 /* UstcCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */; };
+		56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */; };
 		56E8AD722973EC0F009006D0 /* UstcRooms.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E8AD712973EC0F009006D0 /* UstcRooms.json */; };
 		56E8AD752973F25E009006D0 /* ClassroomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD742973F25E009006D0 /* ClassroomView.swift */; };
 		56E94E23298A77790085241B /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E22298A77790085241B /* AboutPage.swift */; };
@@ -177,14 +179,15 @@
 		565587E6294B43BD0010E060 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		565587EB294B46900010E060 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		565587EF294B46BB0010E060 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		565587F0294C4E5D0010E060 /* UstcUgAAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcUgAAS.swift; sourceTree = "<group>"; };
+		565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+UgAAS.swift"; sourceTree = "<group>"; };
 		565587FD294D67D80010E060 /* SwiftUIExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIExtension.swift; sourceTree = "<group>"; };
 		56558800294D74BB0010E060 /* CASLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CASLoginView.swift; sourceTree = "<group>"; };
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		5655880A294DEA6B0010E060 /* UstcCAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCAS.swift; sourceTree = "<group>"; };
+		5655880A294DEA6B0010E060 /* USTC+CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CAS.swift"; sourceTree = "<group>"; };
 		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExamView.swift; sourceTree = "<group>"; };
+		5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Constants.swift"; sourceTree = "<group>"; };
 		567E6FA72A121CB50056BE5F /* console.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = console.js; sourceTree = "<group>"; };
 		567FA93029D083180003050F /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -193,9 +196,9 @@
 		569CFE51297EBD240072C094 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		569CFE53297EBD2E0072C094 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		56A3B86D29A889D100BFE64F /* AsyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncView.swift; sourceTree = "<group>"; };
-		56A3B87429A8B86700BFE64F /* USTCExamDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USTCExamDelegate.swift; sourceTree = "<group>"; };
-		56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumDelegate.swift; sourceTree = "<group>"; };
-		56A3B87A29A8B8C600BFE64F /* USTCScoreDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USTCScoreDelegate.swift; sourceTree = "<group>"; };
+		56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ExamDelegate.swift"; sourceTree = "<group>"; };
+		56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CurriculumDelegate.swift"; sourceTree = "<group>"; };
+		56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ScoreDelegate.swift"; sourceTree = "<group>"; };
 		56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWidget.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -220,7 +223,7 @@
 		56E8AD69296FE880009006D0 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		56E8AD6E2972F56C009006D0 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
-		56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UstcCatalog.swift; sourceTree = "<group>"; };
+		56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Catalog.swift"; sourceTree = "<group>"; };
 		56E8AD712973EC0F009006D0 /* UstcRooms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = UstcRooms.json; sourceTree = "<group>"; };
 		56E8AD742973F25E009006D0 /* ClassroomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassroomView.swift; sourceTree = "<group>"; };
 		56E94E22298A77790085241B /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
@@ -532,12 +535,13 @@
 		56D175C4295411DA0070778F /* USTC */ = {
 			isa = PBXGroup;
 			children = (
-				56A3B87829A8B8A400BFE64F /* CurriculumDelegate.swift */,
-				56A3B87429A8B86700BFE64F /* USTCExamDelegate.swift */,
-				56A3B87A29A8B8C600BFE64F /* USTCScoreDelegate.swift */,
-				565587F0294C4E5D0010E060 /* UstcUgAAS.swift */,
-				5655880A294DEA6B0010E060 /* UstcCAS.swift */,
-				56E8AD6F2973D0DB009006D0 /* UstcCatalog.swift */,
+				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
+				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
+				56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */,
+				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
+				5655880A294DEA6B0010E060 /* USTC+CAS.swift */,
+				56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */,
+				5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */,
 			);
 			path = USTC;
 			sourceTree = "<group>";
@@ -836,11 +840,12 @@
 				56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
+				5677E1172A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 				56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */,
 				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
 				567FA93129D083180003050F /* AppPage.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
-				56A3B87929A8B8A400BFE64F /* CurriculumDelegate.swift in Sources */,
+				56A3B87929A8B8A400BFE64F /* USTC+CurriculumDelegate.swift in Sources */,
 				56558801294D74BB0010E060 /* CASLoginView.swift in Sources */,
 				56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */,
 				56E94E25298A77990085241B /* LegalPage.swift in Sources */,
@@ -869,16 +874,16 @@
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				5677E1152A5A83FC00EDCB53 /* SingleExamView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
-				56E8AD702973D0DB009006D0 /* UstcCatalog.swift in Sources */,
+				56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */,
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
-				56A3B87B29A8B8C600BFE64F /* USTCScoreDelegate.swift in Sources */,
+				56A3B87B29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
 				56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */,
-				565587F1294C4E5E0010E060 /* UstcUgAAS.swift in Sources */,
-				56A3B87529A8B86700BFE64F /* USTCExamDelegate.swift in Sources */,
+				565587F1294C4E5E0010E060 /* USTC+UgAAS.swift in Sources */,
+				56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
 				56E94E27298A77D00085241B /* NotificationPage.swift in Sources */,
-				56734CDF297D86C600DBB45F /* UstcCAS.swift in Sources */,
+				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
 				56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
 				56A3B86E29A889D100BFE64F /* AsyncView.swift in Sources */,
@@ -904,20 +909,21 @@
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
 				56A3B86F29A88A5600BFE64F /* SwiftUIExtension.swift in Sources */,
 				56CE43AE2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */,
-				56734CEA297D86F200DBB45F /* UstcUgAAS.swift in Sources */,
+				56734CEA297D86F200DBB45F /* USTC+UgAAS.swift in Sources */,
 				56734CEF297D871500DBB45F /* Constants.swift in Sources */,
-				56A3B87C29A8B8C600BFE64F /* USTCScoreDelegate.swift in Sources */,
-				56A3B87629A8B88400BFE64F /* USTCExamDelegate.swift in Sources */,
+				56A3B87C29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
+				56A3B87629A8B88400BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
-				56734CE9297D86F200DBB45F /* UstcCatalog.swift in Sources */,
-				56A3B87E29A8B8EC00BFE64F /* CurriculumDelegate.swift in Sources */,
+				56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */,
+				56A3B87E29A8B8EC00BFE64F /* USTC+CurriculumDelegate.swift in Sources */,
 				5638E27F2A581324001967D9 /* Score.swift in Sources */,
 				56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
-				56734CE5297D86F200DBB45F /* UstcCAS.swift in Sources */,
+				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,
 				56734CEC297D871500DBB45F /* AsyncCalls.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56EBAEF82A597F7800B23862 /* KeychainItemAccessibility.swift in Sources */,
+				5677E1182A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
