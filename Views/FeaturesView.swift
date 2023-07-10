@@ -64,14 +64,6 @@ struct FeaturesView: View {
         }
         results["Feed"] = tmp
 
-        // MARK: - Classrooms:
-
-        tmp = [.init(image: "doc.text.magnifyingglass",
-                     title: "Classroom Status".localized,
-                     subTitle: "",
-                     destinationView: ClassroomView())]
-        results["Public"] = tmp
-
         // MARK: -
 
         tmp = [.init(image: "book",
@@ -90,11 +82,13 @@ struct FeaturesView: View {
 
         // MARK: -
 
-        tmp = []
-        for webFeature in FeaturesView.availableFeatures {
-            tmp.append(webFeature)
+        for (key, features) in FeaturesView.availableFeatures {
+            if results.keys.contains(key) {
+                results[key]! += features
+            } else {
+                results[key] = features
+            }
         }
-        results["Web"] = tmp
 
         return results
     }()

@@ -24,10 +24,6 @@ enum USTCExports {
         ]
     }
 
-    static var features: [FeatureWithView] {
-        ustcWebFeatures.map(\.featureWithView)
-    }
-
     static var feedURLs: [URL] {
         [
             ustcHomePageFeedURL,
@@ -69,6 +65,10 @@ enum USTCExports {
         { firstLogin in
             .init(USTCCASLoginView.sheet(isPresented: firstLogin))
         }
+    }
+
+    static var semesterIDList: [Int: String] {
+        UstcUgAASClient.semesterIDList
     }
 }
 

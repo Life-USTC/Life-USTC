@@ -21,9 +21,6 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
     @ObservedObject var curriculumDelegate: CurriculumDelegate
     @ObservedObject var examDelegate: ExamDelegate
 
-    @ObservedObject var ustcCasClient = UstcCasClient.shared
-    @ObservedObject var ustcUgAASClient = UstcUgAASClient.shared
-
     @State var navigationToSettingsView = false
     @State private var datePickerShown = false
 
@@ -63,50 +60,6 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
         examDelegate.userTriggerRefresh(forced: forceUpdate)
     }
 
-    var delegateHelperView: some View {
-        HStack {
-            Button {
-                Task {
-                    try await ustcCasClient.loginToCAS()
-                }
-            } label: {
-                VStack {
-                    Text("CAS Client")
-                    Text(ustcCasClient.lastLogined?.debugDescription ?? "nil")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .bold()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                }
-            }
-
-            Button {
-                Task {
-                    try await ustcUgAASClient.login()
-                }
-            } label: {
-                VStack {
-                    Text("Ug AAS Client")
-                    Text(ustcUgAASClient.lastLogined?.debugDescription ?? "nil")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .bold()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                }
-            }
-        }
-    }
-
     var curriculumView: some View {
         VStack {
             VStack(alignment: .leading) {
@@ -141,10 +94,6 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-#if DEBUG
-            delegateHelperView
-#endif
-
             // MARK: - Curriculum
 
             VStack {

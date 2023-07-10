@@ -8,6 +8,16 @@
 import Foundation
 
 extension USTCExports {
+    static var features: [String: [FeatureWithView]] {
+        [
+            "Web": ustcWebFeatures.map(\.featureWithView),
+            "Public": [.init(image: "doc.text.magnifyingglass",
+                             title: "Classroom Status".localized,
+                             subTitle: "",
+                             destinationView: USTCClassroomView())],
+        ]
+    }
+
     static let ustcWebFeatures: [USTCWebFeature] =
         [.init(name: "AAS(UG)",
                image: "person.2",

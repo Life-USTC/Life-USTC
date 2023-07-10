@@ -33,7 +33,7 @@ struct CurriculumSettingView<CurriculumDelegate: CurriculumDelegateProtocol>: Vi
                 }
 
                 Picker(selection: $semesterID) {
-                    ForEach(UstcUgAASClient.semesterIDList.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                    ForEach(Curriculum.sharedSemesterList.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
                         Text(value)
                             .tag(key)
                     }

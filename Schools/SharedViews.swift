@@ -25,7 +25,7 @@ var SharedCurriculumView: some View {
 }
 
 extension FeaturesView {
-    static var availableFeatures: [FeatureWithView] {
+    static var availableFeatures: [String: [FeatureWithView]] {
         USTCExports.features
     }
 }

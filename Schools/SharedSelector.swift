@@ -24,3 +24,9 @@ extension Score {
         USTCExports.scoreDelegate
     }
 }
+
+extension Curriculum {
+    static var sharedSemesterList: [Int: String] {
+        USTCExports.semesterIDList
+    }
+}
