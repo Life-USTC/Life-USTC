@@ -17,7 +17,7 @@ private var currentTimeInt: Int {
     return calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
 }
 
-private struct LessonView: View {
+private struct USTCLessonView: View {
     @State var showSheet: Bool = false
     let lesson: Lesson
 
@@ -56,7 +56,7 @@ private struct LessonView: View {
     }
 }
 
-private struct SingleClassroomView: View {
+private struct USTCSingleClassroomView: View {
     @AppStorage("showOneLine") var showOneLine = true
     @State var highlighted = false
     var room: String
@@ -79,7 +79,7 @@ private struct SingleClassroomView: View {
                             .fill(Color.secondary)
                     )
                 ForEach(filteredClass) { lesson in
-                    LessonView(lesson: lesson)
+                    USTCLessonView(lesson: lesson)
                         .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start))
                         .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
                 }
@@ -117,7 +117,7 @@ private struct SingleClassroomView: View {
     }
 }
 
-struct ClassroomView: View {
+struct USTCClassroomView: View {
     @StateObject var ustcCatalogDelegate = UstcCatalogClient.shared
     var allLessons: [String: [Lesson]] {
         ustcCatalogDelegate.data
@@ -145,7 +145,7 @@ struct ClassroomView: View {
         VStack(spacing: showOneLine ? 2 : 5) {
             ForEach(UstcCatalogClient.buildingRooms[building] ?? [], id: \.self) { room in
                 if !showEmptyRoomOnly || statusFor(building: building, room: room) {
-                    SingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
+                    USTCSingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
                 }
             }
         }

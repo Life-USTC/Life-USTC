@@ -16,18 +16,14 @@ struct CurriculumProvider: TimelineProvider {
 
     func getSnapshot(in _: Context, completion: @escaping (CurriculumEntry) -> Void) {
         Task {
-            let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = UstcUgAASClient.shared.weekNumber()
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
+            let entry = CurriculumEntry(courses: try await Curriculum.sharedDelegate.retrive().todaysCourse)
             completion(entry)
         }
     }
 
     func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            let courses = try await CurriculumDelegate.shared.retrive()
-            let weekNumber = UstcUgAASClient.shared.weekNumber()
-            let entry = CurriculumEntry(courses: Course.filter(courses, week: weekNumber))
+            let entry = CurriculumEntry(courses: try await Curriculum.sharedDelegate.retrive().todaysCourse)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -101,7 +97,7 @@ struct CurriculumWidgetEntryView: View {
         VStack(alignment: .leading) {
             HStack {
                 courseSymbolView
-                Text(course.classPositionString)
+                Text(course.buildingName)
                     .font(.callout)
                     .fontWeight(.semibold)
                     .lineLimit(1)
@@ -118,7 +114,7 @@ struct CurriculumWidgetEntryView: View {
             HStack {
                 Text(course._endTime.clockTime)
                 Spacer()
-                Text(course.classTeacherName)
+                Text(course.teacherName)
             }
             .font(.subheadline)
             .fontWeight(.regular)
@@ -172,7 +168,7 @@ struct CurriculumWidgetEntryView: View {
                 .font(.body)
                 .fontWeight(.semibold)
             Text(course._startTime.clockTime)
-            Text(course.classPositionString)
+            Text(course.roomName)
         }
         .scenePadding()
     }
@@ -217,7 +213,7 @@ struct CurriculumWidgetEntryView: View {
 
 private extension Course {
     var detailString: String {
-        "\(classTeacherName) @ \(classPositionString)"
+        "\(teacherName) @ \(buildingName)"
     }
 }
 

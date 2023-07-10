@@ -15,7 +15,7 @@ import LoremSwiftum
  */
 // let imageURLRegex = try! Regex(#"(htt[^\s]+ustc[^\s]+(jpg|jpeg|png|tiff)\b)"#)
 let imageURLRegex = try! Regex(#"(http[^\s]+(jpg|jpeg|png|tiff)\b)"#)
-let shortUstcLinkRegex = try! Regex(#"https?://www.ustc.edu.cn/info/\d+/\d+.htm"#)
+// let shortUstcLinkRegex = try! Regex(#"https?://www.ustc.edu.cn/info/\d+/\d+.htm"#)
 let httpRegex = try! Regex("^http[^s]//")
 
 let filteredImageURLList = [URL(string: "https://s.w.org/images/core/emoji/11/72x72/21a9.png")!]

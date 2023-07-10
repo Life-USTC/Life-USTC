@@ -14,24 +14,32 @@ private struct HomeFeature {
     var preview: AnyView
 }
 
-struct HomeView: View {
-    @State var weekNumber = 0
+struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
+    ExamDelegate: ExamDelegateProtocol>: View
+{
     @State var date = Date()
+    @ObservedObject var curriculumDelegate: CurriculumDelegate
+    @ObservedObject var examDelegate: ExamDelegate
 
-    @StateObject var curriculumDelegate = CurriculumDelegate.shared
+    @State var navigationToSettingsView = false
+    @State private var datePickerShown = false
+
     var today_courses: [Course] {
-        Course.filter(curriculumDelegate.data, week: weekNumber, for: date)
+        curriculumDelegate.data.getCourses(for: date)
     }
 
     var tomorrow_courses: [Course] {
-        Course.filter(curriculumDelegate.data, week: weekNumber, for: date.add(day: 1))
+        curriculumDelegate.data.getCourses(for: date.add(day: 1))
+    }
+
+    var weekNumber: Int {
+        curriculumDelegate.data.weekNumber(for: date)
     }
 
     var curriculumStatus: AsyncViewStatus {
         curriculumDelegate.status
     }
 
-    @StateObject var examDelegate = ExamDelegate.shared
     var exams: [Exam] {
         examDelegate.data
     }
@@ -39,12 +47,6 @@ struct HomeView: View {
     var examStatus: AsyncViewStatus {
         examDelegate.status
     }
-
-    @StateObject var ustcCasClient = UstcCasClient.shared
-    @StateObject var ustcUgAASClient = UstcUgAASClient.shared
-
-    @State var navigationToSettingsView = false
-    @State private var datePickerShown = false
 
     var mmddFormatter: DateFormatter {
         let tmp = DateFormatter()
@@ -54,55 +56,8 @@ struct HomeView: View {
     }
 
     func update(forceUpdate: Bool = false) {
-        Task {
-            weekNumber = UstcUgAASClient.shared.weekNumber(for: date)
-        }
         curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
         examDelegate.userTriggerRefresh(forced: forceUpdate)
-    }
-
-    var delegateHelperView: some View {
-        HStack {
-            Button {
-                Task {
-                    try await ustcCasClient.loginToCAS()
-                }
-            } label: {
-                VStack {
-                    Text("CAS Client")
-                    Text(ustcCasClient.lastLogined?.debugDescription ?? "nil")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .bold()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                }
-            }
-
-            Button {
-                Task {
-                    try await ustcUgAASClient.login()
-                }
-            } label: {
-                VStack {
-                    Text("Ug AAS Client")
-                    Text(ustcUgAASClient.lastLogined?.debugDescription ?? "nil")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .bold()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                }
-            }
-        }
     }
 
     var curriculumView: some View {
@@ -139,10 +94,6 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-#if DEBUG
-            delegateHelperView
-#endif
-
             // MARK: - Curriculum
 
             VStack {
@@ -160,7 +111,7 @@ struct HomeView: View {
                         .padding(.horizontal)
 
                     NavigationLink {
-                        CurriculumView()
+                        SharedCurriculumView
                     } label: {
                         Image(systemName: "chevron.right")
                     }
@@ -184,7 +135,7 @@ struct HomeView: View {
                     Spacer()
 
                     NavigationLink {
-                        ExamView()
+                        SharedExamView
                     } label: {
                         Image(systemName: "chevron.right")
                     }
@@ -237,7 +188,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            HomeView()
+            SharedHomeView
         }
     }
 }

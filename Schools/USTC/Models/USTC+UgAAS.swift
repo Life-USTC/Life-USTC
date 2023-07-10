@@ -15,8 +15,8 @@ class UstcUgAASClient: ObservableObject {
     static var shared = UstcUgAASClient()
 
     var session: URLSession = .shared
-    var semesterID: String {
-        userDefaults.string(forKey: "semesterID") ?? "301"
+    var semesterID: Int {
+        userDefaults.integer(forKey: "semesterIDInt")
     }
 
     var lastLogined: Date? {
@@ -92,33 +92,39 @@ class UstcUgAASClient: ObservableObject {
     func clearLoginStatus() {
         lastLogined = nil
     }
-
-    func weekNumber(for date: Date = Date()) -> Int {
-        let calendar = Calendar(identifier: .gregorian)
-        return calendar.dateComponents([.weekOfYear], from: date).weekOfYear! - calendar.dateComponents([.weekOfYear], from: semesterStartDate).weekOfYear! + 1
-    }
 }
 
 extension UstcUgAASClient {
     // TODO: Maintain a list of these values online, use cached to store them on device
-    static let semesterIDList: [String: String] =
-        ["2021年秋季学期": "221",
-         "2022年春季学期": "241",
-         "2022年夏季学期": "261",
-         "2022年秋季学期": "281",
-         "2023年春季学期": "301"]
-    static let semesterDateList: [String: Date] =
-        ["2021年秋季学期": .init(timeIntervalSince1970: 1_630_771_200),
-         "2022年春季学期": .init(timeIntervalSince1970: 1_642_608_000),
-         "2022年夏季学期": .init(timeIntervalSince1970: 1_656_172_800),
-         "2022年秋季学期": .init(timeIntervalSince1970: 1_661_616_000),
-         "2023年春季学期": .init(timeIntervalSince1970: 1_677_945_600)]
+    static let semesterIDList: [Int: String] =
+        [221: "2021年秋季学期",
+         241: "2022年春季学期",
+         261: "2022年夏季学期",
+         281: "2022年秋季学期",
+         301: "2023年春季学期",
+         321: "2023年夏季学期"]
+    static let semesterDateList: [Int: Date] =
+        [221: .init(timeIntervalSince1970: 1_630_771_200),
+         241: .init(timeIntervalSince1970: 1_642_608_000),
+         261: .init(timeIntervalSince1970: 1_656_172_800),
+         281: .init(timeIntervalSince1970: 1_661_616_000),
+         301: .init(timeIntervalSince1970: 1_677_945_600),
+         321: .init(timeIntervalSince1970: 1_688_918_400)]
 
     var semesterName: String {
-        UstcUgAASClient.semesterIDList.first(where: { $0.value == semesterID })!.key
+        UstcUgAASClient.semesterIDList.first(where: { $0.key == semesterID })?.value ?? "Not Found"
     }
 
     var semesterStartDate: Date {
-        UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterName })!.value
+        UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterID })?.value ?? Date()
+    }
+
+    // TODO: NOT DONE YET
+    var semesterEndDate: Date {
+        semesterStartDate
+    }
+
+    var semesterWeeks: Int {
+        10
     }
 }

@@ -13,28 +13,8 @@ private let importantLabels: Set<String> = ["!!important", "Important", "!!notic
 
 class FeedSource: AsyncDataDelegate {
     typealias D = [Feed]
-    var status: AsyncViewStatus = .cached { // setting default to .cached to avoid loading at startup
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    var data: [Feed] = [] {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    var requireUpdate: Bool {
-        guard let cache = FeedCache.feedSourceCache(using: id) else {
-            return false
-        }
-        return cache.feeds.isEmpty || cache.lastUpdated.addingTimeInterval(7200) < Date()
-    }
+    @Published var status: AsyncViewStatus = .cached // setting default to .cached to avoid loading at startup
+    @Published var data: [Feed] = []
 
     var url: URL
     var name: String
@@ -65,7 +45,13 @@ class FeedSource: AsyncDataDelegate {
         }
     }
 
-    init(url: URL, name: String, id: UUID? = nil, description: String? = nil, image: String? = nil, color: Color? = nil) {
+    init(url: URL,
+         name: String,
+         id: UUID? = nil,
+         description: String? = nil,
+         image: String? = nil,
+         color: Color? = nil)
+    {
         self.url = url
         self.name = name
         if let id {
@@ -82,6 +68,20 @@ class FeedSource: AsyncDataDelegate {
 }
 
 extension FeedSource {
+    var requireUpdate: Bool {
+        guard let cache = FeedCache.feedSourceCache(using: id) else {
+            return false
+        }
+        return cache.feeds.isEmpty || cache.lastUpdated.addingTimeInterval(7200) < Date()
+    }
+
+    var featureWithView: FeatureWithView {
+        .init(image: image ?? "doc.richtext",
+              title: name,
+              subTitle: description ?? "",
+              destinationView: FeedSourceView(feedSource: self))
+    }
+
     /// Return a given amount of Feed from cache, which should contain all posts
     static func recentFeeds(number: Int?) async throws -> [Feed] {
         var result: [Feed] = []
@@ -120,14 +120,14 @@ extension FeedSource {
         }
     }
 
-    static var all: [FeedSource] {
+    static var all: [FeedSource] = {
         do {
             let data = try AutoUpdateDelegate.feedList.retriveLocal()
             var data_json: JSON?
             if let data {
                 data_json = try JSON(data: data)
             } else {
-                if let path = Bundle.main.path(forResource: "feed_source", ofType: "json") {
+                if let path = Bundle.main.path(forResource: localFeedJSONName, ofType: "json") {
                     let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
                     data_json = try JSON(data: data)
                 }
@@ -153,10 +153,10 @@ extension FeedSource {
             print(error)
             return []
         }
-    }
+    }()
 
     static var allToShow: [FeedSource] {
-        let namesToRemove: [String] = .init(rawValue: UserDefaults().string(forKey: "feedSourceNameListToRemove") ?? "") ?? []
+        let namesToRemove: [String] = .init(rawValue: UserDefaults.standard.string(forKey: "feedSourceNameListToRemove") ?? "") ?? []
 
         var result = all
         for name in namesToRemove {
@@ -167,69 +167,5 @@ extension FeedSource {
 
     static func find(_ name: String) -> FeedSource? {
         all.first(where: { $0.name == name })
-    }
-}
-
-// Delegate to update a given file from URL, and store it locally in the app's document directory
-// also provides method to retrive data from local file, asynchronizely
-class AutoUpdateDelegate {
-    var name: String
-    var remoteURL: URL
-    var localURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(name)
-    }
-
-    init(name: String, remoteURL: URL) {
-        self.name = name
-        self.remoteURL = remoteURL
-    }
-
-    func update() async throws {
-        print("network<\(name)>: updating from url \(remoteURL)")
-        let data = try await URLSession.shared.data(from: remoteURL)
-        try data.0.write(to: localURL)
-    }
-
-    func isAvailable() -> Bool {
-        FileManager.default.fileExists(atPath: localURL.path)
-    }
-
-    func retrive() async throws -> Data {
-        if isAvailable() {
-            print("network<\(name)>: local cache found, using it")
-            return try Data(contentsOf: localURL)
-        } else {
-            print("network<\(name)>: local cache not found, updating")
-            try await update()
-            return try await retrive()
-        }
-    }
-
-    func retriveLocal() throws -> Data? {
-        if isAvailable() {
-            print("network<\(name)>: local cache found, using it")
-            return try Data(contentsOf: localURL)
-        } else {
-            print("network<\(name)>: local cache not found, updating for next time")
-            Task {
-                try? await update()
-            }
-            return nil
-        }
-    }
-}
-
-let feedListURL = URL(string: "https://life-ustc.tiankaima.dev/feed_source.json")!
-extension AutoUpdateDelegate {
-    static var feedList: AutoUpdateDelegate = .init(name: "feed_source.json", remoteURL: feedListURL)
-
-    static var allFiles: [AutoUpdateDelegate] {
-        [feedList]
-    }
-
-    static func updateAll() async throws {
-        for file in allFiles {
-            try await file.update()
-        }
     }
 }

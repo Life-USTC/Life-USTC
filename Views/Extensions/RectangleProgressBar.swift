@@ -59,7 +59,7 @@ struct RectangleProgressBar: View {
         // MARK: - Fix padding issue
 
         textWithPositionList = [(Text(course.name), { CGPoint(x: 15, y: $0.height / 2 - 18) }, UnitPoint.topLeading),
-                                (Text(course.classPositionString), { CGPoint(x: 15, y: $0.height / 2 + 18) }, .bottomLeading),
+                                (Text(course.roomName), { CGPoint(x: 15, y: $0.height / 2 + 18) }, .bottomLeading),
                                 (Text(course.clockTime), { CGPoint(x: $0.width - 15, y: $0.height / 2) }, UnitPoint.trailing)]
     }
 

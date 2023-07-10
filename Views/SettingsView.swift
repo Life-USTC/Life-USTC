@@ -14,16 +14,18 @@ struct SettingsView: View {
             Section {
                 NavigationLink("App Settings", destination: AppSettingPage())
                 NavigationLink("Feed Source Settings", destination: FeedSettingView())
-                NavigationLink("CAS Settings", destination: CASLoginView.newPage)
+                NavigationLink("Exam Settings", destination: ExamSettingView())
+                NavigationLink("Notification Settings", destination: NotificationSettingView())
+                ForEach(SettingsView.availableSettings) { setting in
+                    NavigationLink(setting.name.localized, destination: setting.destinationView)
+                }
 #if DEBUG
                 NavigationLink("Change User Type", destination: UserTypeView())
 #endif
-                NavigationLink("Exam Settings", destination: ExamSettingView())
-                NavigationLink("Notification Settings", destination: NotificationSettingView())
             }
 
             Section {
-                NavigationLink("About Life@USTC", destination: AboutLifeAtUSTCView())
+                NavigationLink("About Life@USTC", destination: AboutApp())
                 NavigationLink("Legal Info", destination: LegalInfoView())
             }
         }

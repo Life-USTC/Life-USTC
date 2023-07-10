@@ -49,45 +49,56 @@ struct FeaturesView: View {
                           GridItem(.adaptive(minimum: 110)),
                           GridItem(.adaptive(minimum: 110))]
 
-    var ustcFeatures: [String: [FeatureWithView]] {
+    var features: [String: [FeatureWithView]] = {
         var results: [String: [FeatureWithView]] = [:]
-
         var tmp: [FeatureWithView] = []
-        tmp.append(.init(image: "doc.richtext", title: "Feed".localized, subTitle: "", destinationView: AllSourceView().navigationBarTitleDisplayMode(.inline)))
+
+        // MARK: - Feeds:
+
+        tmp = [.init(image: "doc.richtext",
+                     title: "Feed".localized,
+                     subTitle: "",
+                     destinationView: AllSourceView().navigationBarTitleDisplayMode(.inline))]
         for feedSource in FeedSource.allToShow {
-            tmp.append(.init(feedSource))
+            tmp.append(feedSource.featureWithView)
         }
         results["Feed"] = tmp
 
-        tmp = [.init(image: "doc.text.magnifyingglass", title: "Classroom Status".localized, subTitle: "", destinationView: ClassroomView())]
-        results["Public"] = tmp
+        // MARK: -
 
-        tmp = [.init(image: "book", title: "Curriculum".localized, subTitle: "", destinationView: CurriculumView()),
-               .init(image: "calendar.badge.clock", title: "Exam".localized, subTitle: "", destinationView: ExamView()),
-               .init(image: "graduationcap", title: "Score".localized, subTitle: "", destinationView: ScoreView())]
+        tmp = [.init(image: "book",
+                     title: "Curriculum".localized,
+                     subTitle: "",
+                     destinationView: SharedCurriculumView),
+               .init(image: "calendar.badge.clock",
+                     title: "Exam".localized,
+                     subTitle: "",
+                     destinationView: SharedExamView),
+               .init(image: "graduationcap",
+                     title: "Score".localized,
+                     subTitle: "",
+                     destinationView: SharedScoreView)]
         results["UG AAS"] = tmp
 
-        tmp = []
-        for ustcWebFeature in FeaturesView.ustcWebFeatures {
-            tmp.append(.init(ustcWebFeature))
-        }
-        results["Web"] = tmp
+        // MARK: -
 
-#if DEBUG
-        if userType == .managment {
-            results["Managment"] = [.init(image: "bell.circle", title: "Push Notification", subTitle: "Send notifications to users", destinationView: PushNotification())]
+        for (key, features) in FeaturesView.availableFeatures {
+            if results.keys.contains(key) {
+                results[key]! += features
+            } else {
+                results[key] = features
+            }
         }
-#endif
 
         return results
-    }
+    }()
 
-    var ustcWebFeaturesSearched: [String: [FeatureWithView]] {
+    var webFeaturesSearched: [String: [FeatureWithView]] {
         if searchText.isEmpty {
-            return ustcFeatures
+            return features
         } else {
             var result: [String: [FeatureWithView]] = [:]
-            for (key, value) in ustcFeatures {
+            for (key, value) in features {
                 let tmp = value.filter {
                     $0.title.lowercased().contains(searchText.lowercased()) ||
                         $0.subTitle.lowercased().contains(searchText.lowercased()) ||
@@ -104,7 +115,7 @@ struct FeaturesView: View {
 
     var gridView: some View {
         ScrollView(showsIndicators: false) {
-            ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+            ForEach(webFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                 Text(key.localized)
                     .font(.title2)
                     .fontWeight(.medium)
@@ -126,7 +137,7 @@ struct FeaturesView: View {
 
     var mainView: some View {
         List {
-            ForEach(ustcWebFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+            ForEach(webFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                 Section {
                     ForEach(features, id: \.self) { feature in
                         NavigationLink {
@@ -168,114 +179,6 @@ struct FeaturesView: View {
         }
         .searchable(text: $searchText, placement: .automatic)
     }
-}
-
-extension FeaturesView {
-    struct FeatureWithView: Identifiable, Hashable {
-        static func == (lhs: FeaturesView.FeatureWithView, rhs: FeaturesView.FeatureWithView) -> Bool {
-            lhs.id == rhs.id
-        }
-
-        var id = UUID()
-        var image: String
-        var title: String
-        var subTitle: String
-        var destinationView: AnyView
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
-
-        init(image: String, title: String, subTitle: String, destinationView: any View) {
-            self.image = image
-            self.title = title
-            self.subTitle = subTitle
-            self.destinationView = .init(destinationView)
-        }
-
-        init(_ feedSource: FeedSource) {
-            image = feedSource.image ?? "doc.richtext"
-            title = feedSource.name
-            subTitle = feedSource.description ?? ""
-            destinationView = .init(FeedSourceView(feedSource: feedSource))
-        }
-
-        init(_ ustcWebFeature: USTCWebFeature) {
-            image = ustcWebFeature.image
-            title = ustcWebFeature.name
-            subTitle = ustcWebFeature.description
-            destinationView = .init(Browser(url: ustcWebFeature.url, title: ustcWebFeature.name.localized))
-        }
-    }
-
-    struct USTCWebFeature: Identifiable {
-        var id = UUID()
-        var name: String
-        var image: String
-        var description: String
-        var url: URL
-
-        init(id: UUID = UUID(), name: String, image: String, description: String, url: URL) {
-            self.id = id
-            self.name = name
-            self.image = image
-            self.description = description
-            self.url = url
-        }
-
-        init(id: UUID = UUID(), name: String, image: String, description: String, url: String, markUp: Bool = false) {
-            self.id = id
-            self.name = name
-            self.image = image
-            self.description = description
-            if markUp {
-                self.url = URL(string: url)!.ustcCASLoginMarkup()
-            } else {
-                self.url = URL(string: url)!
-            }
-        }
-    }
-
-    static let ustcWebFeatures: [USTCWebFeature] =
-        [.init(name: "AAS(UG)",
-               image: "person.2",
-               description: "本科生教务系统",
-               url: "https://jw.ustc.edu.cn/ucas-sso/login",
-               markUp: true),
-         .init(name: "Public Query",
-               image: "doc.text.magnifyingglass",
-               description: "查询教室使用情况",
-               url: "https://catalog.ustc.edu.cn/query/classroom"),
-         .init(name: "Web Service",
-               image: "globe.asia.australia",
-               description: "申请/修改网络通、重置密码",
-               url: "https://zczx.ustc.edu.cn/caslogin",
-               markUp: true),
-         .init(name: "Physics Experiment",
-               image: "chart.xyaxis.line",
-               description: "预约/查看物理实验课程",
-               url: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html",
-               markUp: true),
-         .init(name: "Meeting Room Appointment",
-               image: "clock.badge.checkmark",
-               description: "预约中区研讨室/青年之家会议室",
-               url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
-               markUp: true),
-         .init(name: "E-Card",
-               image: "creditcard",
-               description: "遗失、查询记录、门禁权限等",
-               url: "https://ecard.ustc.edu.cn/caslogin",
-               markUp: true),
-         .init(name: "Work-integrated Learning",
-               image: "desktopcomputer",
-               description: "奖学金、助学金、勤工助学等",
-               url: "https://xgyth.ustc.edu.cn/usp/index.aspx",
-               markUp: true),
-         .init(name: "Hanhai Platform",
-               image: "books.vertical",
-               description: "本科教育提升计划-网络课程平台",
-               url: "http://course.ustc.edu.cn/sso/ustc",
-               markUp: true)]
 }
 
 struct FeaturesView_Previews: PreviewProvider {
