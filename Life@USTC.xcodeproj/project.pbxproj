@@ -412,7 +412,6 @@
 			children = (
 				565587B5294ACEFD0010E060 /* Browser.swift */,
 				56C1424F29F64602007D9BD4 /* PushNotification */,
-				56E8AD732973F229009006D0 /* Classroom */,
 				56E8AD6B296FEEDD009006D0 /* Score */,
 				56F3EAD7296EB7E60095AEF4 /* Exam */,
 				56BE9200296679DB00822C98 /* Curriculum */,
@@ -631,13 +630,6 @@
 				5638E2812A58251A001967D9 /* SingleScoreView.swift */,
 			);
 			path = Score;
-			sourceTree = "<group>";
-		};
-		56E8AD732973F229009006D0 /* Classroom */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Classroom;
 			sourceTree = "<group>";
 		};
 		56E94E21298A775C0085241B /* Settings */ = {

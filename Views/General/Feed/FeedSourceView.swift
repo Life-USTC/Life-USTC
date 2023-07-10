@@ -38,7 +38,7 @@ struct AllSourceView: View {
                     self.feeds = try await FeedSource.recentFeeds(number: nil)
                     self.status = .success
                 } catch {
-                    self.status = .failure
+                    self.status = .failure(error.localizedDescription)
                 }
             }
             .refreshable {
@@ -51,7 +51,7 @@ struct AllSourceView: View {
                     self.feeds = try await FeedSource.recentFeeds(number: nil)
                     self.status = .success
                 } catch {
-                    self.status = .failure
+                    self.status = .failure(error.localizedDescription)
                 }
             }
             .navigationTitle("Feed")

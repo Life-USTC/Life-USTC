@@ -40,7 +40,7 @@ struct ExamView<ExamDelegate: ExamDelegateProtocol>: View {
                         try await Exam.saveToCalendar(examDelegate.data)
                         saveToCalendarStatus = .success
                     } catch {
-                        saveToCalendarStatus = .failure
+                        saveToCalendarStatus = .failure(error.localizedDescription)
                     }
                 }
             } label: {
