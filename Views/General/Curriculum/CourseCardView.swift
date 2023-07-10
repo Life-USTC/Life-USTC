@@ -22,16 +22,16 @@ struct CourseCardView: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(nil)
                     .font(.system(size: 12))
-                Text(course.classPositionString)
+                Text(course.roomName)
                     .font(.system(size: 12))
                     .fontWeight(.bold)
             }
             if course.length != 1 {
                 Divider()
                 Spacer()
-                Text(course.classIDString)
+                Text(course.lessonCode)
                     .font(.system(size: 9))
-                Text(course.classTeacherName)
+                Text(course.teacherName)
                     .font(.system(size: 9))
                 Text(course._endTime.clockTime)
                     .font(.system(size: 9))
@@ -65,19 +65,19 @@ struct CourseCardView: View {
                             Text("Classroom: ".localized)
                                 .fontWeight(.semibold)
                             Spacer()
-                            Text(course.classPositionString)
+                            Text(course.roomName)
                         }
                         HStack {
                             Text("Teacher: ".localized)
                                 .fontWeight(.semibold)
                             Spacer()
-                            Text(course.classTeacherName)
+                            Text(course.teacherName)
                         }
                         HStack {
                             Text("ID: ".localized)
                                 .fontWeight(.semibold)
                             Spacer()
-                            Text(course.classIDString)
+                            Text(course.lessonCode)
                         }
                         HStack {
                             Text("Week: ".localized)

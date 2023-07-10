@@ -1,34 +1,53 @@
 //
-//  Exam.swift
-//  Life@USTC (iOS)
+//  ExamExtensions.swift
+//  Life@USTC
 //
-//  Created by TiankaiMa on 2023/1/11.
+//  Created by Tiankai Ma on 2023/7/9.
 //
 
 import EventKit
-import SwiftSoup
 import SwiftUI
-import WidgetKit
 
-struct Exam: Codable, Identifiable {
-    var id = UUID()
-    var classIDString: String
-    var typeName: String
-    var className: String
-    var rawTime: String
-    var classRoomName: String
-    var classRoomBuildingName: String
-    var classRoomDistrict: String
-    var description: String
+extension Exam: Equatable {
+    /// two exams are considered equal if they have the same lesson code and type name
+    static func == (lhs: Exam, rhs: Exam) -> Bool {
+        lhs.lessonCode == rhs.lessonCode && lhs.typeName == rhs.typeName
+    }
+}
 
-    static let example: Exam = .init(classIDString: "MATH10001.01",
+extension Exam {
+    static let example: Exam = .init(lessonCode: "MATH10001.01",
                                      typeName: "期末考试",
-                                     className: "数学分析B1",
+                                     courseName: "数学分析B1",
                                      rawTime: "2023-06-28 14:30~16:30",
                                      classRoomName: "5401",
                                      classRoomBuildingName: "第五教学楼",
                                      classRoomDistrict: "东区",
                                      description: "")
+
+    var time: Date {
+        parse().time
+    }
+
+    var timeDescription: String {
+        parse().description
+    }
+
+    var startTime: Date {
+        parse().startTime
+    }
+
+    var endTime: Date {
+        parse().endTime
+    }
+
+    var isFinished: Bool {
+        endTime <= Date()
+    }
+
+    var daysLeft: Int {
+        Calendar.current.dateComponents([.day], from: Date().stripTime(), to: time).day ?? 0
+    }
 
     /// Parse self.time to a tuple of (date, time, start time, end time)
     ///
@@ -69,7 +88,7 @@ struct Exam: Codable, Identifiable {
 
         for exam in exams {
             let event = EKEvent(eventStore: eventStore)
-            event.title = exam.className + " " + exam.typeName
+            event.title = exam.courseName + " " + exam.typeName
             event.location = exam.classRoomName + "@" + exam.classRoomBuildingName
             event.notes = exam.description
 
@@ -90,30 +109,16 @@ struct Exam: Codable, Identifiable {
             .filter(\.isFinished)
             .sorted { $0.startTime > $1.startTime }
     }
-}
 
-extension Exam {
-    var time: Date {
-        parse().time
-    }
-
-    var timeDescription: String {
-        parse().description
-    }
-
-    var startTime: Date {
-        parse().startTime
-    }
-
-    var endTime: Date {
-        parse().endTime
-    }
-
-    var isFinished: Bool {
-        endTime <= Date()
-    }
-
-    var daysLeft: Int {
-        Calendar.current.dateComponents([.day], from: Date().stripTime(), to: time).day ?? 0
+    /// Merge two list of exam (addition only)
+    static func merge(_ original: [Exam], with new: [Exam]) -> [Exam] {
+        var result = original
+        for exam in new {
+            if !result.filter({ $0 == exam }).isEmpty {
+                continue
+            }
+            result.append(exam)
+        }
+        return result
     }
 }

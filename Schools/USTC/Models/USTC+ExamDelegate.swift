@@ -1,5 +1,5 @@
 //
-//  ExamDelegate.swift
+//  USTCExamDelegate.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/2/24.
@@ -10,42 +10,21 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-final class ExamDelegate: UserDefaultsADD & LastUpdateADD {
-    // Protocol requirements
+final class USTCExamDelegate: ExamDelegateProtocol {
+    static var shared = USTCExamDelegate()
+
+    // MARK: - Protocol requirements
+
     typealias D = [Exam]
     var lastUpdate: Date?
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
-    var status: AsyncViewStatus = .inProgress {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    // Parent
+    @Published var status: AsyncViewStatus = .inProgress
     var ustcUgAASClient: UstcUgAASClient
-
-    // Shared class that shall be used throughout the app
-    // You should call function with ExamDelegate.shared.function()
-    // instead of ExamDelegate().function()
-    // The benifit of this, instead of just using enum for definition
-    // is that the lifecycle could be easily managed and checked when debugging.
-    //
-    // Notice that all ExamDelegate() share the same cache,
-    // and there aren't supposed to be two instance running at the same time to avoid conflict
-    // TODO: Add support for multiple instance with different cache position
-    static var shared = ExamDelegate()
-
     var cache: [Exam] = []
-    var data: [Exam] = [] {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var data: [Exam] = []
+
+    // MARK: - Start reading from here:
 
     func parseCache() async throws -> [Exam] {
         let hiddenExamName = (
@@ -55,7 +34,7 @@ final class ExamDelegate: UserDefaultsADD & LastUpdateADD {
         }
         let result = cache.filter { exam in
             for name in hiddenExamName {
-                if exam.className.contains(name) {
+                if exam.courseName.contains(name) {
                     return false
                 }
             }
@@ -63,7 +42,7 @@ final class ExamDelegate: UserDefaultsADD & LastUpdateADD {
         }
         let hiddenResult = cache.filter { exam in
             for name in hiddenExamName {
-                if exam.className.contains(name) {
+                if exam.courseName.contains(name) {
                     return true
                 }
             }
@@ -88,9 +67,9 @@ final class ExamDelegate: UserDefaultsADD & LastUpdateADD {
 
         for examParsed: Element in examsParsed.array() {
             let textList: [String] = examParsed.children().array().map { $0.ownText() }
-            fetchedExams.append(Exam(classIDString: textList[0],
+            fetchedExams.append(Exam(lessonCode: textList[0],
                                      typeName: textList[1],
-                                     className: textList[2],
+                                     courseName: textList[2],
                                      rawTime: textList[3],
                                      classRoomName: textList[4],
                                      classRoomBuildingName: textList[5],

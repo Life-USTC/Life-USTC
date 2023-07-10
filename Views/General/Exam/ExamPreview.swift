@@ -29,7 +29,7 @@ struct ExamPreview: View {
                     Spacer()
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(exam.className)
+                            Text(exam.courseName)
                                 .fontWeight(.bold)
                                 .strikethrough(exam.isFinished)
                             Text(exam.classRoomName)

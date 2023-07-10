@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct CASLoginView: View {
-    static func sheet(isPresented: Binding<Bool>) -> CASLoginView {
-        CASLoginView(
+struct USTCCASLoginView: View {
+    static func sheet(isPresented: Binding<Bool>) -> USTCCASLoginView {
+        USTCCASLoginView(
             title: "One more step...",
             isInSheet: true,
             casLoginSheet: isPresented
         )
     }
 
-    static var newPage = CASLoginView(casLoginSheet: .constant(false))
+    static var newPage = USTCCASLoginView(casLoginSheet: .constant(false))
 
     var title: LocalizedStringKey = "CAS Settings"
     var isInSheet = false
@@ -174,11 +174,11 @@ struct CASLoginView: View {
     }
 }
 
-struct CASLoginView_Previews: PreviewProvider {
+struct USTCCASLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        CASLoginView.newPage
+        USTCCASLoginView.newPage
 #if os(iOS)
-        CASLoginView.sheet(isPresented: .constant(false))
+        USTCCASLoginView.sheet(isPresented: .constant(false))
 #endif
     }
 }

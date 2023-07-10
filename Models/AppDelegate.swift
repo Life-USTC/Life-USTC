@@ -60,6 +60,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userDefaults.removeObject(forKey: "passportPassword")
         }
 
+        if userDefaults.object(forKey: "semesterID") != nil {
+            userDefaults.setValue(Int(userDefaults.string(forKey: "semesterID") ?? "0") ?? 0, forKey: "semesterIDInt")
+            userDefaults.removeObject(forKey: "semesterID")
+        }
+
         // set version to 1.0.2
         userDefaults.set("1.0.2", forKey: "version")
     }

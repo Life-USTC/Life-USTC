@@ -16,7 +16,7 @@ struct ExamProvider: TimelineProvider {
 
     func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
-            let exams = try await ExamDelegate.shared.retrive()
+            let exams = try await Exam.sharedDelegate.retrive()
             let entry = SimpleEntry(exams: exams)
             completion(entry)
         }
@@ -24,7 +24,7 @@ struct ExamProvider: TimelineProvider {
 
     func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            var exams = try await ExamDelegate.shared.retrive()
+            var exams = try await Exam.sharedDelegate.retrive()
             exams = Exam.show(exams)
             let entry = SimpleEntry(exams: exams)
 
@@ -100,7 +100,7 @@ struct ExamWidgetEntryView: View {
                     .lineLimit(1)
                     .foregroundColor(.blue.opacity(0.8))
             }
-            Text(exam.className)
+            Text(exam.courseName)
                 .lineLimit(2)
                 .fontWeight(.bold)
             Spacer()
@@ -127,7 +127,7 @@ struct ExamWidgetEntryView: View {
 
     var oneLine: some View {
         Text(String(format: "%@+%@D".localized,
-                    exam.className.limitShow(6),
+                    exam.courseName.limitShow(6),
                     String(exam.daysLeft)))
     }
 
@@ -139,7 +139,7 @@ struct ExamWidgetEntryView: View {
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
                         HStack {
-                            Text(exam.className)
+                            Text(exam.courseName)
                                 .font(.headline)
                                 .strikethrough(exam.isFinished)
                                 .bold()
@@ -185,7 +185,7 @@ struct ExamWidgetEntryView: View {
                 .fontWeight(.semibold)
             ForEach(exams.prefix(2)) { exam in
                 HStack {
-                    Text(exam.className)
+                    Text(exam.courseName)
                         .strikethrough(exam.isFinished)
                     if !exam.isFinished {
                         Text("+\(String(exam.daysLeft))D")

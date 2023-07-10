@@ -7,80 +7,20 @@
 
 import SwiftUI
 
-private struct SingleExamView: View {
-    let exam: Exam
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 25) {
-            VStack(alignment: .leading) {
-                HStack(alignment: .center) {
-                    Text("\(exam.className)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .strikethrough(exam.isFinished)
-                    Spacer()
-                    Text("\(exam.typeName)")
-                        .foregroundColor(Color.gray)
-                        .font(.subheadline)
-                }
-                Text("\(exam.classIDString)")
-                    .foregroundColor(Color.gray)
-                    .font(.subheadline)
-            }
-            VStack(alignment: .leading, spacing: 3) {
-                HStack {
-                    Image(systemName: "location.fill.viewfinder")
-                    Text("\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)")
-                }
-                .font(.callout)
-                HStack {
-                    Image(systemName: "calendar.badge.clock")
-                    Text(exam.rawTime)
-                    Spacer()
-                    if exam.isFinished {
-                        Text("Finished".localized)
-                            .foregroundColor(.gray)
-                            .fontWeight(.bold)
-                    } else {
-                        Text(exam.daysLeft == 1 ?
-                            "1 day left".localized :
-                            String(format: "%@ days left".localized, String(exam.daysLeft))
-                        )
-                        .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
-                        .fontWeight(.bold)
-                    }
-                }
-                .font(.callout)
-            }
-        }
-    }
-}
-
-struct ExamView: View {
-    @StateObject var examDelegate = ExamDelegate.shared
-    var exams: [Exam] {
-        examDelegate.data
-    }
-
-    var status: AsyncViewStatus {
-        examDelegate.status
-    }
-
-    var body: some View {
-        makeView(with: exams)
-    }
-
+struct ExamView<ExamDelegate: ExamDelegateProtocol>: View {
+    @ObservedObject var examDelegate: ExamDelegate
     @State var saveToCalendarStatus: AsyncViewStatus? = nil
-    func makeView(with exams: [Exam]) -> some View {
+
+    var body: some View {
         ScrollView(showsIndicators: false) {
-            if exams.isEmpty {
+            if examDelegate.data.isEmpty {
                 VStack {
                     Text("No More Exam!")
                         .font(.system(.body, design: .monospaced))
                         .padding(.vertical, 10)
                 }
             } else {
-                ForEach(exams) { exam in
+                ForEach(examDelegate.data) { exam in
                     SingleExamView(exam: exam)
                     Divider()
                 }
@@ -88,7 +28,7 @@ struct ExamView: View {
             }
         }
         .padding(.horizontal, 25)
-        .asyncViewStatusMask(status: status)
+        .asyncViewStatusMask(status: examDelegate.status)
         .refreshable {
             examDelegate.userTriggerRefresh()
         }
@@ -97,7 +37,7 @@ struct ExamView: View {
                 Task {
                     saveToCalendarStatus = .inProgress
                     do {
-                        try await Exam.saveToCalendar(exams)
+                        try await Exam.saveToCalendar(examDelegate.data)
                         saveToCalendarStatus = .success
                     } catch {
                         saveToCalendarStatus = .failure
@@ -110,6 +50,10 @@ struct ExamView: View {
         }
         .navigationTitle("Exam")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    init(examDelegate: ExamDelegate) {
+        self.examDelegate = examDelegate
     }
 }
 
