@@ -52,7 +52,7 @@ struct FeedViewPreview: View {
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill((feed.feedSource?.color ?? .secondary).opacity(0.6))
+                            .fill((feed.feedSource?.color ?? .secondary).opacity(0.9))
                     }
                 Text(feed.datePosted.formatted())
                     .font(.system(.caption2, design: .monospaced))

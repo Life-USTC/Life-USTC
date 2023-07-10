@@ -144,7 +144,7 @@ extension FeedSource {
                 let description = source["description"].stringValue
                 let image = source["icons"]["sf-symbols"].string ?? "newspaper"
                 let colorString = source["color"].string // hex string with "#"
-                let color = colorString != nil ? Color(hex: colorString!) : nil
+                let color = colorString != nil ? Color(hex: colorString!) : Color(hex: "#72C078")
                 result.append(FeedSource(url: url, name: name, description: description, image: image, color: color))
             }
 

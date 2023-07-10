@@ -36,7 +36,7 @@ struct FeedSettingView: View {
                                 .foregroundColor(.primary)
                             Spacer()
                             if !removedNameList.contains(name) {
-                                Image(systemName: "checkmark.seal.fill")
+                                Image(systemName: "checkmark.circle.fill")
                             }
                         }
                     }

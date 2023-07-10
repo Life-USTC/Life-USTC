@@ -24,10 +24,10 @@ struct ExamView<ExamDelegate: ExamDelegateProtocol>: View {
                     SingleExamView(exam: exam)
                     Divider()
                 }
-                .padding(.top, 25)
+                .padding(.top, 5)
             }
         }
-        .padding(.horizontal, 25)
+        .padding(.horizontal, 15)
         .asyncViewStatusMask(status: examDelegate.status)
         .refreshable {
             examDelegate.userTriggerRefresh()
