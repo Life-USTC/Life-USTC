@@ -55,7 +55,7 @@ struct CurriculumSettingView<CurriculumDelegate: CurriculumDelegateProtocol>: Vi
                             try await curriculumDelegate.saveToCalendar()
                             saveCalendarStatus = .success
                         } catch {
-                            saveCalendarStatus = .failure
+                            saveCalendarStatus = .failure(error.localizedDescription)
                         }
                     }
                 } label: {

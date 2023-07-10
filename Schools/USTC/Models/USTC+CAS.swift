@@ -147,11 +147,16 @@ class UstcCasClient: ObservableObject {
         }
 
         let task = Task {
-            print("network<UstcCAS>: No login task running, [WAITING RESULT]")
-            let result = try await self.loginToCAS()
-            loginTask = nil
-            print("network<UstcCAS>: login task finished, result: \(result)")
-            return result
+            do {
+                print("network<UstcCAS>: No login task running, [WAITING RESULT]")
+                let result = try await self.loginToCAS()
+                loginTask = nil
+                print("network<UstcCAS>: login task finished, result: \(result)")
+                return result
+            } catch {
+                loginTask = nil
+                throw (error)
+            }
         }
         loginTask = task
         return try await task.value

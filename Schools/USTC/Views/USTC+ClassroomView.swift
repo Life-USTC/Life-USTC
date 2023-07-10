@@ -230,7 +230,7 @@ struct USTCClassroomView: View {
         .padding(.horizontal, 5)
         .navigationBarTitle("Classroom List", displayMode: .inline)
         .toolbar {
-            if status == .inProgress {
+            if status.isRefreshing {
                 ProgressView()
             }
 

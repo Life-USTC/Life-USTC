@@ -22,7 +22,7 @@ struct AsyncViewStatusMask: ViewModifier {
                                     .frame(width: 5)
                                 Image(systemName: "xmark.square.fill")
                                     .foregroundColor(.red)
-                                Text("Error Message To be added")
+                                Text(status?.errorMessage ?? "")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }

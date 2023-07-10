@@ -79,11 +79,16 @@ class UstcUgAASClient: ObservableObject {
         }
 
         let task = Task {
-            print("network<UstcUgAAS>: No login task running, [CREATING NEW ONE]")
-            let result = try await self.login()
-            loginTask = nil
-            print("network<UstcUgAAS>: login task finished, result:\(result)")
-            return result
+            do {
+                print("network<UstcUgAAS>: No login task running, [CREATING NEW ONE]")
+                let result = try await self.login()
+                loginTask = nil
+                print("network<UstcUgAAS>: login task finished, result:\(result)")
+                return result
+            } catch {
+                loginTask = nil
+                throw (error)
+            }
         }
         loginTask = task
         return try await task.value

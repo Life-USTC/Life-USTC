@@ -12,21 +12,65 @@ import SwiftyJSON
 enum AsyncViewStatus {
     case inProgress
     case success
-    case failure
+    // Assuming the original data is never overwritten by incorrect data that might lead the app to crash,
+    // So even in event of failure, the views would still be rendered (for user to look at the data with failure)
+    //
+    // If you don't have the correct data for the view, pass a placeholder
+    case failure(String?)
 
     /// In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date
     case cached
 
     var canShowData: Bool {
-        self == .success || self == .cached || self == .failure
+        switch self {
+        case .inProgress:
+            return false
+        case .success:
+            return true
+        case .failure:
+            return true
+        case .cached:
+            return true
+        }
     }
 
     var isRefreshing: Bool {
-        self == .inProgress || self == .cached
+        switch self {
+        case .inProgress:
+            return true
+        case .success:
+            return false
+        case .failure:
+            return false
+        case .cached:
+            return true
+        }
     }
 
     var hasError: Bool {
-        self == .failure
+        switch self {
+        case .inProgress:
+            return false
+        case .success:
+            return false
+        case .failure:
+            return true
+        case .cached:
+            return false
+        }
+    }
+
+    var errorMessage: String {
+        switch self {
+        case .inProgress:
+            return ""
+        case .success:
+            return ""
+        case let .failure(string):
+            return string ?? ""
+        case .cached:
+            return ""
+        }
     }
 }
 
@@ -117,12 +161,12 @@ extension AsyncDataDelegate {
                 foregroundUpdateData(with: try await parseCache())
             } catch {
                 print(error)
-                foregroundUpdateStatus(with: .failure)
+                foregroundUpdateStatus(with: .failure(error.localizedDescription))
             }
 
-            if forced || status == .failure || requireUpdate {
+            if forced || status.hasError || requireUpdate {
                 do {
-                    if self.status == .failure {
+                    if self.status.hasError {
                         foregroundUpdateStatus(with: .inProgress)
                     } else {
                         foregroundUpdateStatus(with: .cached)
@@ -131,7 +175,7 @@ extension AsyncDataDelegate {
                     try await forceUpdate()
                 } catch {
                     print(error)
-                    foregroundUpdateStatus(with: .failure)
+                    foregroundUpdateStatus(with: .failure(error.localizedDescription))
                     return
                 }
             }

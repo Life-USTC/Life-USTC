@@ -20,3 +20,12 @@ func exceptionCall<T>(_ function: @escaping () throws -> T) -> T? {
 enum BaseError: Error {
     case runtimeError(String)
 }
+
+extension BaseError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .runtimeError(string):
+            return string
+        }
+    }
+}
