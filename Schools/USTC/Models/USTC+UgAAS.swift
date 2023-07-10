@@ -101,13 +101,15 @@ extension UstcUgAASClient {
          241: "2022年春季学期",
          261: "2022年夏季学期",
          281: "2022年秋季学期",
-         301: "2023年春季学期"]
+         301: "2023年春季学期",
+         321: "2023年夏季学期"]
     static let semesterDateList: [Int: Date] =
         [221: .init(timeIntervalSince1970: 1_630_771_200),
          241: .init(timeIntervalSince1970: 1_642_608_000),
          261: .init(timeIntervalSince1970: 1_656_172_800),
          281: .init(timeIntervalSince1970: 1_661_616_000),
-         301: .init(timeIntervalSince1970: 1_677_945_600)]
+         301: .init(timeIntervalSince1970: 1_677_945_600),
+         321: .init(timeIntervalSince1970: 1_688_918_400)]
 
     var semesterName: String {
         UstcUgAASClient.semesterIDList.first(where: { $0.key == semesterID })?.value ?? "Not Found"
