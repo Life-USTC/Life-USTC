@@ -49,3 +49,13 @@ extension SettingsView {
         USTCExports.settings
     }
 }
+
+extension ContentView {
+    static var SharedModifier: some ViewModifier {
+        USTCExports.baseModifier
+    }
+
+    static var firstLoginView: (Binding<Bool>) -> AnyView {
+        USTCExports.firstLoginView
+    }
+}

@@ -60,4 +60,39 @@ enum USTCExports {
     static var scoreDelegate: some ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
+
+    static var baseModifier: some ViewModifier {
+        USTCBaseModifier()
+    }
+
+    static var firstLoginView: (Binding<Bool>) -> AnyView {
+        { firstLogin in
+            .init(USTCCASLoginView.sheet(isPresented: firstLogin))
+        }
+    }
+}
+
+struct USTCBaseModifier: ViewModifier {
+    @State var casLoginSheet: Bool = false
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $casLoginSheet) {
+                USTCCASLoginView.sheet(isPresented: $casLoginSheet)
+            }
+            .onAppear(perform: onLoadFunction)
+    }
+
+    func onLoadFunction() {
+        Task {
+            UstcCasClient.shared.clearLoginStatus()
+            UstcUgAASClient.shared.clearLoginStatus()
+
+            if UstcCasClient.shared.precheckFails {
+                casLoginSheet = true
+            }
+            // if the login result fails, present the user with the sheet.
+            casLoginSheet = try await !UstcCasClient.shared.requireLogin()
+        }
+    }
 }

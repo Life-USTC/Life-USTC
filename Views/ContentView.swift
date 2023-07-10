@@ -20,7 +20,6 @@ struct Life_USTCApp: App {
 
 struct ContentView: View {
     // these four variables are used to deterime which sheet is required tp prompot to the user.
-    @State var casLoginSheet: Bool = false
     @AppStorage("firstLogin") var firstLogin: Bool = true
     @State var sideBar: NavigationSplitViewVisibility = .all
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -93,32 +92,20 @@ struct ContentView: View {
 
     var body: some View {
         if firstLogin {
-            USTCCASLoginView.sheet(isPresented: $firstLogin)
+            ContentView.firstLoginView($firstLogin)
         } else {
             ZStack {
                 WebView(wkWebView: LUJSRuntime.shared.wkWebView)
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     // iPadOS:
                     iPadView
+                        .modifier(ContentView.SharedModifier)
                 } else {
                     // iOS:
                     iPhoneView
+                        .modifier(ContentView.SharedModifier)
                 }
             }
-            .onAppear(perform: onLoadFunction)
-        }
-    }
-
-    func onLoadFunction() {
-        Task {
-            UstcCasClient.shared.clearLoginStatus()
-            UstcUgAASClient.shared.clearLoginStatus()
-
-            if UstcCasClient.shared.precheckFails {
-                casLoginSheet = true
-            }
-            // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.shared.requireLogin()
         }
     }
 }
