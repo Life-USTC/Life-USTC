@@ -21,7 +21,7 @@ extension Bundle {
     }
 }
 
-struct AboutLifeAtUSTCView: View {
+struct AboutApp: View {
     @Environment(\.openURL) private var openURL
     let links: [(label: String, url: String)] = [("GitHub", "https://github.com/tiankaima/Life-USTC"),
                                                  ("Discord", "https://discord.gg/BxdsySpkYP")]
@@ -124,6 +124,6 @@ struct AboutLifeAtUSTCView: View {
 
 struct AboutPage_Previews: PreviewProvider {
     static var previews: some View {
-        AboutLifeAtUSTCView()
+        AboutApp()
     }
 }

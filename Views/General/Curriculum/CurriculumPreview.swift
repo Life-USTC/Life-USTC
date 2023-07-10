@@ -140,20 +140,3 @@ struct CourseStackView: View {
         }
     }
 }
-
-struct CurriculumPreview_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            VStack {
-                CurriculumPreview(curriculumDelegate: USTCCurriculumDelegate.shared,
-                                  date: .now)
-                    .happyView
-
-                CurriculumPreview(curriculumDelegate: USTCCurriculumDelegate.shared,
-                                  date: .now)
-                    .makeView(with: [.example, .example])
-            }
-            .padding()
-        }
-    }
-}

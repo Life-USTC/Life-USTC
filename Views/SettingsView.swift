@@ -25,7 +25,7 @@ struct SettingsView: View {
             }
 
             Section {
-                NavigationLink("About Life@USTC", destination: AboutLifeAtUSTCView())
+                NavigationLink("About Life@USTC", destination: AboutApp())
                 NavigationLink("Legal Info", destination: LegalInfoView())
             }
         }
