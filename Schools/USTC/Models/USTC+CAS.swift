@@ -117,6 +117,8 @@ class UstcCasClient: ObservableObject {
             lastLogined = .now
             return true
         }
+
+        lastLogined = nil
         return false
     }
 

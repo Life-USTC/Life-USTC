@@ -54,6 +54,7 @@ class UstcUgAASClient: ObservableObject {
             lastLogined = .now
         }
 
+        lastLogined = nil
         return result
     }
 
