@@ -19,6 +19,9 @@
 		562169222955BEDE00DF46BE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169212955BEDE00DF46BE /* ContentView.swift */; };
 		562169242955BEF900DF46BE /* UserTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169232955BEF900DF46BE /* UserTypeView.swift */; };
 		5627958B2A08F382009D398E /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
+		5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
+		5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */; };
+		5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
 		56311A6F2A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
 		56311A702A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
 		563542CA2A4B021500C5BD7A /* openapi-generator-config.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 563542B62A4B000900C5BD7A /* openapi-generator-config.yaml */; };
@@ -180,6 +183,8 @@
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		562169232955BEF900DF46BE /* UserTypeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeView.swift; sourceTree = "<group>"; };
 		5627958A2A08F382009D398E /* JSRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSRuntime.swift; sourceTree = "<group>"; };
+		5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotification.swift; sourceTree = "<group>"; };
+		5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationTabView.swift; sourceTree = "<group>"; };
 		56311A6E2A16394A009D7A34 /* Runtime.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Runtime.html; sourceTree = "<group>"; };
 		563542B42A4AFFF800C5BD7A /* openapi.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = openapi.yml; sourceTree = "<group>"; };
 		563542B62A4B000900C5BD7A /* openapi-generator-config.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "openapi-generator-config.yaml"; sourceTree = "<group>"; };
@@ -346,6 +351,14 @@
 			path = TPNS;
 			sourceTree = "<group>";
 		};
+		5627D8D42A5EA88E00DEB653 /* InAppNotification */ = {
+			isa = PBXGroup;
+			children = (
+				5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */,
+			);
+			path = InAppNotification;
+			sourceTree = "<group>";
+		};
 		56311A6D2A16390F009D7A34 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -397,6 +410,7 @@
 		565587F5294D635E0010E060 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5627D8D42A5EA88E00DEB653 /* InAppNotification */,
 				5638E27C2A5812BD001967D9 /* School */,
 				56D175C9295438E80070778F /* Feed */,
 				56C1425229F64886007D9BD4 /* PushNotification */,
@@ -411,6 +425,7 @@
 			isa = PBXGroup;
 			children = (
 				565587B5294ACEFD0010E060 /* Browser.swift */,
+				5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */,
 				56C1424F29F64602007D9BD4 /* PushNotification */,
 				56E8AD6B296FEEDD009006D0 /* Score */,
 				56F3EAD7296EB7E60095AEF4 /* Exam */,
@@ -906,6 +921,7 @@
 				56D175C6295438870070778F /* FeedCache.swift in Sources */,
 				5694D91829668191009CFCDF /* Course.swift in Sources */,
 				56EBAEF72A597F5300B23862 /* KeychainItemAccessibility.swift in Sources */,
+				5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */,
 				5677E13E2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
@@ -933,6 +949,7 @@
 				56A3B87B29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
 				56EBAEF42A597F1B00B23862 /* KeychainWrapper.swift in Sources */,
+				5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */,
 				565587F1294C4E5E0010E060 /* USTC+UgAAS.swift in Sources */,
 				56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
@@ -956,6 +973,7 @@
 			files = (
 				5638E27D2A581324001967D9 /* Course.swift in Sources */,
 				56734CEB297D871500DBB45F /* SwiftExtension.swift in Sources */,
+				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
 				5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */,
 				569C6E572A5BC7BA00A6492B /* AsyncView.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
