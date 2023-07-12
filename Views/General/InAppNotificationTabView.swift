@@ -64,11 +64,6 @@ struct InAppNotificationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             InAppNotificationTabView()
-                .task {
-                    InAppNotificationDelegate.shared.notifications.append(.init(color: .accentColor, message: "Hello world"))
-                    InAppNotificationDelegate.shared.notifications.append(.init(color: .accentColor, message: "Hello world"))
-                    InAppNotificationDelegate.shared.notifications.append(.init(color: .accentColor, message: "Hello world"))
-                }
         }
     }
 }

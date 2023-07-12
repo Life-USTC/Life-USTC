@@ -11,6 +11,12 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject {
     @Published var tpnsLog: String = ""
 
+#if IOS_SIMULATOR
+    func preparePreviews() {
+        InAppNotificationDelegate.shared.addErrorMessage("Preview debug message")
+    }
+#endif
+
     func startJSRuntime() {
         let _ = LUJSRuntime.shared
     }
@@ -75,6 +81,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
         version1_0_2Update()
+
+        preparePreviews()
         return true
     }
 
