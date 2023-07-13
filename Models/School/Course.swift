@@ -10,7 +10,9 @@ import SwiftUI
 import SwiftyJSON
 
 struct Course: Identifiable, Equatable {
-    var id: UUID = .init()
+    var id: String {
+        lessonCode
+    }
 
     /// 1-7 as Monday to Sunday
     var dayOfWeek: Int
@@ -88,8 +90,10 @@ struct Course: Identifiable, Equatable {
     }
 }
 
-struct Curriculum: Identifiable {
-    var id = UUID()
+struct Curriculum: Identifiable, Equatable {
+    var id: Int {
+        semesterID
+    }
 
     var semesterID: Int
     var courses: [Course]
@@ -105,15 +109,13 @@ struct Curriculum: Identifiable {
                                            semesterEndDate: Date(),
                                            semesterWeeks: 20)
 
-    init(id: UUID = UUID(),
-         semesterID: Int = 0,
+    init(semesterID: Int = 0,
          courses: [Course] = [],
          semesterName: String = "",
          semesterStartDate: Date = Date(),
          semesterEndDate: Date = Date(),
          semesterWeeks: Int = 0)
     {
-        self.id = id
         self.semesterID = semesterID
         self.courses = courses
         self.semesterName = semesterName

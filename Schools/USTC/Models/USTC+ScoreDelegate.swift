@@ -15,6 +15,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
 
     typealias D = Score
     var lastUpdate: Date?
+    var nameToShowWhenUpdate: String? = "Score"
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
     @Published var status: AsyncViewStatus = .inProgress

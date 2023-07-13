@@ -10,8 +10,10 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-struct Exam: Codable, Identifiable {
-    var id = UUID()
+struct Exam: Codable, Identifiable, Equatable {
+    var id: String {
+        lessonCode
+    }
 
     // MARK: - Information about the course
 
@@ -51,8 +53,7 @@ struct Exam: Codable, Identifiable {
     var classRoomDistrict: String
     var description: String
 
-    init(id: UUID = UUID(),
-         lessonCode: String,
+    init(lessonCode: String,
          typeName: String,
          courseName: String,
          rawTime: String,
@@ -61,7 +62,6 @@ struct Exam: Codable, Identifiable {
          classRoomDistrict: String = "",
          description: String = "")
     {
-        self.id = id
         self.lessonCode = lessonCode
         self.typeName = typeName
         self.courseName = courseName
@@ -79,6 +79,12 @@ extension ExamDelegateProtocol {
     func afterForceUpdate() async throws {
         lastUpdate = Date()
         try saveCache()
-        foregroundUpdateData(with: Exam.merge(data, with: try await parseCache()))
+        let data = Exam.merge(data, with: try await parseCache())
+
+        if self.data != data, let name = nameToShowWhenUpdate {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
+        }
+        foregroundUpdateData(with: data)
+//        foregroundUpdateData(with: Exam.merge(data, with: try await parseCache()))
     }
 }

@@ -13,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
 #if IOS_SIMULATOR
     func preparePreviews() {
-        InAppNotificationDelegate.shared.addErrorMessage("Preview debug message")
+        InAppNotificationDelegate.shared.addInfoMessage("Preview debug message")
     }
 #endif
 

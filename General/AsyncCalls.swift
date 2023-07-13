@@ -77,7 +77,8 @@ enum AsyncViewStatus {
 /// Generic protocol for  Model
 protocol AsyncDataDelegate: ObservableObject {
     /// Type for return
-    associatedtype D
+    associatedtype D: Equatable
+    var nameToShowWhenUpdate: String? { get }
 
     var data: D { get set }
     var status: AsyncViewStatus { get set }
@@ -223,7 +224,12 @@ extension UserDefaultsADD {
 
     func afterForceUpdate() async throws {
         try saveCache()
-        foregroundUpdateData(with: try await parseCache())
+        let data = try await parseCache()
+
+        if self.data != data, let name = nameToShowWhenUpdate {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
+        }
+        foregroundUpdateData(with: data)
     }
 
     func afterInit() {
@@ -275,7 +281,12 @@ extension UserDefaultsADD where Self: LastUpdateADD {
     func afterForceUpdate() async throws {
         lastUpdate = Date()
         try saveCache()
-        foregroundUpdateData(with: try await parseCache())
+        let data = try await parseCache()
+
+        if self.data != data, let name = nameToShowWhenUpdate {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
+        }
+        foregroundUpdateData(with: data)
     }
 
     func afterInit() {

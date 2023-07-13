@@ -17,6 +17,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
 
     typealias D = [Exam]
     var lastUpdate: Date?
+    var nameToShowWhenUpdate: String? = "Exam"
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
     @Published var status: AsyncViewStatus = .inProgress
