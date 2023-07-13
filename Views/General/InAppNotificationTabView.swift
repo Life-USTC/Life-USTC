@@ -14,18 +14,15 @@ struct InAppNotificationTabView: View {
             ForEach(notificationDelegate.notifications) { notification in
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 15.0)
-                        .fill(notification.color)
+                        .fill(notification.color.opacity(0.9))
                     VStack(alignment: .leading) {
                         HStack(alignment: .lastTextBaseline) {
                             Image(systemName: notification.infolabel)
-                                .font(.caption)
                             Text(notification.infoMessage)
-                                .font(.footnote)
-
+                                .fontWeight(.semibold)
                             Spacer()
 
                             Image(systemName: "xmark")
-                                .font(.caption)
                                 .onTapGesture {
                                     notificationDelegate.removeNotification(notification)
                                 }
@@ -33,7 +30,7 @@ struct InAppNotificationTabView: View {
                         .padding(.horizontal)
 
                         Divider()
-                            .frame(minHeight: 1.5)
+                            .frame(minHeight: 2)
                             .overlay(Color.white)
 
                         Text(notification.message)
@@ -42,13 +39,13 @@ struct InAppNotificationTabView: View {
                         Spacer()
                     }
                     .foregroundColor(.white)
-                    .padding(.vertical)
+                    .padding(.vertical, 10)
                 }
-                .frame(width: 380, height: 150)
             }
         }
+        .frame(height:145)
+        .padding(10)
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-        .frame(width: 400, height: 150)
     }
 
     var body: some View {

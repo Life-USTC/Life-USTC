@@ -95,7 +95,7 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
     var body: some View {
         ScrollView(showsIndicators: false) {
             InAppNotificationTabView()
-                .padding(.bottom, 30)
+                .padding(.bottom, 5)
 
             // MARK: - Curriculum
 
