@@ -122,7 +122,13 @@ struct Score: Equatable {
     }
 }
 
-protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == Score.Type {}
+protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Score.Type {}
+
+extension ScoreDelegateProtocol {
+    var nameToShowWhenUpdate: String {
+        "Score"
+    }
+}
 
 extension CourseScore {
     static var example = CourseScore(courseName: "数学分析B1",

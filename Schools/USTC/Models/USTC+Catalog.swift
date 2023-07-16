@@ -108,7 +108,6 @@ func max(_ lhs: Lesson, _ rhs: Lesson) -> Lesson {
 }
 
 class UstcCatalogClient: AsyncDataDelegate {
-    var nameToShowWhenUpdate: String?
     var requireUpdate: Bool = true
     var cache: [String: JSON] = [:]
 

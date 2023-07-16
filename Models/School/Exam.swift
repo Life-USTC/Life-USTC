@@ -73,18 +73,22 @@ struct Exam: Codable, Identifiable, Equatable {
     }
 }
 
-protocol ExamDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == [Exam].Type {}
+protocol ExamDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == [Exam].Type {}
 
 extension ExamDelegateProtocol {
+    var nameToShowWhenUpdate: String {
+        "Exam"
+    }
+
     func afterForceUpdate() async throws {
         lastUpdate = Date()
         try saveCache()
         let data = Exam.merge(data, with: try await parseCache())
 
-        if self.data != data, let name = nameToShowWhenUpdate {
-            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
+        if self.data != data {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
+                                                                   nameToShowWhenUpdate.localized))
         }
         foregroundUpdateData(with: data)
-//        foregroundUpdateData(with: Exam.merge(data, with: try await parseCache()))
     }
 }

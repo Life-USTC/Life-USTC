@@ -15,7 +15,6 @@ class FeedSource: AsyncDataDelegate {
     typealias D = [Feed]
     @Published var status: AsyncViewStatus = .cached // setting default to .cached to avoid loading at startup
     @Published var data: [Feed] = []
-    var nameToShowWhenUpdate: String?
 
     var url: URL
     var name: String

@@ -17,7 +17,6 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
 
     typealias D = Curriculum
     var lastUpdate: Date?
-    var nameToShowWhenUpdate: String? = "Curriculum"
     var cacheName: String = "UstcUgAASCurriculumCache"
     var timeCacheName: String = "UstcUgAASLastUpdatedCurriculum"
 

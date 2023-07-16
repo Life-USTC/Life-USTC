@@ -130,7 +130,7 @@ enum TimeMarkUpForCourse {
     case endTime
 }
 
-protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == Curriculum.Type {
+protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Curriculum.Type {
     /// After which time the course is considered to be ended (including that time)
     /// So `startTimes[lunchbreakTime]` is when the first course after lunch break starts
     /// `0..<lunchbreakTime` is morning, `lunchbreakTime..<endTimes.count` is afternoon
@@ -140,6 +140,12 @@ protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpd
     /// Given a time, return the index of the nearest time in startTimes
     func parseHHMMToInt(time: String, type: TimeMarkUpForCourse) -> Int
     func saveToCalendar() async throws
+}
+
+extension CurriculumDelegateProtocol {
+    var nameToShowWhenUpdate: String {
+        "Curriculum"
+    }
 }
 
 protocol TimeListBasedCDP: CurriculumDelegateProtocol {

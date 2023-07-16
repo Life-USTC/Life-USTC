@@ -77,8 +77,7 @@ enum AsyncViewStatus {
 /// Generic protocol for  Model
 protocol AsyncDataDelegate: ObservableObject {
     /// Type for return
-    associatedtype D: Equatable
-    var nameToShowWhenUpdate: String? { get }
+    associatedtype D
 
     var data: D { get set }
     var status: AsyncViewStatus { get set }
@@ -106,6 +105,10 @@ protocol AsyncDataDelegate: ObservableObject {
 
     // When user trigger refresh
     func userTriggerRefresh(forced: Bool)
+}
+
+protocol NotifyUserWhenUpdateADD: AsyncDataDelegate where D: Equatable {
+    var nameToShowWhenUpdate: String { get }
 }
 
 /// Calculate requireUpdate according to last time data is updated
@@ -224,12 +227,7 @@ extension UserDefaultsADD {
 
     func afterForceUpdate() async throws {
         try saveCache()
-        let data = try await parseCache()
-
-        if self.data != data, let name = nameToShowWhenUpdate {
-            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
-        }
-        foregroundUpdateData(with: data)
+        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {
@@ -238,6 +236,19 @@ extension UserDefaultsADD {
         }
 
         userTriggerRefresh(forced: false)
+    }
+}
+
+extension UserDefaultsADD where Self: NotifyUserWhenUpdateADD {
+    func afterForceUpdate() async throws {
+        try saveCache()
+        let data = try await parseCache()
+
+        if self.data != data {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
+                                                                   nameToShowWhenUpdate.localized))
+        }
+        foregroundUpdateData(with: data)
     }
 }
 
@@ -281,12 +292,7 @@ extension UserDefaultsADD where Self: LastUpdateADD {
     func afterForceUpdate() async throws {
         lastUpdate = Date()
         try saveCache()
-        let data = try await parseCache()
-
-        if self.data != data, let name = nameToShowWhenUpdate {
-            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized, name.localized))
-        }
-        foregroundUpdateData(with: data)
+        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {
@@ -295,5 +301,19 @@ extension UserDefaultsADD where Self: LastUpdateADD {
         }
 
         userTriggerRefresh(forced: false)
+    }
+}
+
+extension UserDefaultsADD where Self: LastUpdateADD & NotifyUserWhenUpdateADD {
+    func afterForceUpdate() async throws {
+        lastUpdate = Date()
+        try saveCache()
+        let data = try await parseCache()
+
+        if self.data != data {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
+                                                                   nameToShowWhenUpdate.localized))
+        }
+        foregroundUpdateData(with: data)
     }
 }
