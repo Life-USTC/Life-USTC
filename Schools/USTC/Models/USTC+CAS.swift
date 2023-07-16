@@ -53,30 +53,28 @@ class UstcCasClient: ObservableObject {
     }
 
     var precheckFails: Bool {
-        (username?.isEmpty ?? false) || (password?.isEmpty ?? false)
+        (username?.isEmpty ?? true) || (password?.isEmpty ?? true)
     }
 
-    func getLtTokenFromCAS(url: URL? = nil) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
-        let (data, _) = try await session.data(from: url ?? ustcLoginUrl)
+        let (data, _) = try await session.data(from: url)
         guard let dataString = String(data: data, encoding: .utf8) else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+            throw BaseError.runtimeError("network<UstcCAS>: failed to fetch raw LT-Token")
         }
 
         guard let match = dataString.firstMatch(of: findLtStringRegex) else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+            throw BaseError.runtimeError("network<UstcCAS>: failed to fetch raw LT-Token")
         }
 
         let ltToken = String(match.0)
-
         print("network<UstcCAS>: LT-TOKEN GET: \(ltToken)")
-
         return (ltToken, session.configuration.httpCookieStorage?.cookies ?? [])
     }
 
-    func loginToCAS(url: URL? = nil) async throws -> Bool {
+    func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws -> Bool {
         if precheckFails {
             throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
         }
@@ -84,11 +82,10 @@ class UstcCasClient: ObservableObject {
 
         let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
-        // - For POST request, the query items should be in the body, here'e the correct way to do it
-        var components = URLComponents(url: ustcLoginUrl, resolvingAgainstBaseURL: true)!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         components.queryItems = [URLQueryItem(name: "model", value: "uplogin.jsp"),
                                  URLQueryItem(name: "CAS_LT", value: ltToken),
-                                 URLQueryItem(name: "service", value: ""),
+                                 URLQueryItem(name: "service", value: service?.absoluteString ?? ""),
                                  URLQueryItem(name: "warn", value: ""),
                                  URLQueryItem(name: "showCode", value: ""),
                                  URLQueryItem(name: "qrcode", value: ""),
@@ -96,13 +93,11 @@ class UstcCasClient: ObservableObject {
                                  URLQueryItem(name: "password", value: password),
                                  URLQueryItem(name: "LT", value: ""),
                                  URLQueryItem(name: "button", value: "")]
-
-        var request = URLRequest(url: url ?? ustcLoginUrl)
+        var request = URLRequest(url: ustcLoginUrl)
         request.httpBody = components.query?.data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.setValue("https://passport.ustc.edu.cn/login", forHTTPHeaderField: "Referer")
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
         let _ = try await session.data(for: request)
@@ -113,7 +108,7 @@ class UstcCasClient: ObservableObject {
             print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
         }
 
-        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false {
+        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" || $0.name == "TGC" }) ?? false {
             lastLogined = .now
             return true
         }

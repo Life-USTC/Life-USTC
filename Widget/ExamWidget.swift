@@ -46,7 +46,7 @@ struct ExamWidgetEntryView: View {
     var entry: ExamProvider.Entry
 
     var exam: Exam {
-        entry.exams.first ?? .example
+        entry.exams.filter { !$0.isFinished }.first ?? .example
     }
 
     var exams: [Exam] {
@@ -123,6 +123,14 @@ struct ExamWidgetEntryView: View {
             .fontWeight(.regular)
         }
         .scenePadding()
+        .if(entry.exams.filter { !$0.isFinished }.isEmpty) { view in
+            view
+                .redacted(reason: .placeholder)
+                .blur(radius: 10)
+                .overlay {
+                    noMoreExamView
+                }
+        }
     }
 
     var oneLine: some View {
