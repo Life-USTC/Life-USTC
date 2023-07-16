@@ -25,12 +25,23 @@ class InAppNotificationDelegate: ObservableObject {
     static var shared: InAppNotificationDelegate = .init()
     @Published var notifications: [InAppNotification] = []
 
-    func addErrorMessage(_ message: String) {
+    func addMessage(message: String, color: Color) {
         DispatchQueue.main.async {
+            if !self.notifications.filter({ $0.message == message }).isEmpty {
+                return
+            }
             withAnimation {
-                self.notifications.append(InAppNotification(color: .red, message: message))
+                self.notifications.append(InAppNotification(color: color, message: message))
             }
         }
+    }
+
+    func addErrorMessage(_ message: String) {
+        addMessage(message: message, color: .red)
+    }
+
+    func addInfoMessage(_ message: String) {
+        addMessage(message: message, color: .accentColor)
     }
 
     func addError(_ error: Error) {

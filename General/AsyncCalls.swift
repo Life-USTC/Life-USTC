@@ -107,6 +107,10 @@ protocol AsyncDataDelegate: ObservableObject {
     func userTriggerRefresh(forced: Bool)
 }
 
+protocol NotifyUserWhenUpdateADD: AsyncDataDelegate where D: Equatable {
+    var nameToShowWhenUpdate: String { get }
+}
+
 /// Calculate requireUpdate according to last time data is updated
 protocol LastUpdateADD: AsyncDataDelegate {
     /// Max time before refresh, this should be a constant definition in each model to avoid unnecessary troubles.
@@ -235,6 +239,19 @@ extension UserDefaultsADD {
     }
 }
 
+extension UserDefaultsADD where Self: NotifyUserWhenUpdateADD {
+    func afterForceUpdate() async throws {
+        try saveCache()
+        let data = try await parseCache()
+
+        if self.data != data {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
+                                                                   nameToShowWhenUpdate.localized))
+        }
+        foregroundUpdateData(with: data)
+    }
+}
+
 // Overloading the function
 // Question posted: https://stackoverflow.com/questions/76431531/how-can-i-check-in-protocol-as-extension-that-whether-or-not-self-follows-pr
 extension UserDefaultsADD where Self: LastUpdateADD {
@@ -284,5 +301,19 @@ extension UserDefaultsADD where Self: LastUpdateADD {
         }
 
         userTriggerRefresh(forced: false)
+    }
+}
+
+extension UserDefaultsADD where Self: LastUpdateADD & NotifyUserWhenUpdateADD {
+    func afterForceUpdate() async throws {
+        lastUpdate = Date()
+        try saveCache()
+        let data = try await parseCache()
+
+        if self.data != data {
+            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
+                                                                   nameToShowWhenUpdate.localized))
+        }
+        foregroundUpdateData(with: data)
     }
 }
