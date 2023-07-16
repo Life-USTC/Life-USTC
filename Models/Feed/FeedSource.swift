@@ -70,7 +70,7 @@ class FeedSource: AsyncDataDelegate {
 extension FeedSource {
     var requireUpdate: Bool {
         guard let cache = FeedCache.feedSourceCache(using: id) else {
-            return false
+            return true
         }
         return cache.feeds.isEmpty || cache.lastUpdated.addingTimeInterval(7200) < Date()
     }
@@ -100,18 +100,6 @@ extension FeedSource {
         result.sort(by: { $0.datePosted > $1.datePosted })
         important.sort(by: { $0.datePosted > $1.datePosted })
         result.insert(contentsOf: important, at: 0)
-
-//        if (number ?? 0) > result.count {
-//            for source in FeedSource.allToShow {
-//                _ = try await source.retrive()
-//            }
-//            return try await recentFeeds(number: number)
-//        }
-
-        // TODO: (BUG) if we don't "force" this function to be async, it seems to run off main thread,
-        // and since sorting this feeds might take a while, this could lead to UI unresponsiveness.
-        // adding a sleep here to show a progressview
-        try await Task.sleep(for: .microseconds(300))
 
         if let number {
             return Array(result.prefix(number))
