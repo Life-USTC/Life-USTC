@@ -45,7 +45,8 @@ open class KeychainWrapper {
     public static let defaultKeychainWrapper = KeychainWrapper.standard
 
     /// Default keychain wrapper access
-    public static let standard = KeychainWrapper()
+    public static let standard = KeychainWrapper(serviceName: "dev.tiankaima.Life-USTC",
+                                                 accessGroup: "group.dev.tiankaima.Life-USTC")
 
     /// ServiceName is used for the kSecAttrService property to uniquely identify this keychain accessor. If no service name is specified, KeychainWrapper will default to using the bundleIdentifier.
     public private(set) var serviceName: String
