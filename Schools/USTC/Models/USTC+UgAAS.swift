@@ -36,7 +36,7 @@ class UstcUgAASClient: ObservableObject {
 
         // handle CAS with casClient
         let tmpCASSession = UstcCasClient(session: session)
-        _ = try await tmpCASSession.loginToCAS(url: UgAASCASLoginURL)
+        _ = try await tmpCASSession.loginToCAS(url: UgAASCASLoginURL, service: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!)
 
         // now try login url, see if that directs to home page
         var request = URLRequest(url: UgAASCASLoginURL)
