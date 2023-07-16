@@ -11,7 +11,7 @@ import SwiftyJSON
 
 struct Course: Identifiable, Equatable {
     var id: String {
-        lessonCode
+        lessonCode + startHHMM + endHHMM + weekString + String(dayOfWeek)
     }
 
     /// 1-7 as Monday to Sunday
