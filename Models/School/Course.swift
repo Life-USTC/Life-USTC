@@ -71,8 +71,8 @@ struct Course: Identifiable, Equatable {
         // testing:
         assert(startTime <= endTime, "startTime should be less than or equal to endTime")
         assert(Bool(1 ... 7 ~= dayOfWeek), "dayOfWeek should be in range 1-7")
-        assert(Bool(1 ... 13 ~= startTime), "startTime should be in range 1-13")
-        assert(Bool(1 ... 13 ~= endTime), "endTime should be in range 1-13")
+        assert(Bool(0 ... 13 ~= startTime), "startTime should be in range 1-13")
+        assert(Bool(0 ... 13 ~= endTime), "endTime should be in range 1-13")
         // production:
         if startTime > endTime {
             self.startTime = 1
