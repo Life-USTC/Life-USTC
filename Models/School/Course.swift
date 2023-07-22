@@ -10,7 +10,9 @@ import SwiftUI
 import SwiftyJSON
 
 struct Course: Identifiable, Equatable {
-    var id: UUID = .init()
+    var id: String {
+        lessonCode + startHHMM + endHHMM + weekString + String(dayOfWeek)
+    }
 
     /// 1-7 as Monday to Sunday
     var dayOfWeek: Int
@@ -69,8 +71,8 @@ struct Course: Identifiable, Equatable {
         // testing:
         assert(startTime <= endTime, "startTime should be less than or equal to endTime")
         assert(Bool(1 ... 7 ~= dayOfWeek), "dayOfWeek should be in range 1-7")
-        assert(Bool(1 ... 13 ~= startTime), "startTime should be in range 1-13")
-        assert(Bool(1 ... 13 ~= endTime), "endTime should be in range 1-13")
+        assert(Bool(0 ... 13 ~= startTime), "startTime should be in range 1-13")
+        assert(Bool(0 ... 13 ~= endTime), "endTime should be in range 1-13")
         // production:
         if startTime > endTime {
             self.startTime = 1
@@ -88,8 +90,10 @@ struct Course: Identifiable, Equatable {
     }
 }
 
-struct Curriculum: Identifiable {
-    var id = UUID()
+struct Curriculum: Identifiable, Equatable {
+    var id: Int {
+        semesterID
+    }
 
     var semesterID: Int
     var courses: [Course]
@@ -105,15 +109,13 @@ struct Curriculum: Identifiable {
                                            semesterEndDate: Date(),
                                            semesterWeeks: 20)
 
-    init(id: UUID = UUID(),
-         semesterID: Int = 0,
+    init(semesterID: Int = 0,
          courses: [Course] = [],
          semesterName: String = "",
          semesterStartDate: Date = Date(),
          semesterEndDate: Date = Date(),
          semesterWeeks: Int = 0)
     {
-        self.id = id
         self.semesterID = semesterID
         self.courses = courses
         self.semesterName = semesterName
@@ -128,7 +130,7 @@ enum TimeMarkUpForCourse {
     case endTime
 }
 
-protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == Curriculum.Type {
+protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Curriculum.Type {
     /// After which time the course is considered to be ended (including that time)
     /// So `startTimes[lunchbreakTime]` is when the first course after lunch break starts
     /// `0..<lunchbreakTime` is morning, `lunchbreakTime..<endTimes.count` is afternoon
@@ -138,6 +140,12 @@ protocol CurriculumDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpd
     /// Given a time, return the index of the nearest time in startTimes
     func parseHHMMToInt(time: String, type: TimeMarkUpForCourse) -> Int
     func saveToCalendar() async throws
+}
+
+extension CurriculumDelegateProtocol {
+    var nameToShowWhenUpdate: String {
+        "Curriculum"
+    }
 }
 
 protocol TimeListBasedCDP: CurriculumDelegateProtocol {

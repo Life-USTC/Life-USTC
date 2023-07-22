@@ -9,8 +9,10 @@ import SwiftUI
 import SwiftyJSON
 
 /// Store score for one course
-struct CourseScore: Identifiable {
-    var id = UUID()
+struct CourseScore: Identifiable, Equatable {
+    var id: String {
+        lessonCode
+    }
 
     // MARK: - Information about the course itself
 
@@ -69,8 +71,7 @@ struct CourseScore: Identifiable {
     /// Try convert to this standard, or file issue on GitHub.
     var score: String
 
-    init(id: UUID = UUID(),
-         courseName: String,
+    init(courseName: String,
          courseCode: String,
          lessonCode: String,
          semesterID: Int,
@@ -79,7 +80,6 @@ struct CourseScore: Identifiable {
          gpa: Double? = nil,
          score: String)
     {
-        self.id = id
         self.courseName = courseName
         self.courseCode = courseCode
         self.lessonCode = lessonCode
@@ -91,7 +91,7 @@ struct CourseScore: Identifiable {
     }
 }
 
-struct Score {
+struct Score: Equatable {
     /// List of course, default order matters for UI.
     var courses: [CourseScore]
 
@@ -122,7 +122,13 @@ struct Score {
     }
 }
 
-protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD where D.Type == Score.Type {}
+protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Score.Type {}
+
+extension ScoreDelegateProtocol {
+    var nameToShowWhenUpdate: String {
+        "Score"
+    }
+}
 
 extension CourseScore {
     static var example = CourseScore(courseName: "数学分析B1",

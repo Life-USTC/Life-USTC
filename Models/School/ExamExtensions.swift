@@ -8,13 +8,6 @@
 import EventKit
 import SwiftUI
 
-extension Exam: Equatable {
-    /// two exams are considered equal if they have the same lesson code and type name
-    static func == (lhs: Exam, rhs: Exam) -> Bool {
-        lhs.lessonCode == rhs.lessonCode && lhs.typeName == rhs.typeName
-    }
-}
-
 extension Exam {
     static let example: Exam = .init(lessonCode: "MATH10001.01",
                                      typeName: "期末考试",

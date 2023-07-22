@@ -20,9 +20,12 @@ let httpRegex = try! Regex("^http[^s]//")
 
 let filteredImageURLList = [URL(string: "https://s.w.org/images/core/emoji/11/72x72/21a9.png")!]
 
-class Feed: Codable {
+struct Feed: Codable, Identifiable, Equatable {
     static var all: [Feed] = []
-    var id = UUID()
+    var id: String {
+        url.absoluteString
+    }
+
     var title: String
     var source: String
     var keywords: Set<String>
@@ -43,8 +46,7 @@ class Feed: Codable {
         FeedSource.find(source)
     }
 
-    init(id: UUID = UUID(),
-         title: String,
+    init(title: String,
          source: String,
          keywords: Set<String>,
          description: String? = nil,
@@ -52,7 +54,6 @@ class Feed: Codable {
          url: URL,
          imageURL: URL? = nil)
     {
-        self.id = id
         self.title = title
         self.source = source
         self.keywords = keywords
@@ -78,7 +79,6 @@ class Feed: Codable {
             }
         }
 
-        id = UUID(name: url.absoluteString, nameSpace: .url)
         Feed.all.append(self)
     }
 }
