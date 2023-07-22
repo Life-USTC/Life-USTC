@@ -6,7 +6,6 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.23YX5YBNK7.dev.tiankaima.Life-USTC</string>
 		<string>group.dev.tiankaima.Life-USTC</string>
 	</array>
 	<key>com.apple.security.network.client</key>
