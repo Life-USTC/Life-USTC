@@ -57,7 +57,7 @@ class AutoUpdateDelegate {
 }
 
 extension AutoUpdateDelegate {
-    static var feedList: AutoUpdateDelegate = .init(name: "feed_source.json",
+    static var feedList: AutoUpdateDelegate = .init(name: FeedSource.localFeedJSONName,
                                                     remoteURL: FeedSource.remoteURL)
 
     static var allFiles: [AutoUpdateDelegate] {

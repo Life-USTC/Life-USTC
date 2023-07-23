@@ -95,7 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
         version1_0_2Update()
-        if userDefaults.bool(forKey: "useNotification") {
+        if userDefaults.value(forKey: "useNotification") as? Bool ?? true {
             startTPNS()
         }
         return true
