@@ -19,13 +19,7 @@ class UstcUgAASClient: ObservableObject {
         userDefaults.integer(forKey: "semesterIDInt")
     }
 
-    var lastLogined: Date? {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var lastLogined: Date?
 
     func login() async throws -> Bool {
         let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!

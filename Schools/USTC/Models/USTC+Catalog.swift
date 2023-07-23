@@ -111,29 +111,9 @@ class UstcCatalogClient: AsyncDataDelegate {
     var requireUpdate: Bool = true
     var cache: [String: JSON] = [:]
 
-    var date = Date() {
-        willSet {
-            Task {
-                self.userTriggerRefresh(forced: true)
-            }
-        }
-    }
-
-    var data: [String: [Lesson]] = [:] {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    var status: AsyncViewStatus = .inProgress {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var date = Date()
+    @Published var data: [String: [Lesson]] = [:]
+    @Published var status: AsyncViewStatus = .inProgress
 
     func parseCache() async throws -> [String: [Lesson]] {
         var result: [String: [Lesson]] = [:]
@@ -192,6 +172,9 @@ class UstcCatalogClient: AsyncDataDelegate {
             let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)")!)
             cache[building] = try JSON(data: data)
         }
+
+        let data = try await parseCache()
+        foregroundUpdateData(with: data)
     }
 
     var token = ""
@@ -213,7 +196,7 @@ class UstcCatalogClient: AsyncDataDelegate {
     }
 
     init() {
-        userTriggerRefresh(forced: false)
+        userTriggerRefresh(forced: true)
     }
 }
 
