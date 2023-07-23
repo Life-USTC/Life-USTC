@@ -23,6 +23,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
     var ustcUgAASClient: UstcUgAASClient
     var cache: [Exam] = []
     @Published var data: [Exam] = []
+    var placeHolderData: [Exam] = [.example]
 
     // MARK: - Start reading from here:
 
@@ -51,7 +52,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
         return Exam.show(result) + Exam.show(hiddenResult)
     }
 
-    func forceUpdate() async throws {
+    func refreshCache() async throws {
         if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }

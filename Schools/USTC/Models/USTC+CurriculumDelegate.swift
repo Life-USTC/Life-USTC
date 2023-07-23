@@ -32,6 +32,7 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
     var ustcUgAASClient: UstcUgAASClient
     var cache = JSON()
     @Published var data: Curriculum = .init()
+    var placeHolderData: Curriculum = .example
 
     func parseCache() async throws -> Curriculum {
         var result: [Course] = []
@@ -62,7 +63,7 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
                           semesterWeeks: ustcUgAASClient.semesterWeeks)
     }
 
-    func forceUpdate() async throws {
+    func refreshCache() async throws {
         let queryURL = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
         if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
@@ -80,7 +81,7 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
         cache = try JSON(data: data)
 
-        try await afterForceUpdate()
+        try await afterRefreshCache()
     }
 
     init(_ client: UstcUgAASClient) {

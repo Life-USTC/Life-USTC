@@ -158,7 +158,9 @@ struct USTCClassroomView: View {
                     DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
                         .onChange(of: date) { newDate in
                             ustcCatalogDelegate.date = newDate
+                            ustcCatalogDelegate.userTriggerRefresh(forced: true)
                         }
+                        .disabled(ustcCatalogDelegate.status.isRefreshing)
                     Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
                     Toggle("Show one line", isOn: $showOneLine)
                 } header: {
@@ -189,6 +191,7 @@ struct USTCClassroomView: View {
                 }
             }
             .navigationTitle("Settings")
+            .asyncViewStatusMask(status: ustcCatalogDelegate.status)
         }
     }
 

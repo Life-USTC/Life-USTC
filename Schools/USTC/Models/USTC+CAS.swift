@@ -38,13 +38,7 @@ class UstcCasClient: ObservableObject {
     @Published public var inputUsername: String = ""
     @Published public var inputPassword: String = ""
 
-    var lastLogined: Date? {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var lastLogined: Date?
 
     init(session: URLSession, lastLogined _: Date? = nil) {
         self.session = session

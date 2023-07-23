@@ -120,6 +120,12 @@ struct Score: Equatable {
         self.majorName = majorName
         self.additionalMessage = additionalMessage
     }
+
+    static let example = Score(courses: [.example],
+                               gpa: 4.3,
+                               majorRank: 1,
+                               majorStdCount: 100,
+                               majorName: "废理兴工")
 }
 
 protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Score.Type {}

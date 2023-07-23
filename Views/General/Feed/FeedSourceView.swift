@@ -46,7 +46,7 @@ struct AllSourceView: View {
                 do {
                     try await AutoUpdateDelegate.feedList.update()
                     for source in FeedSource.allToShow {
-                        _ = try await source.forceUpdate()
+                        _ = try await source.refreshCache()
                     }
                     self.feeds = try await FeedSource.recentFeeds(number: nil)
                     self.status = .success

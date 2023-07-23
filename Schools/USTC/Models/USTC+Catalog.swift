@@ -83,6 +83,12 @@ struct Lesson: Identifiable, Equatable {
         }
         return result
     }
+
+    static let example = Lesson(classroomName: "5104",
+                                courseName: "数学分析B1",
+                                startTime: "09:45",
+                                endTime: "11:20",
+                                color: .blue)
 }
 
 func timeToInt(_ time: String) -> Int {
@@ -111,29 +117,17 @@ class UstcCatalogClient: AsyncDataDelegate {
     var requireUpdate: Bool = true
     var cache: [String: JSON] = [:]
 
-    var date = Date() {
-        willSet {
-            Task {
-                self.userTriggerRefresh(forced: true)
-            }
+    @Published var date = Date()
+    @Published var data: [String: [Lesson]] = [:]
+    var placeHolderData: [String: [Lesson]] {
+        var result: [String: [Lesson]] = [:]
+        for building in UstcCatalogClient.allBuildings {
+            result[building] = [.example]
         }
+        return result
     }
 
-    var data: [String: [Lesson]] = [:] {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
-
-    var status: AsyncViewStatus = .inProgress {
-        willSet {
-            DispatchQueue.main.async {
-                self.objectWillChange.send()
-            }
-        }
-    }
+    @Published var status: AsyncViewStatus = .inProgress
 
     func parseCache() async throws -> [String: [Lesson]] {
         var result: [String: [Lesson]] = [:]
@@ -182,7 +176,7 @@ class UstcCatalogClient: AsyncDataDelegate {
         return result
     }
 
-    func forceUpdate() async throws {
+    func refreshCache() async throws {
         for building in UstcCatalogClient.allBuildings {
             let validToken = try await validToken()
             let dateFormatter = DateFormatter()
@@ -192,6 +186,9 @@ class UstcCatalogClient: AsyncDataDelegate {
             let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)")!)
             cache[building] = try JSON(data: data)
         }
+
+        let data = try await parseCache()
+        foregroundUpdateData(with: data)
     }
 
     var token = ""
@@ -213,7 +210,7 @@ class UstcCatalogClient: AsyncDataDelegate {
     }
 
     init() {
-        userTriggerRefresh(forced: false)
+        userTriggerRefresh(forced: true)
     }
 }
 
