@@ -132,6 +132,9 @@ struct FeaturesView: View {
                 }
             }
             .padding()
+
+            Spacer()
+                .frame(height: 70)
         }
     }
 
@@ -151,6 +154,9 @@ struct FeaturesView: View {
                     Text(key.localized)
                 }
             }
+
+            Spacer()
+                .frame(height: 70)
         }
         .scrollIndicators(.hidden)
         .listStyle(.sidebar)

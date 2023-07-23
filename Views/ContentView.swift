@@ -180,7 +180,6 @@ private struct ContentViewTabBarContainerView<Content: View>: View {
     var body: some View {
         ZStack {
             content
-                .padding(.bottom, 70)
         }
         .overlay(alignment: .bottom) {
             ContentViewTabBarView(selection: $selection)

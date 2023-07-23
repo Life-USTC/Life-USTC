@@ -147,6 +147,9 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
                 ExamPreview(exams: examDelegate.data)
                     .asyncViewStatusMask(status: examStatus)
             }
+
+            Spacer()
+                .frame(height: 70)
         }
         .padding(.horizontal)
         .navigationTitle("Life@USTC")
