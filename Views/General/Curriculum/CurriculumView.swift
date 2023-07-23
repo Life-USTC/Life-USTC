@@ -12,7 +12,7 @@ let paddingWidth = 2.0
 
 struct CurriculumSettingView<CurriculumDelegate: CurriculumDelegateProtocol>: View {
     @AppStorage("curriculumShowSatAndSun") var showSatAndSun = false
-    @AppStorage("semesterIDInt", store: userDefaults) var semesterID: Int = 301
+    @AppStorage("semesterIDInt", store: userDefaults) var semesterID: Int = 321
 
     @ObservedObject var curriculumDelegate: CurriculumDelegate
     var courses: [Course] {
