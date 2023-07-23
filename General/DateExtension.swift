@@ -10,7 +10,7 @@ import SwiftUI
 let daysOfWeek: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 func weekday(for date: Date = Date()) -> Int {
-    (Calendar.current.component(.weekday, from: date) - Calendar.current.firstWeekday) % 7 + 1
+    mod(Calendar(identifier: .gregorian).component(.weekday, from: date) - 2, 7) + 1
 }
 
 var defaultDateFormatter: DateFormatter {
