@@ -32,8 +32,8 @@ class UstcCasClient: ObservableObject {
 
     var session: URLSession
 
-    @AppSecureStorage("passportUsername") private var username: String?
-    @AppSecureStorage("passportPassword") private var password: String?
+    @AppSecureStorage("passportUsername") private var username: String
+    @AppSecureStorage("passportPassword") private var password: String
 
     @Published public var inputUsername: String = ""
     @Published public var inputPassword: String = ""
@@ -48,12 +48,12 @@ class UstcCasClient: ObservableObject {
 
     init(session: URLSession, lastLogined _: Date? = nil) {
         self.session = session
-        inputUsername = username ?? ""
-        inputPassword = password ?? ""
+        inputUsername = username
+        inputPassword = password
     }
 
     var precheckFails: Bool {
-        (username?.isEmpty ?? true) || (password?.isEmpty ?? true)
+        username.isEmpty || password.isEmpty
     }
 
     func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
