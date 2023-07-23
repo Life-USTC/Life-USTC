@@ -160,6 +160,7 @@ struct USTCClassroomView: View {
                             ustcCatalogDelegate.date = newDate
                             ustcCatalogDelegate.userTriggerRefresh(forced: true)
                         }
+                        .disabled(ustcCatalogDelegate.status.isRefreshing)
                     Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
                     Toggle("Show one line", isOn: $showOneLine)
                 } header: {

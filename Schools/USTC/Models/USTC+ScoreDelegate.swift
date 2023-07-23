@@ -21,6 +21,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
     var ustcUgAASClient: UstcUgAASClient
     var cache = JSON()
     @Published var data: Score = .init()
+    var placeHolderData: Score = .example
 
     // MARK: - Start reading from here:
 
@@ -47,7 +48,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
         return result
     }
 
-    func forceUpdate() async throws {
+    func refreshCache() async throws {
         if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
@@ -58,7 +59,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
         let (data, _) = try await session.data(for: request)
         cache = try JSON(data: data)
 
-        try await afterForceUpdate()
+        try await afterRefreshCache()
     }
 
     init(_ client: UstcUgAASClient) {

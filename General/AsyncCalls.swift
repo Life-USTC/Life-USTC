@@ -11,15 +11,12 @@ import SwiftyJSON
 /// Instruct how the view should appear to user
 enum AsyncViewStatus {
     case inProgress
+    case cached // In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date and would be replaced by other status
     case success
-    // Assuming the original data is never overwritten by incorrect data that might lead the app to crash,
-    // So even in event of failure, the views would still be rendered (for user to look at the data with failure)
-    //
-    // If you don't have the correct data for the view, pass a placeholder
-    case failure(String?)
 
-    /// In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date
-    case cached
+    // In ADD, you should always pass a placeholder
+    case failure(String?) // if a out-of-date data is available, use this
+    case lethalFailure(String?) // if no data is available, use this
 
     var canShowData: Bool {
         switch self {
@@ -29,6 +26,8 @@ enum AsyncViewStatus {
             return true
         case .failure:
             return true
+        case .lethalFailure:
+            return false
         case .cached:
             return true
         }
@@ -41,6 +40,8 @@ enum AsyncViewStatus {
         case .success:
             return false
         case .failure:
+            return false
+        case .lethalFailure:
             return false
         case .cached:
             return true
@@ -55,6 +56,8 @@ enum AsyncViewStatus {
             return false
         case .failure:
             return true
+        case .lethalFailure:
+            return true
         case .cached:
             return false
         }
@@ -68,6 +71,8 @@ enum AsyncViewStatus {
             return ""
         case let .failure(string):
             return string ?? ""
+        case let .lethalFailure(string):
+            return string ?? ""
         case .cached:
             return ""
         }
@@ -80,6 +85,7 @@ protocol AsyncDataDelegate: ObservableObject {
     associatedtype D
 
     var data: D { get set }
+    var placeHolderData: D { get }
     var status: AsyncViewStatus { get set }
 
     // MARK: - Functions to implement
@@ -94,7 +100,7 @@ protocol AsyncDataDelegate: ObservableObject {
 
     /// Force update the data
     /// - Description: You can wait for network request in this function
-    func forceUpdate() async throws
+    func refreshCache() async throws
 
     // MARK: - Functions to call
 
@@ -138,7 +144,7 @@ protocol UserDefaultsADD: AsyncDataDelegate where C: Codable {
 extension AsyncDataDelegate {
     func retrive() async throws -> D {
         if requireUpdate {
-            try await forceUpdate()
+            try await refreshCache()
         }
         return try await parseCache()
     }
@@ -159,32 +165,107 @@ extension AsyncDataDelegate {
         }
     }
 
+    /// View controller action, all parameters are updated, and this function is called
+    /// - Parameters:
+    ///     forced: when set to true, a cache won't be used (even if it's still valid)
+    ///
+    /// - Warning:
+    /// forced = true:
+    /// inProgress  -> success
+    ///
+    /// forced = false:
+    /// inProgress -> cached -> success
     func userTriggerRefresh(forced: Bool = true) {
         Task {
-            do {
-                foregroundUpdateData(with: try await parseCache())
-            } catch {
-                print(error)
-                foregroundUpdateStatus(with: .failure(error.localizedDescription))
+            if forced {
+                // forced:
+                do {
+                    // Stage 1: Refresh
+                    foregroundUpdateStatus(with: .inProgress)
+                    try await refreshCache()
+                } catch {
+                    // refresh failed, try parse from old cache
+                    print(error)
+                    do {
+                        foregroundUpdateData(with: try await parseCache())
+
+                        // Outcome A: the refresh is failed, but data still presents
+                        foregroundUpdateStatus(with: .failure(error.localizedDescription))
+                        return
+                    } catch {
+                        // no data could be loaded from old cache, throwing error
+                        print(error)
+
+                        // Outcome B: the refresh is failed, and data is lost, return lethal
+                        foregroundUpdateData(with: placeHolderData)
+                        foregroundUpdateStatus(with: .lethalFailure(error.localizedDescription))
+                        return
+                    }
+                }
+
+                do {
+                    // Stage 2: Load from Cache
+                    foregroundUpdateData(with: try await parseCache())
+
+                    // MARK: Outcome Main: Desired outcome
+
+                    foregroundUpdateStatus(with: .success)
+                    return
+                } catch {
+                    print(error)
+
+                    // Outcome C: the refresh is successful, but no data presents
+                    foregroundUpdateData(with: placeHolderData)
+                    foregroundUpdateStatus(with: .lethalFailure(error.localizedDescription))
+                    return
+                }
             }
 
-            if forced || status.hasError || requireUpdate {
+            // !forced:
+            do {
+                // Stage 1: Parse from cache:
+                foregroundUpdateStatus(with: .inProgress)
+                foregroundUpdateData(with: try await parseCache())
+            } catch {
+                // If no data could be parsed from cache, try forceUpdate
+                print(error)
                 do {
-                    if self.status.hasError {
-                        foregroundUpdateStatus(with: .inProgress)
-                    } else {
-                        foregroundUpdateStatus(with: .cached)
-                    }
+                    try await refreshCache()
+                    foregroundUpdateData(with: try await parseCache())
+                    foregroundUpdateStatus(with: .success)
+                    return
+                } catch {
+                    print(error)
+                    foregroundUpdateData(with: placeHolderData)
+                    foregroundUpdateStatus(with: .lethalFailure(error.localizedDescription))
+                    return
+                }
+            }
 
-                    try await forceUpdate()
+            if requireUpdate {
+                do {
+                    foregroundUpdateStatus(with: .cached)
+                    try await refreshCache()
                 } catch {
                     print(error)
                     foregroundUpdateStatus(with: .failure(error.localizedDescription))
                     return
                 }
-            }
 
-            foregroundUpdateStatus(with: .success)
+                do {
+                    foregroundUpdateData(with: try await parseCache())
+                    foregroundUpdateStatus(with: .success)
+                } catch {
+                    print(error)
+
+                    foregroundUpdateData(with: placeHolderData)
+                    foregroundUpdateStatus(with: .lethalFailure(error.localizedDescription))
+                    return
+                }
+            } else {
+                foregroundUpdateStatus(with: .success)
+                return
+            }
         }
     }
 }
@@ -227,7 +308,6 @@ extension UserDefaultsADD {
 
     func afterForceUpdate() async throws {
         try saveCache()
-        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {
@@ -240,15 +320,12 @@ extension UserDefaultsADD {
 }
 
 extension UserDefaultsADD where Self: NotifyUserWhenUpdateADD {
-    func afterForceUpdate() async throws {
+    func afterRefreshCache() async throws {
         try saveCache()
-        let data = try await parseCache()
-
-        if self.data != data {
+        if try await data != parseCache() {
             InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
                                                                    nameToShowWhenUpdate.localized))
         }
-        foregroundUpdateData(with: data)
     }
 }
 
@@ -289,10 +366,9 @@ extension UserDefaultsADD where Self: LastUpdateADD {
         print("cache<DISK>:\(cacheName) loaded")
     }
 
-    func afterForceUpdate() async throws {
+    func afterRefreshCache() async throws {
         lastUpdate = Date()
         try saveCache()
-        foregroundUpdateData(with: try await parseCache())
     }
 
     func afterInit() {
@@ -305,15 +381,13 @@ extension UserDefaultsADD where Self: LastUpdateADD {
 }
 
 extension UserDefaultsADD where Self: LastUpdateADD & NotifyUserWhenUpdateADD {
-    func afterForceUpdate() async throws {
+    func afterRefreshCache() async throws {
         lastUpdate = Date()
         try saveCache()
-        let data = try await parseCache()
 
-        if self.data != data {
+        if try await data != parseCache() {
             InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
                                                                    nameToShowWhenUpdate.localized))
         }
-        foregroundUpdateData(with: data)
     }
 }

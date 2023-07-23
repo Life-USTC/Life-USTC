@@ -15,6 +15,7 @@ class FeedSource: AsyncDataDelegate {
     typealias D = [Feed]
     @Published var status: AsyncViewStatus = .cached // setting default to .cached to avoid loading at startup
     @Published var data: [Feed] = []
+    var placeHolderData: [Feed] = [.example]
 
     var url: URL
     var name: String
@@ -31,7 +32,7 @@ class FeedSource: AsyncDataDelegate {
         return cache.feeds
     }
 
-    func forceUpdate() async throws {
+    func refreshCache() async throws {
         print("!!! Refresh \(name) RSSFeedPost")
         let result = FeedParser(URL: url).parse()
         switch result {

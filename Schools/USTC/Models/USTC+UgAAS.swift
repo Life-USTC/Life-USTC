@@ -16,7 +16,7 @@ class UstcUgAASClient: ObservableObject {
 
     var session: URLSession = .shared
     var semesterID: Int {
-        userDefaults.integer(forKey: "semesterIDInt")
+        Int(userDefaults.string(forKey: "semesterIDInt") ?? "") ?? 321
     }
 
     @Published var lastLogined: Date?
