@@ -2,9 +2,15 @@
 
 文章写于`d88ebd7adf19109b0326587c7ccbd11d1f3e4716`上，部分代码内容&位置可能变动，请注意通用性。
 
+## ChangeLog
+
+* `6c40582161e22b832a63e947d09d811880504805` 更新了部分过时内容。
+
 ## Code Structure
 
-按照MVC的规范，我们将代码分为三个部分：Model、View、Controller。这些分离出来的代码，最开始并不是参考MVC的设计规范而得到的，而是随着代码的增长，自然而然形成的分离，所以下面所述的设计中，有写会以`Delegate`的名字指代`Controller`。从而可以将其理解为`View`和`Model`的中间人。
+按照MVC的规范，我们将代码分为三个部分：Model、View、Controller。
+
+这些分离出来的代码，最开始并不是参考MVC的设计规范而得到的，而是随着代码的增长，自然而然形成的分离，所以下面所述的设计中，有写会以`Delegate`的名字指代`Controller`。从而可以将其理解为`View`和`Model`的中间人。
 
 代码结构简述如下：
 
@@ -20,6 +26,8 @@ Views/
 ```
 
 将`Model`与`Delegate`存放在同一目录下是实践中最容易理解的方式，因为`Model`和`Delegate`是一一对应的。`View`则是根据`Model`的不同而不同的，所以将其放在`Views`目录下，再根据`Model`的不同进行分类。
+
+> 在[这个PR](https://github.com/Life-USTC/Life-USTC/pull/35)之后，USTC相关的逻辑被单独重构到了外面，也就是说所有非通用的`Model`和`Delegate`都应该存放在`Schools/`下面，`Model`中存放了通用的`Score` `Exam` `Course`等等，并提供了这些`model`通用`delegate`的实现方法（例如`ExamDelegateProtocol`）
 
 ## AsyncDataDelegate Design
 
@@ -39,6 +47,8 @@ Views/
 
 ### Current Design
 
+> 下面的文档中，`forceUpdate()`已被更名为`refreshCache()`，并且无需再去刷新`data`，来确保刷新失败后`cache`还能独立支撑`parseCache()`，这在事实上只是一个建议，而不是强制性的要求。
+
 首先是利用Swift Combine的`ObservableObject`来实现`AsyncDataDelegate`的定义，这样可以将`AsyncDataDelegate`的定义简化为：
 
 ```swift
@@ -46,6 +56,7 @@ protocol AsyncDataDelegate: ObservableObject {
     associatedtype D
 
     var data: D { get set }
+    var placeholderData: D { get }
     var status: AsyncViewStatus { get set }
     var requireUpdate: Bool { get }
     func parseCache() async throws -> D
@@ -109,12 +120,16 @@ class ExamDelegate: UserDefaultsADD, LastUpdateADD {
 
 这些是需要提供的定义，其余的函数、生命周期管理均由`AsyncDataDelegate`来管理。
 
-在这样的定义下，你无需关心`cache`何时可用，无需关心`data`何时可用，无需关心`status`何时变化，只需要关心`data`怎样更新、`cache -> data` 的转换即可。
+在这样的定义下，你无需关心`cache`何时可用，无需关心`data`何时可用，无需关心`status`何时变化，只需要关心`cache`怎样更新、`cache -> data` 的转换即可。
 
-> 在写这个文档时，我注意到其实无需在`forceUpdate()`的结尾中加入`afterForceUpdate()`来存储，可直接返回cache.Type；可能唯一需要的是init中的`afterInit()`，因为无法在范型定义中规范这个函数的调用。
-> 这些想法会在日后作出更新，但这部分文档不会收到影响，更新之后也不会在暴露的接口中存在问题，所以暂时不会进行修改。
+> ~~在写这个文档时，我注意到其实无需在`forceUpdate()`的结尾中加入`afterForceUpdate()`来存储，可直接返回cache.Type；可能唯一需要的是init中的`afterInit()`，因为无法在范型定义中规范这个函数的调用。~~
+> ~~这些想法会在日后作出更新，但这部分文档不会收到影响，更新之后也不会在暴露的接口中存在问题，所以暂时不会进行修改。~~
+>
+> Updates: 这个想法最终被我砍掉了，原因主要是无法知晓cache存放的位置，是文件？userDefaults？还是压根不做缓存？所以无法在`forceUpdate()`中直接返回cache，而是需要在`forceUpdate()`中调用`afterForceUpdate()`来确保cache的存储。（在有些子类Protocol中也可不实现这类方法，比如`USTC+Catalog.swift`中无缓存的方案）
 
 ### Usage
+
+> 使用这些子类Protocol提高了维护的效率，但是也限制了一些自由度，所以如果你想要自定义`cache`的存储位置，或者自定义`cache -> data`的转换，可以直接使用`AsyncDataDelegate`。
 
 在使用`AsyncDataDelegate`时，你需要做的仅仅是：
 
@@ -168,29 +183,27 @@ struct ExamView: View {
 /// Instruct how the view should appear to user
 enum AsyncViewStatus {
     case inProgress
-    case success
-    case failure
-
-    /// In between process from .inProgress -> .sucess. In this stage, the cached data is good to be rendered, just not up-to-date
     case cached
+    case success
+    case failure(String?)
+    case lethalFailure(String?)
 
-    var canShowData: Bool {
-        self == .success || self == .cached
-    }
-
-    var isRefreshing: Bool {
-        self == .inProgress || self == .cached
-    }
+    var canShowData: Bool
+    var isRefreshing: Bool
+    var hasError: Bool
+    var errorMessage: String
 }
 
 ```
 
 `AsyncViewStatus`是一个枚举类型，用来指示UI应该如何展示给用户。
 
-* `inProgress`：正在刷新，此时不应该展示任何数据，而是应该展示一个`ProgressView`。
-* `success`：刷新成功，此时应该展示数据。
-* `failure`：刷新失败，此时应该展示一个`Button`，来触发刷新。
-* `cached`：刷新成功，但是数据并不是最新的，此时应该展示数据，但是应该在数据的上方展示一个`ProgressView`，来提示用户数据并不是最新的。
+* `inProgress`：正在刷新，此时不应该展示任何数据，而是应该展示一个`ProgressView`，由于data时刻都是non-optional的，传递给View并不应该导致crash，所以会以placeholder+模糊的方式占位。
+* `cached`：刷新成功，但是数据并不是最新的，此时应该展示数据，但是应该在数据的上方展示一个`ProgressView`，来提示用户数据并不是最新的，并且数据正在刷新。此状态不能是最终状态，一定会转换为`success`或者`failure`。
+* `success`：刷新成功，此时应该正常展示数据。
+* `failure`：刷新失败，但是数据仍然是可用的，此时应该正常展示数据，但是应该在数据的上方展示一个`Image(systemName: "xmark.octagon.fill")`，来提示用户刷新失败。
+* `letahalFailure`：刷新失败，且数据不可用，此时应该展示一个`Image(systemName: "xmark.octagon.fill")`，来提示用户刷新失败，并且数据不可用（与`inProgress`类似，用placeholderData替换data，并模糊占位。
+    > 多用于第一次打开应用时无任何初始数据且无法获取新数据。
 
 在一些特殊场景中，并不存在上述的状态。但请不要盲目引入新的case，参考下面这个例子：
 
