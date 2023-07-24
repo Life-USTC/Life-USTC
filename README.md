@@ -16,10 +16,9 @@ You can get the app from the [App Store](https://apps.apple.com/cn/app/life-ustc
 
 ## Screenshots
 
-<img src="./Docs/Assets/Screenshot-01.png" />
-<img src="./Docs/Assets/Screenshot-02.png" />
-<img src="./Docs/Assets/Screenshot-03.png" />
-<img src="./Docs/Assets/Screenshot-04.png" />
+| `HomeView` | `AllSourceView` | `FeaturesView` | `ScoreView` |
+--- | --- | --- | ---
+| <img src="./Docs/Assets/Screenshot-01.png" /> | <img src="./Docs/Assets/Screenshot-02.png" /> | <img src="./Docs/Assets/Screenshot-03.png" /> | <img src="./Docs/Assets/Screenshot-04.png" /> |
 
 ## Features
 
