@@ -132,3 +132,7 @@ extension DateComponents {
         return dateFormatter.string(from: Date().stripTime() + self)
     }
 }
+
+var unixTimestamp: Int {
+    Int(Date().timeIntervalSince1970)
+}

@@ -87,12 +87,23 @@ struct USTCBaseModifier: ViewModifier {
         Task {
             UstcCasClient.shared.clearLoginStatus()
             UstcUgAASClient.shared.clearLoginStatus()
+            UstcQCKDClient.shared.clearLoginStatus()
 
             if UstcCasClient.shared.precheckFails {
                 casLoginSheet = true
             }
             // if the login result fails, present the user with the sheet.
             casLoginSheet = try await !UstcCasClient.shared.requireLogin()
+
+// Test functions:
+#if DEBUG
+//            do {
+            ////                try await UstcQCKDClient.shared.login()
+//                debugPrint(try await UstcQCKDClient.shared.fetchAvailableEvents())
+//            } catch {
+//                print(error)
+//            }
+#endif
         }
     }
 }

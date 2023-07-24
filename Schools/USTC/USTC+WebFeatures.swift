@@ -15,6 +15,10 @@ extension USTCExports {
                              title: "Classroom Status".localized,
                              subTitle: "",
                              destinationView: USTCClassroomView())],
+            "QCKD": [.init(image: "building.columns",
+                           title: "QCKD",
+                           subTitle: "",
+                           destinationView: USTCQCKDView())],
         ]
     }
 
