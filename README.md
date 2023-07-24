@@ -1,10 +1,8 @@
 # Life@USTC
+| <img src="./Docs/Assets/AppIcon.png" width="200" height="200">|[![Build To TestFlight](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml/badge.svg)](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml)<br/>![GitHub Repo stars](https://img.shields.io/github/stars/Life-USTC/Life-USTC)<br/>![GitHub repo size](https://img.shields.io/github/repo-size/Life-USTC/Life-USTC) |
+--- | ---
 
-[![Build To TestFlight](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml/badge.svg)](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml)
-![GitHub Repo stars](https://img.shields.io/github/stars/Life-USTC/Life-USTC)
-![GitHub repo size](https://img.shields.io/github/repo-size/Life-USTC/Life-USTC)
 
-<img src="./Docs/Assets/AppIcon.png" width="200" height="200">
 
 ## Introduction
 
