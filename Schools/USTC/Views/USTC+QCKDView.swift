@@ -53,7 +53,7 @@ struct USTCQCKDEventListView: View {
 }
 
 struct USTCQCKDView: View {
-    @StateObject var ustcQCKDDelegate = UstcQCKDClient.shared
+    @StateObject var ustcQCKDDelegate = USTCQCKDDelegate.shared
     @State var selection: String = "Available"
     var body: some View {
         VStack {

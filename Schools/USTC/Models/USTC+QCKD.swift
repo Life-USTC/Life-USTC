@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftyJSON
 
-struct UstcQCKDEvent: Identifiable, Equatable {
+struct UstcQCKDEvent: Identifiable, Equatable, Codable {
     private var json: JSON
     var id: String {
         json["self"]["id"].stringValue
@@ -40,7 +40,7 @@ struct UstcQCKDEvent: Identifiable, Equatable {
     }
 }
 
-struct UstcQCKDModel {
+struct UstcQCKDModel: Codable {
     var availableEvents: [UstcQCKDEvent] = []
     var doneEvents: [UstcQCKDEvent] = []
     var myEvents: [UstcQCKDEvent] = []
@@ -55,34 +55,13 @@ struct UstcQCKDModel {
     }
 }
 
-class UstcQCKDClient: LastUpdateADD {
+class UstcQCKDClient: ObservableObject {
     static var shared = UstcQCKDClient()
-
-    // MARK: - Protocol requirements
-
-    typealias D = UstcQCKDModel
-    @Published var status: AsyncViewStatus = .inProgress
-    @Published var data: UstcQCKDModel = .init()
-    var cache: UstcQCKDModel = .init()
-    var placeHolderData: UstcQCKDModel = .init()
-    var timeInterval: Double?
-    var timeCacheName: String = "UstcQCKDClientLastUpdated"
-    var lastUpdate: Date?
 
     var session: URLSession = .shared
     var loginCache: JSON = .init()
     var token: String = ""
     var lastLogined: Date?
-
-    func parseCache() async throws -> UstcQCKDModel {
-        .init(availableEvents: try await fetchAvailableEvents(),
-              doneEvents: try await fetchDoneEvents(),
-              myEvents: try await fetchMyEvents())
-    }
-
-    func refreshCache() async throws {
-        // nil
-    }
 
     func markRequest(request: inout URLRequest) {
         request.httpMethod = "GET"
@@ -246,9 +225,5 @@ class UstcQCKDClient: LastUpdateADD {
 
     func clearLoginStatus() {
         lastLogined = nil
-    }
-
-    init() {
-        userTriggerRefresh(forced: false)
     }
 }

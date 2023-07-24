@@ -99,6 +99,10 @@
 		56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
 		56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		56CAA6352A6D6825003AFA1B /* XGMTACloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8374F92F03832B8097F86E2D /* XGMTACloud.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		56CB637D2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CB637C2A6EC2A600666541 /* USTC+QCKDDelegate.swift */; };
+		56CB637E2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CB637C2A6EC2A600666541 /* USTC+QCKDDelegate.swift */; };
+		56CB63802A6EC3FD00666541 /* FileADD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CB637F2A6EC3FD00666541 /* FileADD.swift */; };
+		56CB63812A6EC3FD00666541 /* FileADD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CB637F2A6EC3FD00666541 /* FileADD.swift */; };
 		56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */; };
 		56CE43AD2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */; };
 		56CE43AE2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */; };
@@ -230,6 +234,8 @@
 		56BE91FE296679BC00822C98 /* CurriculumPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreview.swift; sourceTree = "<group>"; };
 		56C1425029F64618007D9BD4 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		56C1425329F648A6007D9BD4 /* TPNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TPNSClient.swift; sourceTree = "<group>"; };
+		56CB637C2A6EC2A600666541 /* USTC+QCKDDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+QCKDDelegate.swift"; sourceTree = "<group>"; };
+		56CB637F2A6EC3FD00666541 /* FileADD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileADD.swift; sourceTree = "<group>"; };
 		56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamExtensions.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
@@ -459,6 +465,7 @@
 				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
 				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
 				560409102A6E7EF400052223 /* USTC+QCKD.swift */,
+				56CB637C2A6EC2A600666541 /* USTC+QCKDDelegate.swift */,
 				56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */,
 				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
 			);
@@ -633,6 +640,7 @@
 			children = (
 				56D8A4A32A6D61010027224C /* AsyncDataDelegate.swift */,
 				56D8A4A02A6D60D50027224C /* AsyncViewStatus.swift */,
+				56CB637F2A6EC3FD00666541 /* FileADD.swift */,
 				56D8A4A62A6D61800027224C /* UserDefaultsADD.swift */,
 			);
 			path = AsyncModel;
@@ -921,6 +929,7 @@
 				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
+				56CB63802A6EC3FD00666541 /* FileADD.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */,
 				5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */,
@@ -954,6 +963,7 @@
 				56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1202A5AB5A100EDCB53 /* USTC+Exports.swift in Sources */,
 				560409112A6E7EF400052223 /* USTC+QCKD.swift in Sources */,
+				56CB637D2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */,
 				560409142A6E91FA00052223 /* USTC+QCKDView.swift in Sources */,
 				56A3B87B29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				565587F1294C4E5E0010E060 /* USTC+UgAAS.swift in Sources */,
@@ -979,6 +989,7 @@
 				56CE43AE2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
+				56CB63812A6EC3FD00666541 /* FileADD.swift in Sources */,
 				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
 				56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */,
 				56D8A49E2A6D21F10027224C /* Keychain.swift in Sources */,
@@ -997,6 +1008,7 @@
 				56A3B87629A8B88400BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */,
 				560409122A6E7EF400052223 /* USTC+QCKD.swift in Sources */,
+				56CB637E2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */,
 				56A3B87C29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				56734CEA297D86F200DBB45F /* USTC+UgAAS.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,
