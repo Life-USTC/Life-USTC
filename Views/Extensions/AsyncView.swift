@@ -15,6 +15,9 @@ struct AsyncViewStatusMask: ViewModifier {
             if status?.canShowData ?? true {
                 content
                     .opacity(status?.isRefreshing ?? false ? 0.5 : 1.0)
+                    .if(status?.isRefreshing ?? false) { view in
+                        view.disabled(true)
+                    }
                     .if(status?.hasError ?? false) { view in
                         VStack(alignment: .leading, spacing: 0) {
                             HStack {

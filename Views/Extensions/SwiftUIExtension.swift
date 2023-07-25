@@ -7,6 +7,8 @@
 
 import Introspect
 import SwiftUI
+import UIKit
+import WebKit
 import WidgetKit
 
 struct HStackModifier: ViewModifier {
@@ -240,6 +242,40 @@ extension View {
             transform(self)
         } else {
             self
+        }
+    }
+}
+
+extension Image {
+    func centerCropped() -> some View {
+        GeometryReader { geo in
+            self
+                .resizable()
+                .scaledToFill()
+                .frame(width: geo.size.width, height: geo.size.height)
+                .clipped()
+        }
+    }
+}
+
+struct HTMLStringView: UIViewRepresentable {
+    let htmlContent: String
+    let webView = WKWebView()
+
+    func makeUIView(context _: Context) -> WKWebView {
+        webView.navigationDelegate = HTMLStringViewDelegate.shared
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context _: Context) {
+        uiView.loadHTMLString(htmlContent, baseURL: nil)
+    }
+
+    class HTMLStringViewDelegate: NSObject, WKNavigationDelegate {
+        static var shared = HTMLStringViewDelegate()
+        func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+            let js = "document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust='300%'"
+            webView.evaluateJavaScript(js, completionHandler: nil)
         }
     }
 }

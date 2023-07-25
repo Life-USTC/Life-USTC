@@ -23,15 +23,35 @@ struct UstcQCKDEvent: Identifiable, Equatable, Codable {
     }
 
     var ratingTxt: String {
-        "Rating: \(json["rating"]["avgNum"].stringValue) [\(json["rating"]["evaluationNum"].stringValue)/\(json["rating"]["registrationNum"].stringValue)]"
+        "\(json["rating"]["avgNum"].stringValue) [\(json["rating"]["evaluationNum"].stringValue)/\(json["rating"]["registrationNum"].stringValue)]"
     }
 
     var timeDescription: String {
         "\(json["self"]["st"].stringValue) - \(json["self"]["et"].stringValue)"
     }
 
+    var startTime: String {
+        json["self"]["st"].stringValue
+    }
+
+    var endTime: String {
+        json["self"]["et"].stringValue
+    }
+
+    var infoDescription: String {
+        "\(json["self"]["moduleName"].stringValue) [\(json["self"]["formName"].stringValue)]"
+    }
+
     var description: String {
         json["self"]["baseContent"].stringValue
+    }
+
+    var hostingDepartment: String {
+        json["self"]["sponsorNames"].stringValue
+    }
+
+    var contactInformation: String {
+        json["self"]["linkMan"].stringValue + " " + json["self"]["tel"].stringValue
     }
 
     init(json: JSON) {
@@ -91,12 +111,12 @@ class UstcQCKDClient: ObservableObject {
         return UstcQCKDEvent(json: json)
     }
 
-    func fetchAvailableEvents() async throws -> [UstcQCKDEvent] {
+    func fetchAvailableEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
         if try await !requireLogin() {
             throw BaseError.runtimeError("UstcQCKD Not logined")
         }
 
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/enrolmentList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id%2C%2Caction&pageNo=1&pageSize=50")!)
+        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/enrolmentList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id%2C%2Caction&pageNo=\(pageNo)&pageSize=50")!)
         var result: [UstcQCKDEvent] = []
 
         for (_, subJSON) in queryJSON["result"]["records"] {
@@ -106,12 +126,12 @@ class UstcQCKDClient: ObservableObject {
         return result
     }
 
-    func fetchDoneEvents() async throws -> [UstcQCKDEvent] {
+    func fetchDoneEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
         if try await !requireLogin() {
             throw BaseError.runtimeError("UstcQCKD Not logined")
         }
 
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/endList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,action&pageNo=1&pageSize=10")!)
+        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/endList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,action&pageNo=\(pageNo)&pageSize=10")!)
         var result: [UstcQCKDEvent] = []
 
         for (_, subJSON) in queryJSON["result"]["records"] {
@@ -121,12 +141,12 @@ class UstcQCKDClient: ObservableObject {
         return result
     }
 
-    func fetchMyEvents() async throws -> [UstcQCKDEvent] {
+    func fetchMyEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
         if try await !requireLogin() {
             throw BaseError.runtimeError("UstcQCKD Not logined")
         }
 
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scParticipateItem/list?queryCatelog=0&_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,number,itemName,module_dictText,form_dictText,linkMan,tel,sponsor_dictText,serviceHour,action&pageNo=1&pageSize=10")!)
+        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scParticipateItem/list?queryCatelog=0&_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,number,itemName,module_dictText,form_dictText,linkMan,tel,sponsor_dictText,serviceHour,action&pageNo=\(pageNo)&pageSize=10")!)
         var result: [UstcQCKDEvent] = []
 
         for (_, subJSON) in queryJSON["result"]["records"] {

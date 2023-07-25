@@ -137,6 +137,8 @@
 		56E94E27298A77D00085241B /* NotificationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E26298A77D00085241B /* NotificationPage.swift */; };
 		56E94E29298A77F80085241B /* FeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E28298A77F80085241B /* FeedPage.swift */; };
 		56E94E2B298AA3720085241B /* ExamPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E2A298AA3720085241B /* ExamPage.swift */; };
+		56EC938E2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EC938D2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift */; };
+		56EC938F2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EC938D2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift */; };
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
@@ -259,6 +261,7 @@
 		56E94E26298A77D00085241B /* NotificationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
 		56E94E2A298AA3720085241B /* ExamPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPage.swift; sourceTree = "<group>"; };
+		56EC938D2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+QCKDExamples.swift"; sourceTree = "<group>"; };
 		56F1734F2A1C871D00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173502A1C881300C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173512A1C892C00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -466,6 +469,7 @@
 				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
 				560409102A6E7EF400052223 /* USTC+QCKD.swift */,
 				56CB637C2A6EC2A600666541 /* USTC+QCKDDelegate.swift */,
+				56EC938D2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift */,
 				56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */,
 				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
 			);
@@ -964,6 +968,7 @@
 				5677E1202A5AB5A100EDCB53 /* USTC+Exports.swift in Sources */,
 				560409112A6E7EF400052223 /* USTC+QCKD.swift in Sources */,
 				56CB637D2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */,
+				56EC938E2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift in Sources */,
 				560409142A6E91FA00052223 /* USTC+QCKDView.swift in Sources */,
 				56A3B87B29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				565587F1294C4E5E0010E060 /* USTC+UgAAS.swift in Sources */,
@@ -1009,6 +1014,7 @@
 				5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */,
 				560409122A6E7EF400052223 /* USTC+QCKD.swift in Sources */,
 				56CB637E2A6EC2A600666541 /* USTC+QCKDDelegate.swift in Sources */,
+				56EC938F2A6F7C21000BEBF1 /* USTC+QCKDExamples.swift in Sources */,
 				56A3B87C29A8B8C600BFE64F /* USTC+ScoreDelegate.swift in Sources */,
 				56734CEA297D86F200DBB45F /* USTC+UgAAS.swift in Sources */,
 				56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */,

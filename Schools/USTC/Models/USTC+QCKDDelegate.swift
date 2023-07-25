@@ -61,6 +61,34 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
         try await afterRefreshCache()
     }
 
+    var nextPageNo = [1, 1, 1]
+
+    func fetchMorePage(for type: String) async throws {
+        foregroundUpdateStatus(with: .cached)
+        var newValue = data
+        do {
+            switch type {
+            case "Available":
+                nextPageNo[0] += 1
+                newValue.availableEvents += try await ustcQCKDClient.fetchAvailableEvents(pageNo: nextPageNo[0])
+            case "Done":
+                nextPageNo[1] += 1
+                newValue.doneEvents += try await ustcQCKDClient.fetchDoneEvents(pageNo: nextPageNo[1])
+            case "My":
+                nextPageNo[2] += 1
+                newValue.myEvents += try await ustcQCKDClient.fetchMyEvents(pageNo: nextPageNo[2])
+            default:
+                return
+            }
+        } catch {
+            foregroundUpdateStatus(with: .failure(error.localizedDescription))
+            return
+        }
+        foregroundUpdateData(with: newValue)
+        foregroundUpdateStatus(with: .success)
+        try await afterRefreshCache()
+    }
+
     init() {
         afterInit()
     }
