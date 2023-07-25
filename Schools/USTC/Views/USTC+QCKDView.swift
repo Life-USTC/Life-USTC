@@ -23,28 +23,50 @@ struct USTCQCKDEventDetailView: View {
                 }
 
                 Text(event.name)
-                    .multilineTextAlignment(.trailing)
-                    .font(.title)
+                    .multilineTextAlignment(.center)
+                    .font(.title2)
+                    .fontWeight(.heavy)
             }
 
             Section {
-                HTMLStringView(htmlContent: event.description)
-                    .frame(height: 150)
+               HTMLStringView(htmlContent: event.description)
+                    .frame(height: 145)
 
                 HStack {
-                    Label("Info", systemImage: "quote.bubble.rtl")
+                    HStack {
+                        Image(systemName: ("quote.bubble.rtl"))
+                            .foregroundColor(Color.accentColor)
+                        Text("Info")
+                            .fontWeight(.heavy)
+                    }
+                    .font(.callout)
+                              
                     Spacer()
                     Text(event.infoDescription)
                 }
 
                 HStack {
-                    Label("Rating", systemImage: "star.circle")
+                    HStack {
+                        Image(systemName: ("star.circle"))
+                            .foregroundColor(Color.accentColor)
+                        Text("Rating")
+                            .fontWeight(.heavy)
+                    }
+                    .font(.callout)
+                    
                     Spacer()
                     Text(event.ratingTxt)
                 }
 
                 HStack(alignment: .top) {
-                    Label("Time", systemImage: "calendar.badge.clock")
+                    HStack {
+                        Image(systemName: ("calendar.badge.clock"))
+                            .foregroundColor(Color.accentColor)
+                        Text("Time")
+                            .fontWeight(.heavy)
+                    }
+                    .font(.callout)
+                    
                     Spacer()
                     VStack(alignment: .trailing) {
                         Text(event.startTime)
@@ -57,7 +79,13 @@ struct USTCQCKDEventDetailView: View {
 
             Section {
                 VStack(alignment: .leading, spacing: 5) {
-                    Label("Hosting Department", systemImage: "building.2")
+                    HStack {
+                        Image(systemName: ("building.2"))
+                            .foregroundColor(Color.accentColor)
+                        Text("Hosting Department")
+                            .fontWeight(.heavy)
+                    }
+                    .font(.callout)
                     HStack {
                         Spacer()
                         Text(event.hostingDepartment)
@@ -66,7 +94,13 @@ struct USTCQCKDEventDetailView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Label("Contact Information", systemImage: "phone")
+                    HStack {
+                        Image(systemName: ("phone"))
+                            .foregroundColor(Color.accentColor)
+                        Text("Contact Information")
+                            .fontWeight(.heavy)
+                    }
+                    .font(.callout)
                     HStack {
                         Spacer()
                         Text(event.contactInformation)
@@ -94,52 +128,54 @@ struct USTCQCKDEventView: View {
 
     var mainView: some View {
         AsyncImage(url: event.imageURL) { phase in
-            ZStack {
-                RoundedRectangle(cornerRadius: 10.0)
-                    .fill(Color.gray)
-                    .frame(width: 300, height: 200)
+            HStack (alignment: .center){
                 if let image = phase.image {
                     image
                         .centerCropped()
-                        .frame(width: 300, height: 200)
+                        .frame(width: 70, height: 70)
+                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                        )
                 } else {
                     ProgressView()
+                        .frame(width: 70, height: 70)
                 }
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(event.name)
+                        .multilineTextAlignment(.leading)
+                        .font(.title3)
+                        .fontWeight(.heavy)
+                        .lineLimit(1)
+
+                    HStack {
+                        Image(systemName: "calendar.badge.clock")
+                            .foregroundColor(Color.accentColor)
+                        Text(event.startTime)
+                    }
+                    .font(.caption)
+
+                    HStack {
+                        Image(systemName: "star.circle")
+                            .foregroundColor(Color.accentColor)
+                        Text(event.ratingTxt)
+                        Spacer()
+                    }
+                    .font(.caption)
+                    
+                    HStack {
+                        Image(systemName: "quote.bubble.rtl")
+                            .foregroundColor(Color.accentColor)
+                        Text(event.infoDescription)
+                        Spacer()
+                    }
+                    .font(.caption)
+                }
+                .foregroundColor(.black)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10.0))
-        .overlay {
-            LinearGradient(colors: [.clear, .black], startPoint: .init(x: 0.5, y: 0.25), endPoint: .bottom)
-                .clipShape(RoundedRectangle(cornerRadius: 10.0))
-        }
-        .overlay(alignment: .bottomLeading) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text(event.name)
-                    .multilineTextAlignment(.leading)
-                    .font(.title2)
-
-                HStack {
-                    Image(systemName: "calendar.badge.clock")
-                    Text(event.timeDescription)
-                }
-                .font(.caption)
-
-                HStack {
-                    Image(systemName: "star.circle")
-                    Text(event.ratingTxt)
-
-                    Spacer()
-
-                    Image(systemName: "quote.bubble.rtl")
-                    Text(event.infoDescription)
-
-                    Spacer()
-                }
-                .font(.caption)
-            }
-            .foregroundColor(.white)
-            .padding()
-        }
+        .padding(5)
     }
 }
 
@@ -153,6 +189,7 @@ struct USTCQCKDEventListView: View {
             VStack(spacing: 10) {
                 ForEach(events) { event in
                     USTCQCKDEventView(event: event)
+                    Divider()
                 }
 
                 Button {
