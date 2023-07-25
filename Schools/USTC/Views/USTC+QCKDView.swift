@@ -82,6 +82,14 @@ struct USTCQCKDEventDetailView: View {
                 } label: {
                     Label("Sign Up", systemImage: "pencil.circle")
                 }
+
+                Button {
+                    Task {
+                        try await UstcQCKDClient.shared.cancelEvent(id: event.id)
+                    }
+                } label: {
+                    Label("Cancel", systemImage: "calendar.badge.minus")
+                }
             } header: {
                 Text("Description")
             }

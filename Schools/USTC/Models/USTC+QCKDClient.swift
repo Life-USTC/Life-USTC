@@ -157,6 +157,18 @@ class UstcQCKDClient: ObservableObject {
         return true
     }
 
+    func cancelEvent(id: String) async throws -> Bool {
+        if try await !requireLogin() {
+            throw BaseError.runtimeError("UstcQCKD Not logined")
+        }
+
+        let url = URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/mobile/item/cancellRegistration/\(id)")!
+        let resultJSON = try await getJSON(from: url)
+
+        debugPrint(resultJSON.rawString())
+        return true
+    }
+
     func login() async throws -> Bool {
         let loginURL = URL(string: "https://young.ustc.edu.cn/login")!
         let casLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fyoung.ustc.edu.cn%2Flogin%2Fsc-wisdom-group-learning%2F")!
