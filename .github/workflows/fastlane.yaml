@@ -19,6 +19,7 @@ jobs:
                 ASC_KEY: ${{ secrets.AUTH_KEY }}
                 MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
                 MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+                COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
           - name: Upload app-store ipa and dsyms to artifacts
             uses: actions/upload-artifact@v2

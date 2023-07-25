@@ -96,7 +96,18 @@ platform :ios do
     #   submit_for_review: false,
     # )
 
-    upload_to_testflight
+    upload_to_testflight(
+      distribute_external: true,
+      changelog: ENV["COMMIT_MESSAGE"],
+      distribute_only: false,
+      groups: [
+        "Internal",
+        "External",
+      ],
+      skip_submission: true,
+      notify_external_testers: true,
+      skip_waiting_for_build_processing: true,
+    )
   end
 
   desc "Update version number (if env['GITHUB-TAG'] contains tag in format v1.2.3)"
