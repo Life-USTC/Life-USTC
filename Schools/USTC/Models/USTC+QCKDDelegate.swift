@@ -30,7 +30,6 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
             data
         }
         set {
-            print("cache set")
             data = newValue
         }
     }

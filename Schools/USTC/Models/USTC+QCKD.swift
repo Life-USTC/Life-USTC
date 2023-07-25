@@ -8,8 +8,13 @@
 import SwiftUI
 import SwiftyJSON
 
-struct UstcQCKDEvent: Identifiable, Equatable, Codable {
+class UstcQCKDEvent: Identifiable, Equatable, Codable, ObservableObject {
     private var json: JSON
+
+    static func == (lhs: UstcQCKDEvent, rhs: UstcQCKDEvent) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var id: String {
         json["self"]["id"].stringValue
     }
@@ -54,9 +59,38 @@ struct UstcQCKDEvent: Identifiable, Equatable, Codable {
         json["self"]["linkMan"].stringValue + " " + json["self"]["tel"].stringValue
     }
 
+    func getChildren() async throws -> [UstcQCKDEvent] {
+        var result: [UstcQCKDEvent] = []
+        for childJSON in json["children"].arrayValue {
+            // var newJSON = JSON()
+            // newJSON["self"] = childJSON
+            // newJSON["rating"] = JSON()
+            // newJSON["children"] = JSON(parseJSON: "[]")
+            // debugPrint(newJSON)
+            // children.append(UstcQCKDEvent(json: newJSON))
+            try await result.append(UstcQCKDClient.shared.fetchEvent(id: childJSON["id"].stringValue))
+        }
+
+        return result
+    }
+
     init(json: JSON) {
         self.json = json
         // json["self"], json["children"], json["rating"]
+    }
+
+    enum CodingKeys: CodingKey {
+        case json
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        json = try container.decode(JSON.self, forKey: .json)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(json, forKey: .json)
     }
 }
 

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct USTCQCKDEventDetailView: View {
     var event: UstcQCKDEvent
+    @State var children: [UstcQCKDEvent] = []
+
     var body: some View {
         List {
             Section {
@@ -29,44 +31,44 @@ struct USTCQCKDEventDetailView: View {
             }
 
             Section {
-               HTMLStringView(htmlContent: event.description)
+                HTMLStringView(htmlContent: event.description)
                     .frame(height: 145)
 
                 HStack {
                     HStack {
-                        Image(systemName: ("quote.bubble.rtl"))
+                        Image(systemName: "quote.bubble.rtl")
                             .foregroundColor(Color.accentColor)
                         Text("Info")
                             .fontWeight(.heavy)
                     }
                     .font(.callout)
-                              
+
                     Spacer()
                     Text(event.infoDescription)
                 }
 
                 HStack {
                     HStack {
-                        Image(systemName: ("star.circle"))
+                        Image(systemName: "star.circle")
                             .foregroundColor(Color.accentColor)
                         Text("Rating")
                             .fontWeight(.heavy)
                     }
                     .font(.callout)
-                    
+
                     Spacer()
                     Text(event.ratingTxt)
                 }
 
                 HStack(alignment: .top) {
                     HStack {
-                        Image(systemName: ("calendar.badge.clock"))
+                        Image(systemName: "calendar.badge.clock")
                             .foregroundColor(Color.accentColor)
                         Text("Time")
                             .fontWeight(.heavy)
                     }
                     .font(.callout)
-                    
+
                     Spacer()
                     VStack(alignment: .trailing) {
                         Text(event.startTime)
@@ -77,10 +79,21 @@ struct USTCQCKDEventDetailView: View {
                 Text("Description")
             }
 
+            if !children.isEmpty {
+                Section {
+                    ForEach(children) { subEvent in
+                        USTCQCKDEventView(event: subEvent)
+                    }
+
+                } header: {
+                    Text("Sub-Events")
+                }
+            }
+
             Section {
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
-                        Image(systemName: ("building.2"))
+                        Image(systemName: "building.2")
                             .foregroundColor(Color.accentColor)
                         Text("Hosting Department")
                             .fontWeight(.heavy)
@@ -95,7 +108,7 @@ struct USTCQCKDEventDetailView: View {
 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
-                        Image(systemName: ("phone"))
+                        Image(systemName: "phone")
                             .foregroundColor(Color.accentColor)
                         Text("Contact Information")
                             .fontWeight(.heavy)
@@ -112,6 +125,13 @@ struct USTCQCKDEventDetailView: View {
             }
         }
         .navigationTitle(event.name)
+        .task {
+            do {
+                self.children = try await event.getChildren()
+            } catch {
+                print(error)
+            }
+        }
     }
 }
 
@@ -128,7 +148,7 @@ struct USTCQCKDEventView: View {
 
     var mainView: some View {
         AsyncImage(url: event.imageURL) { phase in
-            HStack (alignment: .center){
+            HStack(alignment: .center) {
                 if let image = phase.image {
                     image
                         .centerCropped()
@@ -163,7 +183,7 @@ struct USTCQCKDEventView: View {
                         Spacer()
                     }
                     .font(.caption)
-                    
+
                     HStack {
                         Image(systemName: "quote.bubble.rtl")
                             .foregroundColor(Color.accentColor)
