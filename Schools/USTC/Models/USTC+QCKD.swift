@@ -10,6 +10,7 @@ import SwiftyJSON
 
 class UstcQCKDEvent: Identifiable, Equatable, Codable, ObservableObject {
     private var json: JSON
+    var children: [UstcQCKDEvent] = []
 
     static func == (lhs: UstcQCKDEvent, rhs: UstcQCKDEvent) -> Bool {
         lhs.id == rhs.id
@@ -59,23 +60,9 @@ class UstcQCKDEvent: Identifiable, Equatable, Codable, ObservableObject {
         json["self"]["linkMan"].stringValue + " " + json["self"]["tel"].stringValue
     }
 
-    func getChildren() async throws -> [UstcQCKDEvent] {
-        var result: [UstcQCKDEvent] = []
-        for childJSON in json["children"].arrayValue {
-            // var newJSON = JSON()
-            // newJSON["self"] = childJSON
-            // newJSON["rating"] = JSON()
-            // newJSON["children"] = JSON(parseJSON: "[]")
-            // debugPrint(newJSON)
-            // children.append(UstcQCKDEvent(json: newJSON))
-            try await result.append(UstcQCKDClient.shared.fetchEvent(id: childJSON["id"].stringValue))
-        }
-
-        return result
-    }
-
-    init(json: JSON) {
+    init(json: JSON, children: [UstcQCKDEvent] = []) {
         self.json = json
+        self.children = children
         // json["self"], json["children"], json["rating"]
     }
 
@@ -95,17 +82,18 @@ class UstcQCKDEvent: Identifiable, Equatable, Codable, ObservableObject {
 }
 
 struct UstcQCKDModel: Codable {
-    var availableEvents: [UstcQCKDEvent] = []
-    var doneEvents: [UstcQCKDEvent] = []
-    var myEvents: [UstcQCKDEvent] = []
+    var eventLists: [String: [UstcQCKDEvent]] = [:]
 
-    init(availableEvents: [UstcQCKDEvent] = [],
-         doneEvents: [UstcQCKDEvent] = [],
-         myEvents: [UstcQCKDEvent] = [])
-    {
-        self.availableEvents = availableEvents
-        self.doneEvents = doneEvents
-        self.myEvents = myEvents
+    var availableEvents: [UstcQCKDEvent] {
+        eventLists["Available"] ?? []
+    }
+
+    var doneEvents: [UstcQCKDEvent] {
+        eventLists["Done"] ?? []
+    }
+
+    var myEvents: [UstcQCKDEvent] {
+        eventLists["My"] ?? []
     }
 }
 
@@ -139,55 +127,75 @@ class UstcQCKDClient: ObservableObject {
 
         var json = JSON()
         json["self"] = selfJSON
-        json["children"] = childrenJSON
         json["rating"] = ratingJSON
 
-        return UstcQCKDEvent(json: json)
+        var children: [UstcQCKDEvent] = []
+        await withTaskGroup(of: UstcQCKDEvent?.self) { group in
+            for (_, subJSON) in childrenJSON {
+                group.addTask {
+                    try? await self.fetchEvent(id: subJSON["id"].stringValue)
+                }
+            }
+
+            for await child in group {
+                if let child {
+                    children.append(child)
+                }
+            }
+        }
+
+        return UstcQCKDEvent(json: json, children: children)
     }
 
+    func fetchEventList(with name: String, pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
+        if try await !requireLogin() {
+            throw BaseError.runtimeError("UstcQCKD Not logined")
+        }
+
+        var url: URL?
+        switch name {
+        case "Available":
+            url = URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/enrolmentList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id%2C%2Caction&pageNo=\(pageNo)&pageSize=50")!
+        case "Done":
+            url = URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/endList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,action&pageNo=\(pageNo)&pageSize=10")!
+        case "My":
+            url = URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scParticipateItem/list?queryCatelog=0&_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,number,itemName,module_dictText,form_dictText,linkMan,tel,sponsor_dictText,serviceHour,action&pageNo=\(pageNo)&pageSize=10")!
+        default:
+            throw BaseError.runtimeError("UstcQCKD No such event list")
+        }
+
+        let queryJSON = try await getJSON(from: url!)
+        var result: [UstcQCKDEvent] = []
+        await withTaskGroup(of: UstcQCKDEvent?.self) { group in
+            for (_, subJSON) in queryJSON["result"]["records"] {
+                group.addTask {
+                    try? await self.fetchEvent(id: subJSON["id"].stringValue)
+                }
+            }
+
+            for await child in group {
+                if let child {
+                    result.append(child)
+                }
+            }
+        }
+
+        return result
+    }
+
+    @available(*, renamed: "fetchAvailableEvents(pageNo:)")
     func fetchAvailableEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        if try await !requireLogin() {
-            throw BaseError.runtimeError("UstcQCKD Not logined")
-        }
-
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/enrolmentList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id%2C%2Caction&pageNo=\(pageNo)&pageSize=50")!)
-        var result: [UstcQCKDEvent] = []
-
-        for (_, subJSON) in queryJSON["result"]["records"] {
-            result.append(try await fetchEvent(id: subJSON["id"].stringValue))
-        }
-
-        return result
+        try await fetchEventList(with: "Available", pageNo: pageNo)
     }
 
+    @available(*, renamed: "fetchDoneEvents(pageNo:)")
     func fetchDoneEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        if try await !requireLogin() {
-            throw BaseError.runtimeError("UstcQCKD Not logined")
-        }
-
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scItem/endList?_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,action&pageNo=\(pageNo)&pageSize=10")!)
-        var result: [UstcQCKDEvent] = []
-
-        for (_, subJSON) in queryJSON["result"]["records"] {
-            result.append(try await fetchEvent(id: subJSON["id"].stringValue))
-        }
-
-        return result
+        try await fetchEventList(with: "Done", pageNo: pageNo)
     }
 
+    @available(*, renamed: "fetchMyEvents(pageNo:)")
     func fetchMyEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        if try await !requireLogin() {
-            throw BaseError.runtimeError("UstcQCKD Not logined")
-        }
-
-        let queryJSON = try await getJSON(from: URL(string: "https://young.ustc.edu.cn/login/wisdom-group-learning-bg/item/scParticipateItem/list?queryCatelog=0&_t=\(unixTimestamp)&column=createTime&order=desc&field=id,,number,itemName,module_dictText,form_dictText,linkMan,tel,sponsor_dictText,serviceHour,action&pageNo=\(pageNo)&pageSize=10")!)
-        var result: [UstcQCKDEvent] = []
-
-        for (_, subJSON) in queryJSON["result"]["records"] {
-            result.append(try await fetchEvent(id: subJSON["id"].stringValue))
-        }
-
-        return result
+        try await fetchEventList(with: "My", pageNo: pageNo)
     }
 
     func login() async throws -> Bool {

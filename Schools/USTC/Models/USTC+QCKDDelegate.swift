@@ -47,38 +47,59 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
     }
 
     func refreshCache() async throws {
-        async let availableEvents = ustcQCKDClient.fetchAvailableEvents()
-        async let doneEvents = ustcQCKDClient.fetchDoneEvents()
-        async let myEvents = ustcQCKDClient.fetchMyEvents()
+        // async let availableEvents = ustcQCKDClient.fetchAvailableEvents()
+        // async let doneEvents = ustcQCKDClient.fetchDoneEvents()
+        // async let myEvents = ustcQCKDClient.fetchMyEvents()
 
-        data = .init(availableEvents: try await availableEvents,
-                     doneEvents: try await doneEvents,
-                     myEvents: try await myEvents)
+        // data = .init(availableEvents: try await availableEvents,
+        //              doneEvents: try await doneEvents,
+        //              myEvents: try await myEvents)
+
+        data = .init(eventLists: await withTaskGroup(of: (String, [UstcQCKDEvent])?.self) { group in
+            for name in ["Available", "Done", "My"] {
+                group.addTask {
+                    do {
+                        return (name, try await self.ustcQCKDClient.fetchEventList(with: name))
+                    } catch {
+                        return nil
+                    }
+                }
+            }
+
+            return await group.reduce(into: [:]) { dictionary, result in
+                if let result {
+                    dictionary[result.0] = result.1
+                }
+            }
+        })
 
         // MARK: This isn't the final optimization though.
 
         try await afterRefreshCache()
     }
 
-    var nextPageNo = [1, 1, 1]
+    // var nextPageNo = [1, 1, 1]
+    var nextPageNo = ["Available": 1, "Done": 1, "My": 1]
 
     func fetchMorePage(for type: String) async throws {
         foregroundUpdateStatus(with: .cached)
         var newValue = data
         do {
-            switch type {
-            case "Available":
-                nextPageNo[0] += 1
-                newValue.availableEvents += try await ustcQCKDClient.fetchAvailableEvents(pageNo: nextPageNo[0])
-            case "Done":
-                nextPageNo[1] += 1
-                newValue.doneEvents += try await ustcQCKDClient.fetchDoneEvents(pageNo: nextPageNo[1])
-            case "My":
-                nextPageNo[2] += 1
-                newValue.myEvents += try await ustcQCKDClient.fetchMyEvents(pageNo: nextPageNo[2])
-            default:
-                return
-            }
+            // switch type {
+            // case "Available":
+            //     nextPageNo[0] += 1
+            //     newValue.availableEvents += try await ustcQCKDClient.fetchAvailableEvents(pageNo: nextPageNo[0])
+            // case "Done":
+            //     nextPageNo[1] += 1
+            //     newValue.doneEvents += try await ustcQCKDClient.fetchDoneEvents(pageNo: nextPageNo[1])
+            // case "My":
+            //     nextPageNo[2] += 1
+            //     newValue.myEvents += try await ustcQCKDClient.fetchMyEvents(pageNo: nextPageNo[2])
+            // default:
+            //     return
+            // }
+            // newValue.eventLists[type]?.append(contentsOf: try await ustcQCKDClient.fetchEventList(with: type, pageNo: nextPageNo[["Available", "Done", "My"].firstIndex(of: type)!]))
+            newValue.eventLists[type]?.append(contentsOf: try await ustcQCKDClient.fetchEventList(with: type, pageNo: nextPageNo[type]!))
         } catch {
             foregroundUpdateStatus(with: .failure(error.localizedDescription))
             return

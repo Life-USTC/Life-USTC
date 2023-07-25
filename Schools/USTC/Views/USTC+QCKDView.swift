@@ -9,8 +9,6 @@ import SwiftUI
 
 struct USTCQCKDEventDetailView: View {
     var event: UstcQCKDEvent
-    @State var children: [UstcQCKDEvent] = []
-
     var body: some View {
         List {
             Section {
@@ -79,9 +77,9 @@ struct USTCQCKDEventDetailView: View {
                 Text("Description")
             }
 
-            if !children.isEmpty {
+            if !event.children.isEmpty {
                 Section {
-                    ForEach(children) { subEvent in
+                    ForEach(event.children) { subEvent in
                         USTCQCKDEventView(event: subEvent)
                     }
 
@@ -125,13 +123,6 @@ struct USTCQCKDEventDetailView: View {
             }
         }
         .navigationTitle(event.name)
-        .task {
-            do {
-                self.children = try await event.getChildren()
-            } catch {
-                print(error)
-            }
-        }
     }
 }
 
