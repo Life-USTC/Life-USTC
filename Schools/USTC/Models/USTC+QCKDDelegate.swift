@@ -65,8 +65,6 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
             }
         }))
 
-        // MARK: This isn't the final optimization though.
-
         try await afterRefreshCache()
     }
 

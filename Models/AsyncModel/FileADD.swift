@@ -30,7 +30,7 @@ extension FileADD {
         exceptionCall {
             let data = try JSONEncoder().encode(self.cache)
             let fm = FileManager.default
-            let url = try fm.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let url = try fm.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let fileURL = url.appendingPathComponent(self.cacheName)
             try data.write(to: fileURL)
         }
@@ -43,7 +43,7 @@ extension FileADD {
         // using two exceptionCall to isolate fatal error
         exceptionCall {
             let fm = FileManager.default
-            let url = try fm.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let url = try fm.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let fileURL = url.appendingPathComponent(self.cacheName)
             let data = try Data(contentsOf: fileURL)
             self.cache = try JSONDecoder().decode(C.self, from: data)

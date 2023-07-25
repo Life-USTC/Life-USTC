@@ -9,6 +9,9 @@ import SwiftUI
 
 struct USTCQCKDEventDetailView: View {
     var event: UstcQCKDEvent
+    @State var formData: [UstcQCKDClient.RegisterFormModel] = []
+    @State var formPopUp: Bool = false
+
     var body: some View {
         List {
             Section {
@@ -73,6 +76,12 @@ struct USTCQCKDEventDetailView: View {
                         Text(event.endTime)
                     }
                 }
+
+                Button {
+                    formPopUp = true
+                } label: {
+                    Label("Sign Up", systemImage: "pencil.circle")
+                }
             } header: {
                 Text("Description")
             }
@@ -123,6 +132,36 @@ struct USTCQCKDEventDetailView: View {
             }
         }
         .navigationTitle(event.name)
+        .sheet(isPresented: $formPopUp) {
+            NavigationStack {
+                List {
+                    ForEach($formData, id: \.value) { $pair in
+                        HStack {
+                            Text(pair.text)
+                            Spacer()
+                            TextField(pair.text, text: $pair.text_value)
+                        }
+                    }
+
+                    Button {
+                        Task {
+                            // try await event.signUp(formData: formData)
+                            try await UstcQCKDClient.shared.registerEvent(id: event.id, formData: formData)
+                            formPopUp = false
+                        }
+                    } label: {
+                        Label("Submit", systemImage: "pencil.circle")
+                    }
+                }
+                .navigationTitle("Sign Up")
+                .onAppear {
+                    Task {
+                        formData = try await UstcQCKDClient.shared.getFormForEvent(id: event.id)
+//                        print(formData)
+                    }
+                }
+            }
+        }
     }
 }
 
