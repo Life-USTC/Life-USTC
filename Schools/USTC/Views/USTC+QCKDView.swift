@@ -216,48 +216,34 @@ struct USTCQCKDEventListView: View {
     }
 }
 
+let selections = ["Available", "Done", "My"]
+
 struct USTCQCKDView: View {
     @StateObject var ustcQCKDDelegate = USTCQCKDDelegate.shared
     @State var selection: String = "Available"
     var body: some View {
         VStack {
             Picker(selection: $selection) {
-                Text("Available")
-                    .tag("Available")
-                Text("Done")
-                    .tag("Done")
-                Text("My")
-                    .tag("My")
-
+                ForEach(selections, id: \.self) { text in
+                    Text(text)
+                        .id(text)
+                }
             } label: {
                 Text("Picker")
             }
             .pickerStyle(.segmented)
 
             TabView(selection: $selection) {
-                USTCQCKDEventListView(events: ustcQCKDDelegate.data.availableEvents, buttonStatus: ustcQCKDDelegate.status) {
-                    try await ustcQCKDDelegate.fetchMorePage(for: "Available")
+                ForEach(selections, id: \.self) { text in
+                    USTCQCKDEventListView(events: ustcQCKDDelegate.data.eventLists[text] ?? [],
+                                          buttonStatus: ustcQCKDDelegate.status) {
+                        try await ustcQCKDDelegate.fetchMorePage(for: text)
+                    }
+                    .tag(text)
+                    .refreshable {
+                        ustcQCKDDelegate.userTriggerRefresh()
+                    }
                 }
-                .tabItem {
-                    Text("Available")
-                }
-                .tag("Available")
-
-                USTCQCKDEventListView(events: ustcQCKDDelegate.data.doneEvents, buttonStatus: ustcQCKDDelegate.status) {
-                    try await ustcQCKDDelegate.fetchMorePage(for: "Done")
-                }
-                .tabItem {
-                    Text("Done")
-                }
-                .tag("Done")
-
-                USTCQCKDEventListView(events: ustcQCKDDelegate.data.myEvents, buttonStatus: ustcQCKDDelegate.status) {
-                    try await ustcQCKDDelegate.fetchMorePage(for: "My")
-                }
-                .tabItem {
-                    Text("My")
-                }
-                .tag("My")
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }

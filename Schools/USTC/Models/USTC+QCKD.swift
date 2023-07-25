@@ -83,18 +83,6 @@ class UstcQCKDEvent: Identifiable, Equatable, Codable, ObservableObject {
 
 struct UstcQCKDModel: Codable {
     var eventLists: [String: [UstcQCKDEvent]] = [:]
-
-    var availableEvents: [UstcQCKDEvent] {
-        eventLists["Available"] ?? []
-    }
-
-    var doneEvents: [UstcQCKDEvent] {
-        eventLists["Done"] ?? []
-    }
-
-    var myEvents: [UstcQCKDEvent] {
-        eventLists["My"] ?? []
-    }
 }
 
 class UstcQCKDClient: ObservableObject {
@@ -181,21 +169,6 @@ class UstcQCKDClient: ObservableObject {
         }
 
         return result
-    }
-
-    @available(*, renamed: "fetchAvailableEvents(pageNo:)")
-    func fetchAvailableEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        try await fetchEventList(with: "Available", pageNo: pageNo)
-    }
-
-    @available(*, renamed: "fetchDoneEvents(pageNo:)")
-    func fetchDoneEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        try await fetchEventList(with: "Done", pageNo: pageNo)
-    }
-
-    @available(*, renamed: "fetchMyEvents(pageNo:)")
-    func fetchMyEvents(pageNo: Int = 1) async throws -> [UstcQCKDEvent] {
-        try await fetchEventList(with: "My", pageNo: pageNo)
     }
 
     func login() async throws -> Bool {

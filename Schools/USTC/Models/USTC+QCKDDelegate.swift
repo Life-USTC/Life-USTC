@@ -15,15 +15,7 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
 
     typealias D = UstcQCKDModel
     @Published var status: AsyncViewStatus = .inProgress
-    var data: UstcQCKDModel = .init() {
-        willSet {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.objectWillChange.send()
-                }
-            }
-        }
-    }
+    @Published var data: UstcQCKDModel = .init()
 
     var cache: UstcQCKDModel {
         get {
@@ -54,8 +46,8 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
         // data = .init(availableEvents: try await availableEvents,
         //              doneEvents: try await doneEvents,
         //              myEvents: try await myEvents)
-
-        data = .init(eventLists: await withTaskGroup(of: (String, [UstcQCKDEvent])?.self) { group in
+        nextPageNo = ["Available": 1, "Done": 1, "My": 1]
+        foregroundUpdateData(with: .init(eventLists: await withTaskGroup(of: (String, [UstcQCKDEvent])?.self) { group in
             for name in ["Available", "Done", "My"] {
                 group.addTask {
                     do {
@@ -71,7 +63,7 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
                     dictionary[result.0] = result.1
                 }
             }
-        })
+        }))
 
         // MARK: This isn't the final optimization though.
 
@@ -99,6 +91,7 @@ final class USTCQCKDDelegate: FileADD & LastUpdateADD {
             //     return
             // }
             // newValue.eventLists[type]?.append(contentsOf: try await ustcQCKDClient.fetchEventList(with: type, pageNo: nextPageNo[["Available", "Done", "My"].firstIndex(of: type)!]))
+            nextPageNo[type]! += 1
             newValue.eventLists[type]?.append(contentsOf: try await ustcQCKDClient.fetchEventList(with: type, pageNo: nextPageNo[type]!))
         } catch {
             foregroundUpdateStatus(with: .failure(error.localizedDescription))
