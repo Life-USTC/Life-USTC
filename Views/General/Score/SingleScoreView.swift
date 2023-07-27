@@ -38,12 +38,14 @@ struct SingleScoreView: View {
     }
 
     var normalView: some View {
-        HStack(alignment: .center, spacing: 5) {
+        HStack(alignment: .center, spacing: 0) {
             Text("\(courseScore.score)")
-                .frame(width: 30)
+                .frame(width: 35)
+                .padding(.horizontal, 4)
             Divider()
             Text("\(String(courseScore.gpa!))")
                 .frame(width: 35)
+                .padding(.horizontal, 4)
         }
         .fontWeight(.bold)
         .foregroundColor(.white)
