@@ -91,8 +91,8 @@ func parseWeek(with weekString: String) -> [Int] {
 extension Curriculum {
     func weekNumber(for date: Date = Date()) -> Int {
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.day], from: semesterStartDate, to: date)
-        return components.day! / 7 + 1
+        let day = calendar.dateComponents([.day], from: semesterStartDate, to: date).day!
+        return (day > 0) ? (day / 7 + 1) : 0
     }
 
     func getCourses(week: Int, weekday: Int?) -> [Course] {
