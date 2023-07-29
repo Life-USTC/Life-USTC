@@ -230,7 +230,7 @@ struct USTCQCKDEventView: View {
                     }
                     .font(.caption)
                 }
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
             }
         }
         .padding(5)
