@@ -8,3 +8,4 @@
 import Foundation
 
 let userDefaults = UserDefaults(suiteName: "group.dev.tiankaima.Life-USTC")!
+let userAgent = #"Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari/602.1.50 life-at-ustc/1.0"#

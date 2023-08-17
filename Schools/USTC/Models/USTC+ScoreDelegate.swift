@@ -54,7 +54,8 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
         }
 
         let session = URLSession.shared
-        let request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
+        var request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
 
         let (data, _) = try await session.data(for: request)
         cache = try JSON(data: data)

@@ -92,6 +92,7 @@ class UstcCasClient: ObservableObject {
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
         let _ = try await session.data(for: request)

@@ -68,7 +68,9 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
         if try await !ustcUgAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
-        let (_, response) = try await URLSession.shared.data(from: queryURL)
+        var request = URLRequest(url: queryURL)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (_, response) = try await URLSession.shared.data(for: request)
 
         let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))
         var tableID = "0"
@@ -78,7 +80,9 @@ final class USTCCurriculumDelegate: TimeListBasedCDP {
             }
         }
 
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
+        request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(UstcUgAASClient.shared.semesterID)/print-data/\(tableID)?weekIndex=")!)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, _) = try await URLSession.shared.data(for: request)
         cache = try JSON(data: data)
 
         try await afterRefreshCache()

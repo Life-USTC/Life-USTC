@@ -35,6 +35,7 @@ class UstcUgAASClient: ObservableObject {
         // now try login url, see if that directs to home page
         var request = URLRequest(url: UgAASCASLoginURL)
         request.httpMethod = "GET"
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await session.data(for: request)
 
         print("network<UstcUgAAS>: Login finished, Cookies:")
