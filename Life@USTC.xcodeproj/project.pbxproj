@@ -127,6 +127,10 @@
 		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
 		56E25CC32A8F29E50027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
 		56E25CC42A8F2D210027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
+		56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
+		56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
+		56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
+		56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
@@ -259,6 +263,8 @@
 		56D8A4A62A6D61800027224C /* UserDefaultsADD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsADD.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E25CC22A8F29E50027E72F /* LoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginClient.swift; sourceTree = "<group>"; };
+		56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ClassroomDelegate.swift"; sourceTree = "<group>"; };
+		56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CASViewModel.swift"; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Catalog.swift"; sourceTree = "<group>"; };
@@ -462,8 +468,10 @@
 			isa = PBXGroup;
 			children = (
 				5677E13C2A5AF6BD00EDCB53 /* Assets */,
+				56E25CC52A8F2E200027E72F /* Clients */,
 				5677E11D2A5AB4F000EDCB53 /* Models */,
 				5677E11E2A5AB51400EDCB53 /* Views */,
+				5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */,
 				5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */,
 				5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */,
 			);
@@ -473,13 +481,11 @@
 		5677E11D2A5AB4F000EDCB53 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				5655880A294DEA6B0010E060 /* USTC+CAS.swift */,
-				56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */,
-				5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */,
+				56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */,
+				56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */,
 				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
 				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
 				56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */,
-				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -666,6 +672,16 @@
 				56D8A4A62A6D61800027224C /* UserDefaultsADD.swift */,
 			);
 			path = AsyncModel;
+			sourceTree = "<group>";
+		};
+		56E25CC52A8F2E200027E72F /* Clients */ = {
+			isa = PBXGroup;
+			children = (
+				5655880A294DEA6B0010E060 /* USTC+CAS.swift */,
+				56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */,
+				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
+			);
+			path = Clients;
 			sourceTree = "<group>";
 		};
 		56E8AD6B296FEEDD009006D0 /* Score */ = {
@@ -997,7 +1013,9 @@
 				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
 				56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */,
+				56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
 				56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */,
+				56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
 				56E8AD752973F25E009006D0 /* USTC+ClassroomView.swift in Sources */,
 				5677E1172A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 				56AF3E8A2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,
@@ -1046,7 +1064,9 @@
 				56D8A4A82A6D61830027224C /* UserDefaultsADD.swift in Sources */,
 				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,
 				5677E1232A5AB66F00EDCB53 /* USTC+CASLoginView.swift in Sources */,
+				56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
 				56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */,
+				56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
 				569C6E562A5BC7AE00A6492B /* USTC+ClassroomView.swift in Sources */,
 				5677E1182A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 				56AF3E8B2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,

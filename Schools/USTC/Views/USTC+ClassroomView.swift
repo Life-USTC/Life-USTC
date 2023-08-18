@@ -118,7 +118,7 @@ private struct USTCSingleClassroomView: View {
 }
 
 struct USTCClassroomView: View {
-    @StateObject var ustcCatalogDelegate = UstcCatalogClient.shared
+    @StateObject var ustcCatalogDelegate = UstcClassroomDelegate.shared
     var allLessons: [String: [Lesson]] {
         ustcCatalogDelegate.data
     }
@@ -143,7 +143,7 @@ struct USTCClassroomView: View {
 
     func makeView(with building: String) -> some View {
         VStack(spacing: showOneLine ? 2 : 5) {
-            ForEach(UstcCatalogClient.buildingRooms[building] ?? [], id: \.self) { room in
+            ForEach(UstcClassroomDelegate.buildingRooms[building] ?? [], id: \.self) { room in
                 if !showEmptyRoomOnly || statusFor(building: building, room: room) {
                     USTCSingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
                 }
@@ -168,7 +168,7 @@ struct USTCClassroomView: View {
                 }
 
                 Section {
-                    ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+                    ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
                         Button {
                             if filteredBuildingList.contains(building) {
                                 filteredBuildingList.removeAll(where: { $0 == building })
@@ -177,7 +177,7 @@ struct USTCClassroomView: View {
                             }
                         } label: {
                             HStack {
-                                Text(UstcCatalogClient.buildingName(with: building))
+                                Text(UstcClassroomDelegate.buildingName(with: building))
                                     .foregroundColor(.primary)
                                 if !filteredBuildingList.contains(building) {
                                     Spacer()
@@ -219,9 +219,9 @@ struct USTCClassroomView: View {
                         )
                 }
             }
-            ForEach(UstcCatalogClient.allBuildings, id: \.self) { building in
+            ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
                 if !filteredBuildingList.contains(building) {
-                    Text(UstcCatalogClient.buildingName(with: building))
+                    Text(UstcClassroomDelegate.buildingName(with: building))
                         .font(.title3)
                         .padding()
                         .hStackLeading()

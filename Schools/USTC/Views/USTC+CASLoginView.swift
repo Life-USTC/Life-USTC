@@ -26,7 +26,7 @@ struct USTCCASLoginView: View {
         case password
     }
 
-    @StateObject var ustcCASClient = UstcCasClient.shared
+    @StateObject var ustcCASVoewModel = UstcCasViewModel.shared
     @Binding var casLoginSheet: Bool // used to signal the sheet to close
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
@@ -83,7 +83,7 @@ struct USTCCASLoginView: View {
                         Text("Username:")
                             .bold()
                         VStack(alignment: .leading) {
-                            TextField("Username", text: $ustcCASClient.inputUsername)
+                            TextField("Username", text: $ustcCASVoewModel.inputUsername)
                                 .focused($foucusField, equals: .username)
                                 .onSubmit {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -104,7 +104,7 @@ struct USTCCASLoginView: View {
                         Text("Password:")
                             .bold()
                         VStack(alignment: .leading) {
-                            SecureField("Password", text: $ustcCASClient.inputPassword)
+                            SecureField("Password", text: $ustcCASVoewModel.inputPassword)
                                 .focused($foucusField, equals: .password)
                                 .submitLabel(.done)
                                 .onSubmit {
@@ -151,7 +151,7 @@ struct USTCCASLoginView: View {
     private func checkAndLogin() {
         Task {
             do {
-                let result = try await ustcCASClient.checkAndLogin()
+                let result = try await ustcCASVoewModel.checkAndLogin()
                 if result, isInSheet {
                     showSuccessAlert = true
 

@@ -7,15 +7,13 @@
 
 import Foundation
 
-protocol LoginClient {
+protocol LoginClientProtocol {
     /// Return True if login success
     func login() async throws -> Bool
 }
 
-enum LoginClients {}
-
 @propertyWrapper
-class LoginClientWrapper<T: LoginClient> {
+class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
 
     var lastLogined: Date?
@@ -68,3 +66,5 @@ class LoginClientWrapper<T: LoginClient> {
         self.wrappedValue = wrappedValue
     }
 }
+
+enum LoginClients {}

@@ -81,14 +81,15 @@ struct USTCBaseModifier: ViewModifier {
 
     func onLoadFunction() {
         Task {
-            UstcCasClient.shared.clearLoginStatus()
+            LoginClients.ustcCAS.clearLoginStatus()
             LoginClients.ustcUgAAS.clearLoginStatus()
 
-            if UstcCasClient.shared.precheckFails {
+            if LoginClients.ustcCAS.wrappedValue.precheckFails {
                 casLoginSheet = true
+                return
             }
             // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !UstcCasClient.shared.requireLogin()
+            casLoginSheet = try await !LoginClients.ustcCAS.requireLogin()
         }
     }
 }
