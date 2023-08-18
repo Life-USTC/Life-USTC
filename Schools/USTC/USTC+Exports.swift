@@ -66,10 +66,6 @@ enum USTCExports {
             .init(USTCCASLoginView.sheet(isPresented: firstLogin))
         }
     }
-
-    static var semesterIDList: [Int: String] {
-        UstcUgAASClient.semesterIDList
-    }
 }
 
 struct USTCBaseModifier: ViewModifier {
@@ -86,7 +82,7 @@ struct USTCBaseModifier: ViewModifier {
     func onLoadFunction() {
         Task {
             UstcCasClient.shared.clearLoginStatus()
-            UstcUgAASClient.shared.clearLoginStatus()
+            LoginClients.ustcUgAAS.clearLoginStatus()
 
             if UstcCasClient.shared.precheckFails {
                 casLoginSheet = true

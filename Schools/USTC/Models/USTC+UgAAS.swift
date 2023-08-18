@@ -11,15 +11,10 @@ import SwiftyJSON
 import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
-class UstcUgAASClient: ObservableObject {
+class UstcUgAASClient: LoginClient {
     static var shared = UstcUgAASClient()
 
     var session: URLSession = .shared
-    var semesterID: Int {
-        Int(UserDefaults.appGroup.string(forKey: "semesterIDInt") ?? "") ?? 341
-    }
-
-    @Published var lastLogined: Date?
 
     func login() async throws -> Bool {
         let UgAASCASLoginURL = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
@@ -44,90 +39,10 @@ class UstcUgAASClient: ObservableObject {
             print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
         }
 
-        let result = (response.url == URL(string: "https://jw.ustc.edu.cn/home")!)
-        if result {
-            lastLogined = .now
-        }
-
-        lastLogined = nil
-        return result
-    }
-
-    func checkLogined() -> Bool {
-        if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 5) {
-            print("network<UstcUgAAS>: Not logged in, [REQUIRE LOGIN]")
-            return false
-        }
-        print("network<UstcUgAAS>: Already logged in, passing")
-        return true
-    }
-
-    var loginTask: Task<Bool, Error>?
-
-    func requireLogin() async throws -> Bool {
-        if let loginTask {
-            print("network<UstcUgAAS>: login task already running, [WAITING RESULT]")
-            return try await loginTask.value
-        }
-
-        if checkLogined() {
-            return true
-        }
-
-        let task = Task {
-            do {
-                print("network<UstcUgAAS>: No login task running, [CREATING NEW ONE]")
-                let result = try await self.login()
-                loginTask = nil
-                print("network<UstcUgAAS>: login task finished, result:\(result)")
-                return result
-            } catch {
-                loginTask = nil
-                throw (error)
-            }
-        }
-        loginTask = task
-        return try await task.value
-    }
-
-    func clearLoginStatus() {
-        lastLogined = nil
+        return (response.url == URL(string: "https://jw.ustc.edu.cn/home")!)
     }
 }
 
-extension UstcUgAASClient {
-    // TODO: Maintain a list of these values online, use cached to store them on device
-    static let semesterIDList: [Int: String] =
-        [221: "2021年秋季学期",
-         241: "2022年春季学期",
-         261: "2022年夏季学期",
-         281: "2022年秋季学期",
-         301: "2023年春季学期",
-         321: "2023年夏季学期",
-         322: "2023年秋季学期"]
-    static let semesterDateList: [Int: Date] =
-        [221: .init(timeIntervalSince1970: 1_630_771_200),
-         241: .init(timeIntervalSince1970: 1_642_608_000),
-         261: .init(timeIntervalSince1970: 1_656_172_800),
-         281: .init(timeIntervalSince1970: 1_661_616_000),
-         301: .init(timeIntervalSince1970: 1_677_945_600),
-         321: .init(timeIntervalSince1970: 1_688_918_400),
-         322: .init(timeIntervalSince1970: 1_693_756_800)]
-
-    var semesterName: String {
-        UstcUgAASClient.semesterIDList.first(where: { $0.key == semesterID })?.value ?? "Not Found"
-    }
-
-    var semesterStartDate: Date {
-        UstcUgAASClient.semesterDateList.first(where: { $0.key == semesterID })?.value ?? Date()
-    }
-
-    // TODO: NOT DONE YET
-    var semesterEndDate: Date {
-        semesterStartDate
-    }
-
-    var semesterWeeks: Int {
-        10
-    }
+extension LoginClients {
+    static let ustcUgAAS = LoginClientWrapper(UstcUgAASClient.shared)
 }
