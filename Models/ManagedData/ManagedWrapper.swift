@@ -28,7 +28,7 @@ class ManagedData<D: Codable>: DynamicProperty, ObservableObject {
             do {
                 status.refresh = .waiting
                 try await self.delegate.refresh()
-                wrappedValue = nil
+                wrappedValue = delegate.data as? D
                 status.local = delegate.localStatus
                 status.refresh = .success
             } catch {
