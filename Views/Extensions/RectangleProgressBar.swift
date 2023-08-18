@@ -45,23 +45,23 @@ struct RectangleProgressBar: View {
         textWithPositionList = [(Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2) }, .center)]
     }
 
-    init(width: Double = 400.0,
-         height: Double = 50.0,
-         colors: [Color] = exampleGradientList.randomElement() ?? [],
-         course: Course)
-    {
-        self.width = width
-        self.height = height
-        startDate = Date().stripTime() + course._startTime
-        endDate = Date().stripTime() + course._endTime
-        self.colors = colors
-
-        // MARK: - Fix padding issue
-
-        textWithPositionList = [(Text(course.name), { CGPoint(x: 15, y: $0.height / 2 - 18) }, UnitPoint.topLeading),
-                                (Text(course.roomName), { CGPoint(x: 15, y: $0.height / 2 + 18) }, .bottomLeading),
-                                (Text(course.clockTime), { CGPoint(x: $0.width - 15, y: $0.height / 2) }, UnitPoint.trailing)]
-    }
+//    init(width: Double = 400.0,
+//         height: Double = 50.0,
+//         colors: [Color] = exampleGradientList.randomElement() ?? [],
+//         course: Course)
+//    {
+//        self.width = width
+//        self.height = height
+//        startDate = Date().stripTime() + course._startTime
+//        endDate = Date().stripTime() + course._endTime
+//        self.colors = colors
+//
+//        // MARK: - Fix padding issue
+//
+//        textWithPositionList = [(Text(course.name), { CGPoint(x: 15, y: $0.height / 2 - 18) }, UnitPoint.topLeading),
+//                                (Text(course.roomName), { CGPoint(x: 15, y: $0.height / 2 + 18) }, .bottomLeading),
+//                                (Text(course.clockTime), { CGPoint(x: $0.width - 15, y: $0.height / 2) }, UnitPoint.trailing)]
+//    }
 
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
         let path = Path { path in
@@ -186,7 +186,7 @@ struct RectangleProgressBar_Previews: PreviewProvider {
                 colors: [.black],
                 text: "!!!!!!"
             )
-            RectangleProgressBar(course: .example)
+//            RectangleProgressBar(course: .example)
         }
     }
 }

@@ -30,7 +30,7 @@ extension UserDefaultsADD {
         // using two exceptionCall to isolate fatal error
         exceptionCall {
             let data = try JSONEncoder().encode(self.cache)
-            userDefaults.set(data, forKey: self.cacheName)
+            UserDefaults.appGroup.set(data, forKey: self.cacheName)
         }
 
         // record disk write event
@@ -40,7 +40,7 @@ extension UserDefaultsADD {
     func loadCache() throws {
         // using two exceptionCall to isolate fatal error
         exceptionCall {
-            if let data = userDefaults.data(forKey: self.cacheName) {
+            if let data = UserDefaults.appGroup.data(forKey: self.cacheName) {
                 self.cache = try JSONDecoder().decode(C.self, from: data)
             }
         }
@@ -79,12 +79,12 @@ extension UserDefaultsADD where Self: LastUpdateADD {
         // using two exceptionCall to isolate fatal error
         exceptionCall {
             let data = try JSONEncoder().encode(self.cache)
-            userDefaults.set(data, forKey: self.cacheName)
+            UserDefaults.appGroup.set(data, forKey: self.cacheName)
         }
 
         exceptionCall {
             let data = try JSONEncoder().encode(self.lastUpdate)
-            userDefaults.set(data, forKey: self.timeCacheName)
+            UserDefaults.appGroup.set(data, forKey: self.timeCacheName)
         }
 
         // record disk write event
@@ -94,13 +94,13 @@ extension UserDefaultsADD where Self: LastUpdateADD {
     func loadCache() throws {
         // using two exceptionCall to isolate fatal error
         exceptionCall {
-            if let data = userDefaults.data(forKey: self.cacheName) {
+            if let data = UserDefaults.appGroup.data(forKey: self.cacheName) {
                 self.cache = try JSONDecoder().decode(C.self, from: data)
             }
         }
 
         exceptionCall {
-            if let data = userDefaults.data(forKey: self.timeCacheName) {
+            if let data = UserDefaults.appGroup.data(forKey: self.timeCacheName) {
                 self.lastUpdate = try JSONDecoder().decode(Date.self, from: data)
             }
         }

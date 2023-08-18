@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExamSettingView: View {
-    @AppStorage("hiddenExamName", store: userDefaults) var hiddenExamName: [String] = []
+    @AppStorage("hiddenExamName", store: UserDefaults.appGroup) var hiddenExamName: [String] = []
 
     func delete(at offsets: IndexSet) {
         hiddenExamName.remove(atOffsets: offsets)

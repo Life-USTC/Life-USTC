@@ -27,11 +27,11 @@ enum TPNSClient {
         // SecretKey is also stored in userDefaults: UserDefaults with key "TPNSsecretKey", throw error if not found
 
         let timestamp = Int(Date().timeIntervalSince1970)
-        guard let accessID = userDefaults.string(forKey: "TPNSaccessID") else {
+        guard let accessID = UserDefaults.appGroup.string(forKey: "TPNSaccessID") else {
             throw TPNSClientError.noAccessID
         }
 
-        guard let secretKey = userDefaults.string(forKey: "TPNSsecretKey") else {
+        guard let secretKey = UserDefaults.appGroup.string(forKey: "TPNSsecretKey") else {
             throw TPNSClientError.noSecretKey
         }
 

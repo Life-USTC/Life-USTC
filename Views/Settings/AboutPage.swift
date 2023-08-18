@@ -36,7 +36,7 @@ struct AboutApp: View {
                 .resizable()
                 .frame(width: 200, height: 200)
                 .onTapGesture(count: 5) {
-                    UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
+                    UIPasteboard.general.string = String(describing: Array(UserDefaults.appGroup.dictionaryRepresentation()))
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .contextMenu {

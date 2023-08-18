@@ -24,14 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func shouldRunUpdate(on version: String) -> Bool {
 #if DEBUG
         // Update on developing: if previousVersion <= version
-        if let previousVersion = userDefaults.string(forKey: "version"),
+        if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
            previousVersion.versionCompare(version) == .orderedAscending
         {
             return false
         }
 #else
         // Update on release: if previousVersion < version
-        if let previousVersion = userDefaults.string(forKey: "version"),
+        if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
            previousVersion.versionCompare(version) == .orderedAscending ||
            previousVersion.versionCompare(version) == .orderedSame
         {
@@ -50,29 +50,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // if inside userDefaults, key feedSourceCache exists, then delete it
-        if userDefaults.object(forKey: "feedSourceCache") != nil {
-            userDefaults.removeObject(forKey: "feedSourceCache")
+        if UserDefaults.appGroup.object(forKey: "feedSourceCache") != nil {
+            UserDefaults.appGroup.removeObject(forKey: "feedSourceCache")
         }
 
         if UserDefaults.standard.object(forKey: "homeShowPostNumbers") != nil {
             UserDefaults.standard.removeObject(forKey: "homeShowPostNumbers")
         }
 
-        if userDefaults.object(forKey: "passportUsername") != nil {
-            userDefaults.removeObject(forKey: "passportUsername")
+        if UserDefaults.appGroup.object(forKey: "passportUsername") != nil {
+            UserDefaults.appGroup.removeObject(forKey: "passportUsername")
         }
 
-        if userDefaults.object(forKey: "passportPassword") != nil {
-            userDefaults.removeObject(forKey: "passportPassword")
+        if UserDefaults.appGroup.object(forKey: "passportPassword") != nil {
+            UserDefaults.appGroup.removeObject(forKey: "passportPassword")
         }
 
-        if userDefaults.object(forKey: "semesterID") != nil {
-            userDefaults.setValue(Int(userDefaults.string(forKey: "semesterID") ?? "0") ?? 0, forKey: "semesterIDInt")
-            userDefaults.removeObject(forKey: "semesterID")
+        if UserDefaults.appGroup.object(forKey: "semesterID") != nil {
+            UserDefaults.appGroup.setValue(Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0") ?? 0, forKey: "semesterIDInt")
+            UserDefaults.appGroup.removeObject(forKey: "semesterID")
         }
 
         // set version to 1.0.2
-        userDefaults.set("1.0.2", forKey: "version")
+        UserDefaults.appGroup.set("1.0.2", forKey: "version")
     }
 
 #if IOS_SIMULATOR
@@ -95,7 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         startJSRuntime()
         version1_0_2Update()
-        if userDefaults.value(forKey: "useNotification") as? Bool ?? true {
+        if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool ?? true {
             startTPNS()
         }
         return true

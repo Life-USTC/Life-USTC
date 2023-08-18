@@ -26,7 +26,7 @@ struct FeedSourceView: View {
 
 struct AllSourceView: View {
     @EnvironmentObject var appDelegate: AppDelegate
-    @AppStorage("useNotification", store: userDefaults) var useNotification = true
+    @AppStorage("useNotification", store: UserDefaults.appGroup) var useNotification = true
     @State var feeds: [Feed] = []
     @State var status: AsyncViewStatus = .inProgress
 
