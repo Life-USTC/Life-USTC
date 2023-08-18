@@ -5,20 +5,22 @@
 //  Created by Tiankai Ma on 2023/2/24.
 //
 
-import EventKit
+import Foundation
 import SwiftSoup
-import SwiftUI
-import WidgetKit
 
-final class USTCExamDelegate: ExamDelegateProtocol {
+class USTCExamDelegate: ExamDelegateProtocol {
     static var shared = USTCExamDelegate()
 
     func refresh() async throws -> [Exam] {
+        let examURL = URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!
         if try await !LoginClients.ustcUgAAS.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
-        let (data, _) = try await URLSession.shared.data(from: URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!)
+        var request = URLRequest(url: examURL)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, _) = try await URLSession.shared.data(for: request)
+
         guard let dataString = String(data: data, encoding: .utf8) else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
         }
@@ -45,18 +47,21 @@ final class USTCExamDelegate: ExamDelegateProtocol {
     }
 }
 
-private func parse(rawTime: String) -> (time: Date, description: String, startTime: Date, endTime: Date)? {
-    let dateString = String(rawTime.prefix(10))
+private func parse(rawTime: String) -> (startTime: Date, endTime: Date)? {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
-    guard let result = dateFormatter.date(from: dateString) else {
+    guard let baseDate = dateFormatter.date(from: String(rawTime.prefix(10))) else {
         return nil
     }
-    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map { Int($0.0)! }
+
+    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map { Double($0.0)! }
+
     if times.count != 4 {
         return nil
     }
-    let startTime = result.addingTimeInterval(TimeInterval(times[0] * 60 * 60 + times[1] * 60))
-    let endTime = result.addingTimeInterval(TimeInterval(times[2] * 60 * 60 + times[3] * 60))
-    return (result.stripTime(), String(rawTime.suffix(11)), startTime, endTime)
+
+    let startTime = baseDate.addingTimeInterval(times[0] * 60 * 60 + times[1] * 60)
+    let endTime = baseDate.addingTimeInterval(times[2] * 60 * 60 + times[3] * 60)
+
+    return (startTime, endTime)
 }
