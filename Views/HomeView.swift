@@ -14,9 +14,9 @@ private struct HomeFeature {
     var preview: AnyView
 }
 
-struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
+struct HomeView: View {
     @State var date = Date()
-    @ObservedObject var examDelegate: ExamDelegate
+//    @ObservedObject var examDelegate: ExamDelegate
 
     @State var navigationToSettingsView = false
     @State private var datePickerShown = false
@@ -42,11 +42,13 @@ struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
     }
 
     var exams: [Exam] {
-        examDelegate.data
+//        examDelegate.data
+        []
     }
 
     var examStatus: AsyncViewStatus {
-        examDelegate.status
+//        examDelegate.status
+        .cached
     }
 
     var mmddFormatter: DateFormatter {
@@ -56,9 +58,9 @@ struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
         return tmp
     }
 
-    func update(forceUpdate: Bool = false) {
+    func update(forceUpdate _: Bool = false) {
 //        curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
-        examDelegate.userTriggerRefresh(forced: forceUpdate)
+//        examDelegate.userTriggerRefresh(forced: forceUpdate)
     }
 
     var curriculumView: some View {
@@ -140,14 +142,14 @@ struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
                     Spacer()
 
                     NavigationLink {
-                        SharedExamView
+//                        SharedExamView
                     } label: {
                         Image(systemName: "chevron.right")
                     }
                 }
 
-                ExamPreview(exams: examDelegate.data)
-                    .asyncViewStatusMask(status: examStatus)
+//                ExamPreview(exams: examDelegate.data)
+//                    .asyncViewStatusMask(status: examStatus)
             }
 
             Spacer()
@@ -196,7 +198,7 @@ struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SharedHomeView
+//            SharedHomeView
         }
     }
 }

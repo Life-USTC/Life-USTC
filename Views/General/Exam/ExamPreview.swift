@@ -24,7 +24,7 @@ struct ExamPreview: View {
 
     func makeView(with exams: [Exam]) -> some View {
         VStack {
-            ForEach(exams) { exam in
+            ForEach(exams, id: \.lessonCode) { exam in
                 VStack {
                     Spacer()
                     HStack {

@@ -10,13 +10,14 @@ import SwiftUI
 import WidgetKit
 
 struct ExamProvider: TimelineProvider {
+    @ManagedData(ManagedDataSource.exam) var exams: [Exam]?
     func placeholder(in _: Context) -> SimpleEntry {
         SimpleEntry.example
     }
 
     func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         Task {
-            let exams = try await Exam.sharedDelegate.retrive()
+            let exams = try await _exams.retrive() ?? []
             let entry = SimpleEntry(exams: exams)
             completion(entry)
         }
@@ -24,7 +25,7 @@ struct ExamProvider: TimelineProvider {
 
     func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
-            var exams = try await Exam.sharedDelegate.retrive()
+            var exams = try await _exams.retrive() ?? []
             exams = Exam.show(exams)
             let entry = SimpleEntry(exams: exams)
 
@@ -142,7 +143,7 @@ struct ExamWidgetEntryView: View {
     var listView: some View {
         VStack(alignment: .leading, spacing: 5) {
             examSymbolView
-            ForEach(exams.prefix(numberToShow)) { exam in
+            ForEach(exams.prefix(numberToShow), id: \.lessonCode) { exam in
                 Divider()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
@@ -191,7 +192,7 @@ struct ExamWidgetEntryView: View {
             Text("Exams:")
                 .font(.body)
                 .fontWeight(.semibold)
-            ForEach(exams.prefix(2)) { exam in
+            ForEach(exams.prefix(2), id: \.lessonCode) { exam in
                 HStack {
                     Text(exam.courseName)
                         .strikethrough(exam.isFinished)

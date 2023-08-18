@@ -10,17 +10,13 @@ import SwiftSoup
 import SwiftUI
 import WidgetKit
 
-struct Exam: Codable, Identifiable, Equatable {
-    var id: String {
-        lessonCode
-    }
-
+struct Exam: Codable, Equatable {
     // MARK: - Information about the course
 
     /// Code to indicate which exact lesson the student is tanking, like MATH1000.01
     ///
     /// - Description:
-    /// Make sure this is indentical on Score & Course.
+    /// Make sure this is indentical in Score & Course.
     var lessonCode: String
 
     /// - Important:
@@ -35,8 +31,6 @@ struct Exam: Codable, Identifiable, Equatable {
     /// Shown on UI, please set a length limit
     ///
     /// - Description:
-    /// ## Localizations:
-    /// ## Localizations
     /// Some notations are localized, such as 期末考试 <=> Final, 期中考试 <=> Mid-term, 小测 <=> Quiz
     /// Meaning that you don't have to localization on your own
     /// Try convert to this standard, or file issue on GitHub.
@@ -52,43 +46,35 @@ struct Exam: Codable, Identifiable, Equatable {
     var classRoomBuildingName: String
     var classRoomDistrict: String
     var description: String
+}
 
-    init(lessonCode: String,
-         typeName: String,
-         courseName: String,
-         rawTime: String,
-         classRoomName: String,
-         classRoomBuildingName: String,
-         classRoomDistrict: String = "",
-         description: String = "")
-    {
-        self.lessonCode = lessonCode
-        self.typeName = typeName
-        self.courseName = courseName
-        self.rawTime = rawTime
-        self.classRoomName = classRoomName
-        self.classRoomBuildingName = classRoomBuildingName
-        self.classRoomDistrict = classRoomDistrict
-        self.description = description
+extension Exam {
+    static func clean(_ exams: [Exam]) -> [Exam] {
+        let hiddenExamName = ([String].init(rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName") ?? "") ?? []).filter { !$0.isEmpty }
+        let result = exams.filter { exam in
+            for name in hiddenExamName {
+                if exam.courseName.contains(name) {
+                    return false
+                }
+            }
+            return true
+        }
+        let hiddenResult = exams.filter { exam in
+            for name in hiddenExamName {
+                if exam.courseName.contains(name) {
+                    return true
+                }
+            }
+            return false
+        }
+        return Exam.show(result) + Exam.show(hiddenResult)
     }
 }
 
-protocol ExamDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == [Exam].Type {}
+protocol ExamDelegateProtocol {
+    func refresh() async throws -> [Exam]
+}
 
-extension ExamDelegateProtocol {
-    var nameToShowWhenUpdate: String {
-        "Exam"
-    }
-
-    func afterForceUpdate() async throws {
-        lastUpdate = Date()
-        try saveCache()
-        let data = Exam.merge(data, with: try await parseCache())
-
-        if self.data != data {
-            InAppNotificationDelegate.shared.addInfoMessage(String(format: "%@ have update".localized,
-                                                                   nameToShowWhenUpdate.localized))
-        }
-        foregroundUpdateData(with: data)
-    }
+extension ManagedDataSource {
+    static let exam = ManagedUserDefaults(key: "exam", refreshFunc: Exam.sharedDelegate.refresh)
 }

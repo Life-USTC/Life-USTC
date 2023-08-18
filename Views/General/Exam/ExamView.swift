@@ -7,37 +7,37 @@
 
 import SwiftUI
 
-struct ExamView<ExamDelegate: ExamDelegateProtocol>: View {
-    @ObservedObject var examDelegate: ExamDelegate
+struct ExamView: View {
     @State var saveToCalendarStatus: AsyncViewStatus? = nil
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if examDelegate.data.isEmpty {
-                VStack {
-                    Text("No More Exam!")
-                        .font(.system(.body, design: .monospaced))
-                        .padding(.vertical, 10)
-                }
-            } else {
-                ForEach(examDelegate.data) { exam in
-                    SingleExamView(exam: exam)
-                    Divider()
-                }
-                .padding(.top, 5)
-            }
+//            if examDelegate.data.isEmpty {
+//                VStack {
+//                    Text("No More Exam!")
+//                        .font(.system(.body, design: .monospaced))
+//                        .padding(.vertical, 10)
+//                }
+//            } else {
+//                ForEach(examDelegate.data) { exam in
+//                    SingleExamView(exam: exam)
+//                    Divider()
+//                }
+//                .padding(.top, 5)
+//            }
+            EmptyView()
         }
         .padding(.horizontal, 15)
-        .asyncViewStatusMask(status: examDelegate.status)
-        .refreshable {
-            examDelegate.userTriggerRefresh()
-        }
+//        .asyncViewStatusMask(status: examDelegate.status)
+//        .refreshable {
+//            examDelegate.userTriggerRefresh()
+//        }
         .toolbar {
             Button {
                 Task {
                     saveToCalendarStatus = .inProgress
                     do {
-                        try await Exam.saveToCalendar(examDelegate.data)
+//                        try await Exam.saveToCalendar(examDelegate.data)
                         saveToCalendarStatus = .success
                     } catch {
                         saveToCalendarStatus = .failure(error.localizedDescription)
@@ -52,9 +52,9 @@ struct ExamView<ExamDelegate: ExamDelegateProtocol>: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    init(examDelegate: ExamDelegate) {
-        self.examDelegate = examDelegate
-    }
+//    init(examDelegate: ExamDelegate) {
+//        self.examDelegate = examDelegate
+//    }
 }
 
 struct ExamView_Previews: PreviewProvider {
