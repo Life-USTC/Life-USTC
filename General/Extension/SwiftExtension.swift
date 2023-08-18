@@ -159,3 +159,27 @@ extension Int {
         return ((left % right) + right) % right
     }
 }
+
+extension Color: Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        let hexString = String(description.dropFirst())
+        try container.encode(hexString)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let hexString = try container.decode(String.self)
+        self.init(hexString)
+    }
+}
+
+extension Date: RawRepresentable {
+    public var rawValue: String {
+        timeIntervalSinceReferenceDate.description
+    }
+
+    public init?(rawValue: String) {
+        self = Date(timeIntervalSinceReferenceDate: Double(rawValue) ?? 0.0)
+    }
+}

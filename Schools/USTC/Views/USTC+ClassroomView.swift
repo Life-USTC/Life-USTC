@@ -118,131 +118,137 @@ private struct USTCSingleClassroomView: View {
 }
 
 struct USTCClassroomView: View {
-    @StateObject var ustcCatalogDelegate = UstcClassroomDelegate.shared
-    var allLessons: [String: [Lesson]] {
-        ustcCatalogDelegate.data
-    }
-
-    var status: AsyncViewStatus {
-        ustcCatalogDelegate.status
-    }
-
-    @State var showSheet: Bool = false
-    @State var date = Date()
-    @AppStorage("showOneLine") var showOneLine = true
-    @AppStorage("showEmptyRoomOnly") var showEmptyRoomOnly = false
-    @AppStorage("filteredBuildingList") var filteredBuildingList: [String] = []
-
-    func filterLesson(building: String, room: String) -> [Lesson] {
-        allLessons[building]?.filter { $0.classroomName == room } ?? []
-    }
-
-    func statusFor(building: String, room: String) -> Bool {
-        filterLesson(building: building, room: room).first(where: { timeToInt($0.startTime) <= currentTimeInt && currentTimeInt <= timeToInt($0.endTime) }) == nil
-    }
-
-    func makeView(with building: String) -> some View {
-        VStack(spacing: showOneLine ? 2 : 5) {
-            ForEach(UstcClassroomDelegate.buildingRooms[building] ?? [], id: \.self) { room in
-                if !showEmptyRoomOnly || statusFor(building: building, room: room) {
-                    USTCSingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
-                }
-            }
-        }
-    }
-
-    func settingSheet() -> some View {
-        NavigationStack {
-            List {
-                Section {
-                    DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
-                        .onChange(of: date) { newDate in
-                            ustcCatalogDelegate.date = newDate
-                            ustcCatalogDelegate.userTriggerRefresh(forced: true)
-                        }
-                        .disabled(ustcCatalogDelegate.status.isRefreshing)
-                    Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
-                    Toggle("Show one line", isOn: $showOneLine)
-                } header: {
-                    Text("General")
-                }
-
-                Section {
-                    ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
-                        Button {
-                            if filteredBuildingList.contains(building) {
-                                filteredBuildingList.removeAll(where: { $0 == building })
-                            } else {
-                                filteredBuildingList.append(building)
-                            }
-                        } label: {
-                            HStack {
-                                Text(UstcClassroomDelegate.buildingName(with: building))
-                                    .foregroundColor(.primary)
-                                if !filteredBuildingList.contains(building) {
-                                    Spacer()
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                } header: {
-                    Text("Buildings to show")
-                }
-            }
-            .navigationTitle("Settings")
-            .asyncViewStatusMask(status: ustcCatalogDelegate.status)
-        }
-    }
-
-    private let labels: [(text: String, color: Color)] = [("Lesson", .blue),
-                                                          ("Temp", .green),
-                                                          ("Exam", .red)]
-
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            HStack {
-                Spacer()
-                ForEach(labels, id: \.text) { label in
-                    Text(label.text.localized)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(label.color.opacity(0.7))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(lineWidth: 0.3)
-                                        .fill(Color.secondary)
-                                )
-                        )
-                }
-            }
-            ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
-                if !filteredBuildingList.contains(building) {
-                    Text(UstcClassroomDelegate.buildingName(with: building))
-                        .font(.title3)
-                        .padding()
-                        .hStackLeading()
-                    makeView(with: building)
-                }
-            }
-        }
-        .asyncViewStatusMask(status: status)
-        .padding(.horizontal, 5)
-        .navigationBarTitle("Classroom List", displayMode: .inline)
-        .toolbar {
-            if status.isRefreshing {
-                ProgressView()
-            }
-
-            Button {
-                showSheet = true
-            } label: {
-                Label("Settings", systemImage: "gearshape")
-            }
-        }
-        .sheet(isPresented: $showSheet, content: settingSheet)
+        Text("TBC")
     }
 }
+
+// struct USTCClassroomView: View {
+//    @StateObject var ustcCatalogDelegate = UstcClassroomDelegate.shared
+//    var allLessons: [String: [Lesson]] {
+//        ustcCatalogDelegate.data
+//    }
+//
+//    var status: AsyncViewStatus {
+//        ustcCatalogDelegate.status
+//    }
+//
+//    @State var showSheet: Bool = false
+//    @State var date = Date()
+//    @AppStorage("showOneLine") var showOneLine = true
+//    @AppStorage("showEmptyRoomOnly") var showEmptyRoomOnly = false
+//    @AppStorage("filteredBuildingList") var filteredBuildingList: [String] = []
+//
+//    func filterLesson(building: String, room: String) -> [Lesson] {
+//        allLessons[building]?.filter { $0.classroomName == room } ?? []
+//    }
+//
+//    func statusFor(building: String, room: String) -> Bool {
+//        filterLesson(building: building, room: room).first(where: { timeToInt($0.startTime) <= currentTimeInt && currentTimeInt <= timeToInt($0.endTime) }) == nil
+//    }
+//
+//    func makeView(with building: String) -> some View {
+//        VStack(spacing: showOneLine ? 2 : 5) {
+//            ForEach(UstcClassroomDelegate.buildingRooms[building] ?? [], id: \.self) { room in
+//                if !showEmptyRoomOnly || statusFor(building: building, room: room) {
+//                    USTCSingleClassroomView(room: room, status: statusFor(building: building, room: room), lessons: filterLesson(building: building, room: room))
+//                }
+//            }
+//        }
+//    }
+//
+//    func settingSheet() -> some View {
+//        NavigationStack {
+//            List {
+//                Section {
+//                    DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
+//                        .onChange(of: date) { newDate in
+//                            ustcCatalogDelegate.date = newDate
+//                            ustcCatalogDelegate.userTriggerRefresh(forced: true)
+//                        }
+//                        .disabled(ustcCatalogDelegate.status.isRefreshing)
+//                    Toggle("Show empty room only", isOn: $showEmptyRoomOnly)
+//                    Toggle("Show one line", isOn: $showOneLine)
+//                } header: {
+//                    Text("General")
+//                }
+//
+//                Section {
+//                    ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
+//                        Button {
+//                            if filteredBuildingList.contains(building) {
+//                                filteredBuildingList.removeAll(where: { $0 == building })
+//                            } else {
+//                                filteredBuildingList.append(building)
+//                            }
+//                        } label: {
+//                            HStack {
+//                                Text(UstcClassroomDelegate.buildingName(with: building))
+//                                    .foregroundColor(.primary)
+//                                if !filteredBuildingList.contains(building) {
+//                                    Spacer()
+//                                    Image(systemName: "checkmark")
+//                                }
+//                            }
+//                        }
+//                    }
+//                } header: {
+//                    Text("Buildings to show")
+//                }
+//            }
+//            .navigationTitle("Settings")
+//            .asyncViewStatusMask(status: ustcCatalogDelegate.status)
+//        }
+//    }
+//
+//    private let labels: [(text: String, color: Color)] = [("Lesson", .blue),
+//                                                          ("Temp", .green),
+//                                                          ("Exam", .red)]
+//
+//    var body: some View {
+//        ScrollView(showsIndicators: false) {
+//            HStack {
+//                Spacer()
+//                ForEach(labels, id: \.text) { label in
+//                    Text(label.text.localized)
+//                        .foregroundColor(.white)
+//                        .padding(.horizontal, 10)
+//                        .padding(.vertical, 5)
+//                        .background(
+//                            RoundedRectangle(cornerRadius: 5)
+//                                .fill(label.color.opacity(0.7))
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 5)
+//                                        .stroke(lineWidth: 0.3)
+//                                        .fill(Color.secondary)
+//                                )
+//                        )
+//                }
+//            }
+//            ForEach(UstcClassroomDelegate.allBuildings, id: \.self) { building in
+//                if !filteredBuildingList.contains(building) {
+//                    Text(UstcClassroomDelegate.buildingName(with: building))
+//                        .font(.title3)
+//                        .padding()
+//                        .hStackLeading()
+//                    makeView(with: building)
+//                }
+//            }
+//        }
+//        .asyncViewStatusMask(status: status)
+//        .padding(.horizontal, 5)
+//        .navigationBarTitle("Classroom List", displayMode: .inline)
+//        .toolbar {
+//            if status.isRefreshing {
+//                ProgressView()
+//            }
+//
+//            Button {
+//                showSheet = true
+//            } label: {
+//                Label("Settings", systemImage: "gearshape")
+//            }
+//        }
+//        .sheet(isPresented: $showSheet, content: settingSheet)
+//    }
+// }
