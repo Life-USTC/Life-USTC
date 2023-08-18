@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-var SharedScoreView: some View {
-    ScoreView(scoreDeleage: USTCScoreDelegate.shared)
-}
-
 extension FeaturesView {
     static var availableFeatures: [String: [FeatureWithView]] {
         USTCExports.features

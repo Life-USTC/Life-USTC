@@ -8,23 +8,21 @@
 import Foundation
 import SwiftyJSON
 
-final class USTCScoreDelegate: ScoreDelegateProtocol {
+class USTCScoreDelegate: ScoreDelegateProtocol {
     static var shared = USTCScoreDelegate()
 
-    // MARK: - Protocol requirements
+    func refresh() async throws -> Score {
+        let scoreURL = URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!
+        if try await !LoginClients.ustcUgAAS.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
 
-    typealias D = Score
-    var lastUpdate: Date?
-    var cacheName: String = "UstcUgAASScoreCache"
-    var timeCacheName: String = "UstcUgAASLastUpdateScores"
-    @Published var status: AsyncViewStatus = .inProgress
-    var cache = JSON()
-    @Published var data: Score = .init()
-    var placeHolderData: Score = .example
+        var request = URLRequest(url: scoreURL)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
 
-    // MARK: - Start reading from here:
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let cache = try JSON(data: data)
 
-    func parseCache() async throws -> Score {
         var result = Score()
         let subJson = cache["stdGradeRank"]
         result.gpa = cache["overview"]["gpa"].double ?? 0
@@ -36,33 +34,13 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
                 CourseScore(courseName: courseJSON["courseNameCh"].stringValue,
                             courseCode: courseJSON["courseCode"].stringValue,
                             lessonCode: courseJSON["lessonCode"].stringValue,
-                            semesterID: Int(courseJSON["semesterAssoc"].stringValue)!,
+                            semesterID: courseJSON["semesterAssoc"].stringValue,
                             semesterName: courseJSON["semesterCh"].stringValue,
                             credit: Double(courseJSON["credits"].stringValue)!,
                             gpa: Double(courseJSON["gp"].stringValue),
                             score: courseJSON["scoreCh"].stringValue)
             }
         }
-
         return result
-    }
-
-    func refreshCache() async throws {
-        if try await !LoginClients.ustcUgAAS.requireLogin() {
-            throw BaseError.runtimeError("UstcUgAAS Not logined")
-        }
-
-        let session = URLSession.shared
-        var request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-
-        let (data, _) = try await session.data(for: request)
-        cache = try JSON(data: data)
-
-        try await afterRefreshCache()
-    }
-
-    init() {
-        afterInit()
     }
 }

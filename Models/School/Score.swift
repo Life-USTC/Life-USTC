@@ -9,11 +9,7 @@ import SwiftUI
 import SwiftyJSON
 
 /// Store score for one course
-struct CourseScore: Identifiable, Equatable {
-    var id: String {
-        lessonCode
-    }
-
+struct CourseScore: Codable {
     // MARK: - Information about the course itself
 
     /// - Important:
@@ -43,7 +39,7 @@ struct CourseScore: Identifiable, Equatable {
     /// In USTC, this looks like this (you don't have to match this), however you do have to match with the IDs you provide in Course.
     /// 221: 2021 Fall
     /// 241: 2022 Spring
-    var semesterID: Int
+    var semesterID: String
 
     /// - Important: Shown on UI
     var semesterName: String
@@ -74,7 +70,7 @@ struct CourseScore: Identifiable, Equatable {
     init(courseName: String,
          courseCode: String,
          lessonCode: String,
-         semesterID: Int,
+         semesterID: String,
          semesterName: String,
          credit: Double,
          gpa: Double? = nil,
@@ -89,9 +85,18 @@ struct CourseScore: Identifiable, Equatable {
         self.gpa = gpa
         self.score = score
     }
+
+    static var example = CourseScore(courseName: "数学分析B1",
+                                     courseCode: "MATH10001",
+                                     lessonCode: "MATH10001.01",
+                                     semesterID: "221",
+                                     semesterName: "2021春季学期",
+                                     credit: 3.0,
+                                     gpa: 4.3,
+                                     score: "95")
 }
 
-struct Score: Equatable {
+struct Score: Codable {
     /// List of course, default order matters for UI.
     var courses: [CourseScore]
 
@@ -128,21 +133,10 @@ struct Score: Equatable {
                                majorName: "废理兴工")
 }
 
-protocol ScoreDelegateProtocol: ObservableObject, UserDefaultsADD & LastUpdateADD & NotifyUserWhenUpdateADD where D.Type == Score.Type {}
-
-extension ScoreDelegateProtocol {
-    var nameToShowWhenUpdate: String {
-        "Score"
-    }
+protocol ScoreDelegateProtocol {
+    func refresh() async throws -> Score
 }
 
-extension CourseScore {
-    static var example = CourseScore(courseName: "数学分析B1",
-                                     courseCode: "MATH10001",
-                                     lessonCode: "MATH10001.01",
-                                     semesterID: 221,
-                                     semesterName: "2021春季学期",
-                                     credit: 3.0,
-                                     gpa: 4.3,
-                                     score: "95")
+extension ManagedDataSource {
+    static let score = ManagedUserDefaults(key: "score", refreshFunc: Score.sharedDelegate.refresh)
 }
