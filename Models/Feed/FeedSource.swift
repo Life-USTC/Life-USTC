@@ -11,12 +11,7 @@ import SwiftyJSON
 
 private let importantLabels: Set<String> = ["!!important", "Important", "!!notice"]
 
-class FeedSource: AsyncDataDelegate {
-    typealias D = [Feed]
-    @Published var status: AsyncViewStatus = .cached // setting default to .cached to avoid loading at startup
-    @Published var data: [Feed] = []
-    var placeHolderData: [Feed] = [.example]
-
+class FeedSource: ObservableObject {
     var url: URL
     var name: String
     var id: UUID
@@ -24,7 +19,7 @@ class FeedSource: AsyncDataDelegate {
     var image: String? // system image
     var color: Color?
 
-    func parseCache() async throws -> D {
+    func parseCache() async throws -> [Feed] {
         guard let cache = FeedCache.feedSourceCache(using: id) else {
             throw BaseError.runtimeError("No id found inside cache for \(name)")
         }
@@ -64,7 +59,7 @@ class FeedSource: AsyncDataDelegate {
         self.image = image
         self.color = color
 
-        userTriggerRefresh(forced: false)
+//        userTriggerRefresh(forced: false)
     }
 }
 
@@ -88,7 +83,8 @@ extension FeedSource {
         var result: [Feed] = []
         var important: [Feed] = []
         for source in FeedSource.allToShow {
-            let feeds = try await source.retrive()
+//            let feeds = try await source.retrive()
+            let feeds: [Feed] = []
             for feed in feeds {
                 if feed.keywords.isDisjoint(with: importantLabels) {
                     result.append(feed)

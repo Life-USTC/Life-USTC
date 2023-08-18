@@ -36,20 +36,20 @@ struct HomeView: View {
         0
     }
 
-    var curriculumStatus: AsyncViewStatus {
-//        curriculumDelegate.status
-        .cached
-    }
+//    var curriculumStatus: AsyncViewStatus {
+    ////        curriculumDelegate.status
+//        .cached
+//    }
 
     var exams: [Exam] {
 //        examDelegate.data
         []
     }
 
-    var examStatus: AsyncViewStatus {
-//        examDelegate.status
-        .cached
-    }
+//    var examStatus: AsyncViewStatus {
+    ////        examDelegate.status
+//        .cached
+//    }
 
     var mmddFormatter: DateFormatter {
         let tmp = DateFormatter()
@@ -125,7 +125,7 @@ struct HomeView: View {
                 }
 
                 curriculumView
-                    .asyncViewStatusMask(status: curriculumStatus)
+//                    .asyncViewStatusMask(status: curriculumStatus)
             }
 
             Spacer(minLength: 30)

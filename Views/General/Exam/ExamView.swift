@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExamView: View {
-    @State var saveToCalendarStatus: AsyncViewStatus? = nil
+//    @State var saveToCalendarStatus: AsyncViewStatus? = nil
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -34,18 +34,18 @@ struct ExamView: View {
 //        }
         .toolbar {
             Button {
-                Task {
-                    saveToCalendarStatus = .inProgress
-                    do {
-//                        try await Exam.saveToCalendar(examDelegate.data)
-                        saveToCalendarStatus = .success
-                    } catch {
-                        saveToCalendarStatus = .failure(error.localizedDescription)
-                    }
-                }
+//                Task {
+//                    saveToCalendarStatus = .inProgress
+//                    do {
+                ////                        try await Exam.saveToCalendar(examDelegate.data)
+//                        saveToCalendarStatus = .success
+//                    } catch {
+//                        saveToCalendarStatus = .failure(error.localizedDescription)
+//                    }
+//                }
             } label: {
                 Image(systemName: "square.and.arrow.down")
-                    .asyncViewStatusMask(status: saveToCalendarStatus)
+//                    .asyncViewStatusMask(status: saveToCalendarStatus)
             }
         }
         .navigationTitle("Exam")
