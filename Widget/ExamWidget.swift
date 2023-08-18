@@ -95,7 +95,7 @@ struct ExamWidgetEntryView: View {
         VStack(alignment: .leading) {
             HStack {
                 examSymbolView
-                Text(exam.startTime, format: .dateTime.day().month())
+                Text(exam.startDate, format: .dateTime.day().month())
                     .font(.callout)
                     .fontWeight(.semibold)
                     .lineLimit(1)
@@ -114,7 +114,7 @@ struct ExamWidgetEntryView: View {
                     .fontWeight(.semibold)
             }
             HStack {
-                Text(exam.startTime, format: .dateTime.hour().minute())
+                Text(exam.startDate, format: .dateTime.hour().minute())
                 Spacer()
                 Text(exam.classRoomName)
             }
@@ -157,7 +157,7 @@ struct ExamWidgetEntryView: View {
                                 .foregroundColor(.secondary)
                         }
                         HStack {
-                            Text(exam.startTime, format: .dateTime.day().month())
+                            Text(exam.startDate, format: .dateTime.day().month())
                                 .font(.footnote)
                                 .fontWeight(.heavy)
                                 .foregroundColor(.blue.opacity(0.8))
@@ -235,12 +235,6 @@ struct ExamWidgetEntryView: View {
                     noMoreExamView
                 }
         }
-    }
-}
-
-private extension Exam {
-    var detailString: String {
-        "\(timeDescription) @ \(classRoomName)"
     }
 }
 
