@@ -1,8 +1,8 @@
 //
-//  UstcCatalog.swift
-//  Life@USTC (iOS)
+//  USTC+ClassroomDelegate.swift
+//  Life@USTC
 //
-//  Created by TiankaiMa on 2023/1/15.
+//  Created by Tiankai Ma on 2023/8/18.
 //
 
 import SwiftUI
@@ -113,7 +113,7 @@ func max(_ lhs: Lesson, _ rhs: Lesson) -> Lesson {
     return result
 }
 
-class UstcCatalogClient: AsyncDataDelegate {
+class UstcClassroomDelegate: AsyncDataDelegate {
     var requireUpdate: Bool = true
     var cache: [String: JSON] = [:]
 
@@ -121,7 +121,7 @@ class UstcCatalogClient: AsyncDataDelegate {
     @Published var data: [String: [Lesson]] = [:]
     var placeHolderData: [String: [Lesson]] {
         var result: [String: [Lesson]] = [:]
-        for building in UstcCatalogClient.allBuildings {
+        for building in UstcClassroomDelegate.allBuildings {
             result[building] = [.example]
         }
         return result
@@ -131,7 +131,7 @@ class UstcCatalogClient: AsyncDataDelegate {
 
     func parseCache() async throws -> [String: [Lesson]] {
         var result: [String: [Lesson]] = [:]
-        for building in UstcCatalogClient.allBuildings {
+        for building in UstcClassroomDelegate.allBuildings {
             if let json = cache[building] {
                 for (_, subJson) in json["timetable"]["lessons"] {
                     let tmp = Lesson(classroomName: subJson["classroomName"].stringValue,
@@ -177,7 +177,7 @@ class UstcCatalogClient: AsyncDataDelegate {
     }
 
     func refreshCache() async throws {
-        for building in UstcCatalogClient.allBuildings {
+        for building in UstcClassroomDelegate.allBuildings {
             let validToken = try await validToken()
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -214,14 +214,19 @@ class UstcCatalogClient: AsyncDataDelegate {
     }
 }
 
-extension UstcCatalogClient {
-    static var shared = UstcCatalogClient()
+extension UstcClassroomDelegate {
+    static var shared = UstcClassroomDelegate()
     static var allBuildings = ["1", "2", "3", "5", "17", "11", "12", "13", "14", "22"]
-    static var buildingNames: [String: String] = ["1": "第一教学楼", "2": "第二教学楼",
-                                                  "3": "第三教学楼", "5": "第五教学楼",
-                                                  "17": "先研院未来中心", "11": "高新校区图书教育中心A楼",
-                                                  "12": "高新校区图书教育中心B楼", "13": "高新校区图书教育中心C楼",
-                                                  "14": "高新校区师生活动中心", "22": "高新校区信智楼"]
+    static var buildingNames: [String: String] = ["1": "第一教学楼",
+                                                  "2": "第二教学楼",
+                                                  "3": "第三教学楼",
+                                                  "5": "第五教学楼",
+                                                  "17": "先研院未来中心",
+                                                  "11": "高新校区图书教育中心A楼",
+                                                  "12": "高新校区图书教育中心B楼",
+                                                  "13": "高新校区图书教育中心C楼",
+                                                  "14": "高新校区师生活动中心",
+                                                  "22": "高新校区信智楼"]
     static var buildingRooms: [String: [String]] = parseRoomJson()
 
     static var buildingRoomJsonCache: JSON?

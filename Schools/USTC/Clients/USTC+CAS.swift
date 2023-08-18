@@ -6,51 +6,22 @@
 //
 
 import Foundation
-import os
-
-let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
-
-extension URL {
-    /// Mark self for the CAS service to identify as a service
-    ///
-    ///  - Parameters:
-    ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
-    func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(url: casServer.appendingPathComponent("login"), resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "service", value: absoluteString)]
-        return components.url ?? exampleURL
-    }
-
-    func ustcCASLoginMarkup() -> URL {
-        CASLoginMarkup(casServer: ustcCasUrl)
-    }
-}
 
 /// A cas client to login to https://passport.ustc.edu.cn/
-class UstcCasClient: ObservableObject {
-    static var shared = UstcCasClient(session: .shared)
+class UstcCasClient: LoginClientProtocol {
+    static var shared = UstcCasClient()
 
-    var session: URLSession
+    var session: URLSession = .shared
 
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
-
-    @Published public var inputUsername: String = ""
-    @Published public var inputPassword: String = ""
-
-    @Published var lastLogined: Date?
-
-    init(session: URLSession, lastLogined _: Date? = nil) {
-        self.session = session
-        inputUsername = username
-        inputPassword = password
-    }
 
     var precheckFails: Bool {
         username.isEmpty || password.isEmpty
     }
 
     func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+        let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
@@ -103,74 +74,32 @@ class UstcCasClient: ObservableObject {
             print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
         }
 
-        if session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" || $0.name == "TGC" }) ?? false {
-            lastLogined = .now
-            return true
-        }
-
-        lastLogined = nil
-        return false
+        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" || $0.name == "TGC" }) ?? false
     }
 
-    @available(*, deprecated)
-    func login(undeterimined _: Bool = false) async throws -> Bool {
+    func login() async throws -> Bool {
         try await loginToCAS()
     }
 
-    func checkLogined() -> Bool {
-        if precheckFails || lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 5) {
-            return false
-        }
-        let session = URLSession.shared
-        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" }) ?? false
+    init() {}
+}
+
+extension LoginClients {
+    static let ustcCAS = LoginClient(UstcCasClient.shared)
+}
+
+extension URL {
+    /// Mark self for the CAS service to identify as a service
+    ///
+    ///  - Parameters:
+    ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
+    func CASLoginMarkup(casServer: URL) -> URL {
+        var components = URLComponents(url: casServer.appendingPathComponent("login"), resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "service", value: absoluteString)]
+        return components.url ?? exampleURL
     }
 
-    var loginTask: Task<Bool, Error>?
-
-    func requireLogin() async throws -> Bool {
-        if let loginTask {
-            print("network<UstcCAS>: login task already running, [WAITING RESULT]")
-            return try await loginTask.value
-        }
-
-        if checkLogined() {
-            print("network<UstcCAS>: Already logged in, passing")
-            return true
-        }
-
-        let task = Task {
-            do {
-                print("network<UstcCAS>: No login task running, [WAITING RESULT]")
-                let result = try await self.loginToCAS()
-                loginTask = nil
-                print("network<UstcCAS>: login task finished, result: \(result)")
-                return result
-            } catch {
-                loginTask = nil
-                throw (error)
-            }
-        }
-        loginTask = task
-        return try await task.value
-    }
-
-    func clearLoginStatus() {
-        lastLogined = nil
-    }
-
-    func checkAndLogin() async throws -> Bool {
-        guard !inputUsername.isEmpty else {
-            return false
-        }
-        guard !inputPassword.isEmpty else {
-            return false
-        }
-
-        username = inputUsername
-        password = inputPassword
-
-        clearLoginStatus()
-        await URLSession.shared.reset()
-        return try await loginToCAS()
+    func ustcCASLoginMarkup() -> URL {
+        CASLoginMarkup(casServer: ustcCasUrl)
     }
 }
