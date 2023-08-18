@@ -46,6 +46,15 @@ struct Exam: Codable, Equatable {
     var classRoomBuildingName: String
     var classRoomDistrict: String
     var description: String
+
+    static let example: Exam = .init(lessonCode: "MATH10001.01",
+                                     courseName: "数学分析B1",
+                                     typeName: "期末考试",
+                                     rawTime: "2023-06-28 14:30~16:30",
+                                     classRoomName: "5401",
+                                     classRoomBuildingName: "第五教学楼",
+                                     classRoomDistrict: "东区",
+                                     description: "")
 }
 
 extension Exam {

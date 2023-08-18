@@ -15,7 +15,7 @@ struct Lecture: Codable {
     var name: String
     var location: String
 
-    static var example = Self(startDate: Date(),
+    static let example = Self(startDate: Date(),
                               endDate: Date() + DateComponents(hour: 1),
                               name: "Example Lecture",
                               location: "Example Location")

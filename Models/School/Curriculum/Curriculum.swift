@@ -10,6 +10,9 @@ import Foundation
 struct Curriculum: Codable {
     var semesters: [Semester]
     var semesterIDList: [String]
+
+    static let example = Curriculum(semesters: [.example],
+                                    semesterIDList: [Semester.example.id])
 }
 
 protocol CurriculumProtocol {
