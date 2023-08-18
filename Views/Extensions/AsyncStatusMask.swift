@@ -29,10 +29,6 @@ struct AsyncStatusMask: ViewModifier {
             HStack {
                 localStatusLight
                 refreshStatusLight
-                if status?.refresh == .waiting {
-                    ProgressView()
-                        .progressViewStyle(.linear)
-                }
                 Spacer()
             }
             content
