@@ -49,7 +49,7 @@ enum USTCExports {
         USTCExamDelegate.shared
     }
 
-    static var curriculumDelegate: some CurriculumDelegateProtocol {
+    static var curriculumDelegate: some CurriculumProtocol {
         USTCCurriculumDelegate.shared
     }
 

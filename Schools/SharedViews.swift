@@ -16,12 +16,7 @@ var SharedExamView: some View {
 }
 
 var SharedHomeView: some View {
-    HomeView(curriculumDelegate: USTCCurriculumDelegate.shared,
-             examDelegate: USTCExamDelegate.shared)
-}
-
-var SharedCurriculumView: some View {
-    CurriculumView(curriculumDelegate: USTCCurriculumDelegate.shared)
+    HomeView(examDelegate: USTCExamDelegate.shared)
 }
 
 extension FeaturesView {

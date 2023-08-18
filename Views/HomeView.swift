@@ -14,30 +14,31 @@ private struct HomeFeature {
     var preview: AnyView
 }
 
-struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
-    ExamDelegate: ExamDelegateProtocol>: View
-{
+struct HomeView<ExamDelegate: ExamDelegateProtocol>: View {
     @State var date = Date()
-    @ObservedObject var curriculumDelegate: CurriculumDelegate
     @ObservedObject var examDelegate: ExamDelegate
 
     @State var navigationToSettingsView = false
     @State private var datePickerShown = false
 
     var today_courses: [Course] {
-        curriculumDelegate.data.getCourses(for: date)
+//        curriculumDelegate.data.getCourses(for: date)
+        []
     }
 
     var tomorrow_courses: [Course] {
-        curriculumDelegate.data.getCourses(for: date.add(day: 1))
+//        curriculumDelegate.data.getCourses(for: date.add(day: 1))
+        []
     }
 
     var weekNumber: Int {
-        curriculumDelegate.data.weekNumber(for: date)
+//        curriculumDelegate.data.weekNumber(for: date)
+        0
     }
 
     var curriculumStatus: AsyncViewStatus {
-        curriculumDelegate.status
+//        curriculumDelegate.status
+        .cached
     }
 
     var exams: [Exam] {
@@ -56,7 +57,7 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
     }
 
     func update(forceUpdate: Bool = false) {
-        curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
+//        curriculumDelegate.userTriggerRefresh(forced: forceUpdate)
         examDelegate.userTriggerRefresh(forced: forceUpdate)
     }
 
@@ -114,7 +115,8 @@ struct HomeView<CurriculumDelegate: CurriculumDelegateProtocol,
                         .padding(.horizontal)
 
                     NavigationLink {
-                        SharedCurriculumView
+//                        SharedCurriculumView
+                        CurriculumView()
                     } label: {
                         Image(systemName: "chevron.right")
                     }

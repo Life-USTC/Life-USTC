@@ -44,7 +44,7 @@ struct USTCCASLoginView: View {
                             .resizable()
                             .frame(width: 80, height: 80)
                             .onTapGesture(count: 5) {
-                                UIPasteboard.general.string = String(describing: Array(userDefaults.dictionaryRepresentation()))
+                                UIPasteboard.general.string = String(describing: Array(UserDefaults.appGroup.dictionaryRepresentation()))
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .shadow(radius: 4)

@@ -29,7 +29,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
 
     func parseCache() async throws -> [Exam] {
         let hiddenExamName = (
-            [String].init(rawValue: userDefaults.string(forKey: "hiddenExamName") ?? ""
+            [String].init(rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName") ?? ""
             ) ?? []).filter {
             !$0.isEmpty
         }

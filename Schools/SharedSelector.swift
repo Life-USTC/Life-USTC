@@ -8,7 +8,7 @@
 import Foundation
 
 extension Curriculum {
-    static var sharedDelegate: any CurriculumDelegateProtocol {
+    static var sharedDelegate: any CurriculumProtocol {
         USTCExports.curriculumDelegate
     }
 }
@@ -22,11 +22,5 @@ extension Exam {
 extension Score {
     static var sharedDelegate: any ScoreDelegateProtocol {
         USTCExports.scoreDelegate
-    }
-}
-
-extension Curriculum {
-    static var sharedSemesterList: [Int: String] {
-        USTCExports.semesterIDList
     }
 }
