@@ -51,7 +51,7 @@ enum FeedCache {
     static func update(using id: UUID, with: [Feed]) {
         feedSourceCaches.removeAll(where: { $0.id == id })
         feedSourceCaches.append(FeedSourceCache(id: id, feeds: with, lastUpdated: Date()))
-        exceptionCall(save)
+//        exceptionCall(save)
     }
 
     static func feedSourceCache(using id: UUID) -> FeedSourceCache? {
