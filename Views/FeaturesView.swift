@@ -77,7 +77,7 @@ struct FeaturesView: View {
                .init(image: "graduationcap",
                      title: "Score".localized,
                      subTitle: "",
-                     destinationView: SharedScoreView)]
+                     destinationView: ScoreView())]
         results["UG AAS"] = tmp
 
         // MARK: -
