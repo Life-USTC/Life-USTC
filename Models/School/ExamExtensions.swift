@@ -9,47 +9,14 @@ import EventKit
 import SwiftUI
 
 extension Exam {
-    var time: Date {
-        parse().time
-    }
-
-    var timeDescription: String {
-        parse().description
-    }
-
-    var startTime: Date {
-        parse().startTime
-    }
-
-    var endTime: Date {
-        parse().endTime
-    }
-
     var isFinished: Bool {
-        endTime <= Date()
+        endDate <= Date()
     }
 
     var daysLeft: Int {
-        Calendar.current.dateComponents([.day], from: Date().stripTime(), to: time).day ?? 0
-    }
-
-    /// Parse self.time to a tuple of (date, time, start time, end time)
-    ///
-    /// - Returns: (date, time, start time, end time)
-    private func parse() -> (time: Date, description: String, startTime: Date, endTime: Date) {
-        let dateString = String(rawTime.prefix(10))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        guard let result = dateFormatter.date(from: dateString) else {
-            return (Date(), "Error", Date(), Date())
-        }
-        let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map { Int($0.0)! }
-        if times.count != 4 {
-            return (Date(), "Error", Date(), Date())
-        }
-        let startTime = result.addingTimeInterval(TimeInterval(times[0] * 60 * 60 + times[1] * 60))
-        let endTime = result.addingTimeInterval(TimeInterval(times[2] * 60 * 60 + times[3] * 60))
-        return (result.stripTime(), String(rawTime.suffix(11)), startTime, endTime)
+        Calendar.current.dateComponents([.day],
+                                        from: .now.stripTime(),
+                                        to: startDate.stripTime()).day ?? 0
     }
 
     static func saveToCalendar(_ exams: [Exam]) async throws {
@@ -76,8 +43,8 @@ extension Exam {
             event.location = exam.classRoomName + "@" + exam.classRoomBuildingName
             event.notes = exam.description
 
-            event.startDate = exam.startTime
-            event.endDate = exam.endTime
+            event.startDate = exam.startDate
+            event.endDate = exam.endDate
             event.calendar = calendar
             try eventStore.save(event, span: .thisEvent, commit: false)
         }
@@ -88,10 +55,10 @@ extension Exam {
     static func show(_ exams: [Exam]) -> [Exam] {
         exams
             .filter { !$0.isFinished }
-            .sorted { $0.startTime < $1.startTime }
+            .sorted { $0.startDate < $1.endDate }
             + exams
             .filter(\.isFinished)
-            .sorted { $0.startTime > $1.startTime }
+            .sorted { $0.startDate > $1.endDate }
     }
 
     /// Merge two list of exam (addition only)

@@ -35,7 +35,7 @@ struct SingleExamView: View {
                 .font(.callout)
                 HStack {
                     Image(systemName: "calendar.badge.clock")
-                    Text(exam.rawTime)
+                    Text(exam.detailString)
                     Spacer()
                     if exam.isFinished {
                         Text("Finished".localized)

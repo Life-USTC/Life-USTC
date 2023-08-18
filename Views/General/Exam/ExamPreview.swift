@@ -38,8 +38,8 @@ struct ExamPreview: View {
                         }
                         Spacer()
                         VStack(alignment: .trailing) {
-                            Text(exam.rawTime.split(separator: " ")[0])
-                            Text(exam.rawTime.split(separator: " ")[1])
+                            Text(exam.startDate.description(with: .current))
+                            Text(exam.endDate.description(with: .current))
                                 .font(.caption)
                                 .foregroundColor(Color.secondary)
                         }

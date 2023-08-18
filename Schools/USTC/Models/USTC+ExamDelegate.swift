@@ -29,15 +29,34 @@ final class USTCExamDelegate: ExamDelegateProtocol {
 
         for examParsed: Element in examsParsed.array() {
             let textList: [String] = examParsed.children().array().map { $0.ownText() }
-            result.append(Exam(lessonCode: textList[0],
-                               courseName: textList[2],
-                               typeName: textList[1],
-                               rawTime: textList[3],
-                               classRoomName: textList[4],
-                               classRoomBuildingName: textList[5],
-                               classRoomDistrict: textList[6],
-                               description: textList[7]))
+            if let parsed = parse(rawTime: textList[3]) {
+                result.append(Exam(lessonCode: textList[0],
+                                   courseName: textList[2],
+                                   typeName: textList[1],
+                                   startDate: parsed.startTime,
+                                   endDate: parsed.endTime,
+                                   classRoomName: textList[4],
+                                   classRoomBuildingName: textList[5],
+                                   classRoomDistrict: textList[6],
+                                   description: textList[7]))
+            }
         }
         return result
     }
+}
+
+private func parse(rawTime: String) -> (time: Date, description: String, startTime: Date, endTime: Date)? {
+    let dateString = String(rawTime.prefix(10))
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    guard let result = dateFormatter.date(from: dateString) else {
+        return nil
+    }
+    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map { Int($0.0)! }
+    if times.count != 4 {
+        return nil
+    }
+    let startTime = result.addingTimeInterval(TimeInterval(times[0] * 60 * 60 + times[1] * 60))
+    let endTime = result.addingTimeInterval(TimeInterval(times[2] * 60 * 60 + times[3] * 60))
+    return (result.stripTime(), String(rawTime.suffix(11)), startTime, endTime)
 }
