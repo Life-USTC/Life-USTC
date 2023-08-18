@@ -73,7 +73,7 @@ struct FeaturesView: View {
                .init(image: "calendar.badge.clock",
                      title: "Exam".localized,
                      subTitle: "",
-                     destinationView: SharedExamView),
+                     destinationView: ExamView()),
                .init(image: "graduationcap",
                      title: "Score".localized,
                      subTitle: "",
