@@ -14,8 +14,7 @@ private enum SortPreference: String, CaseIterable {
 
 struct ScoreView: View {
     @ManagedData(ManagedDataSource.score) var score: Score!
-    @State var status: AsyncStatus
-
+    @State var status: AsyncStatus?
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
     @State var showSettings: Bool = false
@@ -92,10 +91,6 @@ struct ScoreView: View {
         }
         .navigationTitle("Score")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    init() {
-        status = _score.status
     }
 }
 

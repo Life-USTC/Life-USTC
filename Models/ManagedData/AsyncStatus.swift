@@ -35,7 +35,7 @@ enum RefreshAsyncStatus: Equatable {
             return .yellow
         case .success:
             return .green
-        case let .error(string):
+        case .error:
             return .red
         }
     }
