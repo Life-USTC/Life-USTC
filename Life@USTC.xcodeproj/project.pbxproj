@@ -103,8 +103,6 @@
 		56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		56CAA6352A6D6825003AFA1B /* XGMTACloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8374F92F03832B8097F86E2D /* XGMTACloud.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */; };
-		56CE43AD2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */; };
-		56CE43AE2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */; };
 		56D175B8294F01EA0070778F /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175B7294F01EA0070778F /* FeedKit */; };
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumView.swift */; };
@@ -249,7 +247,6 @@
 		56BE91FE296679BC00822C98 /* CurriculumPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreview.swift; sourceTree = "<group>"; };
 		56C1425029F64618007D9BD4 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		56C1425329F648A6007D9BD4 /* TPNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TPNSClient.swift; sourceTree = "<group>"; };
-		56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamExtensions.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumView.swift; sourceTree = "<group>"; };
 		56D175C5295438870070778F /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
@@ -385,7 +382,6 @@
 			children = (
 				56A0C1942A8E0CF500BFEAB9 /* Curriculum */,
 				56F3EAD5296EB3B70095AEF4 /* Exam.swift */,
-				56CE43AC2A5A5EDB00C3FFEE /* ExamExtensions.swift */,
 				56E8AD69296FE880009006D0 /* Score.swift */,
 			);
 			path = School;
@@ -967,7 +963,6 @@
 				56D175C0295048A10070778F /* CurriculumView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
-				56CE43AD2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */,
 				56E94E2B298AA3720085241B /* ExamPage.swift in Sources */,
 				56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */,
 				56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */,
@@ -1043,7 +1038,6 @@
 				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
-				56CE43AE2A5A5EDB00C3FFEE /* ExamExtensions.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionCalls.swift in Sources */,
 				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
