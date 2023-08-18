@@ -13,7 +13,7 @@ protocol ManagedDataProtocol {
     // MARK: - ViewModel <-> View
 
     var data: D? { get }
-    var status: AsyncStatus { get }
+    var localStatus: LocalAsyncStatus { get }
 
     // MARK: - View -> ViewModel
 

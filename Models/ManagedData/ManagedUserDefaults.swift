@@ -15,7 +15,11 @@ class ManagedUserDefaults<D: Codable>: ManagedDataProtocol {
     let validDuration: TimeInterval
 
     var data: D? {
-        userDefaults.object(forKey: key) as? D
+        if let data = userDefaults.data(forKey: key) {
+            return try? JSONDecoder().decode(D.self, from: data)
+        } else {
+            return nil
+        }
     }
 
     var lastUpdated: Date? {
@@ -34,23 +38,13 @@ class ManagedUserDefaults<D: Codable>: ManagedDataProtocol {
         }
     }
 
-    var refreshStatus: RefreshAsyncStatus? = nil
-
-    var status: AsyncStatus {
-        AsyncStatus(local: localStatus,
-                    refresh: refreshStatus)
-    }
-
     func refresh() async throws {
-        refreshStatus = .waiting
         do {
             let newData = try await refreshFunc()
-            userDefaults.set(newData, forKey: key)
+            let newDataEncoded = try JSONEncoder().encode(newData)
+            userDefaults.set(newDataEncoded, forKey: key)
             userDefaults.set(Date(), forKey: key + "_lastUpdated")
-            refreshStatus = .success
-        } catch {
-            refreshStatus = .error(error.localizedDescription)
-        }
+        } catch {}
     }
 
     init(key: String,

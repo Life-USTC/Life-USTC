@@ -31,7 +31,7 @@ struct SingleScoreView: View {
             .padding(4)
             .frame(width: 85, height: 30)
             .background(
-                Stripes(config: .init(background: .accentColor,
+                Stripes(config: .init(background: .cyan,
                                       foreground: .white.opacity(0.4)))
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             )
