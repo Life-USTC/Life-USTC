@@ -20,7 +20,6 @@ final class USTCExamDelegate: ExamDelegateProtocol {
     var cacheName: String = "UstcUgAASExamCache"
     var timeCacheName: String = "UstcUgAASLastUpdateExams"
     @Published var status: AsyncViewStatus = .inProgress
-    var ustcUgAASClient: UstcUgAASClient
     var cache: [Exam] = []
     @Published var data: [Exam] = []
     var placeHolderData: [Exam] = [.example]
@@ -53,7 +52,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
     }
 
     func refreshCache() async throws {
-        if try await !ustcUgAASClient.requireLogin() {
+        if try await !LoginClients.ustcUgAAS.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
@@ -82,9 +81,7 @@ final class USTCExamDelegate: ExamDelegateProtocol {
         try await afterForceUpdate()
     }
 
-    init(_ client: UstcUgAASClient = .shared) {
-        ustcUgAASClient = client
-
+    init() {
         afterInit()
     }
 }

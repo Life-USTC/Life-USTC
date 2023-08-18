@@ -9,7 +9,7 @@ import Foundation
 import SwiftyJSON
 
 final class USTCScoreDelegate: ScoreDelegateProtocol {
-    static var shared = USTCScoreDelegate(.shared)
+    static var shared = USTCScoreDelegate()
 
     // MARK: - Protocol requirements
 
@@ -18,7 +18,6 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
     var cacheName: String = "UstcUgAASScoreCache"
     var timeCacheName: String = "UstcUgAASLastUpdateScores"
     @Published var status: AsyncViewStatus = .inProgress
-    var ustcUgAASClient: UstcUgAASClient
     var cache = JSON()
     @Published var data: Score = .init()
     var placeHolderData: Score = .example
@@ -49,7 +48,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
     }
 
     func refreshCache() async throws {
-        if try await !ustcUgAASClient.requireLogin() {
+        if try await !LoginClients.ustcUgAAS.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
@@ -63,9 +62,7 @@ final class USTCScoreDelegate: ScoreDelegateProtocol {
         try await afterRefreshCache()
     }
 
-    init(_ client: UstcUgAASClient) {
-        ustcUgAASClient = client
-
+    init() {
         afterInit()
     }
 }
