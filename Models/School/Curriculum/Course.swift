@@ -29,3 +29,9 @@ extension Course {
         lectures.map { $0.event(in: store) }
     }
 }
+
+extension Course: Identifiable {
+    var id: UUID {
+        UUID()
+    }
+}
