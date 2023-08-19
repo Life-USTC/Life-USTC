@@ -14,6 +14,7 @@ import WidgetKit
 class UstcUgAASClient: LoginClientProtocol {
     static var shared = UstcUgAASClient()
 
+    @LoginClient(\.ustcCAS) var casClient: UstcCasClient
     var session: URLSession = .shared
 
     func login() async throws -> Bool {
@@ -24,7 +25,7 @@ class UstcUgAASClient: LoginClientProtocol {
 
         // jw.ustc.edu.cn login.
         _ = try await session.data(from: urlA)
-        _ = try await LoginClients.ustcCAS.wrappedValue.loginToCAS(url: urlB, service: urlA)
+        _ = try await casClient.loginToCAS(url: urlB, service: urlA)
 
         // now try login url, see if that directs to home page
         var request = URLRequest(url: urlB)
@@ -43,5 +44,7 @@ class UstcUgAASClient: LoginClientProtocol {
 }
 
 extension LoginClients {
-    static let ustcUgAAS = LoginClient(UstcUgAASClient.shared)
+    var ustcUgAAS: UstcUgAASClient {
+        UstcUgAASClient.shared
+    }
 }

@@ -65,6 +65,10 @@ class LoginClient<T: LoginClientProtocol> {
     init(_ wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
+
+    convenience init(_ client: KeyPath<LoginClients, T>) {
+        self.init(LoginClients()[keyPath: client])
+    }
 }
 
-enum LoginClients {}
+struct LoginClients {}

@@ -10,13 +10,15 @@ import SwiftyJSON
 
 class UstcClassroomDelegate {
     static var shared = UstcClassroomDelegate()
+
+    @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
     @AppStorage("ustcClassroomDate") var date: Date = .init()
 
     func refresh() async throws -> [String: [Lesson]] {
-        if try await !LoginClients.ustcCatalog.requireLogin() {
+        if try await !_catalogClient.requireLogin() {
             throw BaseError.runtimeError("UstcCatalog Not logined")
         }
-        let validToken = LoginClients.ustcCatalog.wrappedValue.token
+        let validToken = catalogClient.token
 
         var cache: [String: JSON] = [:]
         for building in UstcClassroomDelegate.allBuildings {

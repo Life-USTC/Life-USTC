@@ -27,5 +27,7 @@ class UstcCatalogClient: LoginClientProtocol {
 }
 
 extension LoginClients {
-    static let ustcCatalog = LoginClient(UstcCatalogClient.shared)
+    var ustcCatalog: UstcCatalogClient {
+        UstcCatalogClient.shared
+    }
 }
