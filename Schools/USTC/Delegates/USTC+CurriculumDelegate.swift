@@ -13,13 +13,15 @@ import WidgetKit
 class USTCCurriculumDelegate: CurriculumProtocol {
     static let shared = USTCCurriculumDelegate()
 
+    @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
+
     func refreshSemesterIDList() async throws -> [String] {
         []
     }
 
     func refreshSemester(id: String) async throws -> Semester {
         let queryURL = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
-        if try await !LoginClients.ustcUgAAS.requireLogin() {
+        if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 

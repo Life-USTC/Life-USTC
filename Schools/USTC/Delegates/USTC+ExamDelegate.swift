@@ -11,9 +11,11 @@ import SwiftSoup
 class USTCExamDelegate: ExamDelegateProtocol {
     static var shared = USTCExamDelegate()
 
+    @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
+
     func refresh() async throws -> [Exam] {
         let examURL = URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!
-        if try await !LoginClients.ustcUgAAS.requireLogin() {
+        if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 

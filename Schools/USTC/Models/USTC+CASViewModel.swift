@@ -10,6 +10,7 @@ import Foundation
 class UstcCasViewModel: ObservableObject {
     static let shared = UstcCasViewModel()
 
+    @LoginClient(\.ustcCAS) var casClient: UstcCasClient
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
     @Published public var inputUsername: String = ""
@@ -28,8 +29,8 @@ class UstcCasViewModel: ObservableObject {
         username = inputUsername
         password = inputPassword
 
-        LoginClients.ustcCAS.clearLoginStatus()
+        _casClient.clearLoginStatus()
         await URLSession.shared.reset()
-        return try await LoginClients.ustcCAS.requireLogin()
+        return try await _casClient.requireLogin()
     }
 }

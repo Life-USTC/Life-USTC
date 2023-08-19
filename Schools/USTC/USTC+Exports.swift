@@ -69,6 +69,9 @@ enum USTCExports {
 }
 
 struct USTCBaseModifier: ViewModifier {
+    @LoginClient(\.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
+
     @State var casLoginSheet: Bool = false
 
     func body(content: Content) -> some View {
@@ -81,15 +84,15 @@ struct USTCBaseModifier: ViewModifier {
 
     func onLoadFunction() {
         Task {
-            LoginClients.ustcCAS.clearLoginStatus()
-            LoginClients.ustcUgAAS.clearLoginStatus()
+            _casClient.clearLoginStatus()
+            _ugAASClient.clearLoginStatus()
 
-            if LoginClients.ustcCAS.wrappedValue.precheckFails {
+            if casClient.precheckFails {
                 casLoginSheet = true
                 return
             }
             // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !LoginClients.ustcCAS.requireLogin()
+            casLoginSheet = try await !_casClient.requireLogin()
         }
     }
 }

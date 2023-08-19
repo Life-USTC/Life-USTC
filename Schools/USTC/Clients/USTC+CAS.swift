@@ -85,7 +85,9 @@ class UstcCasClient: LoginClientProtocol {
 }
 
 extension LoginClients {
-    static let ustcCAS = LoginClient(UstcCasClient.shared)
+    var ustcCAS: UstcCasClient {
+        UstcCasClient.shared
+    }
 }
 
 extension URL {
