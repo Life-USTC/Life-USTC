@@ -13,6 +13,9 @@ struct Course: Codable {
     var code: String
     var teacherName: String
     var lectures: [Lecture]
+    var description: String = ""
+    var credit: Double = 0
+    var additionalInfo: [String: String] = [:]
 
     static var example = Self(name: "Example Course",
                               code: "Example Code",

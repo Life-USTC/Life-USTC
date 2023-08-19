@@ -11,7 +11,8 @@ struct CurriculumView: View {
     @ManagedData(\.curriculum) var curriculum: Curriculum?
 
     var body: some View {
-        Text("Under construction")
+//        Text("Under construction")
+        Text(String(data: try! JSONEncoder().encode(curriculum), encoding: .utf8)!)
     }
 }
 
