@@ -95,7 +95,7 @@ extension UstcClassroomDelegate {
     static var buildingRoomJsonCache: JSON?
     static func parseRoomJson() -> [String: [String]] {
         if buildingRoomJsonCache == nil {
-            if let path = Bundle.main.path(forResource: "UstcRooms", ofType: "json") {
+            if let path = Bundle.main.path(forResource: "ustc_rooms", ofType: "json") {
                 let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
                 buildingRoomJsonCache = try! JSON(data: data)
             }
