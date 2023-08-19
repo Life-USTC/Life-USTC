@@ -13,7 +13,10 @@ struct Lecture: Codable {
     var startDate: Date
     var endDate: Date
     var name: String
-    var location: String
+    var location: String = ""
+    var teacher: String = ""
+    var periods: Double = 0
+    var additionalInfo: [String: String] = [:]
 
     static let example = Self(startDate: Date(),
                               endDate: Date() + DateComponents(hour: 1),

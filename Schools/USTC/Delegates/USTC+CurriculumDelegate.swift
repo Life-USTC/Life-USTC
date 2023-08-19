@@ -10,6 +10,12 @@ import SwiftUI
 import SwiftyJSON
 import WidgetKit
 
+private func convertYYMMDD(_ date: String) -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    return dateFormatter.date(from: date)!
+}
+
 class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
     static let shared = USTCCurriculumDelegate()
 
@@ -17,12 +23,6 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
     @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
 
     func refreshSemesterBase() async throws -> [Semester] {
-        func convertYYMMDD(_ date: String) -> Date {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            return dateFormatter.date(from: date)!
-        }
-
         if try await !_catalogClient.requireLogin() {
             throw BaseError.runtimeError("UstcCatalog Not logined")
         }
@@ -40,8 +40,8 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
             result.append(Semester(id: subJson["id"].stringValue,
                                    courses: [],
                                    name: subJson["nameZh"].stringValue,
-                                   startDate: convertYYMMDD(subJson["startDate"].stringValue),
-                                   endDate: convertYYMMDD(subJson["endDate"].stringValue)))
+                                   startDate: convertYYMMDD(subJson["start"].stringValue),
+                                   endDate: convertYYMMDD(subJson["end"].stringValue)))
         }
 
         return result
@@ -49,10 +49,12 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
 
     func refreshSemester(inComplete: Semester) async throws -> Semester {
         let queryURL = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
+        // Step 0: Check login
         if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
+        // Step 1: Get tableID, (usually 353802)
         var request = URLRequest(url: queryURL)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await URLSession.shared.data(for: request)
@@ -65,13 +67,75 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
             }
         }
 
-        let url = URL(string: "https://jw.ustc.edu.cn/for-std/course-table/semester/\(inComplete.id)/print-data/\(tableID)?weekIndex=")!
+        // Step 2: Get lessonIDs
+        let url = URL(string: "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(inComplete.id)&dataId=\(tableID)")!
         request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (baseData, _) = try await URLSession.shared.data(for: request)
+        let baseJSON = try JSON(data: baseData)
+        let lessonIDs = baseJSON["lessonIds"].stringValue
+
+        // Step3: Get courses details
+        let detailURL = URL(string: "https://jw.ustc.edu.cn/ws/schedule-table/datum")!
+        request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = "{\"lessonIds\":\(lessonIDs)}".data(using: .utf8)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (data, _) = try await URLSession.shared.data(for: request)
         let json = try JSON(data: data)
 
-//        let semesterName = json["semesterName"].stringValue
-        return .example
+        // Step4: Setup Lecutures:
+        var lectureList: [String: [Lecture]] = [:]
+        for (_, subJson) in json["result"]["scheduleList"] {
+            let baseDate = convertYYMMDD(subJson["date"].stringValue)
+            let startTime = subJson["startTime"].intValue
+            let endTime = subJson["endTime"].intValue
+            let startDate = baseDate + DateComponents(hour: startTime / 100, minute: startTime % 100)
+            let endDate = baseDate + DateComponents(hour: endTime / 100, minute: endTime % 100)
+
+            let location = subJson["room"]["code"].stringValue
+            let teacher = subJson["personName"].stringValue
+            let periods = subJson["periods"].doubleValue
+            let lecture = Lecture(startDate: startDate,
+                                  endDate: endDate,
+                                  name: "",
+                                  location: location,
+                                  teacher: teacher,
+                                  periods: periods)
+
+            let courseID = subJson["lessonId"].stringValue
+            // adding to lectureList
+            if lectureList[courseID] == nil {
+                lectureList[courseID] = [lecture]
+            } else {
+                lectureList[courseID]?.append(lecture)
+            }
+        }
+
+        // Step 4: Load Course
+        var courses: [Course] = []
+        for (_, subJson) in baseJSON["lessons"] {
+            let name = subJson["course"]["nameZh"].stringValue
+            let code = subJson["code"].stringValue
+            let teachers = subJson["teacherAssignmentList"].arrayValue.map { $0["person"]["nameZh"].stringValue }
+            let teacherName = teachers.joined(separator: ",")
+            let description = subJson["scheduleGroupStr"].stringValue
+            let credit = subJson["credits"].doubleValue
+
+            let courseID = subJson["id"].stringValue
+            let lectures = lectureList[courseID] ?? []
+
+            let course = Course(name: name,
+                                code: code,
+                                teacherName: teacherName,
+                                lectures: lectures,
+                                description: description,
+                                credit: credit)
+            courses.append(course)
+        }
+
+        var result = inComplete
+        result.courses = courses
+        return result
     }
 }
