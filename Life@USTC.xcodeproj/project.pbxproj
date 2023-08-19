@@ -497,8 +497,8 @@
 		5677E13C2A5AF6BD00EDCB53 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				56E8AD712973EC0F009006D0 /* ustc_rooms.json */,
 				56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */,
+				56E8AD712973EC0F009006D0 /* ustc_rooms.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
