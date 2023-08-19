@@ -14,9 +14,10 @@ class USTCCurriculumDelegate: CurriculumProtocol {
     static let shared = USTCCurriculumDelegate()
 
     @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
 
-    func refreshSemesterIDList() async throws -> [String] {
-        []
+    func refreshSemesterList() async throws -> [String: String] {
+        [:]
     }
 
     func refreshSemester(id: String) async throws -> Semester {
