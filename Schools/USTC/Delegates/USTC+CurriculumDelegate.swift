@@ -73,14 +73,20 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (baseData, _) = try await URLSession.shared.data(for: request)
         let baseJSON = try JSON(data: baseData)
-        let lessonIDs = baseJSON["lessonIds"].stringValue
+        let lessonIDs = baseJSON["lessonIds"].arrayValue.map(\.stringValue)
+        if lessonIDs.isEmpty {
+            return inComplete
+        }
 
         // Step3: Get courses details
         let detailURL = URL(string: "https://jw.ustc.edu.cn/ws/schedule-table/datum")!
-        request = URLRequest(url: url)
+        request = URLRequest(url: detailURL)
         request.httpMethod = "POST"
-        request.httpBody = "{\"lessonIds\":\(lessonIDs)}".data(using: .utf8)
+        let params = ["lessonIds": lessonIDs]
+        let paramsData = try JSONSerialization.data(withJSONObject: params, options: [])
+        request.httpBody = paramsData
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let (data, _) = try await URLSession.shared.data(for: request)
         let json = try JSON(data: data)
 
@@ -123,7 +129,15 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
             let credit = subJson["credits"].doubleValue
 
             let courseID = subJson["id"].stringValue
-            let lectures = lectureList[courseID] ?? []
+            var lectures = lectureList[courseID] ?? []
+//            for lecture in lectures {
+//                lecture.name = name + "" + DateFormatter.localizedString(from: lecture.startDate, dateStyle: .short, timeStyle: .medium)
+//            }
+            lectures = lectures.map { lecture in
+                var result = lecture
+                result.name = name + "" + DateFormatter.localizedString(from: lecture.startDate, dateStyle: .short, timeStyle: .medium)
+                return result
+            }
 
             let course = Course(name: name,
                                 code: code,
