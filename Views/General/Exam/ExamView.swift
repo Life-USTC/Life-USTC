@@ -8,60 +8,60 @@
 import SwiftUI
 
 struct ExamView: View {
-//    @State var saveToCalendarStatus: AsyncViewStatus? = nil
+    @ManagedData(ManagedDataSource.exam) var exams: [Exam]!
+    @State var status: AsyncStatus?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-//            if examDelegate.data.isEmpty {
-//                VStack {
-//                    Text("No More Exam!")
-//                        .font(.system(.body, design: .monospaced))
-//                        .padding(.vertical, 10)
-//                }
-//            } else {
-//                ForEach(examDelegate.data) { exam in
-//                    SingleExamView(exam: exam)
-//                    Divider()
-//                }
-//                .padding(.top, 5)
-//            }
+            if exams.isEmpty {
+                VStack {
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                        .padding(.vertical, 10)
+                }
+            } else {
+                ForEach(exams, id: \.lessonCode) { exam in
+                    SingleExamView(exam: exam)
+                    Divider()
+                }
+                .padding(.top, 5)
+            }
             EmptyView()
         }
-        .padding(.horizontal, 15)
-//        .asyncViewStatusMask(status: examDelegate.status)
-//        .refreshable {
-//            examDelegate.userTriggerRefresh()
-//        }
         .toolbar {
-            Button {
-//                Task {
-//                    saveToCalendarStatus = .inProgress
-//                    do {
-                ////                        try await Exam.saveToCalendar(examDelegate.data)
-//                        saveToCalendarStatus = .success
-//                    } catch {
-//                        saveToCalendarStatus = .failure(error.localizedDescription)
-//                    }
-//                }
-            } label: {
-                Image(systemName: "square.and.arrow.down")
-//                    .asyncViewStatusMask(status: saveToCalendarStatus)
-            }
+            saveButton
         }
+        .asyncStatusMask(status: status)
+        .refreshable {
+            _exams.userTriggeredRefresh()
+        }
+        .onReceive(_exams.$status, perform: {
+            status = $0
+        })
+        .padding(.horizontal)
         .navigationTitle("Exam")
         .navigationBarTitleDisplayMode(.inline)
     }
 
-//    init(examDelegate: ExamDelegate) {
-//        self.examDelegate = examDelegate
-//    }
+    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+
+    var saveButton: some View {
+        Button {
+            Task {
+                try await saveToCalendarStatus.exec {
+                    try await Exam.saveToCalendar(exams)
+                }
+            }
+        } label: {
+            Image(systemName: "square.and.arrow.down")
+                .asyncStatusMask(status: .init(local: status?.local,
+                                               refresh: saveToCalendarStatus))
+        }
+    }
 }
 
 struct ExamView_Previews: PreviewProvider {
     static var previews: some View {
-        List {
-            SingleExamView(exam: .example)
-        }
-        .listStyle(.inset)
+        ExamView()
     }
 }
