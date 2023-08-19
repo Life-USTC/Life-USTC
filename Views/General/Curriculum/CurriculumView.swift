@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CurriculumView: View {
-    @ManagedData(ManagedDataSource.curriculum) var curriculum: Curriculum?
+    @ManagedData(\.curriculum) var curriculum: Curriculum?
 
     var body: some View {
         Text("Under construction")

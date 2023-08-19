@@ -138,5 +138,7 @@ protocol ScoreDelegateProtocol {
 }
 
 extension ManagedDataSource {
-    static let score = ManagedUserDefaults(key: "score", refreshFunc: Score.sharedDelegate.refresh)
+    var score: any ManagedDataProtocol {
+        ManagedUserDefaults(key: "score", refreshFunc: Score.sharedDelegate.refresh)
+    }
 }

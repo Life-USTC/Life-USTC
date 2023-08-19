@@ -61,6 +61,14 @@ class ManagedData<D: Codable>: DynamicProperty, ObservableObject {
             userTriggeredRefresh()
         }
     }
+
+    convenience init(_ source: KeyPath<ManagedDataSource.Type, any ManagedDataProtocol>) {
+        self.init(ManagedDataSource.self[keyPath: source])
+    }
+
+    convenience init(_ source: KeyPath<ManagedDataSource, any ManagedDataProtocol>) {
+        self.init(ManagedDataSource()[keyPath: source])
+    }
 }
 
-enum ManagedDataSource {}
+struct ManagedDataSource {}

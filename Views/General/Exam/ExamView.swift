@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExamView: View {
-    @ManagedData(ManagedDataSource.exam) var exams: [Exam]!
+    @ManagedData(\.exam) var exams: [Exam]!
     @State var status: AsyncStatus?
 
     var body: some View {

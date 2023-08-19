@@ -149,5 +149,7 @@ protocol ExamDelegateProtocol {
 }
 
 extension ManagedDataSource {
-    static let exam = ManagedUserDefaults(key: "exam", refreshFunc: Exam.sharedDelegate.refresh)
+    var exam: any ManagedDataProtocol {
+        ManagedUserDefaults(key: "exam", refreshFunc: Exam.sharedDelegate.refresh)
+    }
 }

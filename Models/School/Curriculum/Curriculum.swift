@@ -43,5 +43,7 @@ extension CurriculumProtocol {
 }
 
 extension ManagedDataSource {
-    static let curriculum = ManagedUserDefaults(key: "curriculum", refreshFunc: Curriculum.sharedDelegate.refresh)
+    var curriculum: any ManagedDataProtocol {
+        ManagedUserDefaults(key: "curriculum", refreshFunc: Curriculum.sharedDelegate.refresh)
+    }
 }
