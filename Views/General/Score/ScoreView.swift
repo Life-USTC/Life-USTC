@@ -62,23 +62,10 @@ struct ScoreView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                if score != nil {
-                    rankingView
-                    scoreListView
-                } else {
-                    ProgressView()
-                }
+                rankingView
+                scoreListView
             }
         }
-        .asyncStatusMask(status: status)
-        .refreshable {
-            _score.userTriggeredRefresh()
-        }
-        .onReceive(_score.$status, perform: {
-            status = $0
-        })
-        .sheet(isPresented: $showSettings) { sheet }
-        .padding([.leading, .trailing])
         .toolbar {
             Button {
                 showSettings.toggle()
@@ -86,6 +73,15 @@ struct ScoreView: View {
                 Label("Settings", systemImage: "gearshape")
             }
         }
+        .sheet(isPresented: $showSettings) { sheet }
+        .asyncStatusMask(status: status)
+        .refreshable {
+            _score.userTriggeredRefresh()
+        }
+        .onReceive(_score.$status, perform: {
+            status = $0
+        })
+        .padding(.horizontal)
         .navigationTitle("Score")
         .navigationBarTitleDisplayMode(.inline)
     }

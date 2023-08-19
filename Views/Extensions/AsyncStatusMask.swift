@@ -31,7 +31,11 @@ struct AsyncStatusMask: ViewModifier {
                 refreshStatusLight
                 Spacer()
             }
-            content
+            if (status?.local ?? .notFound) != .notFound {
+                content
+            } else {
+                Text("Error when handling data")
+            }
         }
     }
 }
