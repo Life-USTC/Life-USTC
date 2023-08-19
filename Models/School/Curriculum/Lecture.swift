@@ -35,3 +35,9 @@ extension Lecture {
         return event
     }
 }
+
+extension Lecture: Identifiable {
+    var id: UUID {
+        UUID()
+    }
+}

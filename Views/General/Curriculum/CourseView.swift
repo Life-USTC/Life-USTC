@@ -50,7 +50,7 @@ struct CourseView: View {
             }
 
             Section {
-                ForEach(course.lectures, id: \.startDate) { lecture in
+                ForEach(course.lectures) { lecture in
                     NavigationLink(destination: LectureView(lecture: lecture)) {
                         Text(lecture.name)
                     }

@@ -13,7 +13,7 @@ struct CurriculumView: View {
 
     var body: some View {
         List {
-            ForEach(curriculum.semesters.sorted(by: { $0.startDate > $1.startDate }), id: \.startDate) { semester in
+            ForEach(curriculum.semesters.sorted(by: { $0.startDate > $1.startDate })) { semester in
                 Section(header: Text(semester.name)) {
                     ForEach(semester.courses, id: \.code) { course in
                         NavigationLink(destination: CourseView(course: course)) {
