@@ -41,3 +41,29 @@ extension View {
         modifier(AsyncStatusMask(status: status))
     }
 }
+
+private extension LocalAsyncStatus {
+    var color: Color {
+        switch self {
+        case .valid:
+            return .green
+        case .notFound:
+            return .red
+        case .outDated:
+            return .yellow
+        }
+    }
+}
+
+private extension RefreshAsyncStatus {
+    var color: Color {
+        switch self {
+        case .waiting:
+            return .yellow
+        case .success:
+            return .green
+        case .error:
+            return .red
+        }
+    }
+}

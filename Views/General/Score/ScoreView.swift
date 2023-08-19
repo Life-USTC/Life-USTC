@@ -77,9 +77,6 @@ struct ScoreView: View {
         .onReceive(_score.$status, perform: {
             status = $0
         })
-        .onChange(of: _score.status) { _ in
-            print("???")
-        }
         .sheet(isPresented: $showSettings) { sheet }
         .padding([.leading, .trailing])
         .toolbar {
