@@ -1,0 +1,62 @@
+//
+//  CourseView.swift
+//  Life@USTC
+//
+//  Created by Tiankai Ma on 2023/8/19.
+//
+
+import SwiftUI
+
+struct CourseView: View {
+    let course: Course
+    var body: some View {
+        List {
+            HStack {
+                Text("Name")
+                Spacer()
+                Text(course.name)
+            }
+
+            HStack {
+                Text("Code")
+                Spacer()
+                Text(course.code)
+            }
+
+            HStack {
+                Text("Teacher")
+                Spacer()
+                Text(course.teacherName)
+            }
+
+            HStack {
+                Text("Credit")
+                Spacer()
+                Text("\(course.credit)")
+            }
+
+            HStack {
+                Text("Description")
+                Spacer()
+                Text(course.description)
+            }
+
+            ForEach(course.additionalInfo.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                HStack {
+                    Text(key)
+                    Spacer()
+                    Text(value)
+                }
+            }
+
+            Section {
+                ForEach(course.lectures, id: \.startDate) { lecture in
+                    NavigationLink(destination: LectureView(lecture: lecture)) {
+                        Text(lecture.name)
+                    }
+                }
+            }
+        }
+        .scrollContentBackground(.hidden)
+    }
+}
