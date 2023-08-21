@@ -59,6 +59,14 @@ struct ScoreView: View {
         }
     }
 
+    var settingButton: some View {
+        Button {
+            showSettings.toggle()
+        } label: {
+            Label("Settings", systemImage: "gearshape")
+        }
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
@@ -67,12 +75,9 @@ struct ScoreView: View {
             }
         }
         .toolbar {
-            Button {
-                showSettings.toggle()
-            } label: {
-                Label("Settings", systemImage: "gearshape")
-            }
+            settingButton
         }
+        .padding(.horizontal)
         .sheet(isPresented: $showSettings) { sheet }
         .asyncStatusMask(status: status)
         .refreshable {
@@ -81,7 +86,6 @@ struct ScoreView: View {
         .onReceive(_score.$status, perform: {
             status = $0
         })
-        .padding(.horizontal)
         .navigationTitle("Score")
         .navigationBarTitleDisplayMode(.inline)
     }

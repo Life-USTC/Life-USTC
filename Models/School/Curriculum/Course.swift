@@ -10,17 +10,19 @@ import Foundation
 
 struct Course: Codable {
     var name: String
-    var code: String
+    var courseCode: String
+    var lessonCode: String
     var teacherName: String
     var lectures: [Lecture]
     var description: String = ""
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
 
-    static var example = Self(name: "Example Course",
-                              code: "Example Code",
-                              teacherName: "Example Teacher",
-                              lectures: [.example])
+    static var example = Course(name: "Example Course",
+                                courseCode: "Example-0001",
+                                lessonCode: "Example-0001.01",
+                                teacherName: "Example Teacher",
+                                lectures: [.example])
 }
 
 extension Course {

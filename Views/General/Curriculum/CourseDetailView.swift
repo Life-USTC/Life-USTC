@@ -1,5 +1,5 @@
 //
-//  CourseView.swift
+//  CourseDetailView.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/8/19.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CourseView: View {
+struct CourseDetailView: View {
     let course: Course
     var body: some View {
         List {
@@ -20,7 +20,7 @@ struct CourseView: View {
             HStack {
                 Text("Code")
                 Spacer()
-                Text(course.code)
+                Text(course.lessonCode)
             }
 
             HStack {
@@ -51,7 +51,7 @@ struct CourseView: View {
 
             Section {
                 ForEach(course.lectures) { lecture in
-                    NavigationLink(destination: LectureView(lecture: lecture)) {
+                    NavigationLink(destination: LectureDetailView(lecture: lecture)) {
                         Text(lecture.name)
                     }
                 }

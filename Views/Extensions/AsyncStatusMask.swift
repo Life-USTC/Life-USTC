@@ -31,6 +31,7 @@ struct AsyncStatusMask: ViewModifier {
                 refreshStatusLight
                 Spacer()
             }
+            .padding(.horizontal)
             if (status?.local ?? .notFound) != .notFound {
                 content
             } else {

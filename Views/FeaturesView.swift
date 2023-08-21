@@ -69,7 +69,7 @@ struct FeaturesView: View {
         tmp = [.init(image: "book",
                      title: "Curriculum".localized,
                      subTitle: "",
-                     destinationView: CurriculumView()),
+                     destinationView: CurriculumDetailView()),
                .init(image: "calendar.badge.clock",
                      title: "Exam".localized,
                      subTitle: "",

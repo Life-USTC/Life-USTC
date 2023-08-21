@@ -123,6 +123,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
         for (_, subJson) in baseJSON["lessons"] {
             let name = subJson["course"]["nameZh"].stringValue
             let code = subJson["code"].stringValue
+            let courseCode = subJson["course"]["code"].stringValue
             let teachers = subJson["teacherAssignmentList"].arrayValue.map { $0["person"]["nameZh"].stringValue }
             let teacherName = teachers.joined(separator: ",")
             let description = subJson["scheduleGroupStr"].stringValue
@@ -130,17 +131,15 @@ class USTCCurriculumDelegate: CurriculumProtocolB & CurriculumProtocol {
 
             let courseID = subJson["id"].stringValue
             var lectures = lectureList[courseID] ?? []
-//            for lecture in lectures {
-//                lecture.name = name + "" + DateFormatter.localizedString(from: lecture.startDate, dateStyle: .short, timeStyle: .medium)
-//            }
             lectures = lectures.map { lecture in
                 var result = lecture
-                result.name = name + "" + DateFormatter.localizedString(from: lecture.startDate, dateStyle: .short, timeStyle: .medium)
+                result.name = name
                 return result
             }
 
             let course = Course(name: name,
-                                code: code,
+                                courseCode: courseCode,
+                                lessonCode: code,
                                 teacherName: teacherName,
                                 lectures: lectures,
                                 description: description,
