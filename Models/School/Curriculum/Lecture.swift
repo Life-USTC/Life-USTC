@@ -36,7 +36,7 @@ extension Lecture {
     }
 }
 
-extension Lecture: Identifiable {
+extension Lecture: Identifiable, Equatable {
     var id: UUID {
         UUID()
     }

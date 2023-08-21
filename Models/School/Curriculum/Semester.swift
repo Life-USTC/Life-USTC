@@ -21,4 +21,4 @@ struct Semester: Codable {
                               endDate: Date().add(day: 10))
 }
 
-extension Semester: Identifiable {}
+extension Semester: Identifiable, Equatable {}

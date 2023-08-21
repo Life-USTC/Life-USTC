@@ -14,7 +14,7 @@ struct CurriculumDetailView: View {
     var body: some View {
         List {
             if let curriculum {
-                ForEach(curriculum.semesters.sorted(by: { $0.startDate > $1.startDate })) { semester in
+                ForEach(curriculum.semesters) { semester in
                     Section(header: Text(semester.name)) {
                         ForEach(semester.courses, id: \.lessonCode) { course in
                             NavigationLink(destination: CourseDetailView(course: course)) {

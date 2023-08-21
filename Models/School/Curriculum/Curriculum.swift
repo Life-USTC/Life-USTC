@@ -70,6 +70,14 @@ extension CurriculumProtocolB {
                 }
             }
         }
+
+        // Remove semesters with no courses
+        result.semesters = result.semesters.filter {
+            !$0.courses.isEmpty
+        }.sorted {
+            $0.startDate > $1.startDate
+        }
+
         return result
     }
 }
