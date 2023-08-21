@@ -1,1 +1,1 @@
-swiftformat . --xcodeindentation enabled --ifdef outdent --swiftversion 5.7
+swiftformat . --xcodeindentation enabled --ifdef outdent --swiftversion 5.8
