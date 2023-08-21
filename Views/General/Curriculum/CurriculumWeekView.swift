@@ -42,13 +42,15 @@ struct CurriculumWeekView: View {
 
     func updateLectures() {
         if currentSemester == nil {
-            currentSemester = curriculum.semesters.first(where: {
-                ($0.startDate ... $0.endDate).contains(date)
-            })
-        }
-
-        lectures = (currentSemester?.courses.flatMap(\.lectures) ?? []).filter {
-            dateRange.contains($0.startDate.stripTime())
+            lectures = (curriculum?.semesters.flatMap {
+                $0.courses.flatMap(\.lectures)
+            } ?? []).filter {
+                dateRange.contains($0.startDate.stripTime())
+            }
+        } else {
+            lectures = (currentSemester?.courses.flatMap(\.lectures) ?? []).filter {
+                dateRange.contains($0.startDate.stripTime())
+            }
         }
     }
 
@@ -86,8 +88,11 @@ struct CurriculumWeekView: View {
                                     currentSemester = semester
                                 }
                             }
+                            Button("All") {
+                                currentSemester = nil
+                            }
                         } label: {
-                            Text(currentSemester?.name ?? "Select Semester")
+                            Text(currentSemester?.name ?? "All")
                         }
                     }
                 }
