@@ -20,6 +20,7 @@ platform :ios do
   desc "Build"
   lane :build do
     certificates
+    xcversion
     build_app(
       scheme: "Life@USTC",
       export_options: {
@@ -88,6 +89,7 @@ platform :ios do
     certificates
 
     fetch_and_increment_build_number
+    xcversion
     build_app(scheme: "Life@USTC")
 
     # upload_to_app_store(
@@ -127,6 +129,7 @@ platform :ios do
     certificates
 
     fetch_and_increment_build_number
+    xcversion
     build_app(scheme: "Life@USTC")
 
     upload_to_app_store(

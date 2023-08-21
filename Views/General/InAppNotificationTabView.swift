@@ -43,7 +43,7 @@ struct InAppNotificationTabView: View {
                 }
             }
         }
-        .frame(height:145)
+        .frame(height: 145)
         .padding(10)
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
