@@ -43,6 +43,16 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 
+    func stripDate() -> Date {
+        let components = Calendar.current.dateComponents([.hour, .minute, .second, .nanosecond], from: self)
+        return Calendar.current.date(from: components)!
+    }
+
+    var HHMM: Int {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: self)
+        return (components.hour ?? 0) * 60 + (components.minute ?? 0)
+    }
+
     /// Shorthand for adding DateComponents
     func add(year: Int = 0, month: Int = 0, day: Int = 0) -> Date {
         self + DateComponents(year: year, month: month, day: day)

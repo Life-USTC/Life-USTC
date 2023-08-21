@@ -9,9 +9,8 @@ import Foundation
 
 struct Curriculum: Codable {
     var semesters: [Semester]
-    var semesterList: [String: String]
 
-    static let example = Curriculum(semesters: [.example], semesterList: [Semester.example.id: Semester.example.name])
+    static let example = Curriculum(semesters: [.example])
 }
 
 protocol CurriculumProtocol {
@@ -20,17 +19,17 @@ protocol CurriculumProtocol {
 
 /// Usage: `class exampleDelegaet: CurriculumProtocolA & CurriculumProtocol`
 protocol CurriculumProtocolA {
-    func refreshSemesterList() async throws -> [String: String]
+    func refreshSemesterList() async throws -> [String]
     func refreshSemester(id: String) async throws -> Semester
 }
 
 extension CurriculumProtocolA {
     /// Parrallel refresh the whole curriculum
     func refresh() async throws -> Curriculum {
-        var result = Curriculum(semesters: [], semesterList: [:])
-        result.semesterList = try await refreshSemesterList()
+        var result = Curriculum(semesters: [])
+        let semesterList = try await refreshSemesterList()
         await withTaskGroup(of: Semester?.self) { group in
-            for id in result.semesterList.keys {
+            for id in semesterList {
                 group.addTask {
                     try? await self.refreshSemester(id: id)
                 }
@@ -56,9 +55,8 @@ protocol CurriculumProtocolB {
 extension CurriculumProtocolB {
     /// Parrallel refresh the whole curriculum
     func refresh() async throws -> Curriculum {
-        var result = Curriculum(semesters: [], semesterList: [:])
+        var result = Curriculum(semesters: [])
         let incompleteSemesters = try await refreshSemesterBase()
-        result.semesterList = incompleteSemesters.reduce(into: [:]) { $0[$1.id] = $1.name }
         await withTaskGroup(of: Semester?.self) { group in
             for semester in incompleteSemesters {
                 group.addTask {

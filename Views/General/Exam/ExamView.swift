@@ -31,6 +31,7 @@ struct ExamView: View {
         .toolbar {
             saveButton
         }
+        .padding(.horizontal)
         .asyncStatusMask(status: status)
         .refreshable {
             _exams.userTriggeredRefresh()

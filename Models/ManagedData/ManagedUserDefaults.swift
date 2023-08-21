@@ -39,12 +39,10 @@ class ManagedUserDefaults<D: Codable>: ManagedDataProtocol {
     }
 
     func refresh() async throws {
-        do {
-            let newData = try await refreshFunc()
-            let newDataEncoded = try JSONEncoder().encode(newData)
-            userDefaults.set(newDataEncoded, forKey: key)
-            userDefaults.set(Date(), forKey: key + "_lastUpdated")
-        } catch {}
+        let newData = try await refreshFunc()
+        let newDataEncoded = try JSONEncoder().encode(newData)
+        userDefaults.set(newDataEncoded, forKey: key)
+        userDefaults.set(Date(), forKey: key + "_lastUpdated")
     }
 
     init(key: String,
