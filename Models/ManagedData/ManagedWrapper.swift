@@ -24,7 +24,7 @@ struct ManagedData<D>: DynamicProperty {
     @State var refresh: RefreshAsyncStatus? = nil
     var status: AsyncStatus {
         AsyncStatus(
-            local: local.localStatus,
+            local: local.status,
             refresh: refresh
         )
     }
