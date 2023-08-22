@@ -509,6 +509,16 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		567ED62C2A9535A100F3A38B /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				569600102A9116F000677F15 /* LectureDetailView.swift */,
+				56D175BF295048A10070778F /* CurriculumDetailView.swift */,
+				569600122A9117C100677F15 /* CourseDetailView.swift */,
+			);
+			path = Details;
+			sourceTree = "<group>";
+		};
 		569CFE4D297EBCFA0072C094 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -605,12 +615,10 @@
 		56BE9200296679DB00822C98 /* Curriculum */ = {
 			isa = PBXGroup;
 			children = (
+				567ED62C2A9535A100F3A38B /* Details */,
 				56BE91FC2966799200822C98 /* CourseCardView.swift */,
-				569600122A9117C100677F15 /* CourseDetailView.swift */,
-				56D175BF295048A10070778F /* CurriculumDetailView.swift */,
 				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
 				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
-				569600102A9116F000677F15 /* LectureDetailView.swift */,
 			);
 			path = Curriculum;
 			sourceTree = "<group>";
