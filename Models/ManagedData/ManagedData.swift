@@ -28,5 +28,3 @@ struct ManagedDataSource<D> {
     var local: ManagedLocalDataProtocol<D>
     var remote: any ManagedRemoteUpdateProtocol<D>
 }
-
-enum ManagedDataList {}

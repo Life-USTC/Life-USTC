@@ -26,7 +26,6 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
             return nil
         }
         set {
-            print("SET \(key)")
             if let url {
                 if !fm.fileExists(atPath: url.path) {
                     try? fm.createDirectory(at: url.deletingLastPathComponent(),
