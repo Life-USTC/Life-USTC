@@ -20,45 +20,51 @@ class UstcCasClient: LoginClientProtocol {
         username.isEmpty || password.isEmpty
     }
 
-    func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    func getLtTokenFromCAS(
+        url: URL = ustcLoginUrl
+    ) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
         let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
-        let (data, _) = try await session.data(from: url)
-        guard let dataString = String(data: data, encoding: .utf8) else {
-            throw BaseError.runtimeError("network<UstcCAS>: failed to fetch raw LT-Token")
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, _) = try await session.data(for: request)
+
+        guard let dataString = String(data: data, encoding: .utf8),
+              let match = dataString.firstMatch(of: findLtStringRegex)
+        else {
+            throw BaseError.runtimeError("Failed to fetch raw LT-Token")
         }
 
-        guard let match = dataString.firstMatch(of: findLtStringRegex) else {
-            throw BaseError.runtimeError("network<UstcCAS>: failed to fetch raw LT-Token")
-        }
-
-        let ltToken = String(match.0)
-        print("network<UstcCAS>: LT-TOKEN GET: \(ltToken)")
-        return (ltToken, session.configuration.httpCookieStorage?.cookies ?? [])
+        return (String(match.0), session.configuration.httpCookieStorage?.cookies ?? [])
     }
 
-    func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws -> Bool {
+    func loginToCAS(
+        url: URL = ustcLoginUrl,
+        service: URL? = nil
+    ) async throws -> Bool {
         if precheckFails {
-            throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
+            throw BaseError.runtimeError("Precheck fails")
         }
 
         let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        components.queryItems = [URLQueryItem(name: "model", value: "uplogin.jsp"),
-                                 URLQueryItem(name: "CAS_LT", value: ltToken),
-                                 URLQueryItem(name: "service", value: service?.absoluteString ?? ""),
-                                 URLQueryItem(name: "warn", value: ""),
-                                 URLQueryItem(name: "showCode", value: ""),
-                                 URLQueryItem(name: "qrcode", value: ""),
-                                 URLQueryItem(name: "username", value: username),
-                                 URLQueryItem(name: "password", value: password),
-                                 URLQueryItem(name: "LT", value: ""),
-                                 URLQueryItem(name: "button", value: "")]
+        let queries: [String: String] = [
+            "model": "uplogin.jsp",
+            "CAS_LT": ltToken,
+            "service": service?.absoluteString ?? "",
+            "warn": "",
+            "showCode": "",
+            "qrcode": "",
+            "username": username,
+            "password": password,
+            "LT": "",
+            "button": "",
+        ]
+
         var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = components.query?.data(using: .utf8)
+        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(separator: "&").data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -67,7 +73,9 @@ class UstcCasClient: LoginClientProtocol {
 
         let _ = try await session.data(for: request)
 
-        return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" || $0.name == "TGC" }) ?? false
+        return session.configuration.httpCookieStorage?.cookies?.contains(where: {
+            $0.name == "logins" || $0.name == "TGC"
+        }) ?? false
     }
 
     override func login() async throws -> Bool {
@@ -87,8 +95,11 @@ extension URL {
     ///  - Parameters:
     ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
     func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(url: casServer.appendingPathComponent("login"), resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "service", value: absoluteString)]
+        var components = URLComponents(
+            url: casServer.appendingPathComponent("login"),
+            resolvingAgainstBaseURL: false
+        )!
+        components.queryItems = [.init(name: "service", value: absoluteString)]
         return components.url ?? exampleURL
     }
 
