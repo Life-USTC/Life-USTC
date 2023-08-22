@@ -13,12 +13,10 @@ struct ManagedData<D>: DynamicProperty {
     var remote: any ManagedRemoteUpdateProtocol<D>
 
     var wrappedValue: D? {
-        if let data = local.data {
-            return data
-        } else {
+        if local.status != .valid {
             triggerRefresh()
-            return nil
         }
+        return local.data
     }
 
     @State var refresh: RefreshAsyncStatus? = nil
