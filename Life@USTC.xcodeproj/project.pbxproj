@@ -512,9 +512,9 @@
 		567ED62C2A9535A100F3A38B /* Details */ = {
 			isa = PBXGroup;
 			children = (
-				569600102A9116F000677F15 /* LectureDetailView.swift */,
-				56D175BF295048A10070778F /* CurriculumDetailView.swift */,
 				569600122A9117C100677F15 /* CourseDetailView.swift */,
+				56D175BF295048A10070778F /* CurriculumDetailView.swift */,
+				569600102A9116F000677F15 /* LectureDetailView.swift */,
 			);
 			path = Details;
 			sourceTree = "<group>";
@@ -724,8 +724,8 @@
 			children = (
 				567ED62D2A95366700F3A38B /* ManagedLocalData */,
 				5647386E2A8E23D700608E46 /* AsyncStatus.swift */,
-				56E9A0932A8F12BF00A12B29 /* ManagedDataSource.swift */,
 				56E9A0912A8F0E6400A12B29 /* ManagedData.swift */,
+				56E9A0932A8F12BF00A12B29 /* ManagedDataSource.swift */,
 			);
 			path = ManagedData;
 			sourceTree = "<group>";
@@ -1001,10 +1001,10 @@
 				56E94E25298A77990085241B /* LegalPage.swift in Sources */,
 				56B86B862A8F47E6003440D2 /* Lesson.swift in Sources */,
 				56E25CC32A8F29E50027E72F /* LoginClient.swift in Sources */,
+				56E9A0922A8F0E6400A12B29 /* ManagedData.swift in Sources */,
 				56E9A0942A8F12BF00A12B29 /* ManagedDataSource.swift in Sources */,
 				56E9A0982A8F1C9B00A12B29 /* ManagedLocalStorage.swift in Sources */,
 				56E9A0962A8F1A9A00A12B29 /* ManagedUserDefaults.swift in Sources */,
-				56E9A0922A8F0E6400A12B29 /* ManagedData.swift in Sources */,
 				56E94E27298A77D00085241B /* NotificationPage.swift in Sources */,
 				56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */,
 				56D18BBE29E140DE002C6677 /* RectangleProgressBar.swift in Sources */,
@@ -1060,10 +1060,10 @@
 				56A0C1902A8E0AAA00BFEAB9 /* Lecture.swift in Sources */,
 				56B86B872A8F47E6003440D2 /* Lesson.swift in Sources */,
 				56E25CC42A8F2D210027E72F /* LoginClient.swift in Sources */,
+				56E9A09C2A8F1CA700A12B29 /* ManagedData.swift in Sources */,
 				56E9A09B2A8F1CA400A12B29 /* ManagedDataSource.swift in Sources */,
 				56E9A0992A8F1C9E00A12B29 /* ManagedLocalStorage.swift in Sources */,
 				56E9A09A2A8F1CA100A12B29 /* ManagedUserDefaults.swift in Sources */,
-				56E9A09C2A8F1CA700A12B29 /* ManagedData.swift in Sources */,
 				5638E27F2A581324001967D9 /* Score.swift in Sources */,
 				56A0C1932A8E0B7700BFEAB9 /* Semester.swift in Sources */,
 				5677E1272A5AEECD00EDCB53 /* SharedDelegates.swift in Sources */,

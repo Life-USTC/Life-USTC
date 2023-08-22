@@ -69,8 +69,8 @@ enum USTCExports {
 }
 
 struct USTCBaseModifier: ViewModifier {
-    @LoginClient(\.ustcCAS) var casClient: UstcCasClient
-    @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
 
     @State var casLoginSheet: Bool = false
 

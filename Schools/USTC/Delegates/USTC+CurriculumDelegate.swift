@@ -19,8 +19,8 @@ private func convertYYMMDD(_ date: String) -> Date {
 class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol {
     static let shared = USTCCurriculumDelegate()
 
-    @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient
-    @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
+    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
 
     func refreshSemesterBase() async throws -> [Semester] {
         if try await !_catalogClient.requireLogin() {
