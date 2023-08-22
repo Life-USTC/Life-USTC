@@ -13,7 +13,7 @@ class UstcCatalogClient: LoginClientProtocol {
 
     var token: String = ""
 
-    func login() async throws -> Bool {
+    override func login() async throws -> Bool {
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/get_token")!)
 
         if let token = try? JSON(data: data)["access_token"].string {
@@ -23,11 +23,9 @@ class UstcCatalogClient: LoginClientProtocol {
         return false
     }
 
-    init() {}
+    override init() {}
 }
 
-extension LoginClients {
-    var ustcCatalog: UstcCatalogClient {
-        UstcCatalogClient.shared
-    }
+extension LoginClientProtocol {
+    static let ustcCatalog = UstcCatalogClient.shared
 }

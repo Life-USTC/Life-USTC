@@ -14,14 +14,13 @@ import WidgetKit
 class UstcUgAASClient: LoginClientProtocol {
     static var shared = UstcUgAASClient()
 
-    @LoginClient(\.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
     var session: URLSession = .shared
 
-    func login() async throws -> Bool {
+    override func login() async throws -> Bool {
         let urlA = URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!
         let urlB = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
         let urlC = URL(string: "https://jw.ustc.edu.cn/home")!
-        print("network<UstcUgAAS>: login called")
 
         // jw.ustc.edu.cn login.
         _ = try await session.data(from: urlA)
@@ -33,18 +32,10 @@ class UstcUgAASClient: LoginClientProtocol {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await session.data(for: request)
 
-        print("network<UstcUgAAS>: Login finished, Cookies:")
-
-        for cookie in session.configuration.httpCookieStorage?.cookies ?? [] {
-            print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
-        }
-
         return (response.url == urlC)
     }
 }
 
-extension LoginClients {
-    var ustcUgAAS: UstcUgAASClient {
-        UstcUgAASClient.shared
-    }
+extension LoginClientProtocol {
+    static var ustcUgAAS = UstcUgAASClient.shared
 }

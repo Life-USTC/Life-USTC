@@ -43,7 +43,6 @@ class UstcCasClient: LoginClientProtocol {
         if precheckFails {
             throw BaseError.runtimeError("network<UstcCAS>: precheck fails")
         }
-        print("network<UstcCAS>: login called")
 
         let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
@@ -68,26 +67,18 @@ class UstcCasClient: LoginClientProtocol {
 
         let _ = try await session.data(for: request)
 
-        print("network<UstcCAS>: Login To CAS Finished, Cookies:")
-
-        for cookie in session.configuration.httpCookieStorage?.cookies ?? [] {
-            print("[\(cookie.domain)]\tNAME:\(cookie.name)\tVALUE:\(cookie.value)")
-        }
-
         return session.configuration.httpCookieStorage?.cookies?.contains(where: { $0.name == "logins" || $0.name == "TGC" }) ?? false
     }
 
-    func login() async throws -> Bool {
+    override func login() async throws -> Bool {
         try await loginToCAS()
     }
 
-    init() {}
+    override init() {}
 }
 
-extension LoginClients {
-    var ustcCAS: UstcCasClient {
-        UstcCasClient.shared
-    }
+extension LoginClientProtocol {
+    static let ustcCAS = UstcCasClient.shared
 }
 
 extension URL {

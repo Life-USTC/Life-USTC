@@ -7,55 +7,42 @@
 
 import Foundation
 
-protocol LoginClientProtocol {
+class LoginClientProtocol {
     /// Return True if login success
-    func login() async throws -> Bool
+    func login() async throws -> Bool {
+        false
+    }
 }
 
 @propertyWrapper
 class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
-
     var lastLogined: Date?
-
-    func checkLogined() -> Bool {
-        if lastLogined == nil || Date() > lastLogined! + DateComponents(minute: 5) {
-            print("network<\(T.self)>: Not logged in, [REQUIRE LOGIN]")
-            return false
-        }
-        print("network<\(T.self)>: Already logged in, passing")
-        return true
-    }
-
     var loginTask: Task<Bool, Error>?
 
     func requireLogin() async throws -> Bool {
         if let loginTask {
-            print("network<\(T.self)>: login task already running, [WAITING RESULT]")
             return try await loginTask.value
         }
 
-        if checkLogined() {
+        if lastLogined != nil, Date().timeIntervalSince(lastLogined!) < 5 * 60 {
             return true
         }
 
-        let task = Task {
+        loginTask = Task {
             do {
-                print("network<\(T.self)>: No login task running, [CREATING NEW ONE]")
-                let result = try await self.wrappedValue.login()
-                loginTask = nil
-                print("network<\(T.self)>: login task finished, result:\(result)")
-                if result {
-                    lastLogined = .now
+                if try await self.wrappedValue.login() {
+                    lastLogined = Date()
+                    return true
                 }
-                return result
+                loginTask = nil
+                return false
             } catch {
                 loginTask = nil
                 throw (error)
             }
         }
-        loginTask = task
-        return try await task.value
+        return try await loginTask!.value
     }
 
     func clearLoginStatus() {
@@ -65,10 +52,4 @@ class LoginClient<T: LoginClientProtocol> {
     init(_ wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
-
-    convenience init(_ client: KeyPath<LoginClients, T>) {
-        self.init(LoginClients()[keyPath: client])
-    }
 }
-
-struct LoginClients {}

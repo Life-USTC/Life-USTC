@@ -11,7 +11,7 @@ import SwiftyJSON
 class UstcClassroomDelegate: ManagedRemoteUpdateProtocol {
     static var shared = UstcClassroomDelegate()
 
-    @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
+    @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
     @AppStorage("ustcClassroomDate") var date: Date = .init()
 
     func refresh() async throws -> [String: [Lesson]] {
