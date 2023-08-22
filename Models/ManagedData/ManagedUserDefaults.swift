@@ -8,25 +8,29 @@
 import Foundation
 
 /// Wrapper for UserDefaults
-class ManagedUserDefaults<D: Codable>: ManagedDataProtocol {
+class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
     let key: String
     let userDefaults: UserDefaults
-    let refreshFunc: () async throws -> D
     let validDuration: TimeInterval
 
-    var data: D? {
-        if let data = userDefaults.data(forKey: key) {
-            return try? JSONDecoder().decode(D.self, from: data)
-        } else {
-            return nil
+    override var data: D? {
+        get {
+            if let data = userDefaults.data(forKey: key) {
+                return try? JSONDecoder().decode(D.self, from: data)
+            } else {
+                return nil
+            }
+        }
+        set {
+            if let newValue {
+                try? userDefaults.set(JSONEncoder().encode(newValue), forKey: key)
+                lastUpdated = Date()
+                self.objectWillChange.send()
+            }
         }
     }
 
-    var lastUpdated: Date? {
-        userDefaults.object(forKey: key + "_lastUpdated") as? Date
-    }
-
-    var localStatus: LocalAsyncStatus {
+    override var localStatus: LocalAsyncStatus {
         if data != nil, let lastUpdated {
             if Date().timeIntervalSince(lastUpdated) < validDuration {
                 return .valid
@@ -38,21 +42,22 @@ class ManagedUserDefaults<D: Codable>: ManagedDataProtocol {
         }
     }
 
-    func refresh() async throws {
-        let newData = try await refreshFunc()
-        let newDataEncoded = try JSONEncoder().encode(newData)
-        userDefaults.set(newDataEncoded, forKey: key)
-        userDefaults.set(Date(), forKey: key + "_lastUpdated")
+    var lastUpdated: Date? {
+        get {
+            userDefaults.object(forKey: key + "_lastUpdated") as? Date
+        }
+        set {
+            userDefaults.set(newValue, forKey: key + "_lastUpdated")
+            objectWillChange.send()
+        }
     }
 
-    init(key: String,
+    init(_ key: String,
          userDefaults: UserDefaults = UserDefaults.appGroup,
-         refreshFunc: @escaping () async throws -> D,
          validDuration: TimeInterval = 60 * 15)
     {
         self.key = key
         self.userDefaults = userDefaults
-        self.refreshFunc = refreshFunc
         self.validDuration = validDuration
     }
 }

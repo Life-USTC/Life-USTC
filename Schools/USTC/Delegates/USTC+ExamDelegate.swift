@@ -8,7 +8,7 @@
 import Foundation
 import SwiftSoup
 
-class USTCExamDelegate: ExamDelegateProtocol {
+class USTCExamDelegate: ManagedRemoteUpdateProtocol {
     static var shared = USTCExamDelegate()
 
     @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-class USTCScoreDelegate: ScoreDelegateProtocol {
+class USTCScoreDelegate: ManagedRemoteUpdateProtocol {
     static var shared = USTCScoreDelegate()
 
     @LoginClient(\.ustcUgAAS) var ugAASClient: UstcUgAASClient

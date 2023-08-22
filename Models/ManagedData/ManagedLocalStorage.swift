@@ -8,29 +8,40 @@
 import Foundation
 
 /// Wrapper for LocalStorage, stored in fm.documentsDirectory/ManagedLocalStorage/key, lastUpdated is stored in userDefaults
-class ManagedLocalStorage<D: Codable>: ManagedDataProtocol {
+class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     let key: String
     let fm: FileManager
     let userDefaults: UserDefaults
-    let refreshFunc: () async throws -> D
     let validDuration: TimeInterval
 
     var url: URL? {
-        fm.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ManagedLocalStorage/\(key)")
+        fm.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ManagedLocalStorage/\(key).json")
     }
 
-    var data: D? {
-        if let url {
-            return try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
+    override var data: D? {
+        get {
+            if let url {
+                return try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
+            }
+            return nil
         }
-        return nil
+        set {
+            print("SET \(key)")
+            if let url {
+                if !fm.fileExists(atPath: url.path) {
+                    try? fm.createDirectory(at: url.deletingLastPathComponent(),
+                                            withIntermediateDirectories: true,
+                                            attributes: nil)
+                }
+
+                try? JSONEncoder().encode(newValue).write(to: url)
+                lastUpdated = Date()
+            }
+            self.objectWillChange.send()
+        }
     }
 
-    var lastUpdated: Date? {
-        userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date
-    }
-
-    var localStatus: LocalAsyncStatus {
+    override var localStatus: LocalAsyncStatus {
         if data != nil, let lastUpdated {
             if Date().timeIntervalSince(lastUpdated) < validDuration {
                 return .valid
@@ -42,37 +53,24 @@ class ManagedLocalStorage<D: Codable>: ManagedDataProtocol {
         }
     }
 
-    var refreshStatus: RefreshAsyncStatus? = nil
-
-    var status: AsyncStatus {
-        AsyncStatus(local: localStatus,
-                    refresh: refreshStatus)
-    }
-
-    func refresh() async throws {
-        refreshStatus = .waiting
-        do {
-            let newData = try await refreshFunc()
-            if let url {
-                try JSONEncoder().encode(newData).write(to: url)
-            }
-            userDefaults.set(Date(), forKey: "fm_\(key)_lastUpdated")
-            refreshStatus = .success
-        } catch {
-            refreshStatus = .error(error.localizedDescription)
+    var lastUpdated: Date? {
+        get {
+            userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date
+        }
+        set {
+            userDefaults.set(newValue, forKey: "fm_\(key)_lastUpdated")
+            objectWillChange.send()
         }
     }
 
-    init(key: String,
+    init(_ key: String,
          fm: FileManager = FileManager.default,
          userDefaults: UserDefaults = UserDefaults.appGroup,
-         refreshFunc: @escaping () async throws -> D,
          validDuration: TimeInterval = 60 * 15)
     {
         self.key = key
         self.fm = fm
         self.userDefaults = userDefaults
-        self.refreshFunc = refreshFunc
         self.validDuration = validDuration
     }
 }

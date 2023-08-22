@@ -13,9 +13,7 @@ struct Curriculum: Codable {
     static let example = Curriculum(semesters: [.example])
 }
 
-protocol CurriculumProtocol {
-    func refresh() async throws -> Curriculum
-}
+typealias CurriculumProtocol = ManagedRemoteUpdateProtocol<Curriculum>
 
 /// Usage: `class exampleDelegaet: CurriculumProtocolA & CurriculumProtocol`
 protocol CurriculumProtocolA {
@@ -82,8 +80,9 @@ extension CurriculumProtocolB {
     }
 }
 
-extension ManagedDataSource {
-    var curriculum: any ManagedDataProtocol {
-        ManagedUserDefaults(key: "curriculum", refreshFunc: Curriculum.sharedDelegate.refresh)
-    }
+extension ManagedDataSource<Curriculum> {
+    static let curriculum = ManagedDataSource(
+        local: ManagedLocalStorage("Curriculum"),
+        remote: Curriculum.sharedDelegate
+    )
 }

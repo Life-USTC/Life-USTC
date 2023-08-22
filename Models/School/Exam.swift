@@ -144,12 +144,11 @@ extension Exam {
     }
 }
 
-protocol ExamDelegateProtocol {
-    func refresh() async throws -> [Exam]
-}
+typealias ExamDelegateProtocol = ManagedRemoteUpdateProtocol<[Exam]>
 
-extension ManagedDataSource {
-    var exam: any ManagedDataProtocol {
-        ManagedUserDefaults(key: "exam", refreshFunc: Exam.sharedDelegate.refresh)
-    }
+extension ManagedDataSource<[Exam]> {
+    static let exam = ManagedDataSource(
+        local: ManagedLocalStorage("Exam"),
+        remote: Exam.sharedDelegate
+    )
 }

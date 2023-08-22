@@ -13,8 +13,8 @@ func HHMM(hour: Int, minute: Int) -> Int {
 }
 
 struct CurriculumWeekView: View {
-    @ManagedData(\.curriculum) var curriculum: Curriculum!
-    @State var status: AsyncStatus?
+    @ManagedData(.curriculum) var curriculum: Curriculum!
+
     @State var date: Date = .init() {
         willSet {
             date = newValue.stripTime()
@@ -71,118 +71,126 @@ struct CurriculumWeekView: View {
         HHMM(hour: 18, minute: 20),
     ]
 
+    var mainView: some View {
+        Group {
+            if #available(iOS 17.0, *) {
+                VStack {
+                    List {
+                        DatePicker(selection: $date, displayedComponents: .date) {
+                            Text("Date")
+                        }
+
+                        HStack {
+                            Text("Semester")
+                            Spacer()
+                            Menu {
+                                ForEach(curriculum.semesters) { semester in
+                                    Button(semester.name) {
+                                        currentSemester = semester
+                                    }
+                                }
+                                Button("All") {
+                                    currentSemester = nil
+                                }
+                            } label: {
+                                Text(currentSemester?.name ?? "All")
+                            }
+                        }
+                    }
+                    .listStyle(.grouped)
+                    .scrollContentBackground(.hidden)
+                    .frame(height: 150)
+
+                    Chart {
+                        ForEach(lectures) { lecture in
+                            BarMark(xStart: .value("Start Time", lecture.startDate.HHMM),
+                                    xEnd: .value("End Time", lecture.endDate.HHMM),
+                                    y: .value("Date", lecture.startDate.stripTime(), unit: .day))
+                                .foregroundStyle(by: .value("Course Name", lecture.name))
+                                .annotation(position: .overlay) {
+                                    Text(lecture.name)
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                }
+                        }
+                    }
+                    .chartXAxis {
+                        AxisMarks(position: .top, values: shownTimes) { value in
+                            if let hhmm = value.as(Int.self) {
+                                AxisValueLabel {
+                                    Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
+                                }
+                                AxisGridLine()
+                            }
+                        }
+
+                        AxisMarks(position: .bottom, values: [Date().stripDate().HHMM]) { _ in
+                            AxisValueLabel {
+                                Text("Now")
+                                    .foregroundColor(.red)
+                            }
+                            AxisGridLine()
+                                .foregroundStyle(.red)
+                        }
+
+                        AxisMarks(position: .bottom, values: highLightTimes) { value in
+                            if let hhmm = value.as(Int.self) {
+                                AxisValueLabel {
+                                    Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
+                                        .foregroundColor(.blue)
+                                }
+                                AxisGridLine()
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    }
+                    .chartXScale(domain: shownTimes.first! ... shownTimes.last!,
+                                 range: .plotDimension(padding: 5))
+                    .chartScrollPosition(initialX: shownTimes.first!)
+                    .chartScrollPosition(x: $scrollPostion)
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: dates) { value in
+                            if let date = value.as(Date.self) {
+                                AxisValueLabel(anchor: .topTrailing) {
+                                    HStack(spacing: 2) {
+                                        Text(date, format: .dateTime.day())
+                                        Text(date, format: .dateTime.weekday())
+                                    }
+                                    .fontDesign(.monospaced)
+                                    .foregroundColor(date == self.date ? .red : .secondary)
+                                }
+                                AxisGridLine()
+                            }
+                        }
+                    }
+                    .chartYScale(domain: dateRange)
+                    .chartLegend(.hidden)
+                    .chartScrollableAxes(.horizontal)
+                    .onChange(of: date) { _ in
+                        updateLectures()
+                    }
+                    .onChange(of: currentSemester) { _ in
+                        updateLectures()
+                    }
+                    .frame(height: 230)
+                }
+            } else {
+                Text("???")
+            }
+        }
+    }
+
     var body: some View {
-        if #available(iOS 17.0, *) {
-            VStack {
-                List {
-                    DatePicker(selection: $date, displayedComponents: .date) {
-                        Text("Date")
-                    }
-
-                    HStack {
-                        Text("Semester")
-                        Spacer()
-                        Menu {
-                            ForEach(curriculum.semesters) { semester in
-                                Button(semester.name) {
-                                    currentSemester = semester
-                                }
-                            }
-                            Button("All") {
-                                currentSemester = nil
-                            }
-                        } label: {
-                            Text(currentSemester?.name ?? "All")
-                        }
-                    }
-                }
-                .listStyle(.grouped)
-                .scrollContentBackground(.hidden)
-                .frame(height: 150)
-
-                Chart {
-                    ForEach(lectures) { lecture in
-                        BarMark(xStart: .value("Start Time", lecture.startDate.HHMM),
-                                xEnd: .value("End Time", lecture.endDate.HHMM),
-                                y: .value("Date", lecture.startDate.stripTime(), unit: .day))
-                            .foregroundStyle(by: .value("Course Name", lecture.name))
-                            .annotation(position: .overlay) {
-                                Text(lecture.name)
-                                    .font(.caption)
-                                    .foregroundColor(.white)
-                            }
-                    }
-                }
-                .chartXAxis {
-                    AxisMarks(position: .top, values: shownTimes) { value in
-                        if let hhmm = value.as(Int.self) {
-                            AxisValueLabel {
-                                Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
-                            }
-                            AxisGridLine()
-                        }
-                    }
-
-                    AxisMarks(position: .bottom, values: [Date().stripDate().HHMM]) { _ in
-                        AxisValueLabel {
-                            Text("Now")
-                                .foregroundColor(.red)
-                        }
-                        AxisGridLine()
-                            .foregroundStyle(.red)
-                    }
-
-                    AxisMarks(position: .bottom, values: highLightTimes) { value in
-                        if let hhmm = value.as(Int.self) {
-                            AxisValueLabel {
-                                Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
-                                    .foregroundColor(.blue)
-                            }
-                            AxisGridLine()
-                                .foregroundStyle(.blue)
-                        }
-                    }
-                }
-                .chartXScale(domain: shownTimes.first! ... shownTimes.last!,
-                             range: .plotDimension(padding: 5))
-                .chartScrollPosition(initialX: shownTimes.first!)
-                .chartScrollPosition(x: $scrollPostion)
-                .chartYAxis {
-                    AxisMarks(position: .leading, values: dates) { value in
-                        if let date = value.as(Date.self) {
-                            AxisValueLabel(anchor: .topTrailing) {
-                                HStack(spacing: 2) {
-                                    Text(date, format: .dateTime.day())
-                                    Text(date, format: .dateTime.weekday())
-                                }
-                                .fontDesign(.monospaced)
-                                .foregroundColor(date == self.date ? .red : .secondary)
-                            }
-                            AxisGridLine()
-                        }
-                    }
-                }
-                .chartYScale(domain: dateRange)
-                .chartLegend(.hidden)
-                .chartScrollableAxes(.horizontal)
-                .onChange(of: date) { _ in
-                    updateLectures()
-                }
-                .onChange(of: currentSemester) { _ in
-                    updateLectures()
-                }
-                .onReceive(_curriculum.$wrappedValue) { _ in
-                    updateLectures()
-                }
-                .frame(height: 230)
+        Group {
+            if curriculum != nil {
+                mainView
+            } else {
+                Text("TBC")
             }
-            .asyncStatusMask(status: status)
-            .refreshable {
-                _curriculum.userTriggeredRefresh()
-            }
-            .onReceive(_curriculum.$status, perform: {
-                status = $0
-            })
+        }
+        .asyncStatusMask(status: _curriculum.status)
+        .refreshable {
+            _curriculum.triggerRefresh()
         }
     }
 }

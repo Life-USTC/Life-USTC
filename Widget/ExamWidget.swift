@@ -10,7 +10,7 @@ import SwiftUI
 import WidgetKit
 
 struct ExamProvider: TimelineProvider {
-    @ManagedData(\.exam) var exams: [Exam]?
+    @ManagedData(.exam) var exams: [Exam]?
     func placeholder(in _: Context) -> SimpleEntry {
         SimpleEntry.example
     }

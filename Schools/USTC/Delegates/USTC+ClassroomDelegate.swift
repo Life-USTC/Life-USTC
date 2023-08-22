@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftyJSON
 
-class UstcClassroomDelegate {
+class UstcClassroomDelegate: ManagedRemoteUpdateProtocol {
     static var shared = UstcClassroomDelegate()
 
     @LoginClient(\.ustcCatalog) var catalogClient: UstcCatalogClient
@@ -82,30 +82,27 @@ class UstcClassroomDelegate {
 
 extension UstcClassroomDelegate {
     static var allBuildings = ["1", "2", "3", "5", "17", "11", "12", "13", "14", "22"]
-    static var buildingNames: [String: String] = ["1": "第一教学楼",
-                                                  "2": "第二教学楼",
-                                                  "3": "第三教学楼",
-                                                  "5": "第五教学楼",
-                                                  "17": "先研院未来中心",
-                                                  "11": "高新校区图书教育中心A楼",
-                                                  "12": "高新校区图书教育中心B楼",
-                                                  "13": "高新校区图书教育中心C楼",
-                                                  "14": "高新校区师生活动中心",
-                                                  "22": "高新校区信智楼"]
-    static var buildingRooms: [String: [String]] = parseRoomJson()
+    static var buildingNames: [String: String] = [
+        "1": "第一教学楼",
+        "2": "第二教学楼",
+        "3": "第三教学楼",
+        "5": "第五教学楼",
+        "17": "先研院未来中心",
+        "11": "高新校区图书教育中心A楼",
+        "12": "高新校区图书教育中心B楼",
+        "13": "高新校区图书教育中心C楼",
+        "14": "高新校区师生活动中心",
+        "22": "高新校区信智楼",
+    ]
 
-    static var buildingRoomJsonCache: JSON?
-    static func parseRoomJson() -> [String: [String]] {
-        if buildingRoomJsonCache == nil {
-            if let path = Bundle.main.path(forResource: "ustc_rooms", ofType: "json") {
-                let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-                buildingRoomJsonCache = try! JSON(data: data)
-            }
-        }
+    static var buildingRooms: [String: [String]] = {
+        let path = Bundle.main.path(forResource: "ustc_rooms", ofType: "json")!
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+        let cache = try! JSON(data: data)
 
         var result: [String: [String]] = [:]
 
-        for (_, subJson) in buildingRoomJsonCache! {
+        for (_, subJson) in cache {
             let building = subJson["buildingCode"].stringValue
             let room = subJson["code"].stringValue
 
@@ -116,13 +113,16 @@ extension UstcClassroomDelegate {
             }
         }
         return result
-    }
+    }()
 
     static func buildingName(with id: String) -> String {
         buildingNames.first(where: { $0.key == id })?.value ?? "Error"
     }
 }
 
-extension ManagedDataSource {
-    static let classroom = ManagedLocalStorage(key: "ustc_classroom", refreshFunc: UstcClassroomDelegate.shared.refresh)
+extension ManagedDataList {
+    static let classroom = ManagedDataSource(
+        local: ManagedLocalStorage("ustc_classroom"),
+        remote: UstcClassroomDelegate.shared
+    )
 }
