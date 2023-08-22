@@ -120,7 +120,7 @@ extension UstcClassroomDelegate {
     }
 }
 
-extension ManagedDataList {
+extension ManagedDataSource<[String: [Lesson]]> {
     static let classroom = ManagedDataSource(
         local: ManagedLocalStorage("ustc_classroom"),
         remote: UstcClassroomDelegate.shared
