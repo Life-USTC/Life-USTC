@@ -32,6 +32,7 @@ struct AsyncStatusMask: ViewModifier {
                 Spacer()
             }
             .padding(.horizontal)
+
             if (status?.local ?? .notFound) != .notFound {
                 content
             } else {

@@ -8,67 +8,48 @@
 import SwiftUI
 
 @propertyWrapper
-class ManagedData<D: Codable>: DynamicProperty, ObservableObject {
-    let delegate: any ManagedDataProtocol
+struct ManagedData<D>: DynamicProperty {
+    @ObservedObject var local: ManagedLocalDataProtocol<D>
+    var remote: any ManagedRemoteUpdateProtocol<D>
 
-    @Published var wrappedValue: D? = nil {
-        willSet {
-            objectWillChange.send()
+    var wrappedValue: D? {
+        if let data = local.data {
+            return data
+        } else {
+            triggerRefresh()
+            return nil
         }
     }
 
-    @Published var status: AsyncStatus = .init() {
-        willSet {
-            objectWillChange.send()
-        }
-    }
-
-    func userTriggeredRefresh() {
-        Task {
-            do {
-                status.refresh = .waiting
-                try await self.delegate.refresh()
-                wrappedValue = delegate.data as? D
-                status.local = delegate.localStatus
-                status.refresh = .success
-            } catch {
-                status.refresh = .error(error.localizedDescription)
-            }
-        }
+    @State var refresh: RefreshAsyncStatus? = nil
+    var status: AsyncStatus {
+        AsyncStatus(
+            local: local.localStatus,
+            refresh: refresh
+        )
     }
 
     func retrive() async throws -> D? {
-        if delegate.localStatus != .valid {
-            do {
-                status.refresh = .waiting
-                try await delegate.refresh()
-                wrappedValue = delegate.data as? D
-                status.local = delegate.localStatus
-                status.refresh = .success
-            } catch {
-                status.refresh = .error(error.localizedDescription)
-            }
+        if status.local != .valid {
+            try await refresh()
         }
         return wrappedValue
     }
 
-    init(_ delegate: any ManagedDataProtocol) {
-        self.delegate = delegate
-        wrappedValue = delegate.data as? D
-        status.local = delegate.localStatus
-
-        if delegate.localStatus != .valid {
-            userTriggeredRefresh()
+    func refresh() async throws {
+        try await $refresh.exec {
+            local.data = try await remote.refresh()
         }
     }
 
-    convenience init(_ source: KeyPath<ManagedDataSource.Type, any ManagedDataProtocol>) {
-        self.init(ManagedDataSource.self[keyPath: source])
+    func triggerRefresh() {
+        Task { @MainActor in
+            try await self.refresh()
+        }
     }
 
-    convenience init(_ source: KeyPath<ManagedDataSource, any ManagedDataProtocol>) {
-        self.init(ManagedDataSource()[keyPath: source])
+    init(_ source: ManagedDataSource<D>) {
+        _local = .init(wrappedValue: source.local)
+        remote = source.remote
     }
 }
-
-struct ManagedDataSource {}

@@ -13,8 +13,8 @@ private enum SortPreference: String, CaseIterable {
 }
 
 struct ScoreView: View {
-    @ManagedData(\.score) var score: Score!
-    @State var status: AsyncStatus?
+    @ManagedData(.score) var score: Score!
+
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
     @State var showSettings: Bool = false
@@ -70,22 +70,22 @@ struct ScoreView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                rankingView
-                scoreListView
+                if score != nil {
+                    rankingView
+                    scoreListView
+                }
+                Spacer()
             }
+            .asyncStatusMask(status: _score.status)
         }
+        .padding(.horizontal)
+        .refreshable {
+            _score.triggerRefresh()
+        }
+        .sheet(isPresented: $showSettings) { sheet }
         .toolbar {
             settingButton
         }
-        .padding(.horizontal)
-        .sheet(isPresented: $showSettings) { sheet }
-        .asyncStatusMask(status: status)
-        .refreshable {
-            _score.userTriggeredRefresh()
-        }
-        .onReceive(_score.$status, perform: {
-            status = $0
-        })
         .navigationTitle("Score")
         .navigationBarTitleDisplayMode(.inline)
     }

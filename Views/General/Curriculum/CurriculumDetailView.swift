@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct CurriculumDetailView: View {
-    @ManagedData(\.curriculum) var curriculum: Curriculum!
-    @State var status: AsyncStatus?
+    @ManagedData(.curriculum) var curriculum: Curriculum!
 
     var body: some View {
         List {
@@ -26,13 +25,10 @@ struct CurriculumDetailView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .asyncStatusMask(status: status)
+        .asyncStatusMask(status: _curriculum.status)
         .refreshable {
-            _curriculum.userTriggeredRefresh()
+            _curriculum.triggerRefresh()
         }
-        .onReceive(_curriculum.$status, perform: {
-            status = $0
-        })
         .navigationTitle("Curriculum")
         .navigationBarTitleDisplayMode(.inline)
     }

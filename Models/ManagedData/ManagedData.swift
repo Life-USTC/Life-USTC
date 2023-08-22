@@ -7,16 +7,26 @@
 
 import Foundation
 
-protocol ManagedDataProtocol {
+class ManagedLocalDataProtocol<D>: ObservableObject {
+    var data: D?
+    var localStatus: LocalAsyncStatus {
+        .notFound
+    }
+
+    init(data: D? = nil) {
+        self.data = data
+    }
+}
+
+protocol ManagedRemoteUpdateProtocol<D> {
     associatedtype D
 
-    // MARK: - ViewModel <-> View
-
-    var data: D? { get }
-    var localStatus: LocalAsyncStatus { get }
-
-    // MARK: - View -> ViewModel
-
-    /// Triggered when status.local == .notFound or .outDated, manage status on your own
-    func refresh() async throws
+    func refresh() async throws -> D
 }
+
+struct ManagedDataSource<D> {
+    var local: ManagedLocalDataProtocol<D>
+    var remote: any ManagedRemoteUpdateProtocol<D>
+}
+
+enum ManagedDataList {}

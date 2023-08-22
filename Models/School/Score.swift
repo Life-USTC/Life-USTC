@@ -133,12 +133,11 @@ struct Score: Codable {
                                majorName: "废理兴工")
 }
 
-protocol ScoreDelegateProtocol {
-    func refresh() async throws -> Score
-}
+typealias ScoreDelegateProtocol = ManagedRemoteUpdateProtocol<Score>
 
-extension ManagedDataSource {
-    var score: any ManagedDataProtocol {
-        ManagedUserDefaults(key: "score", refreshFunc: Score.sharedDelegate.refresh)
-    }
+extension ManagedDataSource<Score> {
+    static let score = ManagedDataSource(
+        local: ManagedLocalStorage("Score"),
+        remote: Score.sharedDelegate
+    )
 }

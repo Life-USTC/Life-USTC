@@ -48,3 +48,15 @@ extension RefreshAsyncStatus? {
         }
     }
 }
+
+extension Binding<RefreshAsyncStatus?> {
+    func exec(_ action: @escaping () async throws -> Void) async throws {
+        wrappedValue = .waiting
+        do {
+            try await action()
+            wrappedValue = .success
+        } catch {
+            wrappedValue = .error(error.localizedDescription)
+        }
+    }
+}
