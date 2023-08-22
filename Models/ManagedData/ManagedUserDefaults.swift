@@ -30,7 +30,7 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
         }
     }
 
-    override var localStatus: LocalAsyncStatus {
+    override var status: LocalAsyncStatus {
         if data != nil, let lastUpdated {
             if Date().timeIntervalSince(lastUpdated) < validDuration {
                 return .valid

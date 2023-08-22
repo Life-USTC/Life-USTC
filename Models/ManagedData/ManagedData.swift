@@ -9,7 +9,7 @@ import Foundation
 
 class ManagedLocalDataProtocol<D>: ObservableObject {
     var data: D?
-    var localStatus: LocalAsyncStatus {
+    var status: LocalAsyncStatus {
         .notFound
     }
 
