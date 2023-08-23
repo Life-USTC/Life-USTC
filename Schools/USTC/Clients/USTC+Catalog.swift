@@ -22,8 +22,6 @@ class UstcCatalogClient: LoginClientProtocol {
         }
         return false
     }
-
-    override init() {}
 }
 
 extension LoginClientProtocol {
