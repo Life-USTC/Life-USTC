@@ -49,7 +49,7 @@ struct AsyncStatusMask: ViewModifier {
             case .valid:
                 content
             case .outDated:
-                content.grayscale(0.5)
+                content.grayscale(0.8)
             case .notFound:
                 content.redacted(reason: .placeholder)
             }

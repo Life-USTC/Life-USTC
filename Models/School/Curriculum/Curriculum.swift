@@ -13,6 +13,14 @@ struct Curriculum: Codable, Equatable, ExampleDataProtocol {
     static let example = Curriculum(semesters: [.example])
 }
 
+struct CurriculumBehavior {
+    var shownTimes: [Int] = []
+    var highLightTimes: [Int] = []
+
+    var convertTo: (Int) -> Int = { $0 }
+    var convertFrom: (Int) -> Int = { $0 }
+}
+
 typealias CurriculumProtocol = ManagedRemoteUpdateProtocol<Curriculum>
 
 /// Usage: `class exampleDelegaet: CurriculumProtocolA & CurriculumProtocol`
@@ -85,4 +93,14 @@ extension ManagedDataSource<Curriculum> {
         local: ManagedLocalStorage("Curriculum"),
         remote: Curriculum.sharedDelegate
     )
+}
+
+extension Curriculum {
+    static var sharedDelegate: any CurriculumProtocol {
+        SchoolExport.shared.curriculumDelegate
+    }
+
+    static var behviour: CurriculumBehavior {
+        SchoolExport.shared.curriculumBehavior
+    }
 }

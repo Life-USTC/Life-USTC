@@ -141,3 +141,9 @@ extension ManagedDataSource<Score> {
         remote: Score.sharedDelegate
     )
 }
+
+extension Score {
+    static var sharedDelegate: any ScoreDelegateProtocol {
+        SchoolExport.shared.scoreDelegate
+    }
+}

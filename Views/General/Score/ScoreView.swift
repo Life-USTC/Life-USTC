@@ -70,10 +70,8 @@ struct ScoreView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                if score != nil {
-                    rankingView
-                    scoreListView
-                }
+                rankingView
+                scoreListView
                 Spacer()
             }
             .asyncStatusOverlay(_score.status)

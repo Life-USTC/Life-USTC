@@ -36,22 +36,9 @@ struct CurriculumWeekView: View {
         }
     }
 
-    var shownTimes: [Int] = [
-        7 * 60 + 50,
-        9 * 60 + 45,
-        11 * 60 + 20,
-        14 * 60 + 0,
-        15 * 60 + 55,
-        17 * 60 + 30,
-        19 * 60 + 30,
-        21 * 60 + 5,
-        21 * 60 + 55,
-    ]
-
-    var highLightTimes: [Int] = [
-        12 * 60 + 10,
-        18 * 60 + 20,
-    ]
+    var mergedTimes: [Int] {
+        (Curriculum.behviour.shownTimes + Curriculum.behviour.highLightTimes).sorted()
+    }
 
     var settingsView: some View {
         VStack(alignment: .leading) {
@@ -86,20 +73,33 @@ struct CurriculumWeekView: View {
     var chartView: some View {
         Chart {
             ForEach(lectures) { lecture in
-                BarMark(xStart: .value("Start Time", lecture.startDate.HHMM),
-                        xEnd: .value("End Time", lecture.endDate.HHMM),
-                        y: .value("Date", lecture.startDate.stripTime(), unit: .day))
-                    .foregroundStyle(by: .value("Course Name", lecture.name))
-                    .annotation(position: .overlay) {
-                        Text(lecture.name + " @ " + lecture.location)
-                            .font(.caption)
-                            .foregroundColor(.white)
-                    }
+                BarMark(
+                    xStart: .value(
+                        "Start Time",
+                        Curriculum.behviour.convertTo(lecture.startDate.HHMM)
+                    ),
+
+                    xEnd: .value(
+                        "End Time",
+                        Curriculum.behviour.convertTo(lecture.endDate.HHMM)
+                    ),
+                    y: .value(
+                        "Date", lecture.startDate.stripTime(),
+                        unit: .day
+                    )
+                )
+                .foregroundStyle(by: .value("Course Name", lecture.name))
+                .annotation(position: .overlay) {
+                    Text(lecture.name)
+                        .font(.caption)
+                        .foregroundColor(.white)
+                }
             }
         }
         .chartXAxis {
-            AxisMarks(position: .top, values: shownTimes) { value in
-                if let hhmm = value.as(Int.self) {
+            AxisMarks(position: .top, values: Curriculum.behviour.shownTimes) { value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = Curriculum.behviour.convertFrom(_hhmm)
                     AxisValueLabel {
                         Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
                     }
@@ -107,7 +107,7 @@ struct CurriculumWeekView: View {
                 }
             }
 
-            AxisMarks(position: .bottom, values: [Date().stripDate().HHMM]) { _ in
+            AxisMarks(position: .bottom, values: [Curriculum.behviour.convertTo(Date().stripDate().HHMM)]) { _ in
                 AxisValueLabel(anchor: .topTrailing) {
                     Text("Now")
                         .foregroundColor(.red)
@@ -116,39 +116,30 @@ struct CurriculumWeekView: View {
                     .foregroundStyle(.red)
             }
 
-            AxisMarks(position: .bottom, values: highLightTimes) { value in
-                if let hhmm = value.as(Int.self) {
+            AxisMarks(position: .bottom, values: Curriculum.behviour.highLightTimes) { value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = Curriculum.behviour.convertFrom(_hhmm)
                     AxisValueLabel(anchor: .topTrailing) {
                         Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
                             .foregroundColor(.blue)
                     }
-                    AxisGridLine()
+                    AxisGridLine(stroke: .init(dash: []))
                         .foregroundStyle(.blue)
                 }
             }
         }
-        .chartXScale(domain: shownTimes.first! ... shownTimes.last!)
-        .chartScrollPosition(initialX: shownTimes.first!)
-        .chartScrollTargetBehavior(.valueAligned(unit: 75, majorAlignment: .page))
+        .chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
         .chartYAxis {
-            AxisMarks(position: .leading, values: .stride(by: .day)) { value in
-                if let date = value.as(Date.self) {
-                    AxisValueLabel {
-                        HStack(spacing: 2) {
-                            Text(date, format: .dateTime.day())
-                            Text(date, format: .dateTime.weekday())
-                        }
-                        .fontDesign(.monospaced)
-                        .foregroundColor(date == Date().stripTime() ? .red : .secondary)
-                    }
-                    AxisGridLine()
-                }
+            AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
+                AxisGridLine()
+            }
+
+            AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
+                AxisGridLine()
             }
         }
         .chartYVisibleDomain(length: 3600 * 24 * 7)
-        .chartYScale(domain: date ... date.add(day: 6))
-        .chartLegend(.hidden)
-        .chartScrollableAxes([.horizontal, .vertical])
+        .chartYScale(domain: date ... date.add(day: 7))
         .frame(height: 230)
     }
 
@@ -212,6 +203,9 @@ struct CurriculumWeekView: View {
                 .opacity(flipped ? 1 : 0)
         }
         .onChange(of: currentSemester) { _ in
+            updateLectures()
+        }
+        .onChange(of: curriculum) { _ in
             updateLectures()
         }
         .onChange(of: _date) { _ in
