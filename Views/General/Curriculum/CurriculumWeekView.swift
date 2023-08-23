@@ -13,14 +13,6 @@ struct CurriculumWeekView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
     @State var currentSemester: Semester?
-//    @State var scrollPostion: Int = 7 * 60 + 50 {
-//        willSet {
-//            // round to nearest showTimes
-//            scrollPostion = shownTimes.min(by: {
-//                abs($0 - newValue) < abs($1 - newValue)
-//            }) ?? newValue
-//        }
-//    }
     @State var flipped = false
     @State var date: Date = .init() {
         willSet {
@@ -150,7 +142,6 @@ struct CurriculumWeekView: View {
             }
         }
         .chartXScale(domain: shownTimes.first! ... shownTimes.last!)
-//        .chartScrollPosition(x: $scrollPostion)
         .chartScrollPosition(initialX: shownTimes.first!)
         .chartScrollTargetBehavior(.valueAligned(unit: 75, majorAlignment: .page))
         .chartYAxis {
@@ -174,31 +165,6 @@ struct CurriculumWeekView: View {
         .frame(height: 230)
     }
 
-    var jumpView: some View {
-        Menu {
-//            Button {
-//                scrollPostion = 7 * 60 + 20
-//            } label: {
-//                Text("7:50")
-//            }
-//
-//            Button {
-//                scrollPostion = 14 * 60 + 0
-//            } label: {
-//                Text("14:00")
-//            }
-//
-//            Button {
-//                scrollPostion = 19 * 60 + 30
-//            } label: {
-//                Text("19:30")
-//            }
-        } label: {
-            Label("Jump", systemImage: "arrow.up.and.down")
-                .font(.caption)
-        }
-    }
-
     var mainView: some View {
         VStack {
             HStack {
@@ -220,8 +186,6 @@ struct CurriculumWeekView: View {
                 .refreshable {
                     _curriculum.triggerRefresh()
                 }
-
-            jumpView
         }
     }
 
@@ -236,7 +200,7 @@ struct CurriculumWeekView: View {
 
     var flipButton: some View {
         Button {
-            withAnimation(.easeInOut) {
+            withAnimation(.spring) {
                 flipped.toggle()
             }
         } label: {
@@ -247,26 +211,29 @@ struct CurriculumWeekView: View {
     }
 
     var body: some View {
-        VStack(alignment: .trailing) {
-            ZStack {
-                mainView
-                    .flipRotate(flippedDegrees)
-                    .opacity(flipped ? 0 : 1)
+        ZStack {
+            mainView
+                .card()
+                .flipRotate(flippedDegrees)
+                .opacity(flipped ? 0 : 1)
 
-                settingsView
-                    .flipRotate(-180 + flippedDegrees)
-                    .opacity(flipped ? 1 : 0)
-            }
-            .padding()
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(Color.secondary, lineWidth: 0.2)
-            }
+            settingsView
+                .card()
+                .flipRotate(-180 + flippedDegrees)
+                .opacity(flipped ? 1 : 0)
         }
     }
 }
 
 extension View {
+    func card() -> some View {
+        padding()
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(Color.secondary, lineWidth: 0.2)
+            }
+    }
+
     func flipRotate(_ degrees: Double) -> some View {
         rotation3DEffect(
             Angle(degrees: degrees),
