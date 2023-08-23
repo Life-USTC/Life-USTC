@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Curriculum: Codable, ExampleDataProtocol {
+struct Curriculum: Codable, Equatable, ExampleDataProtocol {
     var semesters: [Semester]
 
     static let example = Curriculum(semesters: [.example])
