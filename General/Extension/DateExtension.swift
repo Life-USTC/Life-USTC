@@ -37,6 +37,10 @@ extension Date {
     func add(year: Int = 0, month: Int = 0, day: Int = 0) -> Date {
         self + DateComponents(year: year, month: month, day: day)
     }
+
+    func startOfWeek() -> Date {
+        Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
+    }
 }
 
 extension DateComponents {

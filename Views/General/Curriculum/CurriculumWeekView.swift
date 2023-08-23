@@ -14,39 +14,25 @@ struct CurriculumWeekView: View {
 
     @State var currentSemester: Semester?
     @State var flipped = false
-    @State var date: Date = .init() {
-        willSet {
-            date = newValue.stripTime()
-        }
+    @State var _date: Date = .init()
+    @State var lectures: [Lecture] = []
+    var date: Date {
+        _date.startOfWeek()
     }
 
     var flippedDegrees: Double {
         flipped ? 180 : 0
     }
 
-    var shownDateRange: ClosedRange<Date> {
-        date + DateComponents(day: -3, hour: -6) ... date + DateComponents(day: 3, hour: 6)
-    }
-
-    var dateRange: ClosedRange<Date> {
-        date.add(day: -3) ... date.add(day: 3)
-    }
-
-    var dates: [Date] {
-        (-3 ... 3).map { date.add(day: $0) }
-    }
-
-    var lectures: [Lecture] {
-        if currentSemester == nil {
-            return curriculum.semesters.flatMap {
-                $0.courses.flatMap(\.lectures)
-            }.filter {
-                dateRange.contains($0.startDate.stripTime())
-            }
-        } else {
-            return (currentSemester?.courses.flatMap(\.lectures) ?? []).filter {
-                dateRange.contains($0.startDate.stripTime())
-            }
+    func updateLectures() {
+        lectures = (
+            currentSemester == nil ?
+                curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) } :
+                currentSemester!.courses.flatMap(\.lectures)
+        ).filter {
+            (0.0 ..< 3600.0 * 24 * 7).contains(
+                $0.startDate.stripTime().timeIntervalSince(date)
+            )
         }
     }
 
@@ -71,12 +57,8 @@ struct CurriculumWeekView: View {
         VStack(alignment: .leading) {
             topBar
 
-            HStack {
-                DatePicker(selection: $date, displayedComponents: .date) {
-                    Text("Date")
-                }
+            DatePicker("Date", selection: $_date, displayedComponents: .date)
                 .datePickerStyle(.compact)
-            }
 
             HStack {
                 Text("Semester")
@@ -126,7 +108,7 @@ struct CurriculumWeekView: View {
             }
 
             AxisMarks(position: .bottom, values: [Date().stripDate().HHMM]) { _ in
-                AxisValueLabel(anchor: .trailing) {
+                AxisValueLabel(anchor: .topTrailing) {
                     Text("Now")
                         .foregroundColor(.red)
                 }
@@ -136,7 +118,7 @@ struct CurriculumWeekView: View {
 
             AxisMarks(position: .bottom, values: highLightTimes) { value in
                 if let hhmm = value.as(Int.self) {
-                    AxisValueLabel(anchor: .trailing) {
+                    AxisValueLabel(anchor: .topTrailing) {
                         Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
                             .foregroundColor(.blue)
                     }
@@ -149,7 +131,7 @@ struct CurriculumWeekView: View {
         .chartScrollPosition(initialX: shownTimes.first!)
         .chartScrollTargetBehavior(.valueAligned(unit: 75, majorAlignment: .page))
         .chartYAxis {
-            AxisMarks(position: .leading, values: dates) { value in
+            AxisMarks(position: .leading, values: .stride(by: .day)) { value in
                 if let date = value.as(Date.self) {
                     AxisValueLabel {
                         HStack(spacing: 2) {
@@ -157,15 +139,16 @@ struct CurriculumWeekView: View {
                             Text(date, format: .dateTime.weekday())
                         }
                         .fontDesign(.monospaced)
-                        .foregroundColor(date == self.date ? .red : .secondary)
+                        .foregroundColor(date == Date().stripTime() ? .red : .secondary)
                     }
                     AxisGridLine()
                 }
             }
         }
-        .chartYScale(domain: shownDateRange)
+        .chartYVisibleDomain(length: 3600 * 24 * 7)
+        .chartYScale(domain: date ... date.add(day: 6))
         .chartLegend(.hidden)
-        .chartScrollableAxes(.horizontal)
+        .chartScrollableAxes([.horizontal, .vertical])
         .frame(height: 230)
     }
 
@@ -191,15 +174,13 @@ struct CurriculumWeekView: View {
 
             chartView
                 .asyncStatusOverlay(_curriculum.status, showLight: false)
-                .refreshable {
-                    _curriculum.triggerRefresh()
-                }
         }
     }
 
     var refreshButton: some View {
         Button {
             _curriculum.triggerRefresh()
+            updateLectures()
         } label: {
             Label("Refresh", systemImage: "arrow.clockwise")
                 .font(.caption)
@@ -229,6 +210,15 @@ struct CurriculumWeekView: View {
                 .card()
                 .flipRotate(-180 + flippedDegrees)
                 .opacity(flipped ? 1 : 0)
+        }
+        .onChange(of: currentSemester) { _ in
+            updateLectures()
+        }
+        .onChange(of: _date) { _ in
+            updateLectures()
+        }
+        .onAppear {
+            updateLectures()
         }
     }
 }
