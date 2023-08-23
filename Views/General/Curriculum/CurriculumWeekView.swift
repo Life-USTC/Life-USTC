@@ -12,33 +12,47 @@ import SwiftUI
 struct CurriculumWeekView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
+    @State var currentSemester: Semester?
+//    @State var scrollPostion: Int = 7 * 60 + 50 {
+//        willSet {
+//            // round to nearest showTimes
+//            scrollPostion = shownTimes.min(by: {
+//                abs($0 - newValue) < abs($1 - newValue)
+//            }) ?? newValue
+//        }
+//    }
+    @State var flipped = false
     @State var date: Date = .init() {
         willSet {
             date = newValue.stripTime()
         }
     }
 
-    @State var currentSemester: Semester?
-    @State var lectures: [Lecture] = []
-    @State var scrollPostion: Int = 0
+    var flippedDegrees: Double {
+        flipped ? 180 : 0
+    }
+
+    var shownDateRange: ClosedRange<Date> {
+        date.add(day: -4) ... date.add(day: 4)
+    }
 
     var dateRange: ClosedRange<Date> {
-        date.add(day: -2) ... date.add(day: 3)
+        date.add(day: -3) ... date.add(day: 3)
     }
 
     var dates: [Date] {
-        (-2 ... 2).map { date.add(day: $0) }
+        (-3 ... 3).map { date.add(day: $0) }
     }
 
-    func updateLectures() {
+    var lectures: [Lecture] {
         if currentSemester == nil {
-            lectures = curriculum.semesters.flatMap {
+            return curriculum.semesters.flatMap {
                 $0.courses.flatMap(\.lectures)
             }.filter {
                 dateRange.contains($0.startDate.stripTime())
             }
         } else {
-            lectures = (currentSemester?.courses.flatMap(\.lectures) ?? []).filter {
+            return (currentSemester?.courses.flatMap(\.lectures) ?? []).filter {
                 dateRange.contains($0.startDate.stripTime())
             }
         }
@@ -86,10 +100,12 @@ struct CurriculumWeekView: View {
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
-        .frame(height: 150)
+        .overlay(alignment: .topTrailing) {
+            flipButton
+        }
     }
 
-    var mainView: some View {
+    var chartView: some View {
         Chart {
             ForEach(lectures) { lecture in
                 BarMark(xStart: .value("Start Time", lecture.startDate.HHMM),
@@ -97,7 +113,7 @@ struct CurriculumWeekView: View {
                         y: .value("Date", lecture.startDate.stripTime(), unit: .day))
                     .foregroundStyle(by: .value("Course Name", lecture.name))
                     .annotation(position: .overlay) {
-                        Text(lecture.name)
+                        Text(lecture.name + " @ " + lecture.location)
                             .font(.caption)
                             .foregroundColor(.white)
                     }
@@ -114,7 +130,7 @@ struct CurriculumWeekView: View {
             }
 
             AxisMarks(position: .bottom, values: [Date().stripDate().HHMM]) { _ in
-                AxisValueLabel {
+                AxisValueLabel(anchor: .trailing) {
                     Text("Now")
                         .foregroundColor(.red)
                 }
@@ -133,14 +149,14 @@ struct CurriculumWeekView: View {
                 }
             }
         }
-        .chartXScale(domain: shownTimes.first! ... shownTimes.last!,
-                     range: .plotDimension(padding: 5))
+        .chartXScale(domain: shownTimes.first! ... shownTimes.last!)
+//        .chartScrollPosition(x: $scrollPostion)
         .chartScrollPosition(initialX: shownTimes.first!)
-        .chartScrollPosition(x: $scrollPostion)
+        .chartScrollTargetBehavior(.valueAligned(unit: 75, majorAlignment: .page))
         .chartYAxis {
             AxisMarks(position: .leading, values: dates) { value in
                 if let date = value.as(Date.self) {
-                    AxisValueLabel(anchor: .topTrailing) {
+                    AxisValueLabel {
                         HStack(spacing: 2) {
                             Text(date, format: .dateTime.day())
                             Text(date, format: .dateTime.weekday())
@@ -152,39 +168,86 @@ struct CurriculumWeekView: View {
                 }
             }
         }
-        .chartYScale(domain: dateRange)
+        .chartYScale(domain: shownDateRange)
         .chartLegend(.hidden)
         .chartScrollableAxes(.horizontal)
-        .onChange(of: date) { _ in
-            updateLectures()
-        }
-        .onChange(of: currentSemester) { _ in
-            updateLectures()
-        }
-        .frame(height: 180)
-        .asyncStatusMask(status: _curriculum.status)
-        .refreshable {
-            _curriculum.triggerRefresh()
+        .frame(height: 230)
+    }
+
+    var jumpView: some View {
+        Menu {
+//            Button {
+//                scrollPostion = 7 * 60 + 20
+//            } label: {
+//                Text("7:50")
+//            }
+//
+//            Button {
+//                scrollPostion = 14 * 60 + 0
+//            } label: {
+//                Text("14:00")
+//            }
+//
+//            Button {
+//                scrollPostion = 19 * 60 + 30
+//            } label: {
+//                Text("19:30")
+//            }
+        } label: {
+            Label("Jump", systemImage: "arrow.up.and.down")
+                .font(.caption)
         }
     }
 
-    @State var flipped = false
-    var flippedDegrees: Double {
-        flipped ? 180 : 0
+    var mainView: some View {
+        VStack {
+            HStack {
+                Text("Curriculum")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .fontDesign(.monospaced)
+
+                AsyncStatusLight(status: _curriculum.status)
+
+                Spacer()
+
+                refreshButton
+                flipButton
+            }
+
+            chartView
+                .asyncStatusOverlay(_curriculum.status, showLight: false)
+                .refreshable {
+                    _curriculum.triggerRefresh()
+                }
+
+            jumpView
+        }
+    }
+
+    var refreshButton: some View {
+        Button {
+            _curriculum.triggerRefresh()
+        } label: {
+            Label("Refresh", systemImage: "arrow.clockwise")
+                .font(.caption)
+        }
+    }
+
+    var flipButton: some View {
+        Button {
+            withAnimation(.easeInOut) {
+                flipped.toggle()
+            }
+        } label: {
+            Label(flipped ? "Chart" : "Settings",
+                  systemImage: flipped ? "chart.bar.xaxis" : "gearshape")
+                .font(.caption)
+        }
     }
 
     var body: some View {
         VStack(alignment: .trailing) {
-            Button {
-                withAnimation(.easeInOut) {
-                    flipped.toggle()
-                }
-            } label: {
-                Label(flipped ? "Chart" : "Settings",
-                      systemImage: flipped ? "chart.bar.xaxis" : "gearshape")
-                    .font(.caption2)
-            }
-
             ZStack {
                 mainView
                     .flipRotate(flippedDegrees)

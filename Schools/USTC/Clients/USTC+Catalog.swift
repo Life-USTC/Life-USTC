@@ -11,7 +11,7 @@ import SwiftyJSON
 class UstcCatalogClient: LoginClientProtocol {
     static var shared = UstcCatalogClient()
 
-    var token: String = ""
+    @AppStorage("UstcCatalogClient_token", store: .appGroup) var token: String = ""
 
     override func login() async throws -> Bool {
         let (data, _) = try await URLSession.shared.data(from: URL(string: "https://catalog.ustc.edu.cn/get_token")!)
