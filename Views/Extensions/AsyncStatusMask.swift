@@ -9,7 +9,7 @@ import SwiftUI
 
 private let lightSize = 8.0
 
-struct AsyncStatusMask: ViewModifier {
+struct AsyncStatusLight: View {
     var status: AsyncStatus?
 
     var localStatusLight: some View {
@@ -24,12 +24,25 @@ struct AsyncStatusMask: ViewModifier {
             .frame(width: lightSize, height: lightSize)
     }
 
+    var body: some View {
+        HStack {
+            localStatusLight
+            refreshStatusLight
+        }
+    }
+}
+
+struct AsyncStatusMask: ViewModifier {
+    var status: AsyncStatus?
+    var showLight: Bool = true
+
     func body(content: Content) -> some View {
         VStack {
-            HStack {
-                localStatusLight
-                refreshStatusLight
-                Spacer()
+            if showLight {
+                HStack {
+                    AsyncStatusLight(status: status)
+                    Spacer()
+                }
             }
 
             switch status?.local ?? .notFound {
@@ -50,8 +63,8 @@ struct AsyncStatusMask: ViewModifier {
 }
 
 extension View {
-    func asyncStatusMask(status: AsyncStatus?) -> some View {
-        modifier(AsyncStatusMask(status: status))
+    func asyncStatusOverlay(_ status: AsyncStatus?, showLight: Bool = true) -> some View {
+        modifier(AsyncStatusMask(status: status, showLight: showLight))
     }
 }
 

@@ -5,7 +5,7 @@
 //  Created by Tiankai Ma on 2023/8/18.
 //
 
-import Foundation
+import SwiftUI
 
 class LoginClientProtocol {
     /// Return True if login success
@@ -18,16 +18,7 @@ class LoginClientProtocol {
 class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
 
-    let userDefaults = UserDefaults.appGroup
-
-    var lastLogined: Date? {
-        get {
-            userDefaults.object(forKey: "\(T.self)_lastLogined") as? Date
-        }
-        set {
-            userDefaults.set(newValue, forKey: "\(T.self)_lastLogined")
-        }
-    }
+    @AppStorage("\(T.self)_lastLogined", store: .appGroup) var lastLogined: Date?
 
     var loginTask: Task<Bool, Error>?
 

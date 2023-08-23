@@ -23,7 +23,7 @@ struct CurriculumDetailView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .asyncStatusMask(status: _curriculum.status)
+        .asyncStatusOverlay(_curriculum.status)
         .refreshable {
             _curriculum.triggerRefresh()
         }

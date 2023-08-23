@@ -76,7 +76,7 @@ struct ScoreView: View {
                 }
                 Spacer()
             }
-            .asyncStatusMask(status: _score.status)
+            .asyncStatusOverlay(_score.status)
         }
         .padding(.horizontal)
         .refreshable {

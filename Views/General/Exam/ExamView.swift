@@ -32,7 +32,7 @@ struct ExamView: View {
             saveButton
         }
         .padding(.horizontal)
-        .asyncStatusMask(status: _exams.status)
+        .asyncStatusOverlay(_exams.status)
         .refreshable {
             _exams.triggerRefresh()
         }
