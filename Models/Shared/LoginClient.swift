@@ -17,15 +17,28 @@ class LoginClientProtocol {
 @propertyWrapper
 class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
-    var lastLogined: Date?
+
+    let userDefaults = UserDefaults.appGroup
+
+    var lastLogined: Date? {
+        get {
+            userDefaults.object(forKey: "\(T.self)_lastLogined") as? Date
+        }
+        set {
+            userDefaults.set(newValue, forKey: "\(T.self)_lastLogined")
+        }
+    }
+
     var loginTask: Task<Bool, Error>?
 
     func requireLogin() async throws -> Bool {
+        // Waiting random time to avoid racing condition
+        try await Task.sleep(nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000))
         if let loginTask {
             return try await loginTask.value
         }
 
-        if lastLogined != nil, Date().timeIntervalSince(lastLogined!) < 5 * 60 {
+        if let lastLogined, Date().timeIntervalSince(lastLogined) < 5 * 60 {
             return true
         }
 
@@ -33,6 +46,7 @@ class LoginClient<T: LoginClientProtocol> {
             do {
                 if try await self.wrappedValue.login() {
                     lastLogined = Date()
+                    loginTask = nil
                     return true
                 }
                 loginTask = nil
