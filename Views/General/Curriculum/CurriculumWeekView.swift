@@ -25,7 +25,7 @@ struct CurriculumWeekView: View {
     }
 
     var shownDateRange: ClosedRange<Date> {
-        date.add(day: -4) ... date.add(day: 4)
+        date + DateComponents(day: -3, hour: -6) ... date + DateComponents(day: 3, hour: 6)
     }
 
     var dateRange: ClosedRange<Date> {
@@ -68,9 +68,14 @@ struct CurriculumWeekView: View {
     ]
 
     var settingsView: some View {
-        List {
-            DatePicker(selection: $date, displayedComponents: .date) {
-                Text("Date")
+        VStack(alignment: .leading) {
+            topBar
+
+            HStack {
+                DatePicker(selection: $date, displayedComponents: .date) {
+                    Text("Date")
+                }
+                .datePickerStyle(.compact)
             }
 
             HStack {
@@ -89,11 +94,10 @@ struct CurriculumWeekView: View {
                     Text(currentSemester?.name ?? "All")
                 }
             }
-        }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
-        .overlay(alignment: .topTrailing) {
-            flipButton
+
+            Divider()
+
+            Spacer()
         }
     }
 
@@ -115,7 +119,7 @@ struct CurriculumWeekView: View {
             AxisMarks(position: .top, values: shownTimes) { value in
                 if let hhmm = value.as(Int.self) {
                     AxisValueLabel {
-                        Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
+                        Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
                     }
                     AxisGridLine()
                 }
@@ -133,7 +137,7 @@ struct CurriculumWeekView: View {
             AxisMarks(position: .bottom, values: highLightTimes) { value in
                 if let hhmm = value.as(Int.self) {
                     AxisValueLabel(anchor: .trailing) {
-                        Text("\(hhmm / 60):\(hhmm % 60, specifier: "%02d")")
+                        Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
                             .foregroundColor(.blue)
                     }
                     AxisGridLine()
@@ -165,21 +169,25 @@ struct CurriculumWeekView: View {
         .frame(height: 230)
     }
 
+    var topBar: some View {
+        HStack {
+            Text("Curriculum")
+                .font(.caption)
+                .fontWeight(.bold)
+                .fontDesign(.monospaced)
+
+            AsyncStatusLight(status: _curriculum.status)
+
+            Spacer()
+
+            refreshButton
+            flipButton
+        }
+    }
+
     var mainView: some View {
         VStack {
-            HStack {
-                Text("Curriculum")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .fontDesign(.monospaced)
-
-                AsyncStatusLight(status: _curriculum.status)
-
-                Spacer()
-
-                refreshButton
-                flipButton
-            }
+            topBar
 
             chartView
                 .asyncStatusOverlay(_curriculum.status, showLight: false)
@@ -237,7 +245,7 @@ extension View {
     func flipRotate(_ degrees: Double) -> some View {
         rotation3DEffect(
             Angle(degrees: degrees),
-            axis: (x: 1.0, y: 0.0, z: 0.0)
+            axis: (x: 0.0, y: 1.0, z: 0.0)
         )
     }
 }
