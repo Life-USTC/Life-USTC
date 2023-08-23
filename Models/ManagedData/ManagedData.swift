@@ -7,16 +7,21 @@
 
 import SwiftUI
 
+protocol ExampleDataProtocol {
+    static var example: Self { get }
+}
+
 @propertyWrapper
-struct ManagedData<D>: DynamicProperty {
+struct ManagedData<D: ExampleDataProtocol>: DynamicProperty {
     @ObservedObject var local: ManagedLocalDataProtocol<D>
     var remote: any ManagedRemoteUpdateProtocol<D>
 
-    var wrappedValue: D? {
-        if local.status != .valid {
+    var wrappedValue: D {
+        if local.status != .valid, refresh == nil {
             triggerRefresh()
         }
-        return local.data
+
+        return local.data ?? D.example
     }
 
     @State var refresh: RefreshAsyncStatus? = nil

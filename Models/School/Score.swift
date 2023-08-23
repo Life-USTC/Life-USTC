@@ -96,7 +96,7 @@ struct CourseScore: Codable {
                                      score: "95")
 }
 
-struct Score: Codable {
+struct Score: Codable, ExampleDataProtocol {
     /// List of course, default order matters for UI.
     var courses: [CourseScore]
 

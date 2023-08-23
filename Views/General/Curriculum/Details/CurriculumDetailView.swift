@@ -8,17 +8,15 @@
 import SwiftUI
 
 struct CurriculumDetailView: View {
-    @ManagedData(.curriculum) var curriculum: Curriculum!
+    @ManagedData(.curriculum) var curriculum: Curriculum
 
     var body: some View {
         List {
-            if let curriculum {
-                ForEach(curriculum.semesters) { semester in
-                    Section(header: Text(semester.name)) {
-                        ForEach(semester.courses, id: \.lessonCode) { course in
-                            NavigationLink(destination: CourseDetailView(course: course)) {
-                                Text(course.name)
-                            }
+            ForEach(curriculum.semesters) { semester in
+                Section(header: Text(semester.name)) {
+                    ForEach(semester.courses, id: \.lessonCode) { course in
+                        NavigationLink(destination: CourseDetailView(course: course)) {
+                            Text(course.name)
                         }
                     }
                 }

@@ -27,7 +27,9 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            CurriculumWeekView()
+            if #available(iOS 17.0, *) {
+                CurriculumWeekView()
+            }
         }
         .padding(.horizontal)
         .navigationTitle("Life@USTC")

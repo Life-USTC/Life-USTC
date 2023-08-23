@@ -31,12 +31,19 @@ struct AsyncStatusMask: ViewModifier {
                 refreshStatusLight
                 Spacer()
             }
-            .padding(.horizontal)
 
-            if (status?.local ?? .notFound) != .notFound {
+            switch status?.local ?? .notFound {
+            case .valid:
                 content
-            } else {
-                Text("Error when handling data")
+            case .outDated:
+                content.grayscale(0.5)
+            case .notFound:
+                content.redacted(reason: .placeholder)
+            }
+        }
+        .overlay {
+            if status?.refresh == .waiting {
+                ProgressView()
             }
         }
     }
