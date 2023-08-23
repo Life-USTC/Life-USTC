@@ -10,7 +10,7 @@ import SwiftUI
 import WidgetKit
 
 struct CurriculumProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum?
+    @ManagedData(.curriculum) var curriculum: Curriculum
     func placeholder(in _: Context) -> CurriculumEntry {
         CurriculumEntry.example
     }

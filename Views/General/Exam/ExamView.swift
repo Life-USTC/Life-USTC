@@ -8,26 +8,25 @@
 import SwiftUI
 
 struct ExamView: View {
-    @ManagedData(.exam) var exams: [Exam]!
+    @ManagedData(.exam) var exams: [Exam]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if let exams {
-                if exams.isEmpty {
-                    VStack {
-                        Text("No More Exam!")
-                            .font(.system(.body, design: .monospaced))
-                            .padding(.vertical, 10)
-                    }
-                } else {
-                    ForEach(exams, id: \.lessonCode) { exam in
-                        SingleExamView(exam: exam)
-                        Divider()
-                    }
-                    .padding(.top, 5)
+            if exams.isEmpty {
+                VStack {
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                        .padding(.vertical, 10)
                 }
-                EmptyView()
+            } else {
+                ForEach(exams, id: \.lessonCode) { exam in
+                    SingleExamView(exam: exam)
+                    Divider()
+                }
+                .padding(.top, 5)
             }
+
+            Spacer()
         }
         .toolbar {
             saveButton

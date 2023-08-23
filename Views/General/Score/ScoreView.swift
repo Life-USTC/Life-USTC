@@ -13,7 +13,7 @@ private enum SortPreference: String, CaseIterable {
 }
 
 struct ScoreView: View {
-    @ManagedData(.score) var score: Score!
+    @ManagedData(.score) var score: Score
 
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa

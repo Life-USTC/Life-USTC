@@ -43,6 +43,10 @@ struct Exam: Codable, Equatable {
                                      description: "")
 }
 
+extension [Exam]: ExampleDataProtocol {
+    static let example: [Exam] = .init([.example])
+}
+
 extension Exam {
     var detailString: String {
         "\(startDate.description(with: .current)) - \(endDate.description(with: .current)) @ \(classRoomName)"
