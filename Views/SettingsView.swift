@@ -34,3 +34,9 @@ struct SettingsView: View {
         .scrollContentBackground(.hidden)
     }
 }
+
+extension SettingsView {
+    static var availableSettings: [SettingWithView] {
+        SchoolExport.shared.settings
+    }
+}

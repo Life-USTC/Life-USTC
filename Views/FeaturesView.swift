@@ -194,3 +194,9 @@ struct FeaturesView_Previews: PreviewProvider {
         }
     }
 }
+
+extension FeaturesView {
+    static var availableFeatures: [String: [FeatureWithView]] {
+        SchoolExport.shared.features
+    }
+}

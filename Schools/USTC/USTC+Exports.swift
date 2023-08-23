@@ -7,24 +7,31 @@
 
 import SwiftUI
 
-enum USTCExports {
-    // MARK: - Information about the school
+class USTCExports: SchoolExport {
+    override var abbrName: String {
+        "USTC"
+    }
 
-    static var abbrName = "USTC"
-    static var fullName = "The University of Science and Technology of China"
-    static var fullChineseName = "中国科学技术大学"
-    static var commonNames: [String] = ["中科大"]
+    override var fullName: String {
+        "The University of Science and Technology of China"
+    }
 
-    // MARK: - Available Views
+    override var fullChineseName: String {
+        "中国科学技术大学"
+    }
 
-    static var settings: [SettingWithView] {
+    override var commonNames: [String] {
+        ["中科大"]
+    }
+
+    override var settings: [SettingWithView] {
         [
             .init(name: "CAS Settings",
                   destinationView: .init(USTCCASLoginView.newPage)),
         ]
     }
 
-    static var feedURLs: [URL] {
+    override var feedURLs: [URL] {
         [
             ustcHomePageFeedURL,
             ustcOAAFeedURL,
@@ -37,35 +44,51 @@ enum USTCExports {
         ]
     }
 
-    static var remoteFeedURL: URL {
+    override var remoteFeedURL: URL {
         ustcFeedListURL
     }
 
-    static var localFeedJSOName: String {
+    override var localFeedJSOName: String {
         "ustc_feed_source"
     }
 
-    static var examDelegate: some ExamDelegateProtocol {
+    override var examDelegate: any ExamDelegateProtocol {
         USTCExamDelegate.shared
     }
 
-    static var curriculumDelegate: some CurriculumProtocol {
+    override var curriculumDelegate: any CurriculumProtocol {
         USTCCurriculumDelegate.shared
     }
 
-    static var scoreDelegate: some ScoreDelegateProtocol {
+    override var curriculumBehavior: CurriculumBehavior {
+        ustcCurriculumBehavior
+    }
+
+    override var scoreDelegate: any ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
 
-    static var baseModifier: some ViewModifier {
-        USTCBaseModifier()
+//    override var baseModifier: some ViewModifier {
+//        USTCBaseModifier()
+//    }
+
+    override var firstLoginView: (Binding<Bool>) -> AnyView {
+        { .init(USTCCASLoginView.sheet(isPresented: $0)) }
     }
 
-    static var firstLoginView: (Binding<Bool>) -> AnyView {
-        { firstLogin in
-            .init(USTCCASLoginView.sheet(isPresented: firstLogin))
-        }
+    override var features: [String: [FeatureWithView]] {
+        [
+            "Web": ustcWebFeatures.map { FeatureWithView($0) },
+            "Public": [.init(image: "doc.text.magnifyingglass",
+                             title: "Classroom Status".localized,
+                             subTitle: "",
+                             destinationView: USTCClassroomView())],
+        ]
     }
+}
+
+extension SchoolExport {
+    static var ustc = USTCExports()
 }
 
 struct USTCBaseModifier: ViewModifier {

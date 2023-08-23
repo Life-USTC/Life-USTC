@@ -156,3 +156,9 @@ extension ManagedDataSource<[Exam]> {
         remote: Exam.sharedDelegate
     )
 }
+
+extension Exam {
+    static var sharedDelegate: any ExamDelegateProtocol {
+        SchoolExport.shared.examDelegate
+    }
+}

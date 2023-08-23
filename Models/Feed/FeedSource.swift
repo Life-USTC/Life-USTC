@@ -154,3 +154,17 @@ extension FeedSource {
         all.first(where: { $0.name == name })
     }
 }
+
+extension FeedSource {
+    static var feedURLs: [URL] {
+        SchoolExport.shared.feedURLs
+    }
+
+    static var remoteURL: URL {
+        SchoolExport.shared.remoteFeedURL
+    }
+
+    static var localFeedJSONName: String {
+        SchoolExport.shared.localFeedJSOName
+    }
+}

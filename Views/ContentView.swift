@@ -232,6 +232,18 @@ private struct ContentViewTabBarView: View {
     }
 }
 
+extension ContentView {
+    static var SharedModifier: some ViewModifier {
+        //        SchoolExport.shared.baseModifier as! ViewModifier
+        //        USTCExports().baseModifier
+        USTCBaseModifier()
+    }
+
+    static var firstLoginView: (Binding<Bool>) -> AnyView {
+        SchoolExport.shared.firstLoginView
+    }
+}
+
 struct ContentViewTabBarView_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
