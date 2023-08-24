@@ -58,13 +58,17 @@ struct WelcomeView_1: View {
             ZStack {
                 Image(imageName)
                     .resizable()
-                    .frame(width: geo.size.width,
-                           height: geo.size.height)
+                    .frame(
+                        width: geo.size.width,
+                        height: geo.size.height
+                    )
                     .overlay {
                         if showText {
-                            LinearGradient(colors: [.clear, .black],
-                                           startPoint: .center,
-                                           endPoint: .bottom)
+                            LinearGradient(
+                                colors: [.clear, .black],
+                                startPoint: .center,
+                                endPoint: .bottom
+                            )
                         }
                     }
                     .clipShape(
@@ -102,7 +106,9 @@ struct WelcomeView_2: View {
             isInSheet: true,
             casLoginSheet: $isPresented
         )
-        .navigationDestination(isPresented: .init(get: { !isPresented }, set: { isPresented = !$0 })) {
+        .navigationDestination(
+            isPresented: .init(get: { !isPresented }, set: { isPresented = !$0 })
+        ) {
             WelcomeView_3()
         }
         .navigationBarBackButtonHidden()
@@ -111,13 +117,15 @@ struct WelcomeView_2: View {
 
 struct WelcomeView_3: View {
     var body: some View {
-        WelcomeView_1(textToShow: "Want to the latest info from school with system notification?",
-                      imageName: "Example.Notification",
-                      nextView: {
-                          AnyView(
-                              EmptyView()
-                          )
-                      })
+        WelcomeView_1(
+            textToShow: "Want to the latest info from school with system notification?",
+            imageName: "Example.Notification",
+            nextView: {
+                AnyView(
+                    EmptyView()
+                )
+            }
+        )
     }
 }
 

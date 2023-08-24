@@ -27,7 +27,7 @@ struct USTCCASLoginView: View {
     }
 
     @StateObject var ustcCASVoewModel = UstcCasViewModel.shared
-    @Binding var casLoginSheet: Bool // used to signal the sheet to close
+    @Binding var casLoginSheet: Bool  // used to signal the sheet to close
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
     @FocusState var foucusField: Field?
@@ -44,7 +44,11 @@ struct USTCCASLoginView: View {
                             .resizable()
                             .frame(width: 80, height: 80)
                             .onTapGesture(count: 5) {
-                                UIPasteboard.general.string = String(describing: Array(UserDefaults.appGroup.dictionaryRepresentation()))
+                                UIPasteboard.general.string = String(
+                                    describing: Array(
+                                        UserDefaults.appGroup.dictionaryRepresentation()
+                                    )
+                                )
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .shadow(radius: 4)
@@ -137,12 +141,22 @@ struct USTCCASLoginView: View {
                 .padding(.top)
             }
             .padding(.horizontal)
-            .alert("Login Failed".localized, isPresented: $showFailedAlert, actions: {}, message: {
-                Text("Double check your username and password".localized)
-            })
-            .alert("Login Success".localized, isPresented: $showSuccessAlert, actions: {}, message: {
-                Text("You're good to go".localized)
-            })
+            .alert(
+                "Login Failed".localized,
+                isPresented: $showFailedAlert,
+                actions: {},
+                message: {
+                    Text("Double check your username and password".localized)
+                }
+            )
+            .alert(
+                "Login Success".localized,
+                isPresented: $showSuccessAlert,
+                actions: {},
+                message: {
+                    Text("You're good to go".localized)
+                }
+            )
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -177,8 +191,8 @@ struct USTCCASLoginView: View {
 struct USTCCASLoginView_Previews: PreviewProvider {
     static var previews: some View {
         USTCCASLoginView.newPage
-#if os(iOS)
+        #if os(iOS)
         USTCCASLoginView.sheet(isPresented: .constant(false))
-#endif
+        #endif
     }
 }

@@ -41,7 +41,8 @@ extension String {
         } else {
             versionComponents.append(contentsOf: zeros)
         }
-        return versionComponents
+        return
+            versionComponents
             .joined(separator: versionDelimiter)
             .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
     }

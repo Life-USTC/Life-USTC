@@ -23,11 +23,15 @@ extension Bundle {
 
 struct AboutApp: View {
     @Environment(\.openURL) private var openURL
-    let links: [(label: String, url: String)] = [("GitHub", "https://github.com/tiankaima/Life-USTC"),
-                                                 ("Discord", "https://discord.gg/BxdsySpkYP")]
+    let links: [(label: String, url: String)] = [
+        ("GitHub", "https://github.com/tiankaima/Life-USTC"),
+        ("Discord", "https://discord.gg/BxdsySpkYP"),
+    ]
     @State var contributorList: [(name: String, avatar: URL?)] =
-        [("tiankaima", URL(string: "https://avatars.githubusercontent.com/u/91816094?v=4")),
-         ("odeinjul", URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4"))]
+        [
+            ("tiankaima", URL(string: "https://avatars.githubusercontent.com/u/91816094?v=4")),
+            ("odeinjul", URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4")),
+        ]
 
     var body: some View {
         VStack {
@@ -36,7 +40,9 @@ struct AboutApp: View {
                 .resizable()
                 .frame(width: 200, height: 200)
                 .onTapGesture(count: 5) {
-                    UIPasteboard.general.string = String(describing: Array(UserDefaults.appGroup.dictionaryRepresentation()))
+                    UIPasteboard.general.string = String(
+                        describing: Array(UserDefaults.appGroup.dictionaryRepresentation())
+                    )
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .contextMenu {
@@ -101,10 +107,17 @@ struct AboutApp: View {
         .navigationBarTitle("About", displayMode: .inline)
         .onAppear {
             Task {
-                var request = URLRequest(url: URL(string: "https://api.github.com/repos/tiankaima/Life-USTC/contributors")!)
+                var request = URLRequest(
+                    url: URL(
+                        string: "https://api.github.com/repos/tiankaima/Life-USTC/contributors"
+                    )!
+                )
                 request.httpMethod = "GET"
                 request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-                request.setValue("Bearer \(githubDumbTokenA + githubDumbTokenB)", forHTTPHeaderField: "Authorization")
+                request.setValue(
+                    "Bearer \(githubDumbTokenA + githubDumbTokenB)",
+                    forHTTPHeaderField: "Authorization"
+                )
                 request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
 
                 let (data, response) = try await URLSession.shared.data(for: request)
@@ -115,7 +128,12 @@ struct AboutApp: View {
                 contributorList.removeAll()
                 let dataJson = try JSON(data: data)
                 for (_, userInfo) in dataJson {
-                    contributorList.append((userInfo["login"].stringValue, URL(string: userInfo["avatar_url"].stringValue)))
+                    contributorList.append(
+                        (
+                            userInfo["login"].stringValue,
+                            URL(string: userInfo["avatar_url"].stringValue)
+                        )
+                    )
                 }
             }
         }

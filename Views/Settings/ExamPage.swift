@@ -34,7 +34,9 @@ struct ExamSettingView: View {
                 Text("Exam name to hide")
                     .textCase(.none)
             } footer: {
-                Text("When exam contains these words, they will be shown at the bottom even they comes first in time")
+                Text(
+                    "When exam contains these words, they will be shown at the bottom even they comes first in time"
+                )
             }
             EmptyView()
         }

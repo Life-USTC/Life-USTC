@@ -12,7 +12,7 @@ struct FeedSource: Codable, Identifiable, Equatable, ExampleDataProtocol {
     var url: URL
     var name: String
     var description: String?
-    var image: String? // system image
+    var image: String?  // system image
     var colorHex: String?
 
     var feed: [Feed] = []

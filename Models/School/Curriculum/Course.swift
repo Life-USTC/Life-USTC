@@ -19,11 +19,13 @@ struct Course: Codable, Identifiable, Equatable {
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
 
-    static let example = Course(name: "Example Course",
-                                courseCode: "Example-0001",
-                                lessonCode: "Example-0001.01",
-                                teacherName: "Example Teacher",
-                                lectures: [.example])
+    static let example = Course(
+        name: "Example Course",
+        courseCode: "Example-0001",
+        lessonCode: "Example-0001.01",
+        teacherName: "Example Teacher",
+        lectures: [.example]
+    )
 }
 
 extension Course {

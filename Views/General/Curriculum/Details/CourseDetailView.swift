@@ -41,7 +41,9 @@ struct CourseDetailView: View {
                 Text(course.description)
             }
 
-            ForEach(course.additionalInfo.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+            ForEach(course.additionalInfo.sorted(by: { $0.key < $1.key }), id: \.key) {
+                key,
+                value in
                 HStack {
                     Text(key)
                     Spacer()

@@ -15,10 +15,12 @@ struct HealthCheckPage: View {
     @AppStorage("jiji_mobile", store: userDefaults) var jiji_mobile: String = ""
 
     func formData() -> [(caption: String, defaultString: String, value: Binding<String>)] {
-        [("居住地:", "安徽省合肥市蜀山区", $juzhudi),
-         ("应急联系人:", "人名", $jinji_lxr),
-         ("应急联系人关系:", "母亲/父亲/...", $jinji_guanxi),
-         ("应急联系人电话:", "11位数字", $jiji_mobile)]
+        [
+            ("居住地:", "安徽省合肥市蜀山区", $juzhudi),
+            ("应急联系人:", "人名", $jinji_lxr),
+            ("应急联系人关系:", "母亲/父亲/...", $jinji_guanxi),
+            ("应急联系人电话:", "11位数字", $jiji_mobile),
+        ]
     }
 
     var body: some View {

@@ -8,36 +8,38 @@
 import SwiftUI
 import UIKit
 
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate,
+    XGPushDelegate, ObservableObject
+{
     @Published var tpnsLog: String = ""
 
-#if IOS_SIMULATOR
+    #if IOS_SIMULATOR
     func preparePreviews() {
         InAppNotificationDelegate.shared.addInfoMessage("Preview debug message")
     }
-#endif
+    #endif
 
     func startJSRuntime() {
         let _ = LUJSRuntime.shared
     }
 
     func shouldRunUpdate(on version: String) -> Bool {
-#if DEBUG
+        #if DEBUG
         // Update on developing: if previousVersion <= version
         if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
-           previousVersion.versionCompare(version) == .orderedAscending
+            previousVersion.versionCompare(version) == .orderedAscending
         {
             return false
         }
-#else
+        #else
         // Update on release: if previousVersion < version
         if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
-           previousVersion.versionCompare(version) == .orderedAscending ||
-           previousVersion.versionCompare(version) == .orderedSame
+            previousVersion.versionCompare(version) == .orderedAscending
+                || previousVersion.versionCompare(version) == .orderedSame
         {
             return false
         }
-#endif
+        #endif
 
         print("Version <= \(version); Updating to version \(version)")
         return true
@@ -67,7 +69,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if UserDefaults.appGroup.object(forKey: "semesterID") != nil {
-            UserDefaults.appGroup.setValue(Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0") ?? 0, forKey: "semesterIDInt")
+            UserDefaults.appGroup.setValue(
+                Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0") ?? 0,
+                forKey: "semesterIDInt"
+            )
             UserDefaults.appGroup.removeObject(forKey: "semesterID")
         }
 
@@ -75,10 +80,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.appGroup.set("1.0.2", forKey: "version")
     }
 
-#if IOS_SIMULATOR
+    #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator
     // as XCFramework lib isn't fully supported with Apple chips
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
 
@@ -91,8 +99,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func stopTPNS() {}
 
     func clearBadgeNumber() {}
-#else
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    #else
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
         if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool ?? true {
@@ -105,7 +116,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         XGPush.defaultManager().isEnableDebug = true
         XGPush.defaultManager().configureClusterDomainName("tpns.sh.tencent.com")
         XGPush.defaultManager().appDelegate = self
-        XGPush.defaultManager().startXG(withAccessID: 1_680_015_447, accessKey: "IOSAEBOQD6US", delegate: self)
+        XGPush.defaultManager().startXG(
+            withAccessID: 1_680_015_447,
+            accessKey: "IOSAEBOQD6US",
+            delegate: self
+        )
     }
 
     func stopTPNS() {
@@ -139,5 +154,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
-#endif
+    #endif
 }

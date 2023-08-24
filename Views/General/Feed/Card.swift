@@ -37,7 +37,11 @@ struct Card: View {
                             .resizable()
                             .scaledToFill()
                             .overlay(
-                                LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: .top, endPoint: .bottom)
+                                LinearGradient(
+                                    gradient: Gradient(colors: [.clear, .black]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
                             )
                             .frame(width: geo.size.width, height: geo.size.height)
                     } placeholder: {

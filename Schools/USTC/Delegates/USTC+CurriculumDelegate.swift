@@ -28,7 +28,9 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
         }
         let validToken = catalogClient.token
 
-        let url = URL(string: "https://catalog.ustc.edu.cn/api/teach/semester/list?access_token=\(validToken)")!
+        let url = URL(
+            string: "https://catalog.ustc.edu.cn/api/teach/semester/list?access_token=\(validToken)"
+        )!
 
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
@@ -37,11 +39,15 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
 
         var result: [Semester] = []
         for (_, subJson) in json {
-            result.append(Semester(id: subJson["id"].stringValue,
-                                   courses: [],
-                                   name: subJson["nameZh"].stringValue,
-                                   startDate: convertYYMMDD(subJson["start"].stringValue),
-                                   endDate: convertYYMMDD(subJson["end"].stringValue)))
+            result.append(
+                Semester(
+                    id: subJson["id"].stringValue,
+                    courses: [],
+                    name: subJson["nameZh"].stringValue,
+                    startDate: convertYYMMDD(subJson["start"].stringValue),
+                    endDate: convertYYMMDD(subJson["end"].stringValue)
+                )
+            )
         }
 
         return result
@@ -68,7 +74,10 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
         }
 
         // Step 2: Get lessonIDs
-        let url = URL(string: "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(inComplete.id)&dataId=\(tableID)")!
+        let url = URL(
+            string:
+                "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(inComplete.id)&dataId=\(tableID)"
+        )!
         request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (baseData, _) = try await URLSession.shared.data(for: request)
@@ -96,18 +105,21 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
             let baseDate = convertYYMMDD(subJson["date"].stringValue)
             let startTime = subJson["startTime"].intValue
             let endTime = subJson["endTime"].intValue
-            let startDate = baseDate + DateComponents(hour: startTime / 100, minute: startTime % 100)
+            let startDate =
+                baseDate + DateComponents(hour: startTime / 100, minute: startTime % 100)
             let endDate = baseDate + DateComponents(hour: endTime / 100, minute: endTime % 100)
 
             let location = subJson["room"]["code"].stringValue
             let teacher = subJson["personName"].stringValue
             let periods = subJson["periods"].doubleValue
-            let lecture = Lecture(startDate: startDate,
-                                  endDate: endDate,
-                                  name: "",
-                                  location: location,
-                                  teacher: teacher,
-                                  periods: periods)
+            let lecture = Lecture(
+                startDate: startDate,
+                endDate: endDate,
+                name: "",
+                location: location,
+                teacher: teacher,
+                periods: periods
+            )
 
             let courseID = subJson["lessonId"].stringValue
             // adding to lectureList
@@ -124,7 +136,9 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
             let name = subJson["course"]["nameZh"].stringValue
             let code = subJson["code"].stringValue
             let courseCode = subJson["course"]["code"].stringValue
-            let teachers = subJson["teacherAssignmentList"].arrayValue.map { $0["person"]["nameZh"].stringValue }
+            let teachers = subJson["teacherAssignmentList"].arrayValue.map {
+                $0["person"]["nameZh"].stringValue
+            }
             let teacherName = teachers.joined(separator: ",")
             let description = subJson["scheduleGroupStr"].stringValue
             let credit = subJson["credits"].doubleValue
@@ -137,13 +151,15 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
                 return result
             }
 
-            let course = Course(name: name,
-                                courseCode: courseCode,
-                                lessonCode: code,
-                                teacherName: teacherName,
-                                lectures: lectures,
-                                description: description,
-                                credit: credit)
+            let course = Course(
+                name: name,
+                courseCode: courseCode,
+                lessonCode: code,
+                teacherName: teacherName,
+                lectures: lectures,
+                description: description,
+                credit: credit
+            )
             courses.append(course)
         }
 
@@ -158,15 +174,11 @@ let ustcCurriculumBehavior = CurriculumBehavior(
     highLightTimes: [730, 995, 1145],
     convertTo: { value in
 
-        value <= 730 ? value :
-            value <= 1100 ? value - 105 :
-            value - 170
+        value <= 730 ? value : value <= 1100 ? value - 105 : value - 170
 
     },
     convertFrom: { value in
 
-        value <= 730 ? value :
-            value <= 995 ? value + 105 :
-            value + 170
+        value <= 730 ? value : value <= 995 ? value + 105 : value + 170
     }
 )

@@ -17,7 +17,9 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
     static let shared = FeedSourceListDelegate()
 
     func refresh() async throws -> [FeedSource] {
-        let (data, _) = try await URLSession.shared.data(from: SchoolExport.shared.remoteFeedURL)
+        let (data, _) = try await URLSession.shared.data(
+            from: SchoolExport.shared.remoteFeedURL
+        )
         let json = try JSON(data: data)
 
         return json["sources"].arrayValue.map { feedSource in
@@ -35,8 +37,14 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
         // If "ManagedLocalStorage/feedSourceList.json" isn't found locally
         // copy it from main Bundle SchoolExport.shared.localFeedJSOName
         if FeedSourceListLocalStorage.data == nil {
-            let path = Bundle.main.path(forResource: SchoolExport.shared.localFeedJSOName, ofType: "json")!
-            let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+            let path = Bundle.main.path(
+                forResource: SchoolExport.shared.localFeedJSOName,
+                ofType: "json"
+            )!
+            let data = try! Data(
+                contentsOf: URL(fileURLWithPath: path),
+                options: .mappedIfSafe
+            )
             // Write to FeedSourceListLocalStorage.url
             try! data.write(to: FeedSourceListLocalStorage.url)
         }

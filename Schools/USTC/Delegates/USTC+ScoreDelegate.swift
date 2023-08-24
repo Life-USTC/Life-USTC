@@ -14,7 +14,10 @@ class USTCScoreDelegate: ManagedRemoteUpdateProtocol {
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
 
     func refresh() async throws -> Score {
-        let scoreURL = URL(string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds")!
+        let scoreURL = URL(
+            string:
+                "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds"
+        )!
         if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
@@ -33,14 +36,16 @@ class USTCScoreDelegate: ManagedRemoteUpdateProtocol {
         result.majorStdCount = subJson["majorStdCount"].int ?? 0
         result.courses = cache["semesters"].flatMap { _, semesterJSON in
             semesterJSON["scores"].map { _, courseJSON in
-                CourseScore(courseName: courseJSON["courseNameCh"].stringValue,
-                            courseCode: courseJSON["courseCode"].stringValue,
-                            lessonCode: courseJSON["lessonCode"].stringValue,
-                            semesterID: courseJSON["semesterAssoc"].stringValue,
-                            semesterName: courseJSON["semesterCh"].stringValue,
-                            credit: Double(courseJSON["credits"].stringValue)!,
-                            gpa: Double(courseJSON["gp"].stringValue),
-                            score: courseJSON["scoreCh"].stringValue)
+                CourseScore(
+                    courseName: courseJSON["courseNameCh"].stringValue,
+                    courseCode: courseJSON["courseCode"].stringValue,
+                    lessonCode: courseJSON["lessonCode"].stringValue,
+                    semesterID: courseJSON["semesterAssoc"].stringValue,
+                    semesterName: courseJSON["semesterCh"].stringValue,
+                    credit: Double(courseJSON["credits"].stringValue)!,
+                    gpa: Double(courseJSON["gp"].stringValue),
+                    score: courseJSON["scoreCh"].stringValue
+                )
             }
         }
         return result

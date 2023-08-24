@@ -30,7 +30,9 @@ struct SingleExamView: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Image(systemName: "location.fill.viewfinder")
-                    Text("\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)")
+                    Text(
+                        "\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)"
+                    )
                 }
                 .font(.callout)
                 HStack {
@@ -42,9 +44,10 @@ struct SingleExamView: View {
                             .foregroundColor(.gray)
                             .fontWeight(.bold)
                     } else {
-                        Text(exam.daysLeft == 1 ?
-                            "1 day left".localized :
-                            String(format: "%@ days left".localized, String(exam.daysLeft))
+                        Text(
+                            exam.daysLeft == 1
+                                ? "1 day left".localized
+                                : String(format: "%@ days left".localized, String(exam.daysLeft))
                         )
                         .foregroundColor(exam.daysLeft <= 7 ? .red : .accentColor)
                         .fontWeight(.bold)

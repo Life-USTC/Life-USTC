@@ -31,7 +31,7 @@ class USTCExports: SchoolExport {
                 destinationView: {
                     AnyView(USTCCASLoginView.newPage)
                 }
-            ),
+            )
         ]
     }
 
@@ -72,9 +72,9 @@ class USTCExports: SchoolExport {
         USTCScoreDelegate.shared
     }
 
-//    override var baseModifier: some ViewModifier {
-//        USTCBaseModifier()
-//    }
+    //    override var baseModifier: some ViewModifier {
+    //        USTCBaseModifier()
+    //    }
 
     override var firstLoginView: (Binding<Bool>) -> AnyView {
         { .init(USTCCASLoginView.sheet(isPresented: $0)) }
@@ -91,7 +91,7 @@ class USTCExports: SchoolExport {
                     destinationView: {
                         AnyView(USTCClassroomView())
                     }
-                ),
+                )
             ],
         ]
     }

@@ -21,10 +21,10 @@ struct FeaturesView: View {
             var result: [String: [FeatureWithView]] = [:]
             for (key, value) in features {
                 let tmp = value.filter {
-                    $0.title.lowercased().contains(searchText.lowercased()) ||
-                        $0.subTitle.lowercased().contains(searchText.lowercased()) ||
-                        $0.title.localized.contains(searchText) ||
-                        $0.subTitle.localized.contains(searchText)
+                    $0.title.lowercased().contains(searchText.lowercased())
+                        || $0.subTitle.lowercased().contains(searchText.lowercased())
+                        || $0.title.localized.contains(searchText)
+                        || $0.subTitle.localized.contains(searchText)
                 }
                 if !tmp.isEmpty {
                     result[key] = tmp
@@ -36,7 +36,9 @@ struct FeaturesView: View {
 
     var body: some View {
         List {
-            ForEach(featureSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+            ForEach(featureSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) {
+                key,
+                features in
                 Section {
                     ForEach(features, id: \.id) { feature in
                         NavigationLink {
@@ -70,16 +72,17 @@ extension FeaturesView {
     func collectFeatures() -> [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
 
-        results["Feed"] = [
-            .init(
-                image: "doc.richtext",
-                title: "Feed".localized,
-                subTitle: "",
-                destinationView: {
-                    AnyView(AllSourceView())
-                }
-            ),
-        ] + feedSourceList.map { FeatureWithView($0) }
+        results["Feed"] =
+            [
+                .init(
+                    image: "doc.richtext",
+                    title: "Feed".localized,
+                    subTitle: "",
+                    destinationView: {
+                        AnyView(AllSourceView())
+                    }
+                )
+            ] + feedSourceList.map { FeatureWithView($0) }
 
         results["UG AAS"] = [
             .init(

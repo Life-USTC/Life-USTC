@@ -15,7 +15,7 @@ struct NotificationSettingView: View {
 
     var body: some View {
         List {
-#if DEBUG && !IOS_SIMULATOR
+            #if DEBUG && !IOS_SIMULATOR
             // ensure that this isn't shown on preview device
             // as it runs off rossetta (apple chips) so that it's always x86_64
             ScrollView {
@@ -24,7 +24,7 @@ struct NotificationSettingView: View {
             .border(.yellow)
             .frame(height: 150)
             .padding(0)
-#endif
+            #endif
             Section {
                 Toggle("Allow Notification", isOn: $useNotification)
                     .onChange(of: useNotification) { newValue in
@@ -36,8 +36,8 @@ struct NotificationSettingView: View {
                     }
 
                 Button {
-//                    XGPush.defaultManager().clearTPNSCache()
-//                    showingAlert = true
+                    //                    XGPush.defaultManager().clearTPNSCache()
+                    //                    showingAlert = true
                 } label: {
                     Text("Clear TPNS Cache")
                 }
@@ -49,10 +49,10 @@ struct NotificationSettingView: View {
                     .textCase(.none)
             }
 
-#if DEBUG
+            #if DEBUG
             Section {
                 Button {
-//                    XGPushTokenManager.default().appendTags([])
+                    //                    XGPushTokenManager.default().appendTags([])
                 } label: {
                     Text("Update Labels")
                 }
@@ -60,7 +60,7 @@ struct NotificationSettingView: View {
                 Text("Labels")
                     .textCase(.none)
             }
-#endif
+            #endif
         }
         .scrollContentBackground(.hidden)
         .navigationBarTitle("Notification Settings", displayMode: .inline)

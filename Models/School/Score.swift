@@ -67,15 +67,16 @@ struct CourseScore: Codable {
     /// Try convert to this standard, or file issue on GitHub.
     var score: String
 
-    init(courseName: String,
-         courseCode: String,
-         lessonCode: String,
-         semesterID: String,
-         semesterName: String,
-         credit: Double,
-         gpa: Double? = nil,
-         score: String)
-    {
+    init(
+        courseName: String,
+        courseCode: String,
+        lessonCode: String,
+        semesterID: String,
+        semesterName: String,
+        credit: Double,
+        gpa: Double? = nil,
+        score: String
+    ) {
         self.courseName = courseName
         self.courseCode = courseCode
         self.lessonCode = lessonCode
@@ -86,14 +87,16 @@ struct CourseScore: Codable {
         self.score = score
     }
 
-    static let example = CourseScore(courseName: "数学分析B1",
-                                     courseCode: "MATH10001",
-                                     lessonCode: "MATH10001.01",
-                                     semesterID: "221",
-                                     semesterName: "2021春季学期",
-                                     credit: 3.0,
-                                     gpa: 4.3,
-                                     score: "95")
+    static let example = CourseScore(
+        courseName: "数学分析B1",
+        courseCode: "MATH10001",
+        lessonCode: "MATH10001.01",
+        semesterID: "221",
+        semesterName: "2021春季学期",
+        credit: 3.0,
+        gpa: 4.3,
+        score: "95"
+    )
 }
 
 struct Score: Codable, ExampleDataProtocol {
@@ -111,13 +114,14 @@ struct Score: Codable, ExampleDataProtocol {
 
     var additionalMessage: String?
 
-    init(courses: [CourseScore] = [],
-         gpa: Double = 0.0,
-         majorRank: Int = 0,
-         majorStdCount: Int = 0,
-         majorName: String = "",
-         additionalMessage: String? = nil)
-    {
+    init(
+        courses: [CourseScore] = [],
+        gpa: Double = 0.0,
+        majorRank: Int = 0,
+        majorStdCount: Int = 0,
+        majorName: String = "",
+        additionalMessage: String? = nil
+    ) {
         self.courses = courses
         self.gpa = gpa
         self.majorRank = majorRank
@@ -126,11 +130,13 @@ struct Score: Codable, ExampleDataProtocol {
         self.additionalMessage = additionalMessage
     }
 
-    static let example = Score(courses: [.example],
-                               gpa: 4.3,
-                               majorRank: 1,
-                               majorStdCount: 100,
-                               majorName: "废理兴工")
+    static let example = Score(
+        courses: [.example],
+        gpa: 4.3,
+        majorRank: 1,
+        majorStdCount: 100,
+        majorName: "废理兴工"
+    )
 }
 
 typealias ScoreDelegateProtocol = ManagedRemoteUpdateProtocol<Score>

@@ -106,12 +106,14 @@ struct ExamWidgetEntryView: View {
                 .fontWeight(.bold)
             Spacer()
             HStack(alignment: .lastTextBaseline) {
-                Text(exam.daysLeft == 1 ?
-                    "1 day left".localized :
-                    String(format: "%@ days left".localized, String(exam.daysLeft)))
-                    .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-                    .font(.title3)
-                    .fontWeight(.semibold)
+                Text(
+                    exam.daysLeft == 1
+                        ? "1 day left".localized
+                        : String(format: "%@ days left".localized, String(exam.daysLeft))
+                )
+                .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                .font(.title3)
+                .fontWeight(.semibold)
             }
             HStack {
                 Text(exam.startDate, format: .dateTime.hour().minute())
@@ -135,9 +137,13 @@ struct ExamWidgetEntryView: View {
     }
 
     var oneLine: some View {
-        Text(String(format: "%@+%@D".localized,
-                    exam.courseName.truncated(),
-                    String(exam.daysLeft)))
+        Text(
+            String(
+                format: "%@+%@D".localized,
+                exam.courseName.truncated(),
+                String(exam.daysLeft)
+            )
+        )
     }
 
     var listView: some View {
@@ -173,12 +179,16 @@ struct ExamWidgetEntryView: View {
                             .font(.subheadline)
                             .fontWeight(.heavy)
                     } else {
-                        Text(exam.daysLeft == 1 ?
-                            "1 day left".localized :
-                            String(format: "%@ days left".localized, String(exam.daysLeft)))
-                            .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-                            .font(.subheadline)
-                            .fontWeight(.heavy)
+                        Text(
+                            exam.daysLeft == 1
+                                ? "1 day left".localized
+                                : String(format: "%@ days left".localized, String(exam.daysLeft))
+                        )
+                        .foregroundColor(
+                            exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8)
+                        )
+                        .font(.subheadline)
+                        .fontWeight(.heavy)
                     }
                 }
             }

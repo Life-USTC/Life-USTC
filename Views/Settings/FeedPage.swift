@@ -21,7 +21,9 @@ struct FeedSettingView: View {
                 Text("UI Preference")
                     .textCase(.none)
             } footer: {
-                Text("Reader would generaly improve reading experience for web page that aren't optimized for mobile.")
+                Text(
+                    "Reader would generaly improve reading experience for web page that aren't optimized for mobile."
+                )
             }
 
             Section {

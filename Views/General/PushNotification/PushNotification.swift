@@ -39,18 +39,24 @@ struct PushNotification: View {
             Section {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(0 ..< 10) { index in
-                            Toggle("Tag \(index)", isOn:
-                                .init(get: {
-                                    tags.contains("Tag \(index)")
-                                }, set: { newValue in
-                                    if newValue {
-                                        tags.append("Tag \(index)")
-                                    } else {
-                                        tags.removeAll(where: { $0 == "Tag \(index)" })
-                                    }
-                                }))
-                                .toggleStyle(.button)
+                        ForEach(0..<10) { index in
+                            Toggle(
+                                "Tag \(index)",
+                                isOn:
+                                    .init(
+                                        get: {
+                                            tags.contains("Tag \(index)")
+                                        },
+                                        set: { newValue in
+                                            if newValue {
+                                                tags.append("Tag \(index)")
+                                            } else {
+                                                tags.removeAll(where: { $0 == "Tag \(index)" })
+                                            }
+                                        }
+                                    )
+                            )
+                            .toggleStyle(.button)
                         }
                     }
                 }
@@ -59,13 +65,19 @@ struct PushNotification: View {
                     .textCase(.none)
             }
 
-            Button(role: .destructive) {} label: {
+            Button(role: .destructive) {
+            } label: {
                 Text("Push")
             }
         }
         .onTapGesture {
             // dismiss keyboard
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )
         }
         .navigationTitle("Push Notification")
         .navigationBarTitleDisplayMode(.inline)

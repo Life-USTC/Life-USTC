@@ -34,10 +34,12 @@ class LUNetworkBridge: NSObject, WKURLSchemeHandler {
         let method = queryItems.first(where: { $0.name == "method" })!.value!
         let request = URLRequest(url: URL(string: url)!)
         let task = URLSession.shared.dataTask(with: request) { data, _, _ in
-            let response = HTTPURLResponse(url: urlSchemeTask.request.url!,
-                                           statusCode: 200,
-                                           httpVersion: nil,
-                                           headerFields: nil)!
+            let response = HTTPURLResponse(
+                url: urlSchemeTask.request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: nil
+            )!
             urlSchemeTask.didReceive(response)
             urlSchemeTask.didReceive(data!)
             urlSchemeTask.didFinish()
@@ -55,19 +57,26 @@ class LUJSRuntime {
     let wkWebView: WKWebView
 
     class LoggingMessageHandler: NSObject, WKScriptMessageHandler {
-        func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage)
+        {
             print(message.body)
         }
     }
 
     init() {
         // load script with name console.js
-        let overrideConsole = try! String(contentsOf: Bundle.main.url(forResource: "console", withExtension: "js")!)
-        let script = WKUserScript(source: overrideConsole, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        let overrideConsole = try! String(
+            contentsOf: Bundle.main.url(forResource: "console", withExtension: "js")!
+        )
+        let script = WKUserScript(
+            source: overrideConsole,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
 
         let config = WKWebViewConfiguration()
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-//        config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
+        //        config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         config.userContentController.addUserScript(script)
         config.userContentController.add(LoggingMessageHandler(), name: "logging")
         config.setURLSchemeHandler(LUNetworkBridge(), forURLScheme: "lu-bridge")
@@ -80,9 +89,11 @@ class LUJSRuntime {
         let request = URLRequest(url: url)
         wkWebView.load(request)
 
-        wkWebView.evaluateJavaScript("""
-        // console.log("Init finished here");
-        """)
+        wkWebView.evaluateJavaScript(
+            """
+            // console.log("Init finished here");
+            """
+        )
     }
 }
 
