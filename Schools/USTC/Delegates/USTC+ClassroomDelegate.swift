@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftyJSON
 
 // class UstcClassroomDelegate: ManagedRemoteUpdateProtocol {
-//    static var shared = UstcClassroomDelegate()
+//    static let shared = UstcClassroomDelegate()
 //
 //    @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
 //    @AppStorage("ustcClassroomDate") var date: Date = .init()

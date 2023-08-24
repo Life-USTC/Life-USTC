@@ -12,7 +12,7 @@ import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
 class UstcUgAASClient: LoginClientProtocol {
-    static var shared = UstcUgAASClient()
+    static let shared = UstcUgAASClient()
 
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
     var session: URLSession = .shared

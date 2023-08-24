@@ -86,7 +86,7 @@ struct CourseScore: Codable {
         self.score = score
     }
 
-    static var example = CourseScore(courseName: "数学分析B1",
+    static let example = CourseScore(courseName: "数学分析B1",
                                      courseCode: "MATH10001",
                                      lessonCode: "MATH10001.01",
                                      semesterID: "221",
@@ -138,12 +138,6 @@ typealias ScoreDelegateProtocol = ManagedRemoteUpdateProtocol<Score>
 extension ManagedDataSource<Score> {
     static let score = ManagedDataSource(
         local: ManagedLocalStorage("Score"),
-        remote: Score.sharedDelegate
+        remote: SchoolExport.shared.scoreDelegate
     )
-}
-
-extension Score {
-    static var sharedDelegate: any ScoreDelegateProtocol {
-        SchoolExport.shared.scoreDelegate
-    }
 }

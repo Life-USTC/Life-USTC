@@ -11,6 +11,10 @@ protocol ExampleDataProtocol {
     static var example: Self { get }
 }
 
+extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
+    static var example: Self { [Element.example] }
+}
+
 @propertyWrapper
 struct ManagedData<D: ExampleDataProtocol>: DynamicProperty {
     @ObservedObject var local: ManagedLocalDataProtocol<D>
