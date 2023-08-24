@@ -8,92 +8,11 @@
 import Reeeed
 import SwiftUI
 
-struct FeatureLabelStyle: LabelStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(spacing: 10) {
-            configuration.icon
-                .font(.title)
-                .symbolRenderingMode(.hierarchical)
-            configuration.title
-                .lineLimit(2)
-                .font(.caption)
-        }
-        .frame(width: 110, height: 110)
-        .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-        }
-    }
-}
-
 struct FeaturesView: View {
-    private enum Style: String, CaseIterable {
-        case list
-        case grid
-
-        var imageName: String {
-            switch self {
-            case .list:
-                return "list.bullet.below.rectangle"
-            case .grid:
-                return "square.grid.2x2"
-            }
-        }
-    }
-
     @State var searchText = ""
-    @AppStorage("userType") var userType: UserType?
-    @AppStorage("featureViewStyle") private var style: Style = .list
 
-    let gridItemLayout = [GridItem(.adaptive(minimum: 110)),
-                          GridItem(.adaptive(minimum: 110)),
-                          GridItem(.adaptive(minimum: 110))]
-
-    var features: [String: [FeatureWithView]] = {
-        var results: [String: [FeatureWithView]] = [:]
-        var tmp: [FeatureWithView] = []
-
-        // MARK: - Feeds:
-
-        tmp = [.init(image: "doc.richtext",
-                     title: "Feed".localized,
-                     subTitle: "",
-                     destinationView: AllSourceView().navigationBarTitleDisplayMode(.inline))]
-        for feedSource in FeedSource.allToShow {
-            tmp.append(feedSource.featureWithView)
-        }
-        results["Feed"] = tmp
-
-        // MARK: -
-
-        tmp = [.init(image: "book",
-                     title: "Curriculum".localized,
-                     subTitle: "",
-                     destinationView: CurriculumDetailView()),
-               .init(image: "calendar.badge.clock",
-                     title: "Exam".localized,
-                     subTitle: "",
-                     destinationView: ExamView()),
-               .init(image: "graduationcap",
-                     title: "Score".localized,
-                     subTitle: "",
-                     destinationView: ScoreView())]
-        results["UG AAS"] = tmp
-
-        // MARK: -
-
-        for (key, features) in FeaturesView.availableFeatures {
-            if results.keys.contains(key) {
-                results[key]! += features
-            } else {
-                results[key] = features
-            }
-        }
-
-        return results
-    }()
-
-    var webFeaturesSearched: [String: [FeatureWithView]] {
+    var features: [String: [FeatureWithView]] = [:]
+    var featureSearched: [String: [FeatureWithView]] {
         if searchText.isEmpty {
             return features
         } else {
@@ -113,38 +32,13 @@ struct FeaturesView: View {
         }
     }
 
-    var gridView: some View {
-        ScrollView(showsIndicators: false) {
-            ForEach(webFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
-                Text(key.localized)
-                    .font(.title2)
-                    .fontWeight(.medium)
-                    .hStackLeading()
-                LazyVGrid(columns: gridItemLayout) {
-                    ForEach(features, id: \.self) { feature in
-                        NavigationLink {
-                            feature.destinationView
-                        } label: {
-                            Label(feature.title.localized, systemImage: feature.image)
-                                .labelStyle(FeatureLabelStyle())
-                        }
-                    }
-                }
-            }
-            .padding()
-
-            Spacer()
-                .frame(height: 70)
-        }
-    }
-
-    var mainView: some View {
+    var body: some View {
         List {
-            ForEach(webFeaturesSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
+            ForEach(featureSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) { key, features in
                 Section {
-                    ForEach(features, id: \.self) { feature in
+                    ForEach(features, id: \.id) { feature in
                         NavigationLink {
-                            feature.destinationView
+                            feature.destinationView()
                         } label: {
                             Label(feature.title.localized, systemImage: feature.image)
                                 .symbolRenderingMode(.hierarchical)
@@ -158,32 +52,69 @@ struct FeaturesView: View {
             Spacer()
                 .frame(height: 70)
         }
-        .scrollIndicators(.hidden)
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
-    }
-
-    var body: some View {
-        Group {
-            switch style {
-            case .grid:
-                gridView
-            case .list:
-                mainView
-            }
-        }
         .navigationTitle("Features")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            Button {
-                withAnimation {
-                    style = style.next()
+        .searchable(text: $searchText, placement: .automatic)
+    }
+
+    init() {
+        features = collectFeatures()
+    }
+}
+
+extension FeaturesView {
+    func collectFeatures() -> [String: [FeatureWithView]] {
+        var results: [String: [FeatureWithView]] = [:]
+
+        results["Feed"] = [
+            .init(
+                image: "doc.richtext",
+                title: "Feed".localized,
+                subTitle: "",
+                destinationView: {
+                    AnyView(AllSourceView())
                 }
-            } label: {
-                Label("Switch", systemImage: style.next().imageName)
+            ),
+        ] + FeedSource.allToShow.map { FeatureWithView($0) }
+
+        results["UG AAS"] = [
+            .init(
+                image: "book",
+                title: "Curriculum".localized,
+                subTitle: "",
+                destinationView: {
+                    AnyView(CurriculumDetailView())
+                }
+            ),
+            .init(
+                image: "calendar.badge.clock",
+                title: "Exam".localized,
+                subTitle: "",
+                destinationView: {
+                    AnyView(ExamView())
+                }
+            ),
+            .init(
+                image: "graduationcap",
+                title: "Score".localized,
+                subTitle: "",
+                destinationView: {
+                    AnyView(ScoreView())
+                }
+            ),
+        ]
+
+        for (key, features) in SchoolExport.shared.features {
+            if results.keys.contains(key) {
+                results[key]! += features
+            } else {
+                results[key] = features
             }
         }
-        .searchable(text: $searchText, placement: .automatic)
+
+        return results
     }
 }
 
@@ -192,11 +123,5 @@ struct FeaturesView_Previews: PreviewProvider {
         NavigationStack {
             FeaturesView()
         }
-    }
-}
-
-extension FeaturesView {
-    static var availableFeatures: [String: [FeatureWithView]] {
-        SchoolExport.shared.features
     }
 }

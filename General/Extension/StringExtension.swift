@@ -1,5 +1,5 @@
 //
-//  SwiftExtension.swift
+//  StringExtension.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2023/1/5.
@@ -45,12 +45,4 @@ extension String {
             .joined(separator: versionDelimiter)
             .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
     }
-}
-
-func isInWidget() -> Bool {
-    guard let extesion = Bundle.main.infoDictionary?["NSExtension"] as? [String: String] else {
-        return false
-    }
-    guard let widget = extesion["NSExtensionPointIdentifier"] else { return false }
-    return widget == "com.apple.widgetkit-extension"
 }

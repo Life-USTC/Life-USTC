@@ -9,6 +9,21 @@ import Introspect
 import SwiftUI
 import WidgetKit
 
+// Optional Binding
+func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue ?? rhs },
+        set: { lhs.wrappedValue = $0 }
+    )
+}
+
+prefix func ! <T>(lhs: Binding<T?>) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue! },
+        set: { lhs.wrappedValue = $0 }
+    )
+}
+
 struct HStackModifier: ViewModifier {
     var trailing = false
     func body(content: Content) -> some View {
@@ -35,6 +50,19 @@ extension View {
 
     func edgesIgnoringHorizontal(_: Edge.Set) -> some View {
         self
+    }
+
+    /// Applies the given transform if the given condition evaluates to `true`.
+    /// - Parameters:
+    ///   - condition: The condition to evaluate.
+    ///   - transform: The transform to apply to the source `View`.
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    @ViewBuilder func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
 
@@ -86,33 +114,3 @@ let exampleGradientList: [[Color]] = [
     [.init(hex: "#3D6585"), .init(hex: "#99D587")],
     [.init(hex: "#D5AF8D"), .init(hex: "#6FA3A3")],
 ]
-
-extension View {
-    /// Applies the given transform if the given condition evaluates to `true`.
-    /// - Parameters:
-    ///   - condition: The condition to evaluate.
-    ///   - transform: The transform to apply to the source `View`.
-    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
-    @ViewBuilder func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
-    }
-}
-
-// Optional Binding
-func ?? <T>(lhs: Binding<T?>, rhs: T) -> Binding<T> {
-    Binding(
-        get: { lhs.wrappedValue ?? rhs },
-        set: { lhs.wrappedValue = $0 }
-    )
-}
-
-prefix func ! <T>(lhs: Binding<T?>) -> Binding<T> {
-    Binding(
-        get: { lhs.wrappedValue! },
-        set: { lhs.wrappedValue = $0 }
-    )
-}
