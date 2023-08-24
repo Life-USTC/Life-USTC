@@ -12,36 +12,55 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink("App Settings", destination: AppSettingPage())
+                NavigationLink(
+                    "App Settings",
+                    destination: AppSettingPage()
+                )
                 NavigationLink(
                     "Feed Source Settings",
                     destination: FeedSettingView()
                 )
-                NavigationLink("Exam Settings", destination: ExamSettingView())
+                NavigationLink(
+                    "Exam Settings",
+                    destination: ExamSettingView()
+                )
                 NavigationLink(
                     "Notification Settings",
                     destination: NotificationSettingView()
                 )
-                ForEach(SettingsView.availableSettings) { setting in
+            } header: {
+                Text("General")
+                    .textCase(.none)
+            }
+
+            Section {
+                ForEach(SchoolExport.shared.settings) { setting in
                     NavigationLink(
                         setting.name.localized,
                         destination: setting.destinationView
                     )
                 }
+            } header: {
+                Text("School")
+                    .textCase(.none)
             }
 
             Section {
-                NavigationLink("About Life@USTC", destination: AboutApp())
-                NavigationLink("Legal Info", destination: LegalInfoView())
+                NavigationLink(
+                    "About Life@USTC",
+                    destination: AboutApp()
+                )
+                NavigationLink(
+                    "Legal Info",
+                    destination: LegalInfoView()
+                )
+            } header: {
+                Text("More")
+                    .textCase(.none)
             }
         }
-        .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
         .scrollContentBackground(.hidden)
-    }
-}
-
-extension SettingsView {
-    static var availableSettings: [SettingWithView] {
-        SchoolExport.shared.settings
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

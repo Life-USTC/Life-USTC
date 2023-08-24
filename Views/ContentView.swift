@@ -10,7 +10,11 @@ import SwiftUI
 @main struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    var body: some Scene { WindowGroup { ContentView() } }
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
 }
 
 struct ContentView: View {
@@ -23,10 +27,8 @@ struct ContentView: View {
         NavigationStack {
             ContentViewTabBarContainerView(selection: $tabSelection) {
                 ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                    eachTab.view.tabBarItem(
-                        tab: eachTab,
-                        selection: $tabSelection
-                    )
+                    eachTab.view
+                        .tabBarItem(tab: eachTab, selection: $tabSelection)
                     Spacer()
                 }
             }
@@ -40,8 +42,11 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image("Icon").resizable().aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50).clipShape(Circle())
+            Image("Icon")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .clipShape(Circle())
                 .overlay {
                     Circle()
                         .stroke(Color.accentColor, style: .init(lineWidth: 2))
@@ -66,15 +71,18 @@ struct ContentView: View {
                 )
             }
         }
-        .labelStyle(.iconOnly).font(.largeTitle)
+        .labelStyle(.iconOnly)
+        .font(.largeTitle)
     }
 
     var iPadView: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            sideBarView.navigationSplitViewColumnWidth(80)
+            sideBarView
+                .navigationSplitViewColumnWidth(80)
                 .navigationBarHidden(true)
         } content: {
-            tabSelection.view.navigationSplitViewColumnWidth(400)
+            tabSelection.view
+                .navigationSplitViewColumnWidth(400)
         } detail: {
             EmptyView()
         }

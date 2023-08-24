@@ -24,27 +24,31 @@ struct ExamView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            if exams.isEmpty {
-                SingleExamView(exam: .example)
-                    .redacted(reason: .placeholder)
-                    .overlay {
-                        Text("No More Exam!")
-                            .font(.system(.body, design: .monospaced))
-                            .padding(.vertical, 10)
+        List {
+            Section {
+                if exams.isEmpty {
+                    SingleExamView(exam: .example)
+                        .redacted(reason: .placeholder)
+                        .overlay {
+                            Text("No More Exam!")
+                                .font(.system(.body, design: .monospaced))
+                                .padding(.vertical, 10)
+                        }
+                } else {
+                    ForEach(exams, id: \.lessonCode) { exam in
+                        SingleExamView(exam: exam)
+                        Divider()
                     }
-            } else {
-                ForEach(exams, id: \.lessonCode) { exam in
-                    SingleExamView(exam: exam)
-                    Divider()
+                    .padding(.top, 5)
                 }
-                .padding(.top, 5)
+            } header: {
+                AsyncStatusLight(status: _exams.status)
             }
-
-            Spacer()
         }
-        .asyncStatusOverlay(_exams.status)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .padding(.horizontal)
+        .asyncStatusOverlay(_exams.status, showLight: false)
         .refreshable {
             _exams.triggerRefresh()
         }

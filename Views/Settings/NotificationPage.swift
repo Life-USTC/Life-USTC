@@ -16,12 +16,17 @@ struct NotificationSettingView: View {
 
     var body: some View {
         List {
+
             #if DEBUG && !IOS_SIMULATOR
             // ensure that this isn't shown on preview device
             // as it runs off rossetta (apple chips) so that it's always x86_64
-            ScrollView { Text(appDelegate.tpnsLog) }.border(.yellow)
-                .frame(height: 150).padding(0)
+            ScrollView {
+                Text(appDelegate.tpnsLog)
+            }
+            .border(.yellow)
+            .frame(height: 150).padding(0)
             #endif
+
             Section {
                 Toggle("Allow Notification", isOn: $useNotification)
                     .onChange(of: useNotification) { newValue in
@@ -42,30 +47,21 @@ struct NotificationSettingView: View {
                     Button("OK", role: .cancel) {}
                 }
             } header: {
-                Text("General").textCase(.none)
+                Text("General")
+                    .textCase(.none)
             }
-
-            #if DEBUG
-            Section {
-                Button {
-                    //                    XGPushTokenManager.default().appendTags([])
-                } label: {
-                    Text("Update Labels")
-                }
-            } header: {
-                Text("Labels").textCase(.none)
-            }
-            #endif
         }
         .scrollContentBackground(.hidden)
-        .navigationBarTitle("Notification Settings", displayMode: .inline)
+        .navigationTitle("Notification Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct NotificationSetting_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            NotificationSettingView().environmentObject(AppDelegate())
+            NotificationSettingView()
+                .environmentObject(AppDelegate())
         }
     }
 }
