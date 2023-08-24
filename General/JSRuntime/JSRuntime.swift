@@ -81,7 +81,7 @@ class LUJSRuntime {
         wkWebView.load(request)
 
         wkWebView.evaluateJavaScript("""
-        console.log("Init finished here");
+        // console.log("Init finished here");
         """)
     }
 }
