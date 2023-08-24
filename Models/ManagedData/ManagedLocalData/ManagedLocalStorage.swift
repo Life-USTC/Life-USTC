@@ -14,28 +14,26 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     let userDefaults: UserDefaults
     let validDuration: TimeInterval
 
-    var url: URL? {
-        fm.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ManagedLocalStorage/\(key).json")
+    var url: URL {
+        fm.urls(
+            for: .documentDirectory,
+            in: .userDomainMask
+        ).first!.appendingPathComponent("ManagedLocalStorage/\(key).json")
     }
 
     override var data: D? {
         get {
-            if let url {
-                return try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
-            }
-            return nil
+            try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
         }
         set {
-            if let url {
-                if !fm.fileExists(atPath: url.path) {
-                    try? fm.createDirectory(at: url.deletingLastPathComponent(),
-                                            withIntermediateDirectories: true,
-                                            attributes: nil)
-                }
-
-                try? JSONEncoder().encode(newValue).write(to: url)
-                lastUpdated = Date()
+            if !fm.fileExists(atPath: url.path) {
+                try? fm.createDirectory(at: url.deletingLastPathComponent(),
+                                        withIntermediateDirectories: true,
+                                        attributes: nil)
             }
+
+            try? JSONEncoder().encode(newValue).write(to: url)
+            lastUpdated = Date()
             self.objectWillChange.send()
         }
     }

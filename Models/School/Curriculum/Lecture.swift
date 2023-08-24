@@ -9,7 +9,8 @@ import EventKit
 import SwiftUI
 
 /// Represent one lecture
-struct Lecture: Codable {
+struct Lecture: Codable, Identifiable, Equatable {
+    var id: UUID = .init()
     var startDate: Date
     var endDate: Date
     var name: String
@@ -24,20 +25,12 @@ struct Lecture: Codable {
                               location: "Example Location")
 }
 
-extension Lecture {
-    /// Convert to EKEvent
-    func event(in store: EKEventStore = EKEventStore()) -> EKEvent {
-        let event = EKEvent(eventStore: store)
-        event.title = name
-        event.startDate = startDate
-        event.endDate = endDate
-        event.location = String(location)
-        return event
-    }
-}
-
-extension Lecture: Identifiable, Equatable {
-    var id: UUID {
-        UUID()
+extension EKEvent {
+    convenience init(_ lecture: Lecture, in store: EKEventStore = EKEventStore()) {
+        self.init(eventStore: store)
+        title = lecture.name
+        startDate = lecture.startDate
+        endDate = lecture.endDate
+        location = lecture.location
     }
 }

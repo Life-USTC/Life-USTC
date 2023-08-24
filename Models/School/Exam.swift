@@ -8,7 +8,7 @@
 import EventKit
 import SwiftUI
 
-struct Exam: Codable, Equatable {
+struct Exam: Codable, Equatable, ExampleDataProtocol {
     // MARK: - Information about the course
 
     /// Code to indicate which exact lesson the student is tanking, like MATH1000.01
@@ -41,10 +41,6 @@ struct Exam: Codable, Equatable {
                                      classRoomBuildingName: "第五教学楼",
                                      classRoomDistrict: "东区",
                                      description: "")
-}
-
-extension [Exam]: ExampleDataProtocol {
-    static let example: [Exam] = .init([.example])
 }
 
 extension Exam {
@@ -153,12 +149,6 @@ typealias ExamDelegateProtocol = ManagedRemoteUpdateProtocol<[Exam]>
 extension ManagedDataSource<[Exam]> {
     static let exam = ManagedDataSource(
         local: ManagedLocalStorage("Exam"),
-        remote: Exam.sharedDelegate
+        remote: SchoolExport.shared.examDelegate
     )
-}
-
-extension Exam {
-    static var sharedDelegate: any ExamDelegateProtocol {
-        SchoolExport.shared.examDelegate
-    }
 }

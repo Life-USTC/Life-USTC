@@ -91,15 +91,11 @@ extension CurriculumProtocolB {
 extension ManagedDataSource<Curriculum> {
     static let curriculum = ManagedDataSource(
         local: ManagedLocalStorage("Curriculum"),
-        remote: Curriculum.sharedDelegate
+        remote: SchoolExport.shared.curriculumDelegate
     )
 }
 
 extension Curriculum {
-    static var sharedDelegate: any CurriculumProtocol {
-        SchoolExport.shared.curriculumDelegate
-    }
-
     static var behviour: CurriculumBehavior {
         SchoolExport.shared.curriculumBehavior
     }

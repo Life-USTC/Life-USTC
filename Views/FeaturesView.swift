@@ -9,6 +9,8 @@ import Reeeed
 import SwiftUI
 
 struct FeaturesView: View {
+    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
+
     @State var searchText = ""
 
     var features: [String: [FeatureWithView]] = [:]
@@ -77,7 +79,7 @@ extension FeaturesView {
                     AnyView(AllSourceView())
                 }
             ),
-        ] + FeedSource.allToShow.map { FeatureWithView($0) }
+        ] + feedSourceList.map { FeatureWithView($0) }
 
         results["UG AAS"] = [
             .init(

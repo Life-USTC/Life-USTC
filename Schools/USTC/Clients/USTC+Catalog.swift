@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftyJSON
 
 class UstcCatalogClient: LoginClientProtocol {
-    static var shared = UstcCatalogClient()
+    static let shared = UstcCatalogClient()
 
     @AppStorage("UstcCatalogClient_token", store: .appGroup) var token: String = ""
 

@@ -9,7 +9,7 @@ import Foundation
 
 /// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient: LoginClientProtocol {
-    static var shared = UstcCasClient()
+    static let shared = UstcCasClient()
 
     var session: URLSession = .shared
 

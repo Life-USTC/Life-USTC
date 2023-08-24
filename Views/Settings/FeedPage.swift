@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FeedSettingView: View {
+    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
+
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     @AppStorage("useReeed") var useReeed = true
 
@@ -23,7 +25,7 @@ struct FeedSettingView: View {
             }
 
             Section {
-                ForEach(FeedSource.all.map(\.name), id: \.self) { name in
+                ForEach(feedSourceList.map(\.name), id: \.self) { name in
                     Button {
                         if removedNameList.contains(name) {
                             removedNameList.removeAll(where: { $0 == name })

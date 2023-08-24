@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedSourceView: View {
-    @StateObject var feedSource: FeedSource
+    var feedSource: FeedSource
     var feeds: [Feed] {
 //        feedSource.data
         []

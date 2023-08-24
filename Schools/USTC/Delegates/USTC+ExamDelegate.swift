@@ -9,7 +9,7 @@ import Foundation
 import SwiftSoup
 
 class USTCExamDelegate: ManagedRemoteUpdateProtocol {
-    static var shared = USTCExamDelegate()
+    static let shared = USTCExamDelegate()
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
 

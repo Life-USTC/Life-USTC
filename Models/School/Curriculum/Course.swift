@@ -8,7 +8,8 @@
 import EventKit
 import Foundation
 
-struct Course: Codable {
+struct Course: Codable, Identifiable, Equatable {
+    var id = UUID()
     var name: String
     var courseCode: String
     var lessonCode: String
@@ -18,7 +19,7 @@ struct Course: Codable {
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
 
-    static var example = Course(name: "Example Course",
+    static let example = Course(name: "Example Course",
                                 courseCode: "Example-0001",
                                 lessonCode: "Example-0001.01",
                                 teacherName: "Example Teacher",
@@ -28,12 +29,6 @@ struct Course: Codable {
 extension Course {
     /// Convert to EKEvent
     func events(in store: EKEventStore = EKEventStore()) -> [EKEvent] {
-        lectures.map { $0.event(in: store) }
-    }
-}
-
-extension Course: Identifiable, Equatable {
-    var id: UUID {
-        UUID()
+        lectures.map { EKEvent($0, in: store) }
     }
 }
