@@ -15,15 +15,15 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
 
     override var data: D? {
         get {
-            if let data = userDefaults.data(forKey: key) {
-                return try? JSONDecoder().decode(D.self, from: data)
-            } else {
-                return nil
-            }
+            guard let data = userDefaults.data(forKey: key) else { return nil }
+            return try? JSONDecoder().decode(D.self, from: data)
         }
         set {
             if let newValue {
-                try? userDefaults.set(JSONEncoder().encode(newValue), forKey: key)
+                try? userDefaults.set(
+                    JSONEncoder().encode(newValue),
+                    forKey: key
+                )
                 lastUpdated = Date()
                 self.objectWillChange.send()
             }
@@ -31,21 +31,15 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     override var status: LocalAsyncStatus {
-        if data != nil, let lastUpdated {
-            if Date().timeIntervalSince(lastUpdated) < validDuration {
-                return .valid
-            } else {
-                return .outDated
-            }
-        } else {
-            return .notFound
+        guard data != nil, let lastUpdated else { return .notFound }
+        guard Date().timeIntervalSince(lastUpdated) < validDuration else {
+            return .outDated
         }
+        return .valid
     }
 
     var lastUpdated: Date? {
-        get {
-            userDefaults.object(forKey: key + "_lastUpdated") as? Date
-        }
+        get { userDefaults.object(forKey: key + "_lastUpdated") as? Date }
         set {
             userDefaults.set(newValue, forKey: key + "_lastUpdated")
             objectWillChange.send()

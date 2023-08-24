@@ -16,13 +16,11 @@ class UstcCasClient: LoginClientProtocol {
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
 
-    var precheckFails: Bool {
-        username.isEmpty || password.isEmpty
-    }
+    var precheckFails: Bool { username.isEmpty || password.isEmpty }
 
-    func getLtTokenFromCAS(
-        url: URL = ustcLoginUrl
-    ) async throws -> (ltToken: String, cookie: [HTTPCookie]) {
+    func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (
+        ltToken: String, cookie: [HTTPCookie]
+    ) {
         let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
         // loading the LT-Token requires a non-logined status, which shared Session could have not provide
         // using a ephemeral session would achieve this.
@@ -33,43 +31,38 @@ class UstcCasClient: LoginClientProtocol {
 
         guard let dataString = String(data: data, encoding: .utf8),
             let match = dataString.firstMatch(of: findLtStringRegex)
-        else {
-            throw BaseError.runtimeError("Failed to fetch raw LT-Token")
-        }
+        else { throw BaseError.runtimeError("Failed to fetch raw LT-Token") }
 
-        return (String(match.0), session.configuration.httpCookieStorage?.cookies ?? [])
+        return (
+            String(match.0),
+            session.configuration.httpCookieStorage?.cookies ?? []
+        )
     }
 
-    func loginToCAS(
-        url: URL = ustcLoginUrl,
-        service: URL? = nil
-    ) async throws -> Bool {
-        if precheckFails {
-            throw BaseError.runtimeError("Precheck fails")
-        }
+    func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws
+        -> Bool
+    {
+        if precheckFails { throw BaseError.runtimeError("Precheck fails") }
 
         let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
         let queries: [String: String] = [
-            "model": "uplogin.jsp",
-            "CAS_LT": ltToken,
-            "service": service?.absoluteString ?? "",
-            "warn": "",
-            "showCode": "",
-            "qrcode": "",
-            "username": username,
-            "password": password,
-            "LT": "",
-            "button": "",
+            "model": "uplogin.jsp", "CAS_LT": ltToken,
+            "service": service?.absoluteString ?? "", "warn": "",
+            "showCode": "", "qrcode": "", "username": username,
+            "password": password, "LT": "", "button": "",
         ]
 
         var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(separator: "&").data(
-            using: .utf8
-        )
+        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(
+            separator: "&"
+        ).data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.setValue(
+            "application/x-www-form-urlencoded",
+            forHTTPHeaderField: "Content-Type"
+        )
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         session.configuration.httpCookieStorage?.setCookies(
             cookies,
@@ -79,21 +72,16 @@ class UstcCasClient: LoginClientProtocol {
 
         let _ = try await session.data(for: request)
 
-        return session.configuration.httpCookieStorage?.cookies?.contains(where: {
-            $0.name == "logins" || $0.name == "TGC"
-        }) ?? false
+        return session.configuration.httpCookieStorage?.cookies?.contains(
+            where: { $0.name == "logins" || $0.name == "TGC" }) ?? false
     }
 
-    override func login() async throws -> Bool {
-        try await loginToCAS()
-    }
+    override func login() async throws -> Bool { try await loginToCAS() }
 
     override init() {}
 }
 
-extension LoginClientProtocol {
-    static let ustcCAS = UstcCasClient.shared
-}
+extension LoginClientProtocol { static let ustcCAS = UstcCasClient.shared }
 
 extension URL {
     /// Mark self for the CAS service to identify as a service
@@ -109,7 +97,5 @@ extension URL {
         return components.url ?? exampleURL
     }
 
-    func ustcCASLoginMarkup() -> URL {
-        CASLoginMarkup(casServer: ustcCasUrl)
-    }
+    func ustcCASLoginMarkup() -> URL { CASLoginMarkup(casServer: ustcCasUrl) }
 }

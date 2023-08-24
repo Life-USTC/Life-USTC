@@ -15,16 +15,12 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     let validDuration: TimeInterval
 
     var url: URL {
-        fm.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first!.appendingPathComponent("ManagedLocalStorage/\(key).json")
+        fm.urls(for: .documentDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("ManagedLocalStorage/\(key).json")
     }
 
     override var data: D? {
-        get {
-            try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
-        }
+        get { try? JSONDecoder().decode(D.self, from: Data(contentsOf: url)) }
         set {
             if !fm.fileExists(atPath: url.path) {
                 try? fm.createDirectory(
@@ -41,21 +37,15 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     override var status: LocalAsyncStatus {
-        if data != nil, let lastUpdated {
-            if Date().timeIntervalSince(lastUpdated) < validDuration {
-                return .valid
-            } else {
-                return .outDated
-            }
-        } else {
-            return .notFound
+        guard data != nil, let lastUpdated else { return .notFound }
+        guard Date().timeIntervalSince(lastUpdated) < validDuration else {
+            return .outDated
         }
+        return .valid
     }
 
     var lastUpdated: Date? {
-        get {
-            userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date
-        }
+        get { userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date }
         set {
             userDefaults.set(newValue, forKey: "fm_\(key)_lastUpdated")
             objectWillChange.send()

@@ -21,17 +21,11 @@ enum UserType: String, CaseIterable {
 
     var caption: String {
         switch self {
-        case .undergraduate:
-            return "Notice; Undergraduate AAS"
-        #if DEBUG
-        case .graduate:
-            return "Notice; Graduate AAS"
-        case .teacher:
-            return "Notice; Teacher AAS"
-        case .parent:
-            return "Notice(Without CAS)"
-        case .managment:
-            return "Notice; Create Notice"
+        case .undergraduate: return "Notice; Undergraduate AAS" #if DEBUG
+        case .graduate: return "Notice; Graduate AAS"
+        case .teacher: return "Notice; Teacher AAS"
+        case .parent: return "Notice(Without CAS)"
+        case .managment: return "Notice; Create Notice"
         #endif
         }
     }

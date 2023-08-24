@@ -27,13 +27,15 @@ enum TPNSClient {
         // SecretKey is also stored in userDefaults: UserDefaults with key "TPNSsecretKey", throw error if not found
 
         let timestamp = Int(Date().timeIntervalSince1970)
-        guard let accessID = UserDefaults.appGroup.string(forKey: "TPNSaccessID") else {
-            throw TPNSClientError.noAccessID
-        }
+        guard
+            let accessID = UserDefaults.appGroup.string(forKey: "TPNSaccessID")
+        else { throw TPNSClientError.noAccessID }
 
-        guard let secretKey = UserDefaults.appGroup.string(forKey: "TPNSsecretKey") else {
-            throw TPNSClientError.noSecretKey
-        }
+        guard
+            let secretKey = UserDefaults.appGroup.string(
+                forKey: "TPNSsecretKey"
+            )
+        else { throw TPNSClientError.noSecretKey }
 
         if accessID.isEmpty || secretKey.isEmpty {
             throw TPNSClientError.emptyParameter
@@ -46,7 +48,9 @@ enum TPNSClient {
 
         // Base64 encode the signature
 
-        let signatureBase64 = signature.compactMap { String(format: "%02x", $0) }.joined()
+        let signatureBase64 = signature.compactMap {
+            String(format: "%02x", $0)
+        }.joined()
 
         // Send the request
 

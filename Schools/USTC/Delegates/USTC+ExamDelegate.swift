@@ -14,7 +14,9 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
 
     func refresh() async throws -> [Exam] {
-        let examURL = URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!
+        let examURL = URL(
+            string: "https://jw.ustc.edu.cn/for-std/exam-arrange"
+        )!
         if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
@@ -24,7 +26,9 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
         let (data, _) = try await URLSession.shared.data(for: request)
 
         guard let dataString = String(data: data, encoding: .utf8) else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: ""))
+            throw DecodingError.dataCorrupted(
+                .init(codingPath: [], debugDescription: "")
+            )
         }
 
         let document: Document = try SwiftSoup.parse(dataString)
@@ -32,7 +36,9 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
         var result: [Exam] = []
 
         for examParsed: Element in examsParsed.array() {
-            let textList: [String] = examParsed.children().array().map { $0.ownText() }
+            let textList: [String] = examParsed.children().array().map {
+                $0.ownText()
+            }
             if let parsed = parse(rawTime: textList[3]) {
                 result.append(
                     Exam(
@@ -56,18 +62,20 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
 private func parse(rawTime: String) -> (startTime: Date, endTime: Date)? {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
-    guard let baseDate = dateFormatter.date(from: String(rawTime.prefix(10))) else {
-        return nil
-    }
+    guard let baseDate = dateFormatter.date(from: String(rawTime.prefix(10)))
+    else { return nil }
 
-    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map { Double($0.0)! }
+    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map
+    { Double($0.0)! }
 
-    if times.count != 4 {
-        return nil
-    }
+    if times.count != 4 { return nil }
 
-    let startTime = baseDate.addingTimeInterval(times[0] * 60 * 60 + times[1] * 60)
-    let endTime = baseDate.addingTimeInterval(times[2] * 60 * 60 + times[3] * 60)
+    let startTime = baseDate.addingTimeInterval(
+        times[0] * 60 * 60 + times[1] * 60
+    )
+    let endTime = baseDate.addingTimeInterval(
+        times[2] * 60 * 60 + times[3] * 60
+    )
 
     return (startTime, endTime)
 }

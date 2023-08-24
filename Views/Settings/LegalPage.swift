@@ -15,30 +15,22 @@ struct LegalInfoView: View {
         VStack {
             List {
                 VStack(alignment: .leading) {
-                    Text("Open source code usage:")
-                        .padding(.bottom, 2)
-                    Text(credit)
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.secondary)
+                    Text("Open source code usage:").padding(.bottom, 2)
+                    Text(credit).font(.caption).bold().foregroundColor(
+                        .secondary
+                    )
                 }
                 VStack(alignment: .leading) {
-                    Text("USTC CAS DISCLAIMER:")
-                        .padding(.bottom, 2)
-                    Text("casFullHint")
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.secondary)
+                    Text("USTC CAS DISCLAIMER:").padding(.bottom, 2)
+                    Text("casFullHint").font(.caption).bold().foregroundColor(
+                        .secondary
+                    )
                 }
-            }
-            .scrollContentBackground(.hidden)
-        }
-        .navigationBarTitle("Legal", displayMode: .inline)
+            }.scrollContentBackground(.hidden)
+        }.navigationBarTitle("Legal", displayMode: .inline)
     }
 }
 
 struct LegalPage_Previews: PreviewProvider {
-    static var previews: some View {
-        LegalInfoView()
-    }
+    static var previews: some View { LegalInfoView() }
 }

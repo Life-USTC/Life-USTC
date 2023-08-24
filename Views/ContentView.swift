@@ -7,15 +7,10 @@
 
 import SwiftUI
 
-@main
-struct Life_USTCApp: App {
+@main struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
+    var body: some Scene { WindowGroup { ContentView() } }
 }
 
 struct ContentView: View {
@@ -28,8 +23,10 @@ struct ContentView: View {
         NavigationStack {
             ContentViewTabBarContainerView(selection: $tabSelection) {
                 ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                    eachTab.view
-                        .tabBarItem(tab: eachTab, selection: $tabSelection)
+                    eachTab.view.tabBarItem(
+                        tab: eachTab,
+                        selection: $tabSelection
+                    )
                     Spacer()
                 }
             }
@@ -43,17 +40,12 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image("Icon")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
-                .clipShape(
-                    Circle()
-                )
-                .overlay {
-                    Circle()
-                        .stroke(Color.accentColor, style: .init(lineWidth: 2))
-                }
+            Image("Icon").resizable().aspectRatio(contentMode: .fit).frame(
+                width: 50,
+                height: 50
+            ).clipShape(Circle()).overlay {
+                Circle().stroke(Color.accentColor, style: .init(lineWidth: 2))
+            }
 
             ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
                 Button {
@@ -64,31 +56,27 @@ struct ContentView: View {
                         tabSelection = eachTab
                     }
                 } label: {
-                    eachTab.label
-                        .foregroundColor(eachTab == tabSelection ? eachTab.color : .primary)
-                }
-                .keyboardShortcut(
+                    eachTab.label.foregroundColor(
+                        eachTab == tabSelection ? eachTab.color : .primary
+                    )
+                }.keyboardShortcut(
                     KeyEquivalent(Character(String(eachTab.rawValue))),
                     modifiers: .command
                 )
             }
-        }
-        .labelStyle(.iconOnly)
-        .font(.largeTitle)
+        }.labelStyle(.iconOnly).font(.largeTitle)
     }
 
     var iPadView: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            sideBarView
-                .navigationSplitViewColumnWidth(80)
-                .navigationBarHidden(true)
+            sideBarView.navigationSplitViewColumnWidth(80).navigationBarHidden(
+                true
+            )
         } content: {
-            tabSelection.view
-                .navigationSplitViewColumnWidth(400)
+            tabSelection.view.navigationSplitViewColumnWidth(400)
         } detail: {
             EmptyView()
-        }
-        .navigationSplitViewStyle(.balanced)
+        }.navigationSplitViewStyle(.balanced)
     }
 
     @AppStorage("firstLogin") var firstLogin: Bool = true
@@ -100,15 +88,16 @@ struct ContentView: View {
             ZStack {
                 // Keep LUJSRuntime in backend and keep alive
                 WebView(wkWebView: LUJSRuntime.shared.wkWebView)
-                if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
+                if UIDevice.current.userInterfaceIdiom == .pad,
+                    horizontalSizeClass == .regular
+                {
                     // iPad:
                     iPadView
                 } else {
                     // iOS (including iPad in Stage Manager):
                     iPhoneView
                 }
-            }
-            .modifier(USTCBaseModifier())
+            }.modifier(USTCBaseModifier())
         }
     }
 }

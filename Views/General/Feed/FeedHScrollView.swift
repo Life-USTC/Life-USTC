@@ -15,13 +15,16 @@ struct FeedHScrollView: View {
     func scrollTo(proxy: ScrollViewProxy, id: UUID, feedPostIDList: [UUID]) {
         Task {
             try await Task.sleep(for: .seconds(3))
-            withAnimation {
-                proxy.scrollTo(id)
-            }
+            withAnimation { proxy.scrollTo(id) }
             let index = feedPostIDList.firstIndex(of: id) ?? -1
             var nextIndex = index + 1
-            nextIndex = feedPostIDList.indices.contains(nextIndex) ? nextIndex : 0
-            scrollTo(proxy: proxy, id: feedPostIDList[nextIndex], feedPostIDList: feedPostIDList)
+            nextIndex =
+                feedPostIDList.indices.contains(nextIndex) ? nextIndex : 0
+            scrollTo(
+                proxy: proxy,
+                id: feedPostIDList[nextIndex],
+                feedPostIDList: feedPostIDList
+            )
         }
     }
 
@@ -31,23 +34,21 @@ struct FeedHScrollView: View {
                 ScrollView(.horizontal, showsIndicators: true) {
                     HStack(alignment: .top, spacing: 0) {
                         ForEach(feeds, id: \.id) { post in
-                            FeedView(feed: post)
-                                .id(post.id)
-                                .padding(.top, 2)
+                            FeedView(feed: post).id(post.id).padding(.top, 2)
                         }
-                    }
-                    .frame(width: geo.size.width * Double(feedPostNumber))
-                }
-                .scrollDisabled(false)
-                .task {
+                    }.frame(width: geo.size.width * Double(feedPostNumber))
+                }.scrollDisabled(false).task {
                     let feedPostIDList = feeds.map(\.id)
                     if let id = feedPostIDList.first {
-                        scrollTo(proxy: proxy, id: id, feedPostIDList: feedPostIDList)
+                        scrollTo(
+                            proxy: proxy,
+                            id: id,
+                            feedPostIDList: feedPostIDList
+                        )
                     }
                 }
             }
-        }
-        .frame(height: cardHeight)
+        }.frame(height: cardHeight)
     }
 
     var body: some View {
@@ -60,9 +61,5 @@ struct FeedHScrollView: View {
 }
 
 struct FeedHScroll_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            FeedHScrollView()
-        }
-    }
+    static var previews: some View { NavigationStack { FeedHScrollView() } }
 }

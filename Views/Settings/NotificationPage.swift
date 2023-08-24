@@ -10,7 +10,8 @@ import UIKit
 
 struct NotificationSettingView: View {
     @EnvironmentObject var appDelegate: AppDelegate
-    @AppStorage("useNotification", store: UserDefaults.appGroup) var useNotification = true
+    @AppStorage("useNotification", store: UserDefaults.appGroup)
+    var useNotification = true
     @State private var showingAlert = false
 
     var body: some View {
@@ -18,35 +19,31 @@ struct NotificationSettingView: View {
             #if DEBUG && !IOS_SIMULATOR
             // ensure that this isn't shown on preview device
             // as it runs off rossetta (apple chips) so that it's always x86_64
-            ScrollView {
-                Text(appDelegate.tpnsLog)
-            }
-            .border(.yellow)
-            .frame(height: 150)
-            .padding(0)
+            ScrollView { Text(appDelegate.tpnsLog) }.border(.yellow).frame(
+                height: 150
+            ).padding(0)
             #endif
             Section {
-                Toggle("Allow Notification", isOn: $useNotification)
-                    .onChange(of: useNotification) { newValue in
-                        if newValue {
-                            appDelegate.startTPNS()
-                        } else {
-                            appDelegate.stopTPNS()
-                        }
+                Toggle("Allow Notification", isOn: $useNotification).onChange(
+                    of: useNotification
+                ) { newValue in
+                    if newValue {
+                        appDelegate.startTPNS()
+                    } else {
+                        appDelegate.stopTPNS()
                     }
+                }
 
                 Button {
                     //                    XGPush.defaultManager().clearTPNSCache()
                     //                    showingAlert = true
                 } label: {
                     Text("Clear TPNS Cache")
-                }
-                .alert("Success", isPresented: $showingAlert) {
+                }.alert("Success", isPresented: $showingAlert) {
                     Button("OK", role: .cancel) {}
                 }
             } header: {
-                Text("General")
-                    .textCase(.none)
+                Text("General").textCase(.none)
             }
 
             #if DEBUG
@@ -57,21 +54,20 @@ struct NotificationSettingView: View {
                     Text("Update Labels")
                 }
             } header: {
-                Text("Labels")
-                    .textCase(.none)
+                Text("Labels").textCase(.none)
             }
             #endif
-        }
-        .scrollContentBackground(.hidden)
-        .navigationBarTitle("Notification Settings", displayMode: .inline)
+        }.scrollContentBackground(.hidden).navigationBarTitle(
+            "Notification Settings",
+            displayMode: .inline
+        )
     }
 }
 
 struct NotificationSetting_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            NotificationSettingView()
-                .environmentObject(AppDelegate())
+            NotificationSettingView().environmentObject(AppDelegate())
         }
     }
 }

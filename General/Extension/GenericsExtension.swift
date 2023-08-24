@@ -11,18 +11,14 @@ extension Array: RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
             let result = try? JSONDecoder().decode([Element].self, from: data)
-        else {
-            return nil
-        }
+        else { return nil }
         self = result
     }
 
     public var rawValue: String {
         guard let data = try? JSONEncoder().encode(self),
             let result = String(data: data, encoding: .utf8)
-        else {
-            return "[]"
-        }
+        else { return "[]" }
         return result
     }
 }
@@ -43,7 +39,9 @@ extension CaseIterable where Self: Equatable {
 }
 
 extension Sequence {
-    public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U: [Iterator.Element]] {
+    public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U:
+        [Iterator.Element]]
+    {
         var dict: [U: [Iterator.Element]] = [:]
         for el in self {
             let key = key(el)

@@ -8,8 +8,8 @@
 import SwiftUI
 import UIKit
 
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate,
-    XGPushDelegate, ObservableObject
+class AppDelegate: UIResponder, UIApplicationDelegate,
+    UNUserNotificationCenterDelegate, XGPushDelegate, ObservableObject
 {
     @Published var tpnsLog: String = ""
 
@@ -19,21 +19,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     #endif
 
-    func startJSRuntime() {
-        let _ = LUJSRuntime.shared
-    }
+    func startJSRuntime() { let _ = LUJSRuntime.shared }
 
     func shouldRunUpdate(on version: String) -> Bool {
         #if DEBUG
         // Update on developing: if previousVersion <= version
-        if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
-            previousVersion.versionCompare(version) == .orderedAscending
-        {
+        if let previousVersion = UserDefaults.appGroup.string(
+            forKey: "version"
+        ), previousVersion.versionCompare(version) == .orderedAscending {
             return false
         }
         #else
         // Update on release: if previousVersion < version
-        if let previousVersion = UserDefaults.appGroup.string(forKey: "version"),
+        if let previousVersion = UserDefaults.appGroup.string(
+            forKey: "version"
+        ),
             previousVersion.versionCompare(version) == .orderedAscending
                 || previousVersion.versionCompare(version) == .orderedSame
         {
@@ -47,9 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     /// What to execute after 1.0.2 update
     func version1_0_2Update() {
-        if !shouldRunUpdate(on: "1.0.2") {
-            return
-        }
+        if !shouldRunUpdate(on: "1.0.2") { return }
 
         // if inside userDefaults, key feedSourceCache exists, then delete it
         if UserDefaults.appGroup.object(forKey: "feedSourceCache") != nil {
@@ -70,7 +68,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if UserDefaults.appGroup.object(forKey: "semesterID") != nil {
             UserDefaults.appGroup.setValue(
-                Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0") ?? 0,
+                Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0")
+                    ?? 0,
                 forKey: "semesterIDInt"
             )
             UserDefaults.appGroup.removeObject(forKey: "semesterID")
@@ -106,7 +105,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
-        if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool ?? true {
+        if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool
+            ?? true
+        {
             startTPNS()
         }
         return true
@@ -114,7 +115,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func startTPNS() {
         XGPush.defaultManager().isEnableDebug = true
-        XGPush.defaultManager().configureClusterDomainName("tpns.sh.tencent.com")
+        XGPush.defaultManager().configureClusterDomainName(
+            "tpns.sh.tencent.com"
+        )
         XGPush.defaultManager().appDelegate = self
         XGPush.defaultManager().startXG(
             withAccessID: 1_680_015_447,
@@ -123,16 +126,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
     }
 
-    func stopTPNS() {
-        XGPush.defaultManager().stopXGNotification()
-    }
+    func stopTPNS() { XGPush.defaultManager().stopXGNotification() }
 
     func clearBadgeNumber() {
         XGPush.defaultManager().setBadge(0)
         XGPush.defaultManager().xgApplicationBadgeNumber = 0
     }
 
-    func xgPushDidRegisteredDeviceToken(_: String?, xgToken _: String?, error _: Error?) {
+    func xgPushDidRegisteredDeviceToken(
+        _: String?,
+        xgToken _: String?,
+        error _: Error?
+    ) {
         // When TPNS is started:
     }
 
@@ -140,9 +145,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // When stop TPNS is requested, callback here
     }
 
-    func xgPushDidReceiveRemoteNotification(_: Any) async -> UInt {
-        1
-    }
+    func xgPushDidReceiveRemoteNotification(_: Any) async -> UInt { 1 }
 
     func xgPushDidRequestNotificationPermission(_: Bool, error _: Error?) {}
 

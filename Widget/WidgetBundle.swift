@@ -8,8 +8,7 @@
 import SwiftUI
 import WidgetKit
 
-@main
-struct ExamWidgetBundle: WidgetBundle {
+@main struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {
         CurriculumWidget()
         ExamWidget()

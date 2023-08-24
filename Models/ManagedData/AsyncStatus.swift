@@ -26,26 +26,24 @@ struct AsyncStatus: Equatable {
 
 extension RefreshAsyncStatus {
     /// - Warning: Always consider exec on `Opentional<RereshAsyncStatus>` instead of `RefreshAsyncStatus`.
-    mutating func exec(_ action: @escaping () async throws -> Void) async throws {
+    mutating func exec(_ action: @escaping () async throws -> Void) async throws
+    {
         self = .waiting
         do {
             try await action()
             self = .success
-        } catch {
-            self = .error(error.localizedDescription)
-        }
+        } catch { self = .error(error.localizedDescription) }
     }
 }
 
 extension RefreshAsyncStatus? {
-    mutating func exec(_ action: @escaping () async throws -> Void) async throws {
+    mutating func exec(_ action: @escaping () async throws -> Void) async throws
+    {
         self = .waiting
         do {
             try await action()
             self = .success
-        } catch {
-            self = .error(error.localizedDescription)
-        }
+        } catch { self = .error(error.localizedDescription) }
     }
 }
 
@@ -55,8 +53,6 @@ extension Binding<RefreshAsyncStatus?> {
         do {
             try await action()
             wrappedValue = .success
-        } catch {
-            wrappedValue = .error(error.localizedDescription)
-        }
+        } catch { wrappedValue = .error(error.localizedDescription) }
     }
 }

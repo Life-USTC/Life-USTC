@@ -16,7 +16,8 @@ private func convertYYMMDD(_ date: String) -> Date {
     return dateFormatter.date(from: date)!
 }
 
-class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol {
+class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
+{
     static let shared = USTCCurriculumDelegate()
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
@@ -29,7 +30,8 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
         let validToken = catalogClient.token
 
         let url = URL(
-            string: "https://catalog.ustc.edu.cn/api/teach/semester/list?access_token=\(validToken)"
+            string:
+                "https://catalog.ustc.edu.cn/api/teach/semester/list?access_token=\(validToken)"
         )!
 
         var request = URLRequest(url: url)
@@ -54,7 +56,9 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
     }
 
     func refreshSemester(inComplete: Semester) async throws -> Semester {
-        let queryURL = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
+        let queryURL = URL(
+            string: "https://jw.ustc.edu.cn/for-std/course-table"
+        )!
         // Step 0: Check login
         if try await !_ugAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
@@ -65,13 +69,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await URLSession.shared.data(for: request)
 
-        let match = response.url?.absoluteString.matches(of: try! Regex(#"\d+"#))
+        let match = response.url?.absoluteString.matches(
+            of: try! Regex(#"\d+"#)
+        )
         var tableID = "0"
-        if let match {
-            if !match.isEmpty {
-                tableID = String(match.first!.0)
-            }
-        }
+        if let match { if !match.isEmpty { tableID = String(match.first!.0) } }
 
         // Step 2: Get lessonIDs
         let url = URL(
@@ -83,16 +85,19 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
         let (baseData, _) = try await URLSession.shared.data(for: request)
         let baseJSON = try JSON(data: baseData)
         let lessonIDs = baseJSON["lessonIds"].arrayValue.map(\.stringValue)
-        if lessonIDs.isEmpty {
-            return inComplete
-        }
+        if lessonIDs.isEmpty { return inComplete }
 
         // Step3: Get courses details
-        let detailURL = URL(string: "https://jw.ustc.edu.cn/ws/schedule-table/datum")!
+        let detailURL = URL(
+            string: "https://jw.ustc.edu.cn/ws/schedule-table/datum"
+        )!
         request = URLRequest(url: detailURL)
         request.httpMethod = "POST"
         let params = ["lessonIds": lessonIDs]
-        let paramsData = try JSONSerialization.data(withJSONObject: params, options: [])
+        let paramsData = try JSONSerialization.data(
+            withJSONObject: params,
+            options: []
+        )
         request.httpBody = paramsData
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -106,8 +111,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
             let startTime = subJson["startTime"].intValue
             let endTime = subJson["endTime"].intValue
             let startDate =
-                baseDate + DateComponents(hour: startTime / 100, minute: startTime % 100)
-            let endDate = baseDate + DateComponents(hour: endTime / 100, minute: endTime % 100)
+                baseDate
+                + DateComponents(hour: startTime / 100, minute: startTime % 100)
+            let endDate =
+                baseDate
+                + DateComponents(hour: endTime / 100, minute: endTime % 100)
 
             let location = subJson["room"]["code"].stringValue
             let teacher = subJson["personName"].stringValue
@@ -145,8 +153,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
 
             let courseID = subJson["id"].stringValue
             var lectures = lectureList[courseID] ?? []
-            lectures = lectures.map { lecture in
-                var result = lecture
+            lectures = lectures.map { lecture in var result = lecture
                 result.name = name
                 return result
             }

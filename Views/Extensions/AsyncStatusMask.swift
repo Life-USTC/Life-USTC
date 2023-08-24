@@ -13,15 +13,17 @@ struct AsyncStatusLight: View {
     var status: AsyncStatus?
 
     var localStatusLight: some View {
-        Circle()
-            .fill(status?.local?.color ?? .gray)
-            .frame(width: lightSize, height: lightSize)
+        Circle().fill(status?.local?.color ?? .gray).frame(
+            width: lightSize,
+            height: lightSize
+        )
     }
 
     var refreshStatusLight: some View {
-        Rectangle()
-            .fill(status?.refresh?.color ?? .gray)
-            .frame(width: lightSize, height: lightSize)
+        Rectangle().fill(status?.refresh?.color ?? .gray).frame(
+            width: lightSize,
+            height: lightSize
+        )
     }
 
     var body: some View {
@@ -46,37 +48,26 @@ struct AsyncStatusMask: ViewModifier {
             }
 
             switch status?.local ?? .notFound {
-            case .valid:
-                content
-            case .outDated:
-                content.grayscale(0.8)
-            case .notFound:
-                content.redacted(reason: .placeholder)
+            case .valid: content
+            case .outDated: content.grayscale(0.8)
+            case .notFound: content.redacted(reason: .placeholder)
             }
-        }
-        .overlay {
-            if status?.refresh == .waiting {
-                ProgressView()
-            }
-        }
+        }.overlay { if status?.refresh == .waiting { ProgressView() } }
     }
 }
 
 extension View {
-    func asyncStatusOverlay(_ status: AsyncStatus?, showLight: Bool = true) -> some View {
-        modifier(AsyncStatusMask(status: status, showLight: showLight))
-    }
+    func asyncStatusOverlay(_ status: AsyncStatus?, showLight: Bool = true)
+        -> some View
+    { modifier(AsyncStatusMask(status: status, showLight: showLight)) }
 }
 
 extension LocalAsyncStatus {
     fileprivate var color: Color {
         switch self {
-        case .valid:
-            return .green
-        case .notFound:
-            return .red
-        case .outDated:
-            return .yellow
+        case .valid: return .green
+        case .notFound: return .red
+        case .outDated: return .yellow
         }
     }
 }
@@ -84,12 +75,9 @@ extension LocalAsyncStatus {
 extension RefreshAsyncStatus {
     fileprivate var color: Color {
         switch self {
-        case .waiting:
-            return .yellow
-        case .success:
-            return .green
-        case .error:
-            return .red
+        case .waiting: return .yellow
+        case .success: return .green
+        case .error: return .red
         }
     }
 }

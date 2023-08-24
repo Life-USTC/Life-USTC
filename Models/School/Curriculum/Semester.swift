@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Semester: Codable {
+struct Semester: Codable, Identifiable, Equatable {
     var id: String
     var courses: [Course]
     var name: String
@@ -22,5 +22,3 @@ struct Semester: Codable {
         endDate: Date().add(day: 10)
     )
 }
-
-extension Semester: Identifiable, Equatable {}

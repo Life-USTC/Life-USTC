@@ -22,31 +22,24 @@ struct ScoreView: View {
     var rankingView: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(score.majorName)
-                    .foregroundColor(.secondary)
-                    .fontWeight(.semibold)
+                Text(score.majorName).foregroundColor(.secondary).fontWeight(
+                    .semibold
+                )
                 Spacer()
                 Text(
                     "Rating:".localized + String(score.majorRank) + "/"
                         + String(score.majorStdCount)
-                )
-                .foregroundColor(.secondary)
-                .fontWeight(.semibold)
+                ).foregroundColor(.secondary).fontWeight(.semibold)
             }
             Text("GPA: " + String(score.gpa))  // Double formatting problem noticed
-                .font(.title2)
-                .bold()
-        }
-        .padding(.vertical, 5)
+                .font(.title2).bold()
+        }.padding(.vertical, 5)
     }
 
     var scoreListView: some View {
         ForEach(sortedScore, id: \.name) {
-            Text($0.name)
-                .fontWeight(.semibold)
-                .foregroundColor(.gray)
-            ForEach($0.courses, id: \.lessonCode) { course in
-                Divider()
+            Text($0.name).fontWeight(.semibold).foregroundColor(.gray)
+            ForEach($0.courses, id: \.lessonCode) { course in Divider()
                 SingleScoreView(
                     courseScore: course,
                     color: { () -> Color in
@@ -56,11 +49,9 @@ struct ScoreView: View {
                         }
                         return .red.opacity(0.6)
                     }()
-                )
-                .padding(.vertical, 5)
+                ).padding(.vertical, 5)
             }
-            Divider()
-                .padding(.bottom, 45)
+            Divider().padding(.bottom, 45)
         }
     }
 
@@ -78,19 +69,11 @@ struct ScoreView: View {
                 rankingView
                 scoreListView
                 Spacer()
-            }
-            .asyncStatusOverlay(_score.status)
-        }
-        .padding(.horizontal)
-        .refreshable {
-            _score.triggerRefresh()
-        }
-        .sheet(isPresented: $showSettings) { sheet }
-        .toolbar {
-            settingButton
-        }
-        .navigationTitle("Score")
-        .navigationBarTitleDisplayMode(.inline)
+            }.asyncStatusOverlay(_score.status)
+        }.padding(.horizontal).refreshable { _score.triggerRefresh() }.sheet(
+            isPresented: $showSettings
+        ) { sheet }.toolbar { settingButton }.navigationTitle("Score")
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -100,35 +83,24 @@ extension ScoreView {
             !semesterNameToRemove.contains(course.semesterName)
         }.sorted(by: { lhs, rhs in
             switch sortPreference {
-            case .none:
-                return true
+            case .none: return true
             case let .some(wrapped):
                 switch wrapped {
-                case .gpa:
-                    return (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
-                case .code:
-                    return lhs.lessonCode < rhs.lessonCode
+                case .gpa: return (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
+                case .code: return lhs.lessonCode < rhs.lessonCode
                 }
             }
-        }).categorise { course in
-            course.semesterName
-        }.sorted(by: { lhs, rhs in
+        }).categorise { course in course.semesterName }.sorted(by: { lhs, rhs in
             lhs.value[0].semesterID > rhs.value[0].semesterID
-        })
-        .map { ($0.key, $0.value) }
+        }).map { ($0.key, $0.value) }
     }
 
-    var semesterList: [String] {
-        Array(Set(score.courses.map(\.semesterName)))
-    }
+    var semesterList: [String] { Array(Set(score.courses.map(\.semesterName))) }
 
     var selectedSemesterNames: String {
         String(
-            semesterList.filter { name in
-                !semesterNameToRemove.contains(name)
-            }.map {
-                $0.prefix(6)
-            }.joined(separator: ", ")
+            semesterList.filter { name in !semesterNameToRemove.contains(name) }
+                .map { $0.prefix(6) }.joined(separator: ", ")
         )
     }
 }
@@ -139,15 +111,17 @@ extension ScoreView {
             ForEach(semesterList, id: \.self) { semester in
                 Button {
                     if semesterNameToRemove.contains(semester) {
-                        semesterNameToRemove.removeAll(where: { $0 == semester })
+                        semesterNameToRemove.removeAll(where: { $0 == semester }
+                        )
                     } else {
                         semesterNameToRemove.append(semester)
                     }
                 } label: {
                     HStack {
                         if !(semesterNameToRemove.contains(semester)) {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.accentColor)
+                            Image(systemName: "checkmark").foregroundColor(
+                                .accentColor
+                            )
                         }
                         Text(semester)
                     }
@@ -157,9 +131,7 @@ extension ScoreView {
             Label(
                 "Semester: \(selectedSemesterNames)",
                 systemImage: "square.dashed.inset.filled"
-            )
-            .lineLimit(1)
-            .hStackLeading()
+            ).lineLimit(1).hStackLeading()
         }
     }
 
@@ -175,8 +147,9 @@ extension ScoreView {
                 } label: {
                     HStack {
                         if sortPreference == _sortPreference {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.accentColor)
+                            Image(systemName: "checkmark").foregroundColor(
+                                .accentColor
+                            )
                         }
                         Text(_sortPreference.rawValue.localized)
                     }
@@ -190,8 +163,7 @@ extension ScoreView {
                 Label(
                     "Sort by: \(sortPreference!.rawValue.localized)",
                     systemImage: "number.square"
-                )
-                .hStackLeading()
+                ).hStackLeading()
             }
         }
     }
@@ -201,16 +173,14 @@ extension ScoreView {
             List {
                 semesterButton
                 sortButton
-            }
-            .listStyle(.plain)
-            .navigationBarTitle("Settings", displayMode: .inline)
-        }
-        .presentationDetents([.fraction(0.2)])
+            }.listStyle(.plain).navigationBarTitle(
+                "Settings",
+                displayMode: .inline
+            )
+        }.presentationDetents([.fraction(0.2)])
     }
 }
 
 struct ScoreView_Previews: PreviewProvider {
-    static var previews: some View {
-        ScoreView()
-    }
+    static var previews: some View { ScoreView() }
 }

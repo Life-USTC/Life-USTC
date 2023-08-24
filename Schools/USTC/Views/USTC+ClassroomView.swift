@@ -117,11 +117,7 @@ import SwiftUI
 //    }
 // }
 //
-struct USTCClassroomView: View {
-    var body: some View {
-        Text("TBC")
-    }
-}
+struct USTCClassroomView: View { var body: some View { Text("TBC") } }
 
 // struct USTCClassroomView: View {
 //    @StateObject var ustcCatalogDelegate = UstcClassroomDelegate.shared

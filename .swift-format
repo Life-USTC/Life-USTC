@@ -11,10 +11,10 @@
   "lineBreakBeforeControlFlowKeywords" : false,
   "lineBreakBeforeEachArgument" : true,
   "lineBreakBeforeEachGenericRequirement" : true,
-  "lineLength" : 100,
+  "lineLength" : 80,
   "maximumBlankLines" : 1,
-  "prioritizeKeepingFunctionOutputTogether" : true,
-  "respectsExistingLineBreaks" : true,
+  "prioritizeKeepingFunctionOutputTogether" : false,
+  "respectsExistingLineBreaks" : false,
   "rules" : {
     "AllPublicDeclarationsHaveDocumentation" : false,
     "AlwaysUseLowerCamelCase" : true,
@@ -43,7 +43,7 @@
     "OnlyOneTrailingClosureArgument" : true,
     "OrderedImports" : true,
     "ReturnVoidInsteadOfEmptyTuple" : true,
-    "UseEarlyExits" : false,
+    "UseEarlyExits" : true,
     "UseLetInEveryBoundCaseVariable" : true,
     "UseShorthandTypeNames" : true,
     "UseSingleLinePropertyGetter" : true,
@@ -52,7 +52,7 @@
     "UseWhereClausesInForLoops" : false,
     "ValidateDocumentationComments" : false
   },
-  "spacesAroundRangeFormationOperators" : false,
+  "spacesAroundRangeFormationOperators" : true,
   "tabWidth" : 8,
   "version" : 1
 }
