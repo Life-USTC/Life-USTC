@@ -47,7 +47,11 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
                 options: .mappedIfSafe
             )
             // Write to FeedSourceListLocalStorage.url
-            try! data.write(to: FeedSourceListLocalStorage.url)
+            FileManager.default.createFile(
+                atPath: FeedSourceListLocalStorage.url.path,
+                contents: data,
+                attributes: nil
+            )
         }
     }
 }

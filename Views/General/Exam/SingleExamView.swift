@@ -10,51 +10,66 @@ import SwiftUI
 struct SingleExamView: View {
     let exam: Exam
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 25) {
+    var basicInfoView: some View {
+        HStack(alignment: .top) {
             VStack(alignment: .leading) {
-                HStack(alignment: .center) {
-                    Text("\(exam.courseName)").font(.title2).fontWeight(.bold)
-                        .strikethrough(exam.isFinished)
-                    Spacer()
-                    Text("\(exam.typeName)").foregroundColor(Color.gray)
-                        .font(.subheadline)
-                }
-                Text("\(exam.lessonCode)").foregroundColor(Color.gray)
+                Text("\(exam.courseName)")
+                    .font(.system(.title2, weight: .bold))
+                    .strikethrough(exam.isFinished)
+                    .foregroundColor(exam.isFinished ? .gray : .primary)
+
+                Text("\(exam.lessonCode)")
                     .font(.subheadline)
+                    .foregroundColor(.gray)
             }
+
+            Spacer()
+
+            Text("\(exam.typeName)")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+        }
+    }
+
+    var timeInfoView: some View {
+        if exam.isFinished {
+            Text("Finished".localized)
+                .fontWeight(.bold)
+                .foregroundColor(.gray)
+        } else {
+            Text(exam.startDate, style: .relative)
+                .fontWeight(.bold)
+                .foregroundColor(
+                    exam.daysLeft <= 7 ? .red : .accentColor
+                )
+        }
+    }
+
+    var detailView: some View {
+        HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Image(systemName: "location.fill.viewfinder")
-                    Text(
-                        "\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)"
-                    )
+                    Text(exam.detailLocation)
                 }
-                .font(.callout)
+
                 HStack {
                     Image(systemName: "calendar.badge.clock")
-                    Text(exam.detailString)
+                    Text(exam.startDate, style: .date)
+                    Text(exam.startDate ... exam.endDate)
                     Spacer()
-                    if exam.isFinished {
-                        Text("Finished".localized).foregroundColor(.gray)
-                            .fontWeight(.bold)
-                    } else {
-                        Text(
-                            exam.daysLeft == 1
-                                ? "1 day left".localized
-                                : String(
-                                    format: "%@ days left".localized,
-                                    String(exam.daysLeft)
-                                )
-                        )
-                        .foregroundColor(
-                            exam.daysLeft <= 7 ? .red : .accentColor
-                        )
-                        .fontWeight(.bold)
-                    }
                 }
-                .font(.callout)
             }
+            .font(.callout)
+
+            timeInfoView
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 25) {
+            basicInfoView
+            detailView
         }
     }
 }

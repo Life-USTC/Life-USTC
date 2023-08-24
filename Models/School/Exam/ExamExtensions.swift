@@ -1,65 +1,36 @@
 //
-//  Exam.swift
-//  Life@USTC (iOS)
+//  ExamExtensions.swift
+//  Life@USTC
 //
-//  Created by TiankaiMa on 2023/1/11.
+//  Created by Tiankai Ma on 2023/8/24.
 //
 
 import EventKit
+import Foundation
 import SwiftUI
 
-struct Exam: Codable, Equatable, ExampleDataProtocol {
-    // MARK: - Information about the course
-
-    /// Code to indicate which exact lesson the student is tanking, like MATH1000.01
-    /// - Description:
-    /// Make sure this is indentical in Score & Course.
-    var lessonCode: String
-    var courseName: String
-
-    // MARK: - Information about the exam
-
-    /// - Important:
-    /// Shown on UI, please set a length limit
-    /// - Description:
-    /// Some notations are localized, such as 期末考试 <=> Final, 期中考试 <=> Mid-term, 小测 <=> Quiz
-    var typeName: String
-
-    var startDate: Date
-    var endDate: Date
-    var classRoomName: String
-    var classRoomBuildingName: String
-    var classRoomDistrict: String
-    var description: String
-
-    static let example: Exam = .init(
-        lessonCode: "MATH10001.01",
-        courseName: "数学分析B1",
-        typeName: "期末考试",
-        startDate: Date(),
-        endDate: Date() + DateComponents(hour: 1),
-        classRoomName: "5401",
-        classRoomBuildingName: "第五教学楼",
-        classRoomDistrict: "东区",
-        description: ""
-    )
-}
-
 extension Exam {
-    var detailString: String {
-        "\(startDate.description(with: .current)) - \(endDate.description(with: .current)) @ \(classRoomName)"
+    var detailLocation: String {
+        "\(classRoomDistrict) \(classRoomBuildingName) \(classRoomName)"
     }
 
     var isFinished: Bool { endDate <= Date() }
 
     var daysLeft: Int {
-        Calendar.current
-            .dateComponents(
-                [.day],
-                from: .now.stripTime(),
-                to: startDate.stripTime()
-            )
-            .day ?? 0
+        Calendar.current.dateComponents([.day], from: .now, to: startDate).day
+            ?? 0
+    }
+}
+
+extension EKEvent {
+    convenience init(_ exam: Exam, in store: EKEventStore = EKEventStore()) {
+        self.init(eventStore: store)
+        title = exam.courseName + " " + exam.typeName
+        location = exam.classRoomName + "@" + exam.classRoomBuildingName
+        notes = exam.description
+
+        startDate = exam.startDate
+        endDate = exam.endDate
     }
 }
 
@@ -102,20 +73,6 @@ extension Exam {
         }
         return result
     }
-}
-
-extension Exam {
-    /// Convert to EKEvent
-    func event(in store: EKEventStore = EKEventStore()) -> EKEvent {
-        let event = EKEvent(eventStore: store)
-        event.title = courseName + " " + typeName
-        event.location = classRoomName + "@" + classRoomBuildingName
-        event.notes = description
-
-        event.startDate = startDate
-        event.endDate = endDate
-        return event
-    }
 
     static func saveToCalendar(_ exams: [Exam]) async throws {
         let eventStore = EKEventStore()
@@ -139,17 +96,12 @@ extension Exam {
         try! eventStore.saveCalendar(calendar!, commit: true)
 
         for exam in exams {
-            try eventStore.save(exam.event(), span: .thisEvent, commit: false)
+            try eventStore.save(
+                EKEvent(exam, in: eventStore),
+                span: .thisEvent,
+                commit: false
+            )
         }
         try eventStore.commit()
     }
-}
-
-typealias ExamDelegateProtocol = ManagedRemoteUpdateProtocol<[Exam]>
-
-extension ManagedDataSource<[Exam]> {
-    static let exam = ManagedDataSource(
-        local: ManagedLocalStorage("Exam"),
-        remote: SchoolExport.shared.examDelegate
-    )
 }

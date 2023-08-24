@@ -174,16 +174,17 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
     }
 }
 
-let ustcCurriculumBehavior = CurriculumBehavior(
-    shownTimes: [470, 585, 680, 735, 850, 945, 1000, 1095],
-    highLightTimes: [730, 995, 1145],
-    convertTo: { value in
-
-        value <= 730 ? value : value <= 1100 ? value - 105 : value - 170
-
-    },
-    convertFrom: { value in
-
-        value <= 730 ? value : value <= 995 ? value + 105 : value + 170
+extension USTCExports {
+    var ustcCurriculumBehavior: CurriculumBehavior {
+        CurriculumBehavior(
+            shownTimes: [470, 585, 680, 735, 850, 945, 1000, 1095],
+            highLightTimes: [730, 995, 1145],
+            convertTo: { value in
+                value <= 730 ? value : value <= 1100 ? value - 105 : value - 170
+            },
+            convertFrom: { value in
+                value <= 730 ? value : value <= 995 ? value + 105 : value + 170
+            }
+        )
     }
-)
+}

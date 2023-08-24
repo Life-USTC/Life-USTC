@@ -12,8 +12,11 @@ struct SingleScoreView: View {
     var color: Color
 
     var noScoreView: some View {
-        Image(systemName: "xmark").font(.body).foregroundColor(.white)
-            .padding(4).frame(width: 85, height: 30)
+        Image(systemName: "xmark")
+            .font(.body)
+            .foregroundColor(.white)
+            .padding(4)
+            .frame(width: 85, height: 30)
             .background(
                 Stripes(
                     config: .init(
@@ -26,8 +29,11 @@ struct SingleScoreView: View {
     }
 
     var noGPAView: some View {
-        Text("\(String(courseScore.score))").fontWeight(.bold)
-            .foregroundColor(.white).padding(4).frame(width: 85, height: 30)
+        Text("\(String(courseScore.score))")
+            .fontWeight(.bold)
+            .foregroundColor(.white)
+            .padding(4)
+            .frame(width: 85, height: 30)
             .background(
                 Stripes(
                     config: .init(
@@ -41,38 +47,48 @@ struct SingleScoreView: View {
 
     var normalView: some View {
         HStack(alignment: .center, spacing: 0) {
-            Text("\(courseScore.score)").frame(width: 35)
+            Text("\(courseScore.score)")
+                .frame(width: 35)
                 .padding(.horizontal, 4)
             Divider()
-            Text("\(String(courseScore.gpa!))").frame(width: 35)
+            Text("\(String(courseScore.gpa!))")
+                .frame(width: 35)
                 .padding(.horizontal, 4)
         }
-        .fontWeight(.bold).foregroundColor(.white).frame(width: 85, height: 30)
-        .background(RoundedRectangle(cornerRadius: 5).fill(color))
+        .fontWeight(.bold)
+        .foregroundColor(.white)
+        .frame(width: 85, height: 30)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(color)
+        )
     }
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(courseScore.courseName).fontWeight(.bold)
+                Text(courseScore.courseName)
+                    .fontWeight(.bold)
                 HStack {
-                    Text(String(courseScore.credit)).fontWeight(.bold)
+                    Text(String(courseScore.credit))
+                        .fontWeight(.bold)
                         .foregroundColor(.gray)
-                    Text(courseScore.courseCode).foregroundColor(.gray)
+                    Text(courseScore.courseCode)
+                        .foregroundColor(.gray)
                 }
                 .font(.subheadline)
             }
+
             Spacer()
-            HStack(alignment: .bottom) {
-                if courseScore.gpa == nil {
-                    if courseScore.score.isEmpty {
-                        noScoreView
-                    } else {
-                        noGPAView
-                    }
+
+            if courseScore.gpa == nil {
+                if courseScore.score.isEmpty {
+                    noScoreView
                 } else {
-                    normalView
+                    noGPAView
                 }
+            } else {
+                normalView
             }
         }
     }

@@ -147,8 +147,8 @@ struct ExamWidgetEntryView: View {
                             )
                             .font(.footnote).fontWeight(.heavy)
                             .foregroundColor(.blue.opacity(0.8))
-                            Text(exam.detailString).font(.caption)
-                                .foregroundColor(.secondary)
+                            //                            Text(exam.detailString).font(.caption)
+                            //                                .foregroundColor(.secondary)
                         }
                     }
                     Spacer()

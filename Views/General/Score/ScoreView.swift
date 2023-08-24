@@ -20,40 +20,51 @@ struct ScoreView: View {
     @State var showSettings: Bool = false
 
     var rankingView: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(score.majorName).foregroundColor(.secondary)
+        Section {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(score.majorName)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+
+                    Spacer()
+
+                    Text(
+                        "\("Rating:".localized) \(score.majorRank) / \(score.majorStdCount)"
+                    )
                     .fontWeight(.semibold)
-                Spacer()
-                Text(
-                    "Rating:".localized + String(score.majorRank) + "/"
-                        + String(score.majorStdCount)
-                )
-                .foregroundColor(.secondary).fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                }
+                Text("GPA: " + String(score.gpa))  // Double formatting problem noticed
+                    .font(.title2).bold()
             }
-            Text("GPA: " + String(score.gpa))  // Double formatting problem noticed
-                .font(.title2).bold()
+        } header: {
+            AsyncStatusLight(status: _score.status)
         }
-        .padding(.vertical, 5)
+    }
+
+    func makeView(with courses: [CourseScore]) -> some View {
+        ForEach(courses, id: \.lessonCode) { course in
+            SingleScoreView(
+                courseScore: course,
+                color: ((course.gpa ?? 0.0) >= 1.0 ?
+                        (course.gpa! >= score.gpa ?
+                            .cyan.opacity(0.6) :
+                                .orange.opacity(0.6)) :
+                        .red.opacity(0.6))
+            )
+        }
     }
 
     var scoreListView: some View {
-        ForEach(sortedScore, id: \.name) {
-            Text($0.name).fontWeight(.semibold).foregroundColor(.gray)
-            ForEach($0.courses, id: \.lessonCode) { course in Divider()
-                SingleScoreView(
-                    courseScore: course,
-                    color: { () -> Color in
-                        if (course.gpa ?? 0.0) >= 1.0 {
-                            return course.gpa! >= score.gpa
-                                ? .cyan.opacity(0.6) : .orange.opacity(0.6)
-                        }
-                        return .red.opacity(0.6)
-                    }()
-                )
-                .padding(.vertical, 5)
+        ForEach(sortedScore, id: \.name) { semester in
+            Section {
+                makeView(with: semester.courses)
+            } header: {
+                Text(semester.name)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.gray)
             }
-            Divider().padding(.bottom, 45)
         }
     }
 
@@ -66,17 +77,24 @@ struct ScoreView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading) {
-                rankingView
-                scoreListView
-                Spacer()
-            }
-            .asyncStatusOverlay(_score.status)
+        List {
+            rankingView
+            scoreListView
         }
-        .padding(.horizontal).refreshable { _score.triggerRefresh() }
-        .sheet(isPresented: $showSettings) { sheet }.toolbar { settingButton }
-        .navigationTitle("Score").navigationBarTitleDisplayMode(.inline)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .asyncStatusOverlay(_score.status, showLight: false)
+        .refreshable {
+            _score.triggerRefresh()
+        }
+        .sheet(isPresented: $showSettings) {
+            sheet
+        }
+        .toolbar {
+            settingButton
+        }
+        .navigationTitle("Score")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -96,19 +114,24 @@ extension ScoreView {
                     }
                 }
             })
-            .categorise { course in course.semesterName }
+            .categorise { course in
+                course.semesterName
+            }
             .sorted(by: { lhs, rhs in
                 lhs.value[0].semesterID > rhs.value[0].semesterID
             })
             .map { ($0.key, $0.value) }
     }
 
-    var semesterList: [String] { Array(Set(score.courses.map(\.semesterName))) }
+    var semesterList: [String] {
+        Array(Set(score.courses.map(\.semesterName)))
+    }
 
     var selectedSemesterNames: String {
         String(
-            semesterList.filter { name in !semesterNameToRemove.contains(name) }
-                .map { $0.prefix(6) }.joined(separator: ", ")
+            semesterList.filter { name in
+                !semesterNameToRemove.contains(name)
+            }.map { $0.truncated(length: 6) }.joined(separator: ", ")
         )
     }
 }
@@ -190,5 +213,7 @@ extension ScoreView {
 }
 
 struct ScoreView_Previews: PreviewProvider {
-    static var previews: some View { ScoreView() }
+    static var previews: some View {
+        ScoreView()
+    }
 }

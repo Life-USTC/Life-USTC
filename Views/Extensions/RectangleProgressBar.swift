@@ -49,7 +49,8 @@ struct RectangleProgressBar: View {
         self.colors = colors
         textWithPositionList = [
             (
-                Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2) },
+                Text(text),
+                { CGPoint(x: $0.width / 2, y: $0.height / 2) },
                 .center
             )
         ]
@@ -176,7 +177,7 @@ struct RectangleProgressBar_Previews: PreviewProvider {
                 endDate: Date().addingTimeInterval(5 * 60),
                 colors: [.black],
                 text: "!!!!!!"
-            )  //            RectangleProgressBar(course: .example)
+            )
         }
     }
 }

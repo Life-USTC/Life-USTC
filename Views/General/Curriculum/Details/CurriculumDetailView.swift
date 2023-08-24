@@ -12,17 +12,27 @@ struct CurriculumDetailView: View {
 
     var body: some View {
         List {
+            Section {
+
+            } header: {
+                AsyncStatusLight(status: _curriculum.status)
+            }
+
             ForEach(curriculum.semesters) { semester in
                 Section(header: Text(semester.name)) {
                     ForEach(semester.courses, id: \.lessonCode) { course in
-                        NavigationLink(
-                            destination: CourseDetailView(course: course)
-                        ) { Text(course.name) }
+                        NavigationLink {
+                            CourseDetailView(course: course)
+                        } label: {
+                            Text(course.name)
+                        }
                     }
                 }
             }
         }
-        .scrollContentBackground(.hidden).asyncStatusOverlay(_curriculum.status)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .asyncStatusOverlay(_curriculum.status, showLight: false)
         .refreshable { _curriculum.triggerRefresh() }
         .navigationTitle("Curriculum").navigationBarTitleDisplayMode(.inline)
     }
