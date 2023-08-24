@@ -48,19 +48,28 @@ struct ExamPreview: View {
     }
 
     var happyView: some View {
-        makeRectangleView(colors: [.orange]) {
-            HStack {
-                Image(systemName: "checklist.checked")
-                    .symbolRenderingMode(.hierarchical)
-                    .font(.system(.largeTitle, weight: .light))
-                    .foregroundStyle(Color.orange)
+        makeView(with: Exam.example)
+            .blur(radius: 2)
+            .redacted(reason: .placeholder)
+            .overlay {
+                HStack {
+                    Image(systemName: "checklist.checked")
+                        .symbolRenderingMode(.hierarchical)
+                        .font(.system(.largeTitle, weight: .light))
+                        .foregroundStyle(Color.orange)
 
-                Spacer()
+                    Spacer()
 
-                Text("No More Exam!")
-                    .font(.system(.body, design: .monospaced))
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                }
+                .padding()
             }
-        }
+            .overlay {
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(style: .init(lineWidth: 1))
+                    .fill(Color.gray.opacity(0.3))
+            }
     }
 
     func makeView(with exams: [Exam]) -> some View {
