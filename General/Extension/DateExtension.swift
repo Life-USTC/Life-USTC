@@ -46,10 +46,12 @@ extension Date {
     }
 
     func startOfWeek() -> Date {
-        Calendar.current.dateComponents(
-            [.calendar, .yearForWeekOfYear, .weekOfYear],
-            from: self
-        ).date!
+        Calendar.current
+            .dateComponents(
+                [.calendar, .yearForWeekOfYear, .weekOfYear],
+                from: self
+            )
+            .date!
     }
 }
 

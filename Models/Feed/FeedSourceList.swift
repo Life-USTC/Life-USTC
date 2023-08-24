@@ -22,15 +22,16 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
         )
         let json = try JSON(data: data)
 
-        return json["sources"].arrayValue.map { feedSource in
-            FeedSource(
-                url: URL(string: feedSource["url"].stringValue)!,
-                name: feedSource["locales"]["zh"].stringValue,
-                description: feedSource["description"].stringValue,
-                image: feedSource["icons"]["sf-symbols"].stringValue,
-                colorHex: feedSource["color"].stringValue
-            )
-        }
+        return json["sources"].arrayValue
+            .map { feedSource in
+                FeedSource(
+                    url: URL(string: feedSource["url"].stringValue)!,
+                    name: feedSource["locales"]["zh"].stringValue,
+                    description: feedSource["description"].stringValue,
+                    image: feedSource["icons"]["sf-symbols"].stringValue,
+                    colorHex: feedSource["color"].stringValue
+                )
+            }
     }
 
     init() {

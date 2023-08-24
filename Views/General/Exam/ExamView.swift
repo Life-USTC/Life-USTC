@@ -14,22 +14,24 @@ struct ExamView: View {
         ScrollView(showsIndicators: false) {
             if exams.isEmpty {
                 VStack {
-                    Text("No More Exam!").font(
-                        .system(.body, design: .monospaced)
-                    ).padding(.vertical, 10)
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                        .padding(.vertical, 10)
                 }
             } else {
                 ForEach(exams, id: \.lessonCode) { exam in
                     SingleExamView(exam: exam)
                     Divider()
-                }.padding(.top, 5)
+                }
+                .padding(.top, 5)
             }
 
             Spacer()
-        }.toolbar { saveButton }.padding(.horizontal).asyncStatusOverlay(
-            _exams.status
-        ).refreshable { _exams.triggerRefresh() }.padding(.horizontal)
-            .navigationTitle("Exam").navigationBarTitleDisplayMode(.inline)
+        }
+        .toolbar { saveButton }.padding(.horizontal)
+        .asyncStatusOverlay(_exams.status)
+        .refreshable { _exams.triggerRefresh() }.padding(.horizontal)
+        .navigationTitle("Exam").navigationBarTitleDisplayMode(.inline)
     }
 
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil

@@ -85,7 +85,8 @@ struct USTCBaseModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.sheet(isPresented: $casLoginSheet) {
             USTCCASLoginView.sheet(isPresented: $casLoginSheet)
-        }.onAppear(perform: onLoadFunction)
+        }
+        .onAppear(perform: onLoadFunction)
     }
 
     func onLoadFunction() {

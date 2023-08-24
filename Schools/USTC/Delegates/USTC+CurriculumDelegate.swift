@@ -69,9 +69,8 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await URLSession.shared.data(for: request)
 
-        let match = response.url?.absoluteString.matches(
-            of: try! Regex(#"\d+"#)
-        )
+        let match = response.url?.absoluteString
+            .matches(of: try! Regex(#"\d+"#))
         var tableID = "0"
         if let match { if !match.isEmpty { tableID = String(match.first!.0) } }
 
@@ -144,9 +143,8 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
             let name = subJson["course"]["nameZh"].stringValue
             let code = subJson["code"].stringValue
             let courseCode = subJson["course"]["code"].stringValue
-            let teachers = subJson["teacherAssignmentList"].arrayValue.map {
-                $0["person"]["nameZh"].stringValue
-            }
+            let teachers = subJson["teacherAssignmentList"].arrayValue
+                .map { $0["person"]["nameZh"].stringValue }
             let teacherName = teachers.joined(separator: ",")
             let description = subJson["scheduleGroupStr"].stringValue
             let credit = subJson["credits"].doubleValue

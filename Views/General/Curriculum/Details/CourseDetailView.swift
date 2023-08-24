@@ -59,6 +59,7 @@ struct CourseDetailView: View {
                     ) { Text(lecture.name) }
                 }
             }
-        }.scrollContentBackground(.hidden)
+        }
+        .scrollContentBackground(.hidden)
     }
 }

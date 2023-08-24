@@ -56,9 +56,8 @@ class UstcCasClient: LoginClientProtocol {
         ]
 
         var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(
-            separator: "&"
-        ).data(using: .utf8)
+        request.httpBody = queries.map { "\($0.key)=\($0.value)" }
+            .joined(separator: "&").data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
         request.setValue(
@@ -66,16 +65,14 @@ class UstcCasClient: LoginClientProtocol {
             forHTTPHeaderField: "Content-Type"
         )
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        session.configuration.httpCookieStorage?.setCookies(
-            cookies,
-            for: ustcCasUrl,
-            mainDocumentURL: ustcCasUrl
-        )
+        session.configuration.httpCookieStorage?
+            .setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
         let _ = try await session.data(for: request)
 
-        return session.configuration.httpCookieStorage?.cookies?.contains(
-            where: { $0.name == "logins" || $0.name == "TGC" }) ?? false
+        return session.configuration.httpCookieStorage?.cookies?
+            .contains(where: { $0.name == "logins" || $0.name == "TGC" })
+            ?? false
     }
 
     override func login() async throws -> Bool { try await loginToCAS() }

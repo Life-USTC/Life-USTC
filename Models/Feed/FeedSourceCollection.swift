@@ -25,9 +25,8 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol {
             switch parseResult {
             case let .success(fetched):
                 guard
-                    let feeds = fetched.rssFeed?.items?.map({
-                        Feed(item: $0, source: source.name)
-                    })
+                    let feeds = fetched.rssFeed?.items?
+                        .map({ Feed(item: $0, source: source.name) })
                 else {
                     throw BaseError.runtimeError(
                         "No feeds found for \(source.name)"

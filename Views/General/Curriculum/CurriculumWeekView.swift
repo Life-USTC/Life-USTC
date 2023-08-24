@@ -23,10 +23,10 @@ import SwiftUI
         lectures =
             (currentSemester == nil
             ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
-            : currentSemester!.courses.flatMap(\.lectures)).filter {
-                (0.0 ..< 3600.0 * 24 * 7).contains(
-                    $0.startDate.stripTime().timeIntervalSince(date)
-                )
+            : currentSemester!.courses.flatMap(\.lectures))
+            .filter {
+                (0.0 ..< 3600.0 * 24 * 7)
+                    .contains($0.startDate.stripTime().timeIntervalSince(date))
             }
     }
 
@@ -75,14 +75,14 @@ import SwiftUI
                         Curriculum.behviour.convertTo(lecture.endDate.HHMM)
                     ),
                     y: .value("Date", lecture.startDate.stripTime(), unit: .day)
-                ).foregroundStyle(by: .value("Course Name", lecture.name))
-                    .annotation(position: .overlay) {
-                        Text(lecture.name).font(.caption).foregroundColor(
-                            .white
-                        )
-                    }
+                )
+                .foregroundStyle(by: .value("Course Name", lecture.name))
+                .annotation(position: .overlay) {
+                    Text(lecture.name).font(.caption).foregroundColor(.white)
+                }
             }
-        }.chartXAxis {
+        }
+        .chartXAxis {
             AxisMarks(position: .top, values: Curriculum.behviour.shownTimes) {
                 value in
                 if let _hhmm = value.as(Int.self) {
@@ -115,30 +115,31 @@ import SwiftUI
                     AxisValueLabel(anchor: .topTrailing) {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
-                        ).foregroundColor(.blue)
+                        )
+                        .foregroundColor(.blue)
                     }
                     AxisGridLine(stroke: .init(dash: [])).foregroundStyle(.blue)
                 }
             }
-        }.chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
-            .chartYAxis {
-                AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
-                    AxisGridLine()
-                }
+        }
+        .chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
+        .chartYAxis {
+            AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
+                AxisGridLine()
+            }
 
-                AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
-                    AxisGridLine()
-                }
-            }.chartYVisibleDomain(length: 3600 * 24 * 7).chartYScale(
-                domain: date ... date.add(day: 7)
-            ).frame(height: 230)
+            AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
+                AxisGridLine()
+            }
+        }
+        .chartYVisibleDomain(length: 3600 * 24 * 7)
+        .chartYScale(domain: date ... date.add(day: 7)).frame(height: 230)
     }
 
     var topBar: some View {
         HStack {
-            Text("Curriculum").font(.caption).fontWeight(.bold).fontDesign(
-                .monospaced
-            )
+            Text("Curriculum").font(.caption).fontWeight(.bold)
+                .fontDesign(.monospaced)
 
             AsyncStatusLight(status: _curriculum.status)
 
@@ -173,7 +174,8 @@ import SwiftUI
             Label(
                 flipped ? "Chart" : "Settings",
                 systemImage: flipped ? "chart.bar.xaxis" : "gearshape"
-            ).font(.caption)
+            )
+            .font(.caption)
         }
     }
 
@@ -181,24 +183,23 @@ import SwiftUI
         ZStack {
             mainView.card().flipRotate(flippedDegrees).opacity(flipped ? 0 : 1)
 
-            settingsView.card().flipRotate(-180 + flippedDegrees).opacity(
-                flipped ? 1 : 0
-            )
-        }.onChange(of: currentSemester) { _ in updateLectures() }.onChange(
-            of: curriculum
-        ) { _ in updateLectures() }.onChange(of: _date) { _ in updateLectures()
-        }.onAppear { updateLectures() }
+            settingsView.card().flipRotate(-180 + flippedDegrees)
+                .opacity(flipped ? 1 : 0)
+        }
+        .onChange(of: currentSemester) { _ in updateLectures() }
+        .onChange(of: curriculum) { _ in updateLectures() }
+        .onChange(of: _date) { _ in updateLectures() }
+        .onAppear { updateLectures() }
     }
 }
 
 extension View {
     func card() -> some View {
-        padding().overlay {
-            RoundedRectangle(cornerRadius: 10).strokeBorder(
-                Color.secondary,
-                lineWidth: 0.2
-            )
-        }
+        padding()
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(Color.secondary, lineWidth: 0.2)
+            }
     }
 
     func flipRotate(_ degrees: Double) -> some View {

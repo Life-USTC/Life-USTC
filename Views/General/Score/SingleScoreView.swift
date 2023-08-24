@@ -12,44 +12,43 @@ struct SingleScoreView: View {
     var color: Color
 
     var noScoreView: some View {
-        Image(systemName: "xmark").font(.body).foregroundColor(.white).padding(
-            4
-        ).frame(width: 85, height: 30).background(
-            Stripes(
-                config: .init(
-                    background: .gray,
-                    foreground: .white.opacity(0.4)
+        Image(systemName: "xmark").font(.body).foregroundColor(.white)
+            .padding(4).frame(width: 85, height: 30)
+            .background(
+                Stripes(
+                    config: .init(
+                        background: .gray,
+                        foreground: .white.opacity(0.4)
+                    )
                 )
-            ).clipShape(RoundedRectangle(cornerRadius: 5))
-        )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+            )
     }
 
     var noGPAView: some View {
-        Text("\(String(courseScore.score))").fontWeight(.bold).foregroundColor(
-            .white
-        ).padding(4).frame(width: 85, height: 30).background(
-            Stripes(
-                config: .init(
-                    background: .cyan,
-                    foreground: .white.opacity(0.4)
+        Text("\(String(courseScore.score))").fontWeight(.bold)
+            .foregroundColor(.white).padding(4).frame(width: 85, height: 30)
+            .background(
+                Stripes(
+                    config: .init(
+                        background: .cyan,
+                        foreground: .white.opacity(0.4)
+                    )
                 )
-            ).clipShape(RoundedRectangle(cornerRadius: 5))
-        )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+            )
     }
 
     var normalView: some View {
         HStack(alignment: .center, spacing: 0) {
-            Text("\(courseScore.score)").frame(width: 35).padding(
-                .horizontal,
-                4
-            )
+            Text("\(courseScore.score)").frame(width: 35)
+                .padding(.horizontal, 4)
             Divider()
-            Text("\(String(courseScore.gpa!))").frame(width: 35).padding(
-                .horizontal,
-                4
-            )
-        }.fontWeight(.bold).foregroundColor(.white).frame(width: 85, height: 30)
-            .background(RoundedRectangle(cornerRadius: 5).fill(color))
+            Text("\(String(courseScore.gpa!))").frame(width: 35)
+                .padding(.horizontal, 4)
+        }
+        .fontWeight(.bold).foregroundColor(.white).frame(width: 85, height: 30)
+        .background(RoundedRectangle(cornerRadius: 5).fill(color))
     }
 
     var body: some View {
@@ -60,7 +59,8 @@ struct SingleScoreView: View {
                     Text(String(courseScore.credit)).fontWeight(.bold)
                         .foregroundColor(.gray)
                     Text(courseScore.courseCode).foregroundColor(.gray)
-                }.font(.subheadline)
+                }
+                .font(.subheadline)
             }
             Spacer()
             HStack(alignment: .bottom) {
@@ -86,6 +86,7 @@ struct SingleScoreView_Previews: PreviewProvider {
                 .noGPAView
             SingleScoreView(courseScore: .example, color: .accentColor)
                 .noScoreView
-        }.padding(.horizontal)
+        }
+        .padding(.horizontal)
     }
 }

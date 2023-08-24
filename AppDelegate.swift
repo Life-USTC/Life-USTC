@@ -115,15 +115,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 
     func startTPNS() {
         XGPush.defaultManager().isEnableDebug = true
-        XGPush.defaultManager().configureClusterDomainName(
-            "tpns.sh.tencent.com"
-        )
+        XGPush.defaultManager()
+            .configureClusterDomainName("tpns.sh.tencent.com")
         XGPush.defaultManager().appDelegate = self
-        XGPush.defaultManager().startXG(
-            withAccessID: 1_680_015_447,
-            accessKey: "IOSAEBOQD6US",
-            delegate: self
-        )
+        XGPush.defaultManager()
+            .startXG(
+                withAccessID: 1_680_015_447,
+                accessKey: "IOSAEBOQD6US",
+                delegate: self
+            )
     }
 
     func stopTPNS() { XGPush.defaultManager().stopXGNotification() }

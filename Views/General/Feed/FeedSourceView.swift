@@ -18,9 +18,9 @@ struct FeedSourceView: View {
         FeedVStackView(feeds: feeds)  //            .asyncViewStatusMask(status: feedSource.status)
             .refreshable {
                 //                feedSource.userTriggerRefresh()
-            }.navigationTitle(feedSource.name).navigationBarTitleDisplayMode(
-                .inline
-            )
+            }
+            .navigationTitle(feedSource.name)
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -32,26 +32,29 @@ struct AllSourceView: View {
     //    @State var status: AsyncViewStatus = .inProgress
 
     var body: some View {
-        FeedVStackView(feeds: feeds).task {
-            //                appDelegate.clearBadgeNumber()
-            //                do {
-            //                    self.feeds = try await FeedSource.recentFeeds(number: nil)
-            ////                    self.status = .success
-            //                } catch {
-            //                    self.status = .failure(error.localizedDescription)
-            //                }
-        }.refreshable {
-            //                self.status = .cached
-            //                do {
-            //                    try await AutoUpdateDelegate.feedList.update()
-            //                    for source in FeedSource.allToShow {
-            //                        _ = try await source.refreshCache()
-            //                    }
-            //                    self.feeds = try await FeedSource.recentFeeds(number: nil)
-            //                    self.status = .success
-            //                } catch {
-            //                    self.status = .failure(error.localizedDescription)
-            //                }
-        }.navigationTitle("Feed").navigationBarTitleDisplayMode(.inline)
+        FeedVStackView(feeds: feeds)
+            .task {
+                //                appDelegate.clearBadgeNumber()
+                //                do {
+                //                    self.feeds = try await FeedSource.recentFeeds(number: nil)
+                ////                    self.status = .success
+                //                } catch {
+                //                    self.status = .failure(error.localizedDescription)
+                //                }
+            }
+            .refreshable {
+                //                self.status = .cached
+                //                do {
+                //                    try await AutoUpdateDelegate.feedList.update()
+                //                    for source in FeedSource.allToShow {
+                //                        _ = try await source.refreshCache()
+                //                    }
+                //                    self.feeds = try await FeedSource.recentFeeds(number: nil)
+                //                    self.status = .success
+                //                } catch {
+                //                    self.status = .failure(error.localizedDescription)
+                //                }
+            }
+            .navigationTitle("Feed").navigationBarTitleDisplayMode(.inline)
     }
 }

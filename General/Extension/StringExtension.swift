@@ -36,9 +36,10 @@ extension String {
         } else {
             versionComponents.append(contentsOf: zeros)
         }
-        return versionComponents.joined(separator: versionDelimiter).compare(
-            otherVersionComponents.joined(separator: versionDelimiter),
-            options: .numeric
-        )
+        return versionComponents.joined(separator: versionDelimiter)
+            .compare(
+                otherVersionComponents.joined(separator: versionDelimiter),
+                options: .numeric
+            )
     }
 }

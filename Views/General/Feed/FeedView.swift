@@ -20,55 +20,58 @@ struct FeedView: View {
                 Browser(url: feed.url)
             }
         } label: {
-            FeedViewPreview(feed: feed).contextMenu {
-                ShareLink(item: feed.url) {
-                    Label("Share", systemImage: "square.and.arrow.up")
+            FeedViewPreview(feed: feed)
+                .contextMenu {
+                    ShareLink(item: feed.url) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                } preview: {
+                    if useReeed {
+                        ReeeederView(url: feed.url).frame(minWidth: 400)
+                    } else {
+                        Browser(url: feed.url).frame(minWidth: 400)
+                    }
                 }
-            } preview: {
-                if useReeed {
-                    ReeeederView(url: feed.url).frame(minWidth: 400)
-                } else {
-                    Browser(url: feed.url).frame(minWidth: 400)
-                }
-            }
         }
     }
 }
 
 struct FeedViewPreview: View {
     let feed: Feed
+    let color: Color = .secondary
 
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(feed.source).font(.caption2).fontWeight(.heavy).padding(
-                    .horizontal,
-                    6
-                ).padding(.vertical, 3).foregroundColor(.white).background {
-                    RoundedRectangle(cornerRadius: 4)
-                    //                            .fill((feed.feedSource?.color ?? .secondary).opacity(0.9))
-                }
-                Text(feed.datePosted.formatted()).font(
-                    .system(.caption2, design: .monospaced)
-                ).foregroundColor(.secondary)
+                Text(feed.source).font(.system(.caption2, weight: .heavy))
+                    .padding(.horizontal, 6).padding(.vertical, 3)
+                    .foregroundColor(.white)
+                    .background {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(color.opacity(0.9))
+                    }
+
+                Text(feed.datePosted.formatted())
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.secondary)
             }
 
             if let imageURL = feed.imageURL {
                 AsyncImage(url: imageURL) {
                     if let image = $0.image {
-                        image.resizable().aspectRatio(contentMode: .fit).frame(
-                            height: 200
-                        ).clipShape(RoundedRectangle(cornerRadius: 5))
+                        image.resizable().aspectRatio(contentMode: .fit)
+                            .frame(height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
                     }
                 }
             } else {
                 Spacer(minLength: 2)
             }
 
-            Text(feed.title).foregroundColor(.primary).font(.title3).fontWeight(
-                .bold
-            ).multilineTextAlignment(.leading).lineLimit(2)
-        }.hStackLeading().padding(.vertical, 5)
+            Text(feed.title).multilineTextAlignment(.leading).lineLimit(2)
+                .font(.system(.title3, weight: .bold)).foregroundColor(.primary)
+        }
+        .padding(.vertical, 5)
     }
 }
 

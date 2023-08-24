@@ -13,17 +13,13 @@ struct AsyncStatusLight: View {
     var status: AsyncStatus?
 
     var localStatusLight: some View {
-        Circle().fill(status?.local?.color ?? .gray).frame(
-            width: lightSize,
-            height: lightSize
-        )
+        Circle().fill(status?.local?.color ?? .gray)
+            .frame(width: lightSize, height: lightSize)
     }
 
     var refreshStatusLight: some View {
-        Rectangle().fill(status?.refresh?.color ?? .gray).frame(
-            width: lightSize,
-            height: lightSize
-        )
+        Rectangle().fill(status?.refresh?.color ?? .gray)
+            .frame(width: lightSize, height: lightSize)
     }
 
     var body: some View {
@@ -52,7 +48,8 @@ struct AsyncStatusMask: ViewModifier {
             case .outDated: content.grayscale(0.8)
             case .notFound: content.redacted(reason: .placeholder)
             }
-        }.overlay { if status?.refresh == .waiting { ProgressView() } }
+        }
+        .overlay { if status?.refresh == .waiting { ProgressView() } }
     }
 }
 

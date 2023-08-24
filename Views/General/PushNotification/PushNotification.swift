@@ -55,7 +55,8 @@ struct PushNotification: View {
                                         }
                                     }
                                 )
-                            ).toggleStyle(.button)
+                            )
+                            .toggleStyle(.button)
                         }
                     }
                 }
@@ -67,7 +68,8 @@ struct PushNotification: View {
             } label: {
                 Text("Push")
             }
-        }.onTapGesture {
+        }
+        .onTapGesture {
             // dismiss keyboard
             UIApplication.shared.sendAction(
                 #selector(UIResponder.resignFirstResponder),
@@ -75,9 +77,9 @@ struct PushNotification: View {
                 from: nil,
                 for: nil
             )
-        }.navigationTitle("Push Notification").navigationBarTitleDisplayMode(
-            .inline
-        )
+        }
+        .navigationTitle("Push Notification")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

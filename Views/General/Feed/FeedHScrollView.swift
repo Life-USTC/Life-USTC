@@ -36,8 +36,11 @@ struct FeedHScrollView: View {
                         ForEach(feeds, id: \.id) { post in
                             FeedView(feed: post).id(post.id).padding(.top, 2)
                         }
-                    }.frame(width: geo.size.width * Double(feedPostNumber))
-                }.scrollDisabled(false).task {
+                    }
+                    .frame(width: geo.size.width * Double(feedPostNumber))
+                }
+                .scrollDisabled(false)
+                .task {
                     let feedPostIDList = feeds.map(\.id)
                     if let id = feedPostIDList.first {
                         scrollTo(
@@ -48,7 +51,8 @@ struct FeedHScrollView: View {
                     }
                 }
             }
-        }.frame(height: cardHeight)
+        }
+        .frame(height: cardHeight)
     }
 
     var body: some View {

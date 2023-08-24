@@ -20,9 +20,9 @@ struct FeaturesView: View {
             for (key, value) in features {
                 let tmp = value.filter {
                     $0.title.lowercased().contains(searchText.lowercased())
-                        || $0.subTitle.lowercased().contains(
-                            searchText.lowercased()
-                        ) || $0.title.localized.contains(searchText)
+                        || $0.subTitle.lowercased()
+                            .contains(searchText.lowercased())
+                        || $0.title.localized.contains(searchText)
                         || $0.subTitle.localized.contains(searchText)
                 }
                 if !tmp.isEmpty { result[key] = tmp }
@@ -46,7 +46,8 @@ struct FeaturesView: View {
                             Label(
                                 feature.title.localized,
                                 systemImage: feature.image
-                            ).symbolRenderingMode(.hierarchical)
+                            )
+                            .symbolRenderingMode(.hierarchical)
                         }
                     }
                 } header: {
@@ -55,12 +56,10 @@ struct FeaturesView: View {
             }
 
             Spacer().frame(height: 70)
-        }.listStyle(.sidebar).scrollContentBackground(.hidden).navigationTitle(
-            "Features"
-        ).navigationBarTitleDisplayMode(.inline).searchable(
-            text: $searchText,
-            placement: .automatic
-        )
+        }
+        .listStyle(.sidebar).scrollContentBackground(.hidden)
+        .navigationTitle("Features").navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $searchText, placement: .automatic)
     }
 
     init() { features = collectFeatures() }

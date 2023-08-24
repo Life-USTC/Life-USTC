@@ -235,24 +235,25 @@ struct CurriculumWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CurriculumProvider()) {
             entry in CurriculumWidgetEntryView(entry: entry)
-        }.supportedFamilies(WidgetFamily.allCases).configurationDisplayName(
-            "Curriculum"
-        ).description("Show today's curriculum.")
+        }
+        .supportedFamilies(WidgetFamily.allCases)
+        .configurationDisplayName("Curriculum")
+        .description("Show today's curriculum.")
     }
 }
 
 struct CurriculumWidget_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWidgetEntryView(entry: .example).previewContext(
-                WidgetPreviewContext(family: family)
-            ).previewDisplayName(family.description)
+            CurriculumWidgetEntryView(entry: .example)
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName(family.description)
         }
 
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWidgetEntryView(entry: .init(courses: [])).previewContext(
-                WidgetPreviewContext(family: family)
-            ).previewDisplayName("\(family.description) [EMPTY]")
+            CurriculumWidgetEntryView(entry: .init(courses: []))
+                .previewContext(WidgetPreviewContext(family: family))
+                .previewDisplayName("\(family.description) [EMPTY]")
         }
     }
 }

@@ -157,7 +157,8 @@ struct RectangleProgressBar: View {
                         endPoint: .init(x: size.width, y: size.height)
                     )
                 )
-            }.frame(width: width, height: height)
+            }
+            .frame(width: width, height: height)
         }
     }
 }

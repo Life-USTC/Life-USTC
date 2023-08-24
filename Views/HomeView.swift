@@ -28,10 +28,12 @@ struct HomeView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             if #available(iOS 17.0, *) { CurriculumWeekView() }
-        }.padding(.horizontal).navigationTitle("Life@USTC")
-            .navigationBarTitleDisplayMode(.inline).sheet(
-                isPresented: $navigationToSettingsView
-            ) { NavigationStack { SettingsView() } }
+        }
+        .padding(.horizontal).navigationTitle("Life@USTC")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $navigationToSettingsView) {
+            NavigationStack { SettingsView() }
+        }
     }
 }
 

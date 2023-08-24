@@ -38,15 +38,17 @@ import SwiftUI
                             )
                         }
                     }
-                }.scrollContentBackground(.hidden).scrollDisabled(true).toolbar
-                {
+                }
+                .scrollContentBackground(.hidden).scrollDisabled(true)
+                .toolbar {
                     AsyncButton(bigStyle: false) {
                         _ = try await UstcWeixinClient.main.dailyReportHealth()
                     } label: { _ in
                         Image(systemName: "square.and.arrow.down")
                     }
                 }
-            }.navigationBarTitle("Health Check", displayMode: .inline)
+            }
+            .navigationBarTitle("Health Check", displayMode: .inline)
         }
     }
 }

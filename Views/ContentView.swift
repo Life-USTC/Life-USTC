@@ -40,12 +40,12 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image("Icon").resizable().aspectRatio(contentMode: .fit).frame(
-                width: 50,
-                height: 50
-            ).clipShape(Circle()).overlay {
-                Circle().stroke(Color.accentColor, style: .init(lineWidth: 2))
-            }
+            Image("Icon").resizable().aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50).clipShape(Circle())
+                .overlay {
+                    Circle()
+                        .stroke(Color.accentColor, style: .init(lineWidth: 2))
+                }
 
             ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
                 Button {
@@ -59,24 +59,26 @@ struct ContentView: View {
                     eachTab.label.foregroundColor(
                         eachTab == tabSelection ? eachTab.color : .primary
                     )
-                }.keyboardShortcut(
+                }
+                .keyboardShortcut(
                     KeyEquivalent(Character(String(eachTab.rawValue))),
                     modifiers: .command
                 )
             }
-        }.labelStyle(.iconOnly).font(.largeTitle)
+        }
+        .labelStyle(.iconOnly).font(.largeTitle)
     }
 
     var iPadView: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            sideBarView.navigationSplitViewColumnWidth(80).navigationBarHidden(
-                true
-            )
+            sideBarView.navigationSplitViewColumnWidth(80)
+                .navigationBarHidden(true)
         } content: {
             tabSelection.view.navigationSplitViewColumnWidth(400)
         } detail: {
             EmptyView()
-        }.navigationSplitViewStyle(.balanced)
+        }
+        .navigationSplitViewStyle(.balanced)
     }
 
     @AppStorage("firstLogin") var firstLogin: Bool = true
@@ -97,7 +99,8 @@ struct ContentView: View {
                     // iOS (including iPad in Stage Manager):
                     iPhoneView
                 }
-            }.modifier(USTCBaseModifier())
+            }
+            .modifier(USTCBaseModifier())
         }
     }
 }

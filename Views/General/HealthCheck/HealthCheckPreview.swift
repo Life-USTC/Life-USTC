@@ -32,7 +32,8 @@ import SwiftUI
                     if status != .success, status != .waiting { FailureView() }
                 }
             }
-        }.onAppear {
+        }
+        .onAppear {
             if let lastReportedHealth = mainClient.lastReportedHealth {
                 if lastReportedHealth.addingTimeInterval(60 * 60 * 8) > Date() {
                     return
@@ -41,11 +42,13 @@ import SwiftUI
             asyncBind($checked, status: $status) {
                 try await UstcWeixinClient.main.dailyReportHealth()
             }
-        }.onTapGesture {
+        }
+        .onTapGesture {
             asyncBind($checked, status: $status) {
                 try await UstcWeixinClient.main.dailyReportHealth()
             }
-        }.padding()
+        }
+        .padding()
     }
 }
 

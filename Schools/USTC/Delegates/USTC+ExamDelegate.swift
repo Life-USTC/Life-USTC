@@ -36,9 +36,8 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
         var result: [Exam] = []
 
         for examParsed: Element in examsParsed.array() {
-            let textList: [String] = examParsed.children().array().map {
-                $0.ownText()
-            }
+            let textList: [String] = examParsed.children().array()
+                .map { $0.ownText() }
             if let parsed = parse(rawTime: textList[3]) {
                 result.append(
                     Exam(
@@ -65,8 +64,8 @@ private func parse(rawTime: String) -> (startTime: Date, endTime: Date)? {
     guard let baseDate = dateFormatter.date(from: String(rawTime.prefix(10)))
     else { return nil }
 
-    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+")).map
-    { Double($0.0)! }
+    let times = String(rawTime.suffix(11)).matches(of: try! Regex("[0-9]+"))
+        .map { Double($0.0)! }
 
     if times.count != 4 { return nil }
 

@@ -49,12 +49,12 @@ struct Stripes: View {
                         height: 2 * longSide
                     )
                 }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity).rotationEffect(
-                Angle(degrees: config.degrees),
-                anchor: .center
-            ).offset(x: -longSide / 2, y: -longSide / 2).background(
-                config.background
-            )
-        }.clipped()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .rotationEffect(Angle(degrees: config.degrees), anchor: .center)
+            .offset(x: -longSide / 2, y: -longSide / 2)
+            .background(config.background)
+        }
+        .clipped()
     }
 }

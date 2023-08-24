@@ -56,6 +56,7 @@ struct LectureDetailView: View {
                     Text(value)
                 }
             }
-        }.scrollContentBackground(.hidden)
+        }
+        .scrollContentBackground(.hidden)
     }
 }

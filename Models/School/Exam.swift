@@ -53,21 +53,25 @@ extension Exam {
     var isFinished: Bool { endDate <= Date() }
 
     var daysLeft: Int {
-        Calendar.current.dateComponents(
-            [.day],
-            from: .now.stripTime(),
-            to: startDate.stripTime()
-        ).day ?? 0
+        Calendar.current
+            .dateComponents(
+                [.day],
+                from: .now.stripTime(),
+                to: startDate.stripTime()
+            )
+            .day ?? 0
     }
 }
 
 extension Exam {
     static func clean(_ exams: [Exam]) -> [Exam] {
         let hiddenExamName =
-            ([String].init(
+            ([String]
+            .init(
                 rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName")
                     ?? ""
-            ) ?? []).filter { !$0.isEmpty }
+            ) ?? [])
+            .filter { !$0.isEmpty }
         let result = exams.filter { exam in
             for name in hiddenExamName {
                 if exam.courseName.contains(name) { return false }
@@ -120,8 +124,8 @@ extension Exam {
         }
 
         let calendarName = "Upcoming Exams"
-        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(
-            where: { $0.title == calendarName.localized })
+        var calendar: EKCalendar? = eventStore.calendars(for: .event)
+            .first(where: { $0.title == calendarName.localized })
 
         // try remove everything with that name in it
         if calendar != nil {
