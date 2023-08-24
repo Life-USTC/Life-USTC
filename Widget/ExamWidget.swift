@@ -136,7 +136,7 @@ struct ExamWidgetEntryView: View {
 
     var oneLine: some View {
         Text(String(format: "%@+%@D".localized,
-                    exam.courseName.limitShow(6),
+                    exam.courseName.truncated(),
                     String(exam.daysLeft)))
     }
 

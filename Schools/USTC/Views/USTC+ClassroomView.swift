@@ -7,116 +7,116 @@
 
 import SwiftUI
 
-private let baseStart = timeToInt("7:50")
-private let baseMiddle = timeToInt("12:30")
-private let baseEnd = timeToInt("21:55")
-
-private var currentTimeInt: Int {
-    let date = Date()
-    let calendar = Calendar.current
-    return calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
-}
-
-private struct USTCLessonView: View {
-    @State var showSheet: Bool = false
-    let lesson: Lesson
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: 5)
-            .fill(lesson.color)
-            .opacity(0.5)
-            .overlay {
-                Text(lesson.courseName)
-                    .font(.system(size: 10))
-                    .foregroundColor(.white)
-            }
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(lineWidth: 0.3)
-                    .fill(Color.secondary)
-            )
-            .onTapGesture {}
-            .onLongPressGesture {
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                showSheet = true
-            }
-            .sheet(isPresented: $showSheet) {
-                NavigationStack {
-                    List {
-                        Text("Lesson name: ".localized + lesson.courseName)
-                        Text("Classroom: ".localized + lesson.classroomName)
-                        Text("Duration: ".localized + lesson.startTime + "->" + lesson.endTime)
-                    }
-                    .foregroundColor(.primary)
-                    .navigationBarTitle("Details", displayMode: .inline)
-                    .listStyle(.plain)
-                }
-                .presentationDetents([.fraction(0.3)])
-            }
-    }
-}
-
-private struct USTCSingleClassroomView: View {
-    @AppStorage("showOneLine") var showOneLine = true
-    @State var highlighted = false
-    var room: String
-    var status: Bool
-    var lessons: [Lesson]
-
-    func makeView(with lessons: [Lesson], isUp: Bool) -> some View {
-        let start = isUp ? baseStart : baseMiddle
-        let end = isUp ? baseMiddle : baseEnd
-        let filteredClass = Lesson.clean(lessons.filter { isUp ? (timeToInt($0.startTime) < baseMiddle) : (timeToInt($0.endTime) > baseMiddle) })
-
-        return GeometryReader { geo in
-            ZStack {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(.gray.opacity(0.4))
-                    .opacity(isUp ? 0.7 : 0.3)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(lineWidth: 0.5)
-                            .fill(Color.secondary)
-                    )
-                ForEach(filteredClass) { lesson in
-                    USTCLessonView(lesson: lesson)
-                        .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start))
-                        .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
-                }
-                Rectangle()
-                    .fill(.background)
-                    .frame(width: 5, height: geo.size.height)
-                    .offset(x: Double(currentTimeInt - (end + start) / 2) / Double(end - start) * geo.size.width)
-            }
-        }
-        .frame(height: 20)
-    }
-
-    var roomText: some View {
-        Text(room)
-            .font(.system(size: 10, design: .monospaced))
-            .lineLimit(1)
-            .foregroundColor(status ? .green : .primary)
-    }
-
-    var body: some View {
-        if showOneLine {
-            HStack {
-                roomText
-                makeView(with: lessons, isUp: currentTimeInt <= baseMiddle)
-            }
-        } else {
-            VStack(spacing: 2) {
-                HStack {
-                    roomText
-                    makeView(with: lessons, isUp: true)
-                }
-                makeView(with: lessons, isUp: false)
-            }
-        }
-    }
-}
-
+// private let baseStart = timeToInt("7:50")
+// private let baseMiddle = timeToInt("12:30")
+// private let baseEnd = timeToInt("21:55")
+//
+// private var currentTimeInt: Int {
+//    let date = Date()
+//    let calendar = Calendar.current
+//    return calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
+// }
+//
+// private struct USTCLessonView: View {
+//    @State var showSheet: Bool = false
+//    let lesson: Lesson
+//
+//    var body: some View {
+//        RoundedRectangle(cornerRadius: 5)
+//            .fill(lesson.color)
+//            .opacity(0.5)
+//            .overlay {
+//                Text(lesson.courseName)
+//                    .font(.system(size: 10))
+//                    .foregroundColor(.white)
+//            }
+//            .overlay(
+//                RoundedRectangle(cornerRadius: 5)
+//                    .stroke(lineWidth: 0.3)
+//                    .fill(Color.secondary)
+//            )
+//            .onTapGesture {}
+//            .onLongPressGesture {
+//                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+//                showSheet = true
+//            }
+//            .sheet(isPresented: $showSheet) {
+//                NavigationStack {
+//                    List {
+//                        Text("Lesson name: ".localized + lesson.courseName)
+//                        Text("Classroom: ".localized + lesson.classroomName)
+//                        Text("Duration: ".localized + lesson.startTime + "->" + lesson.endTime)
+//                    }
+//                    .foregroundColor(.primary)
+//                    .navigationBarTitle("Details", displayMode: .inline)
+//                    .listStyle(.plain)
+//                }
+//                .presentationDetents([.fraction(0.3)])
+//            }
+//    }
+// }
+//
+// private struct USTCSingleClassroomView: View {
+//    @AppStorage("showOneLine") var showOneLine = true
+//    @State var highlighted = false
+//    var room: String
+//    var status: Bool
+//    var lessons: [Lesson]
+//
+//    func makeView(with lessons: [Lesson], isUp: Bool) -> some View {
+//        let start = isUp ? baseStart : baseMiddle
+//        let end = isUp ? baseMiddle : baseEnd
+//        let filteredClass = Lesson.clean(lessons.filter { isUp ? (timeToInt($0.startTime) < baseMiddle) : (timeToInt($0.endTime) > baseMiddle) })
+//
+//        return GeometryReader { geo in
+//            ZStack {
+//                RoundedRectangle(cornerRadius: 5)
+//                    .fill(.gray.opacity(0.4))
+//                    .opacity(isUp ? 0.7 : 0.3)
+//                    .overlay(
+//                        RoundedRectangle(cornerRadius: 5)
+//                            .stroke(lineWidth: 0.5)
+//                            .fill(Color.secondary)
+//                    )
+//                ForEach(filteredClass) { lesson in
+//                    USTCLessonView(lesson: lesson)
+//                        .frame(width: geo.size.width * Double(timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start))
+//                        .offset(x: -Double(end + start - timeToInt(lesson.endTime) - timeToInt(lesson.startTime)) / Double(end - start) / 2.0 * geo.size.width)
+//                }
+//                Rectangle()
+//                    .fill(.background)
+//                    .frame(width: 5, height: geo.size.height)
+//                    .offset(x: Double(currentTimeInt - (end + start) / 2) / Double(end - start) * geo.size.width)
+//            }
+//        }
+//        .frame(height: 20)
+//    }
+//
+//    var roomText: some View {
+//        Text(room)
+//            .font(.system(size: 10, design: .monospaced))
+//            .lineLimit(1)
+//            .foregroundColor(status ? .green : .primary)
+//    }
+//
+//    var body: some View {
+//        if showOneLine {
+//            HStack {
+//                roomText
+//                makeView(with: lessons, isUp: currentTimeInt <= baseMiddle)
+//            }
+//        } else {
+//            VStack(spacing: 2) {
+//                HStack {
+//                    roomText
+//                    makeView(with: lessons, isUp: true)
+//                }
+//                makeView(with: lessons, isUp: false)
+//            }
+//        }
+//    }
+// }
+//
 struct USTCClassroomView: View {
     var body: some View {
         Text("TBC")
