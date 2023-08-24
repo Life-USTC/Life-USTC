@@ -57,9 +57,11 @@ struct FeaturesView: View {
 
             Spacer().frame(height: 70)
         }
-        .listStyle(.sidebar).scrollContentBackground(.hidden)
-        .navigationTitle("Features").navigationBarTitleDisplayMode(.inline)
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
         .searchable(text: $searchText, placement: .automatic)
+        .navigationTitle("Features")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     init() { features = collectFeatures() }
@@ -113,5 +115,9 @@ extension FeaturesView {
 }
 
 struct FeaturesView_Previews: PreviewProvider {
-    static var previews: some View { NavigationStack { FeaturesView() } }
+    static var previews: some View {
+        NavigationStack {
+            FeaturesView()
+        }
+    }
 }

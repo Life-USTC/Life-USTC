@@ -54,5 +54,9 @@ struct HomeView: View {
 }
 
 struct HomeView_Previews: PreviewProvider {
-    static var previews: some View { NavigationStack { HomeView() } }
+    static var previews: some View {
+        NavigationStack {
+            HomeView()
+        }
+    }
 }
