@@ -28,9 +28,6 @@ struct SettingsView: View {
                         destination: setting.destinationView
                     )
                 }
-                #if DEBUG
-                NavigationLink("Change User Type", destination: UserTypeView())
-                #endif
             }
 
             Section {

@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+let ustcFeedListURL = URL(
+    string: "https://life-ustc.tiankaima.dev/feed_source.json"
+)!
+
 class USTCExports: SchoolExport {
     override var abbrName: String { "USTC" }
 
@@ -24,16 +28,6 @@ class USTCExports: SchoolExport {
                 name: "CAS Settings",
                 destinationView: { AnyView(USTCCASLoginView.newPage) }
             )
-        ]
-    }
-
-    override var feedURLs: [URL] {
-        [
-            ustcHomePageFeedURL, ustcOAAFeedURL, mp_ustc_sgy_URL,
-            mp_ustc_official_URL, mp_ustc_graduate_student_union_URL,
-            mp_ustc_youth_league_committee_URL,
-            mp_ustc_undergraduate_student_union_URL,
-            mp_ustc_undergraduate_admission_office_URL,
         ]
     }
 

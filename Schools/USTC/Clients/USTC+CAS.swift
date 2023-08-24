@@ -7,16 +7,18 @@
 
 import Foundation
 
+let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
+let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
+
 /// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient: LoginClientProtocol {
     static let shared = UstcCasClient()
-
-    var session: URLSession = .shared
 
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
 
     var precheckFails: Bool { username.isEmpty || password.isEmpty }
+    var session: URLSession = .shared
 
     func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (
         ltToken: String, cookie: [HTTPCookie]
@@ -84,18 +86,5 @@ class UstcCasClient: LoginClientProtocol {
 extension LoginClientProtocol { static let ustcCAS = UstcCasClient.shared }
 
 extension URL {
-    /// Mark self for the CAS service to identify as a service
-    ///
-    ///  - Parameters:
-    ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
-    func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(
-            url: casServer.appendingPathComponent("login"),
-            resolvingAgainstBaseURL: false
-        )!
-        components.queryItems = [.init(name: "service", value: absoluteString)]
-        return components.url ?? exampleURL
-    }
-
     func ustcCASLoginMarkup() -> URL { CASLoginMarkup(casServer: ustcCasUrl) }
 }

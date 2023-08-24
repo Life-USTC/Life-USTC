@@ -14,9 +14,7 @@
 		5611272329813AAC00BB66EE /* Widget iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 56FA8E75297D7263000AC3A9 /* Widget iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		56143F6B295EDEA5008CE454 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
-		5621691E2955BECA00DF46BE /* UserType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691D2955BECA00DF46BE /* UserType.swift */; };
 		562169222955BEDE00DF46BE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169212955BEDE00DF46BE /* ContentView.swift */; };
-		562169242955BEF900DF46BE /* UserTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562169232955BEF900DF46BE /* UserTypeView.swift */; };
 		5627958B2A08F382009D398E /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
 		5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */; };
@@ -50,8 +48,6 @@
 		56734CEF297D871500DBB45F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56143F6A295EDEA5008CE454 /* Constants.swift */; };
 		56734CF0297D871500DBB45F /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		5677E1152A5A83FC00EDCB53 /* SingleExamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */; };
-		5677E1172A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */; };
-		5677E1182A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */; };
 		5677E1202A5AB5A100EDCB53 /* USTC+Exports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */; };
 		5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */; };
 		5677E1232A5AB66F00EDCB53 /* USTC+CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* USTC+CASLoginView.swift */; };
@@ -188,9 +184,7 @@
 		5606AE5C2A3C5D6A00E1132B /* Strips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strips.swift; sourceTree = "<group>"; };
 		56143F6A295EDEA5008CE454 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5621691B2955BEC500DF46BE /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
-		5621691D2955BECA00DF46BE /* UserType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserType.swift; sourceTree = "<group>"; };
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		562169232955BEF900DF46BE /* UserTypeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTypeView.swift; sourceTree = "<group>"; };
 		5627958A2A08F382009D398E /* JSRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSRuntime.swift; sourceTree = "<group>"; };
 		5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotification.swift; sourceTree = "<group>"; };
 		5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationTabView.swift; sourceTree = "<group>"; };
@@ -214,7 +208,6 @@
 		5655880A294DEA6B0010E060 /* USTC+CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CAS.swift"; sourceTree = "<group>"; };
 		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExamView.swift; sourceTree = "<group>"; };
-		5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Constants.swift"; sourceTree = "<group>"; };
 		5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Exports.swift"; sourceTree = "<group>"; };
 		5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedExtensionViews.swift; sourceTree = "<group>"; };
 		5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+WebFeatures.swift"; sourceTree = "<group>"; };
@@ -395,7 +388,6 @@
 				56A3B86A29A8899800BFE64F /* Extensions */,
 				565587FC294D65E30010E060 /* General */,
 				56E94E21298A775C0085241B /* Settings */,
-				565587FF294D749C0010E060 /* Shared */,
 				565A11B629FF563600310C8B /* StartUp */,
 				562169212955BEDE00DF46BE /* ContentView.swift */,
 				56558803294D93810010E060 /* FeaturesView.swift */,
@@ -434,14 +426,6 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		565587FF294D749C0010E060 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				562169232955BEF900DF46BE /* UserTypeView.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		56558802294D75100010E060 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -467,7 +451,6 @@
 				56B86B882A8F49F4003440D2 /* Delegates */,
 				5677E11D2A5AB4F000EDCB53 /* Models */,
 				5677E11E2A5AB51400EDCB53 /* Views */,
-				5677E1162A5A87DD00EDCB53 /* USTC+Constants.swift */,
 				5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */,
 				5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */,
 			);
@@ -618,7 +601,6 @@
 			isa = PBXGroup;
 			children = (
 				56E25CC22A8F29E50027E72F /* LoginClient.swift */,
-				5621691D2955BECA00DF46BE /* UserType.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -1018,15 +1000,12 @@
 				5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
-				5621691E2955BECA00DF46BE /* UserType.swift in Sources */,
-				562169242955BEF900DF46BE /* UserTypeView.swift in Sources */,
 				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
 				56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */,
 				56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
 				56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */,
 				56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
 				56E8AD752973F25E009006D0 /* USTC+ClassroomView.swift in Sources */,
-				5677E1172A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 				56AF3E8A2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,
 				56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1202A5AB5A100EDCB53 /* USTC+Exports.swift in Sources */,
@@ -1074,7 +1053,6 @@
 				56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */,
 				56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
 				569C6E562A5BC7AE00A6492B /* USTC+ClassroomView.swift in Sources */,
-				5677E1182A5A87DD00EDCB53 /* USTC+Constants.swift in Sources */,
 				56AF3E8B2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,
 				56A3B87629A8B88400BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */,
