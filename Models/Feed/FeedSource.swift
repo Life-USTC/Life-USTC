@@ -32,9 +32,7 @@ extension FeatureWithView {
             image: feedSource.image ?? "doc.richtext",
             title: feedSource.name,
             subTitle: feedSource.description ?? "",
-            destinationView: {
-                AnyView(FeedSourceView(feedSource: feedSource))
-            }
+            destinationView: { AnyView(FeedSourceView(feedSource: feedSource)) }
         )
     }
 }

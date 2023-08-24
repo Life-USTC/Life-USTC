@@ -37,68 +37,64 @@ struct CourseCardView: View {
             //                    .font(.system(size: 9))
             //                    .hStackTrailing()
             //            }
-        }
-        .lineLimit(1)
-        .padding(2)
-        //        .frame(height: heightPerClass * Double(course.length) - 4)
-        .background {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.accentColor.opacity(0.1))
-        }
-        .onTapGesture {}
-        .onLongPressGesture(minimumDuration: 0.6) {
-            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-            showPopUp = true
-        }
-        .sheet(isPresented: $showPopUp) {
-            //            NavigationStack {
-            //                VStack(alignment: .leading) {
-            //                    Text(course.name)
-            //                        .foregroundColor(Color.accentColor)
-            //                        .font(.title)
-            //                        .fontWeight(.bold)
-            //                    Text(course._startTime.clockTime + " - " + course._endTime.clockTime)
-            //                        .bold()
-            //
-            //                    List {
-            //                        HStack {
-            //                            Text("Classroom: ".localized)
-            //                                .fontWeight(.semibold)
-            //                            Spacer()
-            //                            Text(course.roomName)
-            //                        }
-            //                        HStack {
-            //                            Text("Teacher: ".localized)
-            //                                .fontWeight(.semibold)
-            //                            Spacer()
-            //                            Text(course.teacherName)
-            //                        }
-            //                        HStack {
-            //                            Text("ID: ".localized)
-            //                                .fontWeight(.semibold)
-            //                            Spacer()
-            //                            Text(course.lessonCode)
-            //                        }
-            //                        HStack {
-            //                            Text("Week: ".localized)
-            //                                .fontWeight(.semibold)
-            //                            Spacer()
-            //                            Text(course.weekString)
-            //                        }
-            //                        HStack {
-            //                            Text("Time: ".localized)
-            //                                .fontWeight(.semibold)
-            //                            Spacer()
-            //                            Text(course.timeDescription)
-            //                        }
-            //                    }
-            //                    .listStyle(.plain)
-            //                    .scrollDisabled(true)
-            //                }
-            //                .hStackLeading()
-            //                .padding()
-            //            }
-            //            .presentationDetents([.fraction(0.5)])
-        }
+        }.lineLimit(1).padding(2)
+            //        .frame(height: heightPerClass * Double(course.length) - 4)
+            .background {
+                RoundedRectangle(cornerRadius: 5).fill(
+                    Color.accentColor.opacity(0.1)
+                )
+            }.onTapGesture {}.onLongPressGesture(minimumDuration: 0.6) {
+                UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                showPopUp = true
+            }.sheet(isPresented: $showPopUp) {
+                //            NavigationStack {
+                //                VStack(alignment: .leading) {
+                //                    Text(course.name)
+                //                        .foregroundColor(Color.accentColor)
+                //                        .font(.title)
+                //                        .fontWeight(.bold)
+                //                    Text(course._startTime.clockTime + " - " + course._endTime.clockTime)
+                //                        .bold()
+                //
+                //                    List {
+                //                        HStack {
+                //                            Text("Classroom: ".localized)
+                //                                .fontWeight(.semibold)
+                //                            Spacer()
+                //                            Text(course.roomName)
+                //                        }
+                //                        HStack {
+                //                            Text("Teacher: ".localized)
+                //                                .fontWeight(.semibold)
+                //                            Spacer()
+                //                            Text(course.teacherName)
+                //                        }
+                //                        HStack {
+                //                            Text("ID: ".localized)
+                //                                .fontWeight(.semibold)
+                //                            Spacer()
+                //                            Text(course.lessonCode)
+                //                        }
+                //                        HStack {
+                //                            Text("Week: ".localized)
+                //                                .fontWeight(.semibold)
+                //                            Spacer()
+                //                            Text(course.weekString)
+                //                        }
+                //                        HStack {
+                //                            Text("Time: ".localized)
+                //                                .fontWeight(.semibold)
+                //                            Spacer()
+                //                            Text(course.timeDescription)
+                //                        }
+                //                    }
+                //                    .listStyle(.plain)
+                //                    .scrollDisabled(true)
+                //                }
+                //                .hStackLeading()
+                //                .padding()
+                //            }
+                //            .presentationDetents([.fraction(0.5)])
+            }
     }
 }

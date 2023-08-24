@@ -47,14 +47,15 @@ struct LectureDetailView: View {
                 Text("\(lecture.endDate.description(with: .current))")
             }
 
-            ForEach(lecture.additionalInfo.sorted(by: <), id: \.key) { key, value in
+            ForEach(lecture.additionalInfo.sorted(by: <), id: \.key) {
+                key,
+                value in
                 HStack {
                     Text(key)
                     Spacer()
                     Text(value)
                 }
             }
-        }
-        .scrollContentBackground(.hidden)
+        }.scrollContentBackground(.hidden)
     }
 }

@@ -41,9 +41,10 @@ struct CourseDetailView: View {
                 Text(course.description)
             }
 
-            ForEach(course.additionalInfo.sorted(by: { $0.key < $1.key }), id: \.key) {
-                key,
-                value in
+            ForEach(
+                course.additionalInfo.sorted(by: { $0.key < $1.key }),
+                id: \.key
+            ) { key, value in
                 HStack {
                     Text(key)
                     Spacer()
@@ -53,12 +54,11 @@ struct CourseDetailView: View {
 
             Section {
                 ForEach(course.lectures) { lecture in
-                    NavigationLink(destination: LectureDetailView(lecture: lecture)) {
-                        Text(lecture.name)
-                    }
+                    NavigationLink(
+                        destination: LectureDetailView(lecture: lecture)
+                    ) { Text(lecture.name) }
                 }
             }
-        }
-        .scrollContentBackground(.hidden)
+        }.scrollContentBackground(.hidden)
     }
 }

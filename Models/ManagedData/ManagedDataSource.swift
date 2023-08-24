@@ -9,13 +9,9 @@ import Foundation
 
 class ManagedLocalDataProtocol<D>: ObservableObject {
     var data: D?
-    var status: LocalAsyncStatus {
-        .notFound
-    }
+    var status: LocalAsyncStatus { .notFound }
 
-    init(data: D? = nil) {
-        self.data = data
-    }
+    init(data: D? = nil) { self.data = data }
 }
 
 protocol ManagedRemoteUpdateProtocol<D> {

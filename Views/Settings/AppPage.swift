@@ -8,23 +8,25 @@
 import SwiftUI
 
 struct AppSettingPage: View {
-    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool =
+        false
     var body: some View {
         List {
             Section {
-                Toggle("Prevent screenshot when showing score", isOn: $preventScreenShot)
+                Toggle(
+                    "Prevent screenshot when showing score",
+                    isOn: $preventScreenShot
+                )
             } header: {
-                Text("General")
-                    .textCase(.none)
+                Text("General").textCase(.none)
             }
-        }
-        .scrollContentBackground(.hidden)
-        .navigationBarTitle("App Settings", displayMode: .inline)
+        }.scrollContentBackground(.hidden).navigationBarTitle(
+            "App Settings",
+            displayMode: .inline
+        )
     }
 }
 
 struct AppSettingPage_Previews: PreviewProvider {
-    static var previews: some View {
-        AppSettingPage()
-    }
+    static var previews: some View { AppSettingPage() }
 }

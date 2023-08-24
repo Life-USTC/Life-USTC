@@ -13,7 +13,8 @@ struct RectangleProgressBar: View {
     var startDate: Date
     var endDate: Date
     var colors = exampleGradientList.randomElement() ?? []
-    var textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
+    var textWithPositionList:
+        [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
 
     init(
         width: Double = 400.0,
@@ -21,7 +22,9 @@ struct RectangleProgressBar: View {
         startDate: Date,
         endDate: Date,
         colors: [Color] = exampleGradientList.randomElement() ?? [],
-        textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
+        textWithPositionList: [(
+            text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint
+        )]
     ) {
         self.width = width
         self.height = height
@@ -45,15 +48,17 @@ struct RectangleProgressBar: View {
         self.endDate = endDate
         self.colors = colors
         textWithPositionList = [
-            (Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2) }, .center)
+            (
+                Text(text), { CGPoint(x: $0.width / 2, y: $0.height / 2) },
+                .center
+            )
         ]
     }
 
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
-        let path = Path { path in
-            path.move(to: .zero)
+        let path = Path { path in path.move(to: .zero)
             let total = 20
-            for x in 0...total {
+            for x in 0 ... total {
                 let y = rect.height * Double(x) / Double(total)
                 let offset = sin(2.0 * (Double.pi * y / rect.height) + time)
                 let x = rect.width * (progress + 0.0125 * offset)
@@ -104,7 +109,8 @@ struct RectangleProgressBar: View {
         TimelineView(.periodic(from: .now, by: 1 / 60)) { timeline in
             Canvas { context, size in
                 let progress =
-                    Date().timeIntervalSince(startDate) / endDate.timeIntervalSince(startDate)
+                    Date().timeIntervalSince(startDate)
+                    / endDate.timeIntervalSince(startDate)
 
                 draw(
                     context: context,
@@ -115,8 +121,7 @@ struct RectangleProgressBar: View {
 
                 for _textWithPosition in textWithPositionList {
                     context.draw(
-                        _textWithPosition.text
-                            .foregroundColor(.white),
+                        _textWithPosition.text.foregroundColor(.white),
                         at: _textWithPosition.at(size),
                         anchor: _textWithPosition.anchor
                     )
@@ -137,8 +142,7 @@ struct RectangleProgressBar: View {
                 context.clipToLayer(content: { clipContext in
                     for _textWithPosition in textWithPositionList {
                         clipContext.draw(
-                            _textWithPosition.text
-                                .foregroundColor(.black),
+                            _textWithPosition.text.foregroundColor(.black),
                             at: _textWithPosition.at(size),
                             anchor: _textWithPosition.anchor
                         )
@@ -153,8 +157,7 @@ struct RectangleProgressBar: View {
                         endPoint: .init(x: size.width, y: size.height)
                     )
                 )
-            }
-            .frame(width: width, height: height)
+            }.frame(width: width, height: height)
         }
     }
 }
@@ -172,8 +175,7 @@ struct RectangleProgressBar_Previews: PreviewProvider {
                 endDate: Date().addingTimeInterval(5 * 60),
                 colors: [.black],
                 text: "!!!!!!"
-            )
-            //            RectangleProgressBar(course: .example)
+            )  //            RectangleProgressBar(course: .example)
         }
     }
 }

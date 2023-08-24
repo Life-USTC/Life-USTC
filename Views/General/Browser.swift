@@ -16,9 +16,9 @@ struct SwiftUIWebView: UIViewRepresentable {
     init(url: URL) {
         self.url = url
         let wkWebConfig = WKWebViewConfiguration()
-        for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies ?? [] {
-            wkWebConfig.websiteDataStore.httpCookieStore.setCookie(cookie)
-        }
+        for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies
+            ?? []
+        { wkWebConfig.websiteDataStore.httpCookieStore.setCookie(cookie) }
         wkWebConfig.defaultWebpagePreferences.preferredContentMode = .mobile
         wkWebConfig.upgradeKnownHostsToHTTPS = true
         webView = WKWebView(frame: .zero, configuration: wkWebConfig)
@@ -26,9 +26,7 @@ struct SwiftUIWebView: UIViewRepresentable {
         webView.customUserAgent = userAgent
     }
 
-    func makeUIView(context _: Context) -> WKWebView {
-        webView
-    }
+    func makeUIView(context _: Context) -> WKWebView { webView }
 
     func updateUIView(_: WKWebView, context _: Context) {
         webView.load(URLRequest(url: url))
@@ -40,13 +38,10 @@ struct Browser: View {
     var title: String = "Detail"
 
     var body: some View {
-        SwiftUIWebView(url: url)
-            .padding([.leading, .trailing], 2)
-            .toolbar {
-                ShareLink(item: self.url) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
+        SwiftUIWebView(url: url).padding([.leading, .trailing], 2).toolbar {
+            ShareLink(item: self.url) {
+                Label("Share", systemImage: "square.and.arrow.up")
             }
-            .navigationBarTitle(title, displayMode: .inline)
+        }.navigationBarTitle(title, displayMode: .inline)
     }
 }

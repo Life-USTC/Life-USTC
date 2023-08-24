@@ -31,7 +31,9 @@ class InAppNotificationDelegate: ObservableObject {
                 return
             }
             withAnimation {
-                self.notifications.append(InAppNotification(color: color, message: message))
+                self.notifications.append(
+                    InAppNotification(color: color, message: message)
+                )
             }
         }
     }

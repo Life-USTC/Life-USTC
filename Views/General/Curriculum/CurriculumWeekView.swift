@@ -8,35 +8,31 @@
 import Charts
 import SwiftUI
 
-@available(iOS 17.0, *)
-struct CurriculumWeekView: View {
+@available(iOS 17.0, *) struct CurriculumWeekView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
     @State var currentSemester: Semester?
     @State var flipped = false
     @State var _date: Date = .init()
     @State var lectures: [Lecture] = []
-    var date: Date {
-        _date.startOfWeek()
-    }
+    var date: Date { _date.startOfWeek() }
 
-    var flippedDegrees: Double {
-        flipped ? 180 : 0
-    }
+    var flippedDegrees: Double { flipped ? 180 : 0 }
 
     func updateLectures() {
         lectures =
             (currentSemester == nil
             ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
             : currentSemester!.courses.flatMap(\.lectures)).filter {
-                (0.0..<3600.0 * 24 * 7).contains(
+                (0.0 ..< 3600.0 * 24 * 7).contains(
                     $0.startDate.stripTime().timeIntervalSince(date)
                 )
             }
     }
 
     var mergedTimes: [Int] {
-        (Curriculum.behviour.shownTimes + Curriculum.behviour.highLightTimes).sorted()
+        (Curriculum.behviour.shownTimes + Curriculum.behviour.highLightTimes)
+            .sorted()
     }
 
     var settingsView: some View {
@@ -51,13 +47,9 @@ struct CurriculumWeekView: View {
                 Spacer()
                 Menu {
                     ForEach(curriculum.semesters) { semester in
-                        Button(semester.name) {
-                            currentSemester = semester
-                        }
+                        Button(semester.name) { currentSemester = semester }
                     }
-                    Button("All") {
-                        currentSemester = nil
-                    }
+                    Button("All") { currentSemester = nil }
                 } label: {
                     Text(currentSemester?.name ?? "All")
                 }
@@ -82,26 +74,23 @@ struct CurriculumWeekView: View {
                         "End Time",
                         Curriculum.behviour.convertTo(lecture.endDate.HHMM)
                     ),
-                    y: .value(
-                        "Date",
-                        lecture.startDate.stripTime(),
-                        unit: .day
-                    )
-                )
-                .foregroundStyle(by: .value("Course Name", lecture.name))
-                .annotation(position: .overlay) {
-                    Text(lecture.name)
-                        .font(.caption)
-                        .foregroundColor(.white)
-                }
+                    y: .value("Date", lecture.startDate.stripTime(), unit: .day)
+                ).foregroundStyle(by: .value("Course Name", lecture.name))
+                    .annotation(position: .overlay) {
+                        Text(lecture.name).font(.caption).foregroundColor(
+                            .white
+                        )
+                    }
             }
-        }
-        .chartXAxis {
-            AxisMarks(position: .top, values: Curriculum.behviour.shownTimes) { value in
+        }.chartXAxis {
+            AxisMarks(position: .top, values: Curriculum.behviour.shownTimes) {
+                value in
                 if let _hhmm = value.as(Int.self) {
                     let hhmm = Curriculum.behviour.convertFrom(_hhmm)
                     AxisValueLabel {
-                        Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        )
                     }
                     AxisGridLine()
                 }
@@ -112,46 +101,44 @@ struct CurriculumWeekView: View {
                 values: [Curriculum.behviour.convertTo(Date().stripDate().HHMM)]
             ) { _ in
                 AxisValueLabel(anchor: .topTrailing) {
-                    Text("Now")
-                        .foregroundColor(.red)
+                    Text("Now").foregroundColor(.red)
                 }
-                AxisGridLine()
-                    .foregroundStyle(.red)
+                AxisGridLine().foregroundStyle(.red)
             }
 
-            AxisMarks(position: .bottom, values: Curriculum.behviour.highLightTimes) { value in
+            AxisMarks(
+                position: .bottom,
+                values: Curriculum.behviour.highLightTimes
+            ) { value in
                 if let _hhmm = value.as(Int.self) {
                     let hhmm = Curriculum.behviour.convertFrom(_hhmm)
                     AxisValueLabel(anchor: .topTrailing) {
-                        Text("\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")")
-                            .foregroundColor(.blue)
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        ).foregroundColor(.blue)
                     }
-                    AxisGridLine(stroke: .init(dash: []))
-                        .foregroundStyle(.blue)
+                    AxisGridLine(stroke: .init(dash: [])).foregroundStyle(.blue)
                 }
             }
-        }
-        .chartXScale(domain: mergedTimes.first!...mergedTimes.last!)
-        .chartYAxis {
-            AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
-                AxisGridLine()
-            }
+        }.chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
+                    AxisGridLine()
+                }
 
-            AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
-                AxisGridLine()
-            }
-        }
-        .chartYVisibleDomain(length: 3600 * 24 * 7)
-        .chartYScale(domain: date...date.add(day: 7))
-        .frame(height: 230)
+                AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
+                    AxisGridLine()
+                }
+            }.chartYVisibleDomain(length: 3600 * 24 * 7).chartYScale(
+                domain: date ... date.add(day: 7)
+            ).frame(height: 230)
     }
 
     var topBar: some View {
         HStack {
-            Text("Curriculum")
-                .font(.caption)
-                .fontWeight(.bold)
-                .fontDesign(.monospaced)
+            Text("Curriculum").font(.caption).fontWeight(.bold).fontDesign(
+                .monospaced
+            )
 
             AsyncStatusLight(status: _curriculum.status)
 
@@ -166,8 +153,7 @@ struct CurriculumWeekView: View {
         VStack {
             topBar
 
-            chartView
-                .asyncStatusOverlay(_curriculum.status, showLight: false)
+            chartView.asyncStatusOverlay(_curriculum.status, showLight: false)
         }
     }
 
@@ -176,59 +162,43 @@ struct CurriculumWeekView: View {
             _curriculum.triggerRefresh()
             updateLectures()
         } label: {
-            Label("Refresh", systemImage: "arrow.clockwise")
-                .font(.caption)
+            Label("Refresh", systemImage: "arrow.clockwise").font(.caption)
         }
     }
 
     var flipButton: some View {
         Button {
-            withAnimation(.spring) {
-                flipped.toggle()
-            }
+            withAnimation(.spring) { flipped.toggle() }
         } label: {
             Label(
                 flipped ? "Chart" : "Settings",
                 systemImage: flipped ? "chart.bar.xaxis" : "gearshape"
-            )
-            .font(.caption)
+            ).font(.caption)
         }
     }
 
     var body: some View {
         ZStack {
-            mainView
-                .card()
-                .flipRotate(flippedDegrees)
-                .opacity(flipped ? 0 : 1)
+            mainView.card().flipRotate(flippedDegrees).opacity(flipped ? 0 : 1)
 
-            settingsView
-                .card()
-                .flipRotate(-180 + flippedDegrees)
-                .opacity(flipped ? 1 : 0)
-        }
-        .onChange(of: currentSemester) { _ in
-            updateLectures()
-        }
-        .onChange(of: curriculum) { _ in
-            updateLectures()
-        }
-        .onChange(of: _date) { _ in
-            updateLectures()
-        }
-        .onAppear {
-            updateLectures()
-        }
+            settingsView.card().flipRotate(-180 + flippedDegrees).opacity(
+                flipped ? 1 : 0
+            )
+        }.onChange(of: currentSemester) { _ in updateLectures() }.onChange(
+            of: curriculum
+        ) { _ in updateLectures() }.onChange(of: _date) { _ in updateLectures()
+        }.onAppear { updateLectures() }
     }
 }
 
 extension View {
     func card() -> some View {
-        padding()
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(Color.secondary, lineWidth: 0.2)
-            }
+        padding().overlay {
+            RoundedRectangle(cornerRadius: 10).strokeBorder(
+                Color.secondary,
+                lineWidth: 0.2
+            )
+        }
     }
 
     func flipRotate(_ degrees: Double) -> some View {

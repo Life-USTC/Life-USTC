@@ -8,7 +8,9 @@
 import SwiftOverlayShims
 import SwiftUI
 
-@ViewBuilder func HTextField(title: any StringProtocol, text: Binding<String>) -> AnyView {
+@ViewBuilder func HTextField(title: any StringProtocol, text: Binding<String>)
+    -> AnyView
+{
     AnyView(
         LabeledContent {
             TextField(title, text: text, axis: .vertical)
@@ -32,45 +34,40 @@ struct PushNotification: View {
                 HTextField(title: "Subtitle", text: $subTitle)
                 HTextField(title: "Content", text: $content)
             } header: {
-                Text("Details")
-                    .textCase(.none)
+                Text("Details").textCase(.none)
             }
 
             Section {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(0..<10) { index in
+                        ForEach(0 ..< 10) { index in
                             Toggle(
                                 "Tag \(index)",
-                                isOn:
-                                    .init(
-                                        get: {
-                                            tags.contains("Tag \(index)")
-                                        },
-                                        set: { newValue in
-                                            if newValue {
-                                                tags.append("Tag \(index)")
-                                            } else {
-                                                tags.removeAll(where: { $0 == "Tag \(index)" })
-                                            }
+                                isOn: .init(
+                                    get: { tags.contains("Tag \(index)") },
+                                    set: { newValue in
+                                        if newValue {
+                                            tags.append("Tag \(index)")
+                                        } else {
+                                            tags.removeAll(where: {
+                                                $0 == "Tag \(index)"
+                                            })
                                         }
-                                    )
-                            )
-                            .toggleStyle(.button)
+                                    }
+                                )
+                            ).toggleStyle(.button)
                         }
                     }
                 }
             } header: {
-                Text("Tags")
-                    .textCase(.none)
+                Text("Tags").textCase(.none)
             }
 
             Button(role: .destructive) {
             } label: {
                 Text("Push")
             }
-        }
-        .onTapGesture {
+        }.onTapGesture {
             // dismiss keyboard
             UIApplication.shared.sendAction(
                 #selector(UIResponder.resignFirstResponder),
@@ -78,17 +75,14 @@ struct PushNotification: View {
                 from: nil,
                 for: nil
             )
-        }
-        .navigationTitle("Push Notification")
-        .navigationBarTitleDisplayMode(.inline)
+        }.navigationTitle("Push Notification").navigationBarTitleDisplayMode(
+            .inline
+        )
     }
 }
 
 struct PushNotification_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationStack {
-            PushNotification()
-                .environmentObject(AppDelegate())
-        }
+        NavigationStack { PushNotification().environmentObject(AppDelegate()) }
     }
 }

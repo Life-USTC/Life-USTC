@@ -12,13 +12,12 @@ struct FeedVStackView: View {
 
     var body: some View {
         List {
-            ForEach(feeds.sorted(by: { $0.datePosted > $1.datePosted }), id: \.id) {
-                FeedView(feed: $0)
-            }
+            ForEach(
+                feeds.sorted(by: { $0.datePosted > $1.datePosted }),
+                id: \.id
+            ) { FeedView(feed: $0) }
 
-            Spacer()
-                .frame(height: 70)
-        }
-        .scrollContentBackground(.hidden)
+            Spacer().frame(height: 70)
+        }.scrollContentBackground(.hidden)
     }
 }

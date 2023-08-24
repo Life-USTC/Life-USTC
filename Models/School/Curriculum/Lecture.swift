@@ -28,7 +28,10 @@ struct Lecture: Codable, Identifiable, Equatable {
 }
 
 extension EKEvent {
-    convenience init(_ lecture: Lecture, in store: EKEventStore = EKEventStore()) {
+    convenience init(
+        _ lecture: Lecture,
+        in store: EKEventStore = EKEventStore()
+    ) {
         self.init(eventStore: store)
         title = lecture.name
         startDate = lecture.startDate

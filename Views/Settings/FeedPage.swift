@@ -18,8 +18,7 @@ struct FeedSettingView: View {
             Section {
                 Toggle("Use reader", isOn: $useReeed)
             } header: {
-                Text("UI Preference")
-                    .textCase(.none)
+                Text("UI Preference").textCase(.none)
             } footer: {
                 Text(
                     "Reader would generaly improve reading experience for web page that aren't optimized for mobile."
@@ -36,8 +35,7 @@ struct FeedSettingView: View {
                         }
                     } label: {
                         HStack {
-                            Text(name)
-                                .foregroundColor(.primary)
+                            Text(name).foregroundColor(.primary)
                             Spacer()
                             if !removedNameList.contains(name) {
                                 Image(systemName: "checkmark.circle.fill")
@@ -46,21 +44,17 @@ struct FeedSettingView: View {
                     }
                 }
             } header: {
-                Text("Feed source to show")
-                    .textCase(.none)
+                Text("Feed source to show").textCase(.none)
             } footer: {
                 Text("A reload may be required for this to take effect.")
             }
-        }
-        .scrollContentBackground(.hidden)
-        .navigationBarTitle("Feed Source Settings", displayMode: .inline)
+        }.scrollContentBackground(.hidden).navigationBarTitle(
+            "Feed Source Settings",
+            displayMode: .inline
+        )
     }
 }
 
 struct FeedSettingView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            FeedSettingView()
-        }
-    }
+    static var previews: some View { NavigationStack { FeedSettingView() } }
 }

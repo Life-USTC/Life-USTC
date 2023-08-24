@@ -9,41 +9,36 @@ import CryptoKit
 import SwiftUI
 
 extension String {
-    var localized: String {
-        NSLocalizedString(self, comment: "")
-    }
+    var localized: String { NSLocalizedString(self, comment: "") }
 
     var urlEncoded: String? {
         addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 
     func truncated(length: Int = 6) -> String {
-        if count > length {
-            let endIndex = index(startIndex, offsetBy: length)
-            return String(self[..<endIndex]) + "..."
-        } else {
-            return self
-        }
+        guard count > length else { return self }
+        let endIndex = index(startIndex, offsetBy: length)
+        return String(self[..<endIndex]) + "..."
     }
 
     /// Credit: https://sarunw.com/posts/how-to-compare-two-app-version-strings-in-swift/
     func versionCompare(_ otherVersion: String) -> ComparisonResult {
         let versionDelimiter = "."
         var versionComponents = components(separatedBy: versionDelimiter)
-        var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
+        var otherVersionComponents = otherVersion.components(
+            separatedBy: versionDelimiter
+        )
         let zeroDiff = versionComponents.count - otherVersionComponents.count
-        if zeroDiff == 0 {
-            return compare(otherVersion, options: .numeric)
-        }
+        if zeroDiff == 0 { return compare(otherVersion, options: .numeric) }
         let zeros = Array(repeating: "0", count: abs(zeroDiff))
         if zeroDiff > 0 {
             otherVersionComponents.append(contentsOf: zeros)
         } else {
             versionComponents.append(contentsOf: zeros)
         }
-        return
-            versionComponents
-            .joined(separator: versionDelimiter)
-            .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
+        return versionComponents.joined(separator: versionDelimiter).compare(
+            otherVersionComponents.joined(separator: versionDelimiter),
+            options: .numeric
+        )
     }
 }

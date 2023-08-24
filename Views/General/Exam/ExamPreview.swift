@@ -13,13 +13,7 @@ struct ExamPreview: View {
     @State var randomColor = exampleGradientList.randomElement() ?? []
 
     var body: some View {
-        Group {
-            if exams.isEmpty {
-                happyView
-            } else {
-                makeView(with: exams)
-            }
-        }
+        Group { if exams.isEmpty { happyView } else { makeView(with: exams) } }
     }
 
     func makeView(with exams: [Exam]) -> some View {
@@ -29,46 +23,37 @@ struct ExamPreview: View {
                     Spacer()
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(exam.courseName)
-                                .fontWeight(.bold)
+                            Text(exam.courseName).fontWeight(.bold)
                                 .strikethrough(exam.isFinished)
-                            Text(exam.classRoomName)
-                                .font(.caption)
+                            Text(exam.classRoomName).font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .trailing) {
                             Text(exam.startDate.description(with: .current))
-                            Text(exam.endDate.description(with: .current))
-                                .font(.caption)
-                                .foregroundColor(Color.secondary)
-                        }
-                        .font(.system(.body, design: .monospaced))
-                    }
-                    .padding(.horizontal, 8)
+                            Text(exam.endDate.description(with: .current)).font(
+                                .caption
+                            ).foregroundColor(Color.secondary)
+                        }.font(.system(.body, design: .monospaced))
+                    }.padding(.horizontal, 8)
                     Spacer()
                     if exam.isFinished {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.gray)
+                        RoundedRectangle(cornerRadius: 2).fill(Color.gray)
                             .frame(height: 5)
                     } else {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(
-                                LinearGradient(
-                                    colors: randomColor,
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
+                        RoundedRectangle(cornerRadius: 2).fill(
+                            LinearGradient(
+                                colors: randomColor,
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
-                            .frame(height: 5)
+                        ).frame(height: 5)
                     }
-                }
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(style: .init(lineWidth: 1))
-                        .fill(Color.gray.opacity(0.3))
-                }
-                .frame(height: 60)
+                }.background {
+                    RoundedRectangle(cornerRadius: 5).stroke(
+                        style: .init(lineWidth: 1)
+                    ).fill(Color.gray.opacity(0.3))
+                }.frame(height: 60)
             }
         }
     }
@@ -78,30 +63,25 @@ struct ExamPreview: View {
             Spacer()
             HStack {
                 ZStack {
-                    Image(systemName: "checklist.checked")
-                        .symbolRenderingMode(.hierarchical)
-                        .fontWeight(.light)
-                        .font(.largeTitle)
-                        .foregroundStyle(Color.orange)
+                    Image(systemName: "checklist.checked").symbolRenderingMode(
+                        .hierarchical
+                    ).fontWeight(.light).font(.largeTitle).foregroundStyle(
+                        Color.orange
+                    )
                 }
 
                 Spacer()
 
-                Text("No More Exam!")
-                    .font(.system(.body, design: .monospaced))
-            }
-            .padding(.horizontal, 8)
+                Text("No More Exam!").font(.system(.body, design: .monospaced))
+            }.padding(.horizontal, 8)
             Spacer()
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color.orange)
-                .frame(height: 5)
-        }
-        .background {
-            RoundedRectangle(cornerRadius: 5)
-                .stroke(style: .init(lineWidth: 1))
+            RoundedRectangle(cornerRadius: 2).fill(Color.orange).frame(
+                height: 5
+            )
+        }.background {
+            RoundedRectangle(cornerRadius: 5).stroke(style: .init(lineWidth: 1))
                 .fill(Color.gray.opacity(0.3))
-        }
-        .frame(height: 60)
+        }.frame(height: 60)
     }
 }
 

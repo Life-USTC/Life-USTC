@@ -15,37 +15,38 @@ struct FeaturesView: View {
 
     var features: [String: [FeatureWithView]] = [:]
     var featureSearched: [String: [FeatureWithView]] {
-        if searchText.isEmpty {
-            return features
-        } else {
+        guard searchText.isEmpty else {
             var result: [String: [FeatureWithView]] = [:]
             for (key, value) in features {
                 let tmp = value.filter {
                     $0.title.lowercased().contains(searchText.lowercased())
-                        || $0.subTitle.lowercased().contains(searchText.lowercased())
-                        || $0.title.localized.contains(searchText)
+                        || $0.subTitle.lowercased().contains(
+                            searchText.lowercased()
+                        ) || $0.title.localized.contains(searchText)
                         || $0.subTitle.localized.contains(searchText)
                 }
-                if !tmp.isEmpty {
-                    result[key] = tmp
-                }
+                if !tmp.isEmpty { result[key] = tmp }
             }
             return result
         }
+        return features
     }
 
     var body: some View {
         List {
-            ForEach(featureSearched.sorted(by: { $0.value.count < $1.value.count }), id: \.key) {
-                key,
-                features in
+            ForEach(
+                featureSearched.sorted(by: { $0.value.count < $1.value.count }),
+                id: \.key
+            ) { key, features in
                 Section {
                     ForEach(features, id: \.id) { feature in
                         NavigationLink {
                             feature.destinationView()
                         } label: {
-                            Label(feature.title.localized, systemImage: feature.image)
-                                .symbolRenderingMode(.hierarchical)
+                            Label(
+                                feature.title.localized,
+                                systemImage: feature.image
+                            ).symbolRenderingMode(.hierarchical)
                         }
                     }
                 } header: {
@@ -53,19 +54,16 @@ struct FeaturesView: View {
                 }
             }
 
-            Spacer()
-                .frame(height: 70)
-        }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
-        .navigationTitle("Features")
-        .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, placement: .automatic)
+            Spacer().frame(height: 70)
+        }.listStyle(.sidebar).scrollContentBackground(.hidden).navigationTitle(
+            "Features"
+        ).navigationBarTitleDisplayMode(.inline).searchable(
+            text: $searchText,
+            placement: .automatic
+        )
     }
 
-    init() {
-        features = collectFeatures()
-    }
+    init() { features = collectFeatures() }
 }
 
 extension FeaturesView {
@@ -78,9 +76,7 @@ extension FeaturesView {
                     image: "doc.richtext",
                     title: "Feed".localized,
                     subTitle: "",
-                    destinationView: {
-                        AnyView(AllSourceView())
-                    }
+                    destinationView: { AnyView(AllSourceView()) }
                 )
             ] + feedSourceList.map { FeatureWithView($0) }
 
@@ -89,25 +85,19 @@ extension FeaturesView {
                 image: "book",
                 title: "Curriculum".localized,
                 subTitle: "",
-                destinationView: {
-                    AnyView(CurriculumDetailView())
-                }
+                destinationView: { AnyView(CurriculumDetailView()) }
             ),
             .init(
                 image: "calendar.badge.clock",
                 title: "Exam".localized,
                 subTitle: "",
-                destinationView: {
-                    AnyView(ExamView())
-                }
+                destinationView: { AnyView(ExamView()) }
             ),
             .init(
                 image: "graduationcap",
                 title: "Score".localized,
                 subTitle: "",
-                destinationView: {
-                    AnyView(ScoreView())
-                }
+                destinationView: { AnyView(ScoreView()) }
             ),
         ]
 
@@ -124,9 +114,5 @@ extension FeaturesView {
 }
 
 struct FeaturesView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            FeaturesView()
-        }
-    }
+    static var previews: some View { NavigationStack { FeaturesView() } }
 }

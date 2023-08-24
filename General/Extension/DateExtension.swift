@@ -13,13 +13,14 @@ func + (lhs: Date, rhs: DateComponents) -> Date {
 
 extension Date {
     /// Base time at 1970
-    static var zero: Date {
-        Date(timeIntervalSince1970: 0)
-    }
+    static var zero: Date { Date(timeIntervalSince1970: 0) }
 
     /// Keep year month and day components only
     func stripTime() -> Date {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        let components = Calendar.current.dateComponents(
+            [.year, .month, .day],
+            from: self
+        )
         return Calendar.current.date(from: components)!
     }
 
@@ -48,8 +49,7 @@ extension Date {
         Calendar.current.dateComponents(
             [.calendar, .yearForWeekOfYear, .weekOfYear],
             from: self
-        )
-        .date!
+        ).date!
     }
 }
 
@@ -63,9 +63,7 @@ extension DateComponents {
 }
 
 extension Date: RawRepresentable {
-    public var rawValue: String {
-        timeIntervalSinceReferenceDate.description
-    }
+    public var rawValue: String { timeIntervalSinceReferenceDate.description }
 
     public init?(rawValue: String) {
         self = Date(timeIntervalSinceReferenceDate: Double(rawValue) ?? 0.0)

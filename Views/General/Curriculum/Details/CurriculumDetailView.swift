@@ -15,19 +15,16 @@ struct CurriculumDetailView: View {
             ForEach(curriculum.semesters) { semester in
                 Section(header: Text(semester.name)) {
                     ForEach(semester.courses, id: \.lessonCode) { course in
-                        NavigationLink(destination: CourseDetailView(course: course)) {
-                            Text(course.name)
-                        }
+                        NavigationLink(
+                            destination: CourseDetailView(course: course)
+                        ) { Text(course.name) }
                     }
                 }
             }
-        }
-        .scrollContentBackground(.hidden)
-        .asyncStatusOverlay(_curriculum.status)
-        .refreshable {
-            _curriculum.triggerRefresh()
-        }
-        .navigationTitle("Curriculum")
-        .navigationBarTitleDisplayMode(.inline)
+        }.scrollContentBackground(.hidden).asyncStatusOverlay(
+            _curriculum.status
+        ).refreshable { _curriculum.triggerRefresh() }.navigationTitle(
+            "Curriculum"
+        ).navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ExamSettingView: View {
-    @AppStorage("hiddenExamName", store: UserDefaults.appGroup) var hiddenExamName: [String] = []
+    @AppStorage("hiddenExamName", store: UserDefaults.appGroup)
+    var hiddenExamName: [String] = []
 
     func delete(at offsets: IndexSet) {
         hiddenExamName.remove(atOffsets: offsets)
@@ -19,8 +20,7 @@ struct ExamSettingView: View {
             Section {
                 ForEach(hiddenExamName.indices, id: \.self) { index in
                     TextField("Name", text: $hiddenExamName[index])
-                }
-                .onDelete(perform: delete)
+                }.onDelete(perform: delete)
 
                 Button {
                     if hiddenExamName.filter(\.isEmpty).isEmpty {
@@ -31,22 +31,20 @@ struct ExamSettingView: View {
                     Label("Add new", systemImage: "plus")
                 }
             } header: {
-                Text("Exam name to hide")
-                    .textCase(.none)
+                Text("Exam name to hide").textCase(.none)
             } footer: {
                 Text(
                     "When exam contains these words, they will be shown at the bottom even they comes first in time"
                 )
             }
             EmptyView()
-        }
-        .scrollContentBackground(.hidden)
-        .navigationBarTitle("Exam Settings", displayMode: .inline)
+        }.scrollContentBackground(.hidden).navigationBarTitle(
+            "Exam Settings",
+            displayMode: .inline
+        )
     }
 }
 
 struct ExamSettingView_Previews: PreviewProvider {
-    static var previews: some View {
-        ExamSettingView()
-    }
+    static var previews: some View { ExamSettingView() }
 }

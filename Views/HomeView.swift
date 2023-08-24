@@ -27,25 +27,14 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if #available(iOS 17.0, *) {
-                CurriculumWeekView()
-            }
-        }
-        .padding(.horizontal)
-        .navigationTitle("Life@USTC")
-        .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack {
-                SettingsView()
-            }
-        }
+            if #available(iOS 17.0, *) { CurriculumWeekView() }
+        }.padding(.horizontal).navigationTitle("Life@USTC")
+            .navigationBarTitleDisplayMode(.inline).sheet(
+                isPresented: $navigationToSettingsView
+            ) { NavigationStack { SettingsView() } }
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            HomeView()
-        }
-    }
+    static var previews: some View { NavigationStack { HomeView() } }
 }

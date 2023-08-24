@@ -8,7 +8,9 @@
 import Foundation
 
 extension UserDefaults {
-    static let appGroup = UserDefaults(suiteName: "group.dev.tiankaima.Life-USTC")!
+    static let appGroup = UserDefaults(
+        suiteName: "group.dev.tiankaima.Life-USTC"
+    )!
 }
 
 let userAgent =

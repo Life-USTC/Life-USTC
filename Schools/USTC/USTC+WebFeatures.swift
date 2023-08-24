@@ -49,7 +49,8 @@ extension USTCExports {
                 name: "Physics Experiment",
                 image: "chart.xyaxis.line",
                 description: "预约/查看物理实验课程",
-                url: "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html",
+                url:
+                    "http://pems.ustc.edu.cn/index.php/web/login/loginCas.html",
                 markUp: true
             ),
             .init(
@@ -112,10 +113,7 @@ extension FeatureWithView {
             subTitle: feature.description,
             destinationView: {
                 AnyView(
-                    Browser(
-                        url: feature.url,
-                        title: feature.name.localized
-                    )
+                    Browser(url: feature.url, title: feature.name.localized)
                 )
             }
         )

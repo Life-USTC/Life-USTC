@@ -50,9 +50,7 @@ extension Exam {
         "\(startDate.description(with: .current)) - \(endDate.description(with: .current)) @ \(classRoomName)"
     }
 
-    var isFinished: Bool {
-        endDate <= Date()
-    }
+    var isFinished: Bool { endDate <= Date() }
 
     var daysLeft: Int {
         Calendar.current.dateComponents(
@@ -66,21 +64,19 @@ extension Exam {
 extension Exam {
     static func clean(_ exams: [Exam]) -> [Exam] {
         let hiddenExamName =
-            ([String].init(rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName") ?? "")
-            ?? []).filter { !$0.isEmpty }
+            ([String].init(
+                rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName")
+                    ?? ""
+            ) ?? []).filter { !$0.isEmpty }
         let result = exams.filter { exam in
             for name in hiddenExamName {
-                if exam.courseName.contains(name) {
-                    return false
-                }
+                if exam.courseName.contains(name) { return false }
             }
             return true
         }
         let hiddenResult = exams.filter { exam in
             for name in hiddenExamName {
-                if exam.courseName.contains(name) {
-                    return true
-                }
+                if exam.courseName.contains(name) { return true }
             }
             return false
         }
@@ -89,21 +85,15 @@ extension Exam {
 
     /// Sort given exams by time(ascending), and put the ones that are already over to the end of the array
     static func show(_ exams: [Exam]) -> [Exam] {
-        exams
-            .filter { !$0.isFinished }
-            .sorted { $0.startDate < $1.endDate }
-            + exams
-            .filter(\.isFinished)
-            .sorted { $0.startDate > $1.endDate }
+        exams.filter { !$0.isFinished }.sorted { $0.startDate < $1.endDate }
+            + exams.filter(\.isFinished).sorted { $0.startDate > $1.endDate }
     }
 
     /// Merge two list of exam (addition only)
     static func merge(_ original: [Exam], with new: [Exam]) -> [Exam] {
         var result = original
         for exam in new {
-            if !result.filter({ $0 == exam }).isEmpty {
-                continue
-            }
+            if !result.filter({ $0 == exam }).isEmpty { continue }
             result.append(exam)
         }
         return result
@@ -130,9 +120,8 @@ extension Exam {
         }
 
         let calendarName = "Upcoming Exams"
-        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: {
-            $0.title == calendarName.localized
-        })
+        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(
+            where: { $0.title == calendarName.localized })
 
         // try remove everything with that name in it
         if calendar != nil {

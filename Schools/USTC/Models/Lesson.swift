@@ -5,8 +5,7 @@
 //  Created by Tiankai Ma on 2023/8/18.
 //
 
-import SwiftUI
-//
+import SwiftUI  //
 // struct Lesson: Identifiable, Equatable, Codable {
 //    var id: UUID {
 //        UUID(name: "\(classroomName):\(courseName),\(startTime)->\(endTime)", nameSpace: .oid)

@@ -35,9 +35,7 @@ struct StripesConfig {
 struct Stripes: View {
     var config: StripesConfig
 
-    public init(config: StripesConfig) {
-        self.config = config
-    }
+    public init(config: StripesConfig) { self.config = config }
 
     public var body: some View {
         GeometryReader { geometry in
@@ -45,16 +43,18 @@ struct Stripes: View {
             let itemWidth = config.barWidth + config.barSpacing
             let items = Int(2 * longSide / itemWidth)
             HStack(spacing: config.barSpacing) {
-                ForEach(0..<items, id: \.self) { _ in
-                    config.foreground
-                        .frame(width: config.barWidth, height: 2 * longSide)
+                ForEach(0 ..< items, id: \.self) { _ in
+                    config.foreground.frame(
+                        width: config.barWidth,
+                        height: 2 * longSide
+                    )
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .rotationEffect(Angle(degrees: config.degrees), anchor: .center)
-            .offset(x: -longSide / 2, y: -longSide / 2)
-            .background(config.background)
-        }
-        .clipped()
+            }.frame(maxWidth: .infinity, maxHeight: .infinity).rotationEffect(
+                Angle(degrees: config.degrees),
+                anchor: .center
+            ).offset(x: -longSide / 2, y: -longSide / 2).background(
+                config.background
+            )
+        }.clipped()
     }
 }

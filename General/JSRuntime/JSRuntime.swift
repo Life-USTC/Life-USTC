@@ -13,9 +13,7 @@ struct WebView: UIViewRepresentable {
     typealias UIViewType = WKWebView
     var wkWebView: WKWebView
 
-    func makeUIView(context _: Context) -> WKWebView {
-        wkWebView
-    }
+    func makeUIView(context _: Context) -> WKWebView { wkWebView }
 
     func updateUIView(_: WKWebView, context _: Context) {}
 }
@@ -24,11 +22,12 @@ struct WebView: UIViewRepresentable {
 // The url format is: lu-bridge://proxy?url=ENCODED_URL&method=METHOD
 class LUNetworkBridge: NSObject, WKURLSchemeHandler {
     func webView(_: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-        guard let originalURL = urlSchemeTask.request.url else {
-            return
-        }
+        guard let originalURL = urlSchemeTask.request.url else { return }
         print(originalURL.absoluteString)
-        let components = URLComponents(url: originalURL, resolvingAgainstBaseURL: false)!
+        let components = URLComponents(
+            url: originalURL,
+            resolvingAgainstBaseURL: false
+        )!
         let queryItems = components.queryItems!
         let url = queryItems.first(where: { $0.name == "url" })!.value!
         let method = queryItems.first(where: { $0.name == "method" })!.value!
@@ -57,16 +56,19 @@ class LUJSRuntime {
     let wkWebView: WKWebView
 
     class LoggingMessageHandler: NSObject, WKScriptMessageHandler {
-        func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage)
-        {
-            print(message.body)
-        }
+        func userContentController(
+            _: WKUserContentController,
+            didReceive message: WKScriptMessage
+        ) { print(message.body) }
     }
 
     init() {
         // load script with name console.js
         let overrideConsole = try! String(
-            contentsOf: Bundle.main.url(forResource: "console", withExtension: "js")!
+            contentsOf: Bundle.main.url(
+                forResource: "console",
+                withExtension: "js"
+            )!
         )
         let script = WKUserScript(
             source: overrideConsole,
@@ -78,13 +80,19 @@ class LUJSRuntime {
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         //        config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         config.userContentController.addUserScript(script)
-        config.userContentController.add(LoggingMessageHandler(), name: "logging")
+        config.userContentController.add(
+            LoggingMessageHandler(),
+            name: "logging"
+        )
         config.setURLSchemeHandler(LUNetworkBridge(), forURLScheme: "lu-bridge")
 
         wkWebView = WKWebView(frame: .zero, configuration: config)
         wkWebView.evaluateJavaScript(overrideConsole)
 
-        let url = Bundle.main.url(forResource: "Runtime", withExtension: "html")!
+        let url = Bundle.main.url(
+            forResource: "Runtime",
+            withExtension: "html"
+        )!
         wkWebView.loadFileURL(url, allowingReadAccessTo: url)
         let request = URLRequest(url: url)
         wkWebView.load(request)

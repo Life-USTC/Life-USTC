@@ -24,19 +24,15 @@ struct UserTypeView: View {
                 Button {
                     withAnimation {
                         self.userType = userType
-                        if showType == .sheet {
-                            userTypeSheet = false
-                        }
+                        if showType == .sheet { userTypeSheet = false }
                     }
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(String(describing: userType).capitalized)
-                                .font(.body)
-                                .bold()
-                                .padding(.bottom, 1)
-                            Text(userType.caption)
-                                .font(.caption)
+                            Text(String(describing: userType).capitalized).font(
+                                .body
+                            ).bold().padding(.bottom, 1)
+                            Text(userType.caption).font(.caption)
                         }
                         Spacer()
                         if showType == .sheet {
@@ -47,10 +43,8 @@ struct UserTypeView: View {
                         }
                     }
                 }
-            }
-            .foregroundColor(.primary)
-        }
-        .scrollContentBackground(.hidden)
+            }.foregroundColor(.primary)
+        }.scrollContentBackground(.hidden)
     }
 
     var body: some View {
@@ -58,36 +52,32 @@ struct UserTypeView: View {
             NavigationStack {
                 VStack {
                     VStack(alignment: .leading) {
-                        Text("Choose an identity")
-                            .font(.title2)
-                            .bold()
+                        Text("Choose an identity").font(.title2).bold()
                         Text("You could modify this later in app settings")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                            .bold()
+                            .foregroundColor(.secondary).font(.caption).bold()
                     }
-                    mainView
-                        .listStyle(.plain)
+                    mainView.listStyle(.plain)
                     Spacer()
                     Button {
                         userTypeSheet = false
                     } label: {
-                        Text("Skip for now")
-                            .foregroundColor(.white)
-                            .background {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.accentColor)
-                                    .frame(width: 250, height: 50)
-                            }
-                            .padding()
+                        Text("Skip for now").foregroundColor(.white).background
+                        {
+                            RoundedRectangle(cornerRadius: 10).fill(
+                                Color.accentColor
+                            ).frame(width: 250, height: 50)
+                        }.padding()
                     }
-                }
-                .padding()
-                .navigationBarTitle("Before we continue...", displayMode: .inline)
+                }.padding().navigationBarTitle(
+                    "Before we continue...",
+                    displayMode: .inline
+                )
             }
         } else {
-            mainView
-                .navigationBarTitle("Change User Type", displayMode: .inline)
+            mainView.navigationBarTitle(
+                "Change User Type",
+                displayMode: .inline
+            )
         }
     }
 

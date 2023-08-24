@@ -36,15 +36,11 @@ extension CurriculumProtocolA {
         let semesterList = try await refreshSemesterList()
         await withTaskGroup(of: Semester?.self) { group in
             for id in semesterList {
-                group.addTask {
-                    try? await self.refreshSemester(id: id)
-                }
+                group.addTask { try? await self.refreshSemester(id: id) }
             }
 
             for await child in group {
-                if let child {
-                    result.semesters.append(child)
-                }
+                if let child { result.semesters.append(child) }
             }
         }
         return result
@@ -71,18 +67,13 @@ extension CurriculumProtocolB {
             }
 
             for await child in group {
-                if let child {
-                    result.semesters.append(child)
-                }
+                if let child { result.semesters.append(child) }
             }
         }
 
         // Remove semesters with no courses
-        result.semesters = result.semesters.filter {
-            !$0.courses.isEmpty
-        }.sorted {
-            $0.startDate > $1.startDate
-        }
+        result.semesters = result.semesters.filter { !$0.courses.isEmpty }
+            .sorted { $0.startDate > $1.startDate }
 
         return result
     }
