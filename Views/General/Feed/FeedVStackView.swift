@@ -18,6 +18,7 @@ struct FeedVStackView: View {
             ) { FeedView(feed: $0) }
 
             Spacer().frame(height: 70)
-        }.scrollContentBackground(.hidden)
+        }
+        .scrollContentBackground(.hidden)
     }
 }

@@ -20,10 +20,9 @@ struct AppSettingPage: View {
             } header: {
                 Text("General").textCase(.none)
             }
-        }.scrollContentBackground(.hidden).navigationBarTitle(
-            "App Settings",
-            displayMode: .inline
-        )
+        }
+        .scrollContentBackground(.hidden)
+        .navigationBarTitle("App Settings", displayMode: .inline)
     }
 }
 

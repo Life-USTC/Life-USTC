@@ -17,13 +17,11 @@ struct SingleExamView: View {
                     Text("\(exam.courseName)").font(.title2).fontWeight(.bold)
                         .strikethrough(exam.isFinished)
                     Spacer()
-                    Text("\(exam.typeName)").foregroundColor(Color.gray).font(
-                        .subheadline
-                    )
+                    Text("\(exam.typeName)").foregroundColor(Color.gray)
+                        .font(.subheadline)
                 }
-                Text("\(exam.lessonCode)").foregroundColor(Color.gray).font(
-                    .subheadline
-                )
+                Text("\(exam.lessonCode)").foregroundColor(Color.gray)
+                    .font(.subheadline)
             }
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
@@ -31,7 +29,8 @@ struct SingleExamView: View {
                     Text(
                         "\(exam.classRoomDistrict) \(exam.classRoomBuildingName) \(exam.classRoomName)"
                     )
-                }.font(.callout)
+                }
+                .font(.callout)
                 HStack {
                     Image(systemName: "calendar.badge.clock")
                     Text(exam.detailString)
@@ -47,11 +46,14 @@ struct SingleExamView: View {
                                     format: "%@ days left".localized,
                                     String(exam.daysLeft)
                                 )
-                        ).foregroundColor(
+                        )
+                        .foregroundColor(
                             exam.daysLeft <= 7 ? .red : .accentColor
-                        ).fontWeight(.bold)
+                        )
+                        .fontWeight(.bold)
                     }
-                }.font(.callout)
+                }
+                .font(.callout)
             }
         }
     }

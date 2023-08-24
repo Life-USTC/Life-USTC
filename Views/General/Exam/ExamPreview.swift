@@ -31,29 +31,34 @@ struct ExamPreview: View {
                         Spacer()
                         VStack(alignment: .trailing) {
                             Text(exam.startDate.description(with: .current))
-                            Text(exam.endDate.description(with: .current)).font(
-                                .caption
-                            ).foregroundColor(Color.secondary)
-                        }.font(.system(.body, design: .monospaced))
-                    }.padding(.horizontal, 8)
+                            Text(exam.endDate.description(with: .current))
+                                .font(.caption).foregroundColor(Color.secondary)
+                        }
+                        .font(.system(.body, design: .monospaced))
+                    }
+                    .padding(.horizontal, 8)
                     Spacer()
                     if exam.isFinished {
                         RoundedRectangle(cornerRadius: 2).fill(Color.gray)
                             .frame(height: 5)
                     } else {
-                        RoundedRectangle(cornerRadius: 2).fill(
-                            LinearGradient(
-                                colors: randomColor,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(
+                                LinearGradient(
+                                    colors: randomColor,
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                        ).frame(height: 5)
+                            .frame(height: 5)
                     }
-                }.background {
-                    RoundedRectangle(cornerRadius: 5).stroke(
-                        style: .init(lineWidth: 1)
-                    ).fill(Color.gray.opacity(0.3))
-                }.frame(height: 60)
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(style: .init(lineWidth: 1))
+                        .fill(Color.gray.opacity(0.3))
+                }
+                .frame(height: 60)
             }
         }
     }
@@ -63,25 +68,25 @@ struct ExamPreview: View {
             Spacer()
             HStack {
                 ZStack {
-                    Image(systemName: "checklist.checked").symbolRenderingMode(
-                        .hierarchical
-                    ).fontWeight(.light).font(.largeTitle).foregroundStyle(
-                        Color.orange
-                    )
+                    Image(systemName: "checklist.checked")
+                        .symbolRenderingMode(.hierarchical).fontWeight(.light)
+                        .font(.largeTitle).foregroundStyle(Color.orange)
                 }
 
                 Spacer()
 
                 Text("No More Exam!").font(.system(.body, design: .monospaced))
-            }.padding(.horizontal, 8)
+            }
+            .padding(.horizontal, 8)
             Spacer()
-            RoundedRectangle(cornerRadius: 2).fill(Color.orange).frame(
-                height: 5
-            )
-        }.background {
+            RoundedRectangle(cornerRadius: 2).fill(Color.orange)
+                .frame(height: 5)
+        }
+        .background {
             RoundedRectangle(cornerRadius: 5).stroke(style: .init(lineWidth: 1))
                 .fill(Color.gray.opacity(0.3))
-        }.frame(height: 60)
+        }
+        .frame(height: 60)
     }
 }
 

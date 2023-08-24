@@ -38,10 +38,12 @@ struct Browser: View {
     var title: String = "Detail"
 
     var body: some View {
-        SwiftUIWebView(url: url).padding([.leading, .trailing], 2).toolbar {
-            ShareLink(item: self.url) {
-                Label("Share", systemImage: "square.and.arrow.up")
+        SwiftUIWebView(url: url).padding([.leading, .trailing], 2)
+            .toolbar {
+                ShareLink(item: self.url) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
             }
-        }.navigationBarTitle(title, displayMode: .inline)
+            .navigationBarTitle(title, displayMode: .inline)
     }
 }

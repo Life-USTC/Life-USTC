@@ -47,27 +47,25 @@ struct USTCCASLoginView: View {
                                             .dictionaryRepresentation()
                                     )
                                 )
-                            }.clipShape(RoundedRectangle(cornerRadius: 20))
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
                             .shadow(radius: 4)
                         Spacer()
-                        Image(systemName: "link").resizable().frame(
-                            width: 33,
-                            height: 33
-                        )
+                        Image(systemName: "link").resizable()
+                            .frame(width: 33, height: 33)
                         Spacer()
                         ZStack {
-                            Rectangle().fill(Color.white).frame(
-                                width: 80,
-                                height: 80
-                            )
+                            Rectangle().fill(Color.white)
+                                .frame(width: 80, height: 80)
                             Image(
                                 systemName:
                                     "person.crop.square.filled.and.at.rectangle"
-                            ).resizable().frame(width: 40, height: 30)
-                                .foregroundColor(Color.secondary)
-                        }.clipShape(RoundedRectangle(cornerRadius: 20)).shadow(
-                            radius: 4
-                        )
+                            )
+                            .resizable().frame(width: 40, height: 30)
+                            .foregroundColor(Color.secondary)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .shadow(radius: 4)
                         Spacer()
                     }
 
@@ -84,16 +82,19 @@ struct USTCCASLoginView: View {
                             TextField(
                                 "Username",
                                 text: $ustcCASVoewModel.inputUsername
-                            ).focused($foucusField, equals: .username).onSubmit
-                            {
+                            )
+                            .focused($foucusField, equals: .username)
+                            .onSubmit {
                                 DispatchQueue.main.asyncAfter(
                                     deadline: .now() + 0.1
                                 ) { foucusField = .password }
-                            }.submitLabel(.next).autocorrectionDisabled(true)
-                                .keyboardType(.asciiCapable)
+                            }
+                            .submitLabel(.next).autocorrectionDisabled(true)
+                            .keyboardType(.asciiCapable)
 
                             Divider().padding(.vertical, 0)
-                        }.frame(width: 220)
+                        }
+                        .frame(width: 220)
                     }
 
                     HStack(alignment: .top) {
@@ -102,11 +103,13 @@ struct USTCCASLoginView: View {
                             SecureField(
                                 "Password",
                                 text: $ustcCASVoewModel.inputPassword
-                            ).focused($foucusField, equals: .password)
-                                .submitLabel(.done).onSubmit { checkAndLogin() }
-                                .padding(.horizontal, 3)
+                            )
+                            .focused($foucusField, equals: .password)
+                            .submitLabel(.done).onSubmit { checkAndLogin() }
+                            .padding(.horizontal, 3)
                             Divider()
-                        }.frame(width: 220)
+                        }
+                        .frame(width: 220)
                     }
 
                     Spacer()
@@ -115,26 +118,33 @@ struct USTCCASLoginView: View {
                         checkAndLogin()
                     } label: {
                         Text("Check & Login").foregroundColor(.white).padding()
-                            .frame(maxWidth: .infinity).background {
-                                RoundedRectangle(cornerRadius: 25).fill(
-                                    Color.accentColor
-                                )
-                            }.frame(maxWidth: .infinity)
-                    }.keyboardShortcut(.defaultAction)
-                }.padding().padding(.top)
-            }.padding(.horizontal).alert(
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .fill(Color.accentColor)
+                            }
+                            .frame(maxWidth: .infinity)
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+                .padding().padding(.top)
+            }
+            .padding(.horizontal)
+            .alert(
                 "Login Failed".localized,
                 isPresented: $showFailedAlert,
                 actions: {},
                 message: {
                     Text("Double check your username and password".localized)
                 }
-            ).alert(
+            )
+            .alert(
                 "Login Success".localized,
                 isPresented: $showSuccessAlert,
                 actions: {},
                 message: { Text("You're good to go".localized) }
-            ).navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+            )
+            .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
         }
     }
 

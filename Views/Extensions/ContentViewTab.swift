@@ -67,9 +67,10 @@ struct ContentViewTabBarContainerView<Content: View>: View {
     }
 
     var body: some View {
-        ZStack { content }.overlay(alignment: .bottom) {
-            ContentViewTabBarView(selection: $selection)
-        }
+        ZStack { content }
+            .overlay(alignment: .bottom) {
+                ContentViewTabBarView(selection: $selection)
+            }
     }
 }
 
@@ -80,18 +81,21 @@ struct ContentViewTabBarView: View {
 
     func tabView(tab: ContentViewTab) -> some View {
         tab.label.foregroundColor(selection == tab ? tab.color : Color.gray)
-            .padding(.vertical, 12).frame(maxWidth: .infinity).onTapGesture {
+            .padding(.vertical, 12).frame(maxWidth: .infinity)
+            .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.2)) { selection = tab }
-            }.background {
+            }
+            .background {
                 if selection == tab {
                     VStack {
                         Spacer()
-                        RoundedRectangle(cornerRadius: 15).fill(
-                            tab.color.opacity(0.2)
-                        ).frame(width: 80, height: 5).matchedGeometryEffect(
-                            id: "background_rectangle",
-                            in: namespace
-                        )
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(tab.color.opacity(0.2))
+                            .frame(width: 80, height: 5)
+                            .matchedGeometryEffect(
+                                id: "background_rectangle",
+                                in: namespace
+                            )
                     }
                 }
             }
@@ -102,10 +106,12 @@ struct ContentViewTabBarView: View {
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 tabView(tab: tab)
             }
-        }.padding(6).background(
-            colorScheme == .dark ? Color.black : Color.white
-        ).cornerRadius(20).overlay {
+        }
+        .padding(6).background(colorScheme == .dark ? Color.black : Color.white)
+        .cornerRadius(20)
+        .overlay {
             RoundedRectangle(cornerRadius: 20).stroke(.gray.opacity(0.2))
-        }.padding(.horizontal).ignoresSafeArea(.keyboard)
+        }
+        .padding(.horizontal).ignoresSafeArea(.keyboard)
     }
 }

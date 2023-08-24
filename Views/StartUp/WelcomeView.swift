@@ -20,49 +20,52 @@ struct WelcomeView_1: View {
             Spacer()
             Text(textToShow).font(.system(.largeTitle, design: .monospaced))
                 .foregroundColor(.black).padding().background(Color.white)
-                .overlay(Rectangle().stroke(.black)).padding(.horizontal).frame(
-                    maxWidth: .infinity
-                )
+                .overlay(Rectangle().stroke(.black)).padding(.horizontal)
+                .frame(maxWidth: .infinity)
 
             NavigationLink {
                 nextView()
             } label: {
                 Image(systemName: "arrow.right").font(.largeTitle).bold()
-                    .foregroundColor(.black).padding().background {
+                    .foregroundColor(.black).padding()
+                    .background {
                         Circle().stroke().fill(.black)
                         Circle().fill(.white)
-                    }.frame(width: circleRadius * 2, height: circleRadius * 2)
+                    }
+                    .frame(width: circleRadius * 2, height: circleRadius * 2)
             }
-        }.shadow(radius: 50).padding(.bottom, 100)
+        }
+        .shadow(radius: 50).padding(.bottom, 100)
     }
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                Image(imageName).resizable().frame(
-                    width: geo.size.width,
-                    height: geo.size.height
-                ).overlay {
-                    if showText {
-                        LinearGradient(
-                            colors: [.clear, .black],
-                            startPoint: .center,
-                            endPoint: .bottom
-                        )
+                Image(imageName).resizable()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .overlay {
+                        if showText {
+                            LinearGradient(
+                                colors: [.clear, .black],
+                                startPoint: .center,
+                                endPoint: .bottom
+                            )
+                        }
                     }
-                }.clipShape(RoundedRectangle(cornerRadius: 30)).overlay {
-                    RoundedRectangle(cornerRadius: 30).stroke()
-                }.onTapGesture {
-                    withAnimation(.easeInOut(duration: 1.5)) {
-                        showText.toggle()
+                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                    .overlay { RoundedRectangle(cornerRadius: 30).stroke() }
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 1.5)) {
+                            showText.toggle()
+                        }
                     }
-                }
 
                 if showText { nextPageHint }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity).background(
-                Color.white
-            )
-        }.ignoresSafeArea().navigationBarBackButtonHidden()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.white)
+        }
+        .ignoresSafeArea().navigationBarBackButtonHidden()
     }
 }
 
@@ -73,12 +76,14 @@ struct WelcomeView_2: View {
             title: "To get your course table...",
             isInSheet: true,
             casLoginSheet: $isPresented
-        ).navigationDestination(
+        )
+        .navigationDestination(
             isPresented: .init(
                 get: { !isPresented },
                 set: { isPresented = !$0 }
             )
-        ) { WelcomeView_3() }.navigationBarBackButtonHidden()
+        ) { WelcomeView_3() }
+        .navigationBarBackButtonHidden()
     }
 }
 

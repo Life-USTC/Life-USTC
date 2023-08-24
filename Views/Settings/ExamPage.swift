@@ -20,7 +20,8 @@ struct ExamSettingView: View {
             Section {
                 ForEach(hiddenExamName.indices, id: \.self) { index in
                     TextField("Name", text: $hiddenExamName[index])
-                }.onDelete(perform: delete)
+                }
+                .onDelete(perform: delete)
 
                 Button {
                     if hiddenExamName.filter(\.isEmpty).isEmpty {
@@ -38,10 +39,9 @@ struct ExamSettingView: View {
                 )
             }
             EmptyView()
-        }.scrollContentBackground(.hidden).navigationBarTitle(
-            "Exam Settings",
-            displayMode: .inline
-        )
+        }
+        .scrollContentBackground(.hidden)
+        .navigationBarTitle("Exam Settings", displayMode: .inline)
     }
 }
 

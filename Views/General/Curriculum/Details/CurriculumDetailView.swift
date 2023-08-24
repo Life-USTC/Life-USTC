@@ -21,10 +21,9 @@ struct CurriculumDetailView: View {
                     }
                 }
             }
-        }.scrollContentBackground(.hidden).asyncStatusOverlay(
-            _curriculum.status
-        ).refreshable { _curriculum.triggerRefresh() }.navigationTitle(
-            "Curriculum"
-        ).navigationBarTitleDisplayMode(.inline)
+        }
+        .scrollContentBackground(.hidden).asyncStatusOverlay(_curriculum.status)
+        .refreshable { _curriculum.triggerRefresh() }
+        .navigationTitle("Curriculum").navigationBarTitleDisplayMode(.inline)
     }
 }

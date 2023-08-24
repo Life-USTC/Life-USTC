@@ -34,8 +34,9 @@ struct SettingsView: View {
                 NavigationLink("About Life@USTC", destination: AboutApp())
                 NavigationLink("Legal Info", destination: LegalInfoView())
             }
-        }.navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
-            .scrollContentBackground(.hidden)
+        }
+        .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
     }
 }
 

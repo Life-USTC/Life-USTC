@@ -47,20 +47,24 @@ struct AboutApp: View {
                             UserDefaults.appGroup.dictionaryRepresentation()
                         )
                     )
-                }.clipShape(RoundedRectangle(cornerRadius: 20)).contextMenu {
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .contextMenu {
                     ShareLink(item: "Life@USTC") {
                         Label(
                             "Share this app",
                             systemImage: "square.and.arrow.up"
                         )
                     }
-                }.shadow(radius: 10)
+                }
+                .shadow(radius: 10)
             Spacer()
             Text("Life@USTC").font(.title).bold()
 
             Text(
                 "Ver: \(Bundle.main.releaseNumber ?? "") build\(Bundle.main.buildNumber ?? "")"
-            ).font(.caption).bold().foregroundColor(.secondary)
+            )
+            .font(.caption).bold().foregroundColor(.secondary)
 
             Spacer()
 
@@ -77,9 +81,8 @@ struct AboutApp: View {
                             } placeholder: {
                                 ProgressView()
                             }
-                            Text(contributor.name).fontWeight(.medium).font(
-                                .title3
-                            )
+                            Text(contributor.name).fontWeight(.medium)
+                                .font(.title3)
                         }
                     }
                 }
@@ -92,9 +95,13 @@ struct AboutApp: View {
                             .padding([.top, .bottom], 2)
                         Text(link.url).foregroundColor(.gray)
                     }
-                }.frame(height: 40)
-            }.hStackLeading()
-        }.padding().navigationBarTitle("About", displayMode: .inline).onAppear {
+                }
+                .frame(height: 40)
+            }
+            .hStackLeading()
+        }
+        .padding().navigationBarTitle("About", displayMode: .inline)
+        .onAppear {
             Task {
                 var request = URLRequest(
                     url: URL(

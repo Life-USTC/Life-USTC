@@ -41,16 +41,16 @@ enum TPNSClient {
             throw TPNSClientError.emptyParameter
         }
 
-        let signature = HMAC<SHA256>.authenticationCode(
-            for: "\(timestamp)\(accessID)\(message)".data(using: .utf8)!,
-            using: SymmetricKey(data: secretKey.data(using: .utf8)!)
-        )
+        let signature = HMAC<SHA256>
+            .authenticationCode(
+                for: "\(timestamp)\(accessID)\(message)".data(using: .utf8)!,
+                using: SymmetricKey(data: secretKey.data(using: .utf8)!)
+            )
 
         // Base64 encode the signature
 
-        let signatureBase64 = signature.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
+        let signatureBase64 =
+            signature.compactMap { String(format: "%02x", $0) }.joined()
 
         // Send the request
 

@@ -48,10 +48,9 @@ struct FeedSettingView: View {
             } footer: {
                 Text("A reload may be required for this to take effect.")
             }
-        }.scrollContentBackground(.hidden).navigationBarTitle(
-            "Feed Source Settings",
-            displayMode: .inline
-        )
+        }
+        .scrollContentBackground(.hidden)
+        .navigationBarTitle("Feed Source Settings", displayMode: .inline)
     }
 }
 
