@@ -20,8 +20,6 @@ class SchoolExport {
 
     var settings: [SettingWithView] { [] }
 
-    var feedURLs: [URL] { [] }
-
     var remoteFeedURL: URL { exampleURL }
 
     var localFeedJSOName: String { "" }
