@@ -222,6 +222,7 @@
 		5699672A2A9746D500CC1EBB /* GenericsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericsExtension.swift; sourceTree = "<group>"; };
 		5699672D2A976FC200CC1EBB /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
 		5699672F2A976FD700CC1EBB /* FeedSourceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceList.swift; sourceTree = "<group>"; };
+		569967322A97A2E200CC1EBB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		569CFE4B297E85F30072C094 /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
 		569CFE51297EBD240072C094 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		569CFE53297EBD2E0072C094 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -354,9 +355,9 @@
 		56311A6D2A16390F009D7A34 /* JSRuntime */ = {
 			isa = PBXGroup;
 			children = (
-				567E6FA72A121CB50056BE5F /* console.js */,
+				569967312A97A2D100CC1EBB /* Assets */,
 				5627958A2A08F382009D398E /* JSRuntime.swift */,
-				56311A6E2A16394A009D7A34 /* Runtime.html */,
+				569967322A97A2E200CC1EBB /* README.md */,
 			);
 			path = JSRuntime;
 			sourceTree = "<group>";
@@ -402,11 +403,8 @@
 			children = (
 				56D175C9295438E80070778F /* Feed */,
 				5627D8D42A5EA88E00DEB653 /* InAppNotification */,
-				56E9A0902A8F0E4600A12B29 /* ManagedData */,
 				56C1425229F64886007D9BD4 /* PushNotification */,
 				5638E27C2A5812BD001967D9 /* School */,
-				56BE91F52962FEA900822C98 /* Shared */,
-				56DD03A7296D0924004C358C /* AppDelegate.swift */,
 				56F173502A1C881300C79E53 /* README.md */,
 			);
 			path = Models;
@@ -452,7 +450,6 @@
 				5677E11D2A5AB4F000EDCB53 /* Models */,
 				5677E11E2A5AB51400EDCB53 /* Views */,
 				5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */,
-				5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */,
 			);
 			path = USTC;
 			sourceTree = "<group>";
@@ -462,6 +459,7 @@
 			children = (
 				56B86B852A8F47E6003440D2 /* Lesson.swift */,
 				56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */,
+				5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -512,6 +510,15 @@
 			path = ManagedLocalData;
 			sourceTree = "<group>";
 		};
+		569967312A97A2D100CC1EBB /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				567E6FA72A121CB50056BE5F /* console.js */,
+				56311A6E2A16394A009D7A34 /* Runtime.html */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		569CFE4D297EBCFA0072C094 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -558,6 +565,7 @@
 				2BBEA9FBFB8C9A607C68EB2F /* TPNS */,
 				565587F4294D632D0010E060 /* Views */,
 				56FA8E7A297D7263000AC3A9 /* Widget */,
+				56DD03A7296D0924004C358C /* AppDelegate.swift */,
 				56BE91F82965D05A00822C98 /* README.md */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
 				56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */,
@@ -590,9 +598,10 @@
 			children = (
 				56CAA6312A6D66C0003AFA1B /* Extension */,
 				56311A6D2A16390F009D7A34 /* JSRuntime */,
+				56E9A0902A8F0E4600A12B29 /* ManagedData */,
+				56BE91F52962FEA900822C98 /* Shared */,
 				56143F6A295EDEA5008CE454 /* Constants.swift */,
 				56D8A49C2A6D21ED0027224C /* Keychain.swift */,
-				56F1734F2A1C871D00C79E53 /* README.md */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -638,6 +647,7 @@
 				5621691B2955BEC500DF46BE /* DateExtension.swift */,
 				56BE91F62963EF1600822C98 /* ExceptionExtension.swift */,
 				5699672A2A9746D500CC1EBB /* GenericsExtension.swift */,
+				56F1734F2A1C871D00C79E53 /* README.md */,
 				56BE91FA296677A300822C98 /* StringExtension.swift */,
 				56BE91F22962F77800822C98 /* UUIDExtension.swift */,
 			);
