@@ -68,8 +68,8 @@ extension View {
     }
 }
 
-private extension LocalAsyncStatus {
-    var color: Color {
+extension LocalAsyncStatus {
+    fileprivate var color: Color {
         switch self {
         case .valid:
             return .green
@@ -81,8 +81,8 @@ private extension LocalAsyncStatus {
     }
 }
 
-private extension RefreshAsyncStatus {
-    var color: Color {
+extension RefreshAsyncStatus {
+    fileprivate var color: Color {
         switch self {
         case .waiting:
             return .yellow

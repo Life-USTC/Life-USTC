@@ -19,9 +19,9 @@ struct SettingsView: View {
                 ForEach(SettingsView.availableSettings) { setting in
                     NavigationLink(setting.name.localized, destination: setting.destinationView)
                 }
-#if DEBUG
+                #if DEBUG
                 NavigationLink("Change User Type", destination: UserTypeView())
-#endif
+                #endif
             }
 
             Section {

@@ -24,7 +24,7 @@ class LoginClient<T: LoginClientProtocol> {
 
     func requireLogin() async throws -> Bool {
         // Waiting random time to avoid racing condition
-        try await Task.sleep(nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000))
+        try await Task.sleep(nanoseconds: UInt64.random(in: 0..<1_000_000_000))
         if let loginTask {
             return try await loginTask.value
         }

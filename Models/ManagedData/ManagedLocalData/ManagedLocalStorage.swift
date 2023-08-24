@@ -27,9 +27,11 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
         }
         set {
             if !fm.fileExists(atPath: url.path) {
-                try? fm.createDirectory(at: url.deletingLastPathComponent(),
-                                        withIntermediateDirectories: true,
-                                        attributes: nil)
+                try? fm.createDirectory(
+                    at: url.deletingLastPathComponent(),
+                    withIntermediateDirectories: true,
+                    attributes: nil
+                )
             }
 
             try? JSONEncoder().encode(newValue).write(to: url)
@@ -60,11 +62,12 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
         }
     }
 
-    init(_ key: String,
-         fm: FileManager = FileManager.default,
-         userDefaults: UserDefaults = UserDefaults.appGroup,
-         validDuration: TimeInterval = 60 * 15)
-    {
+    init(
+        _ key: String,
+        fm: FileManager = FileManager.default,
+        userDefaults: UserDefaults = UserDefaults.appGroup,
+        validDuration: TimeInterval = 60 * 15
+    ) {
         self.key = key
         self.fm = fm
         self.userDefaults = userDefaults

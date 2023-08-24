@@ -14,11 +14,13 @@ struct Semester: Codable {
     var startDate: Date
     var endDate: Date
 
-    static let example = Self(id: "241",
-                              courses: [.example],
-                              name: "2021 Spring",
-                              startDate: Date(),
-                              endDate: Date().add(day: 10))
+    static let example = Semester(
+        id: "241",
+        courses: [.example],
+        name: "2021 Spring",
+        startDate: Date(),
+        endDate: Date().add(day: 10)
+    )
 }
 
 extension Semester: Identifiable, Equatable {}

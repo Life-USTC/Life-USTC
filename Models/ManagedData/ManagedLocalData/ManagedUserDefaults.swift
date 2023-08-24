@@ -52,10 +52,11 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
         }
     }
 
-    init(_ key: String,
-         userDefaults: UserDefaults = UserDefaults.appGroup,
-         validDuration: TimeInterval = 60 * 15)
-    {
+    init(
+        _ key: String,
+        userDefaults: UserDefaults = UserDefaults.appGroup,
+        validDuration: TimeInterval = 60 * 15
+    ) {
         self.key = key
         self.userDefaults = userDefaults
         self.validDuration = validDuration

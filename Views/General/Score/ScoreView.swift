@@ -26,11 +26,14 @@ struct ScoreView: View {
                     .foregroundColor(.secondary)
                     .fontWeight(.semibold)
                 Spacer()
-                Text("Rating:".localized + String(score.majorRank) + "/" + String(score.majorStdCount))
-                    .foregroundColor(.secondary)
-                    .fontWeight(.semibold)
+                Text(
+                    "Rating:".localized + String(score.majorRank) + "/"
+                        + String(score.majorStdCount)
+                )
+                .foregroundColor(.secondary)
+                .fontWeight(.semibold)
             }
-            Text("GPA: " + String(score.gpa)) // Double formatting problem noticed
+            Text("GPA: " + String(score.gpa))  // Double formatting problem noticed
                 .font(.title2)
                 .bold()
         }
@@ -44,15 +47,17 @@ struct ScoreView: View {
                 .foregroundColor(.gray)
             ForEach($0.courses, id: \.lessonCode) { course in
                 Divider()
-                SingleScoreView(courseScore: course, color: { () -> Color in
-                    if (course.gpa ?? 0.0) >= 1.0 {
-                        return course.gpa! >= score.gpa ?
-                            .cyan.opacity(0.6) :
-                            .orange.opacity(0.6)
-                    }
-                    return .red.opacity(0.6)
-                }())
-                    .padding(.vertical, 5)
+                SingleScoreView(
+                    courseScore: course,
+                    color: { () -> Color in
+                        if (course.gpa ?? 0.0) >= 1.0 {
+                            return course.gpa! >= score.gpa
+                                ? .cyan.opacity(0.6) : .orange.opacity(0.6)
+                        }
+                        return .red.opacity(0.6)
+                    }()
+                )
+                .padding(.vertical, 5)
             }
             Divider()
                 .padding(.bottom, 45)
@@ -149,10 +154,12 @@ extension ScoreView {
                 }
             }
         } label: {
-            Label("Semester: \(selectedSemesterNames)",
-                  systemImage: "square.dashed.inset.filled")
-                .lineLimit(1)
-                .hStackLeading()
+            Label(
+                "Semester: \(selectedSemesterNames)",
+                systemImage: "square.dashed.inset.filled"
+            )
+            .lineLimit(1)
+            .hStackLeading()
         }
     }
 
@@ -180,8 +187,11 @@ extension ScoreView {
                 Label("Sort by: Default", systemImage: "number.square")
                     .hStackLeading()
             } else {
-                Label("Sort by: \(sortPreference!.rawValue.localized)", systemImage: "number.square")
-                    .hStackLeading()
+                Label(
+                    "Sort by: \(sortPreference!.rawValue.localized)",
+                    systemImage: "number.square"
+                )
+                .hStackLeading()
             }
         }
     }

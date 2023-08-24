@@ -18,9 +18,13 @@ struct SingleScoreView: View {
             .padding(4)
             .frame(width: 85, height: 30)
             .background(
-                Stripes(config: .init(background: .gray,
-                                      foreground: .white.opacity(0.4)))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                Stripes(
+                    config: .init(
+                        background: .gray,
+                        foreground: .white.opacity(0.4)
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
             )
     }
 
@@ -31,9 +35,13 @@ struct SingleScoreView: View {
             .padding(4)
             .frame(width: 85, height: 30)
             .background(
-                Stripes(config: .init(background: .cyan,
-                                      foreground: .white.opacity(0.4)))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                Stripes(
+                    config: .init(
+                        background: .cyan,
+                        foreground: .white.opacity(0.4)
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
             )
     }
 
@@ -89,12 +97,18 @@ struct SingleScoreView: View {
 struct SingleScoreView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .trailing) {
-            SingleScoreView(courseScore: .example,
-                            color: .accentColor)
-            SingleScoreView(courseScore: .example,
-                            color: .accentColor).noGPAView
-            SingleScoreView(courseScore: .example,
-                            color: .accentColor).noScoreView
+            SingleScoreView(
+                courseScore: .example,
+                color: .accentColor
+            )
+            SingleScoreView(
+                courseScore: .example,
+                color: .accentColor
+            ).noGPAView
+            SingleScoreView(
+                courseScore: .example,
+                color: .accentColor
+            ).noScoreView
         }
         .padding(.horizontal)
     }

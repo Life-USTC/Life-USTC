@@ -10,7 +10,7 @@ import Foundation
 extension Array: RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
-              let result = try? JSONDecoder().decode([Element].self, from: data)
+            let result = try? JSONDecoder().decode([Element].self, from: data)
         else {
             return nil
         }
@@ -19,7 +19,7 @@ extension Array: RawRepresentable where Element: Codable {
 
     public var rawValue: String {
         guard let data = try? JSONEncoder().encode(self),
-              let result = String(data: data, encoding: .utf8)
+            let result = String(data: data, encoding: .utf8)
         else {
             return "[]"
         }
@@ -27,8 +27,8 @@ extension Array: RawRepresentable where Element: Codable {
     }
 }
 
-public extension Collection where Indices.Iterator.Element == Index {
-    subscript(safe index: Index) -> Iterator.Element? {
+extension Collection where Indices.Iterator.Element == Index {
+    public subscript(safe index: Index) -> Iterator.Element? {
         (startIndex <= index && index < endIndex) ? self[index] : nil
     }
 }
@@ -42,8 +42,8 @@ extension CaseIterable where Self: Equatable {
     }
 }
 
-public extension Sequence {
-    func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U: [Iterator.Element]] {
+extension Sequence {
+    public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U: [Iterator.Element]] {
         var dict: [U: [Iterator.Element]] = [:]
         for el in self {
             let key = key(el)

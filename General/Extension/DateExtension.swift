@@ -24,12 +24,18 @@ extension Date {
     }
 
     func stripDate() -> Date {
-        let components = Calendar.current.dateComponents([.hour, .minute, .second, .nanosecond], from: self)
+        let components = Calendar.current.dateComponents(
+            [.hour, .minute, .second, .nanosecond],
+            from: self
+        )
         return Calendar.current.date(from: components)!
     }
 
     var HHMM: Int {
-        let components = Calendar.current.dateComponents([.hour, .minute], from: self)
+        let components = Calendar.current.dateComponents(
+            [.hour, .minute],
+            from: self
+        )
         return (components.hour ?? 0) * 60 + (components.minute ?? 0)
     }
 
@@ -39,7 +45,11 @@ extension Date {
     }
 
     func startOfWeek() -> Date {
-        Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
+        Calendar.current.dateComponents(
+            [.calendar, .yearForWeekOfYear, .weekOfYear],
+            from: self
+        )
+        .date!
     }
 }
 

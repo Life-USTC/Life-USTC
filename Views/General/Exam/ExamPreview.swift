@@ -53,9 +53,13 @@ struct ExamPreview: View {
                             .frame(height: 5)
                     } else {
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(LinearGradient(colors: randomColor,
-                                                 startPoint: .topLeading,
-                                                 endPoint: .bottomTrailing))
+                            .fill(
+                                LinearGradient(
+                                    colors: randomColor,
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(height: 5)
                     }
                 }

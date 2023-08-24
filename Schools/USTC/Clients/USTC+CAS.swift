@@ -32,7 +32,7 @@ class UstcCasClient: LoginClientProtocol {
         let (data, _) = try await session.data(for: request)
 
         guard let dataString = String(data: data, encoding: .utf8),
-              let match = dataString.firstMatch(of: findLtStringRegex)
+            let match = dataString.firstMatch(of: findLtStringRegex)
         else {
             throw BaseError.runtimeError("Failed to fetch raw LT-Token")
         }
@@ -64,12 +64,18 @@ class UstcCasClient: LoginClientProtocol {
         ]
 
         var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(separator: "&").data(using: .utf8)
+        request.httpBody = queries.map { "\($0.key)=\($0.value)" }.joined(separator: "&").data(
+            using: .utf8
+        )
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        session.configuration.httpCookieStorage?.setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
+        session.configuration.httpCookieStorage?.setCookies(
+            cookies,
+            for: ustcCasUrl,
+            mainDocumentURL: ustcCasUrl
+        )
 
         let _ = try await session.data(for: request)
 

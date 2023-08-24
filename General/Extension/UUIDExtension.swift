@@ -22,7 +22,8 @@ extension UUID {
     init(name: String, nameSpace: UUIDv5NameSpace) {
         // Get UUID bytes from name space:
         var spaceUID = UUID(uuidString: nameSpace.rawValue)!.uuid
-        var data = withUnsafePointer(to: &spaceUID) { [count = MemoryLayout.size(ofValue: spaceUID)] in
+        var data = withUnsafePointer(to: &spaceUID) {
+            [count = MemoryLayout.size(ofValue: spaceUID)] in
             Data(bytes: $0, count: count)
         }
 

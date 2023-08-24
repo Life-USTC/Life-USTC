@@ -19,7 +19,10 @@ class UstcUgAASClient: LoginClientProtocol {
 
     override func login() async throws -> Bool {
         let urlA = URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!
-        let urlB = URL(string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin")!
+        let urlB = URL(
+            string:
+                "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin"
+        )!
         let urlC = URL(string: "https://jw.ustc.edu.cn/home")!
 
         // jw.ustc.edu.cn login.

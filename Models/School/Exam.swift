@@ -32,15 +32,17 @@ struct Exam: Codable, Equatable, ExampleDataProtocol {
     var classRoomDistrict: String
     var description: String
 
-    static let example: Exam = .init(lessonCode: "MATH10001.01",
-                                     courseName: "数学分析B1",
-                                     typeName: "期末考试",
-                                     startDate: Date(),
-                                     endDate: Date() + DateComponents(hour: 1),
-                                     classRoomName: "5401",
-                                     classRoomBuildingName: "第五教学楼",
-                                     classRoomDistrict: "东区",
-                                     description: "")
+    static let example: Exam = .init(
+        lessonCode: "MATH10001.01",
+        courseName: "数学分析B1",
+        typeName: "期末考试",
+        startDate: Date(),
+        endDate: Date() + DateComponents(hour: 1),
+        classRoomName: "5401",
+        classRoomBuildingName: "第五教学楼",
+        classRoomDistrict: "东区",
+        description: ""
+    )
 }
 
 extension Exam {
@@ -53,15 +55,19 @@ extension Exam {
     }
 
     var daysLeft: Int {
-        Calendar.current.dateComponents([.day],
-                                        from: .now.stripTime(),
-                                        to: startDate.stripTime()).day ?? 0
+        Calendar.current.dateComponents(
+            [.day],
+            from: .now.stripTime(),
+            to: startDate.stripTime()
+        ).day ?? 0
     }
 }
 
 extension Exam {
     static func clean(_ exams: [Exam]) -> [Exam] {
-        let hiddenExamName = ([String].init(rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName") ?? "") ?? []).filter { !$0.isEmpty }
+        let hiddenExamName =
+            ([String].init(rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName") ?? "")
+            ?? []).filter { !$0.isEmpty }
         let result = exams.filter { exam in
             for name in hiddenExamName {
                 if exam.courseName.contains(name) {
@@ -124,7 +130,9 @@ extension Exam {
         }
 
         let calendarName = "Upcoming Exams"
-        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: { $0.title == calendarName.localized })
+        var calendar: EKCalendar? = eventStore.calendars(for: .event).first(where: {
+            $0.title == calendarName.localized
+        })
 
         // try remove everything with that name in it
         if calendar != nil {

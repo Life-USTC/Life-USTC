@@ -15,9 +15,13 @@ struct StripesConfig {
     var barWidth: CGFloat
     var barSpacing: CGFloat
 
-    public init(background: Color = Color.pink.opacity(0.5), foreground: Color = Color.pink.opacity(0.8),
-                degrees: Double = 30, barWidth: CGFloat = 20, barSpacing: CGFloat = 20)
-    {
+    public init(
+        background: Color = Color.pink.opacity(0.5),
+        foreground: Color = Color.pink.opacity(0.8),
+        degrees: Double = 30,
+        barWidth: CGFloat = 20,
+        barSpacing: CGFloat = 20
+    ) {
         self.background = background
         self.foreground = foreground
         self.degrees = degrees
@@ -41,7 +45,7 @@ struct Stripes: View {
             let itemWidth = config.barWidth + config.barSpacing
             let items = Int(2 * longSide / itemWidth)
             HStack(spacing: config.barSpacing) {
-                ForEach(0 ..< items, id: \.self) { _ in
+                ForEach(0..<items, id: \.self) { _ in
                     config.foreground
                         .frame(width: config.barWidth, height: 2 * longSide)
                 }

@@ -19,10 +19,12 @@ struct Lecture: Codable, Identifiable, Equatable {
     var periods: Double = 0
     var additionalInfo: [String: String] = [:]
 
-    static let example = Self(startDate: Date(),
-                              endDate: Date() + DateComponents(hour: 1),
-                              name: "Example Lecture",
-                              location: "Example Location")
+    static let example = Self(
+        startDate: Date(),
+        endDate: Date() + DateComponents(hour: 1),
+        name: "Example Lecture",
+        location: "Example Location"
+    )
 }
 
 extension EKEvent {

@@ -39,7 +39,10 @@ enum TPNSClient {
             throw TPNSClientError.emptyParameter
         }
 
-        let signature = HMAC<SHA256>.authenticationCode(for: "\(timestamp)\(accessID)\(message)".data(using: .utf8)!, using: SymmetricKey(data: secretKey.data(using: .utf8)!))
+        let signature = HMAC<SHA256>.authenticationCode(
+            for: "\(timestamp)\(accessID)\(message)".data(using: .utf8)!,
+            using: SymmetricKey(data: secretKey.data(using: .utf8)!)
+        )
 
         // Base64 encode the signature
 

@@ -60,9 +60,9 @@ class SchoolExport {
         USTCScoreDelegate.shared
     }
 
-//    var baseModifier: some ViewModifier {
-//        USTCBaseModifier()
-//    }
+    //    var baseModifier: some ViewModifier {
+    //        USTCBaseModifier()
+    //    }
 
     var firstLoginView: (Binding<Bool>) -> AnyView {
         { .init(USTCCASLoginView.sheet(isPresented: $0)) }

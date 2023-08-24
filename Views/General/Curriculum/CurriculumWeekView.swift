@@ -25,15 +25,14 @@ struct CurriculumWeekView: View {
     }
 
     func updateLectures() {
-        lectures = (
-            currentSemester == nil ?
-                curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) } :
-                currentSemester!.courses.flatMap(\.lectures)
-        ).filter {
-            (0.0 ..< 3600.0 * 24 * 7).contains(
-                $0.startDate.stripTime().timeIntervalSince(date)
-            )
-        }
+        lectures =
+            (currentSemester == nil
+            ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
+            : currentSemester!.courses.flatMap(\.lectures)).filter {
+                (0.0..<3600.0 * 24 * 7).contains(
+                    $0.startDate.stripTime().timeIntervalSince(date)
+                )
+            }
     }
 
     var mergedTimes: [Int] {
@@ -84,7 +83,8 @@ struct CurriculumWeekView: View {
                         Curriculum.behviour.convertTo(lecture.endDate.HHMM)
                     ),
                     y: .value(
-                        "Date", lecture.startDate.stripTime(),
+                        "Date",
+                        lecture.startDate.stripTime(),
                         unit: .day
                     )
                 )
@@ -107,7 +107,10 @@ struct CurriculumWeekView: View {
                 }
             }
 
-            AxisMarks(position: .bottom, values: [Curriculum.behviour.convertTo(Date().stripDate().HHMM)]) { _ in
+            AxisMarks(
+                position: .bottom,
+                values: [Curriculum.behviour.convertTo(Date().stripDate().HHMM)]
+            ) { _ in
                 AxisValueLabel(anchor: .topTrailing) {
                     Text("Now")
                         .foregroundColor(.red)
@@ -128,7 +131,7 @@ struct CurriculumWeekView: View {
                 }
             }
         }
-        .chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
+        .chartXScale(domain: mergedTimes.first!...mergedTimes.last!)
         .chartYAxis {
             AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
                 AxisGridLine()
@@ -139,7 +142,7 @@ struct CurriculumWeekView: View {
             }
         }
         .chartYVisibleDomain(length: 3600 * 24 * 7)
-        .chartYScale(domain: date ... date.add(day: 7))
+        .chartYScale(domain: date...date.add(day: 7))
         .frame(height: 230)
     }
 
@@ -184,9 +187,11 @@ struct CurriculumWeekView: View {
                 flipped.toggle()
             }
         } label: {
-            Label(flipped ? "Chart" : "Settings",
-                  systemImage: flipped ? "chart.bar.xaxis" : "gearshape")
-                .font(.caption)
+            Label(
+                flipped ? "Chart" : "Settings",
+                systemImage: flipped ? "chart.bar.xaxis" : "gearshape"
+            )
+            .font(.caption)
         }
     }
 

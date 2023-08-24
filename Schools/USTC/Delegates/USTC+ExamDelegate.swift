@@ -34,15 +34,19 @@ class USTCExamDelegate: ManagedRemoteUpdateProtocol {
         for examParsed: Element in examsParsed.array() {
             let textList: [String] = examParsed.children().array().map { $0.ownText() }
             if let parsed = parse(rawTime: textList[3]) {
-                result.append(Exam(lessonCode: textList[0],
-                                   courseName: textList[2],
-                                   typeName: textList[1],
-                                   startDate: parsed.startTime,
-                                   endDate: parsed.endTime,
-                                   classRoomName: textList[4],
-                                   classRoomBuildingName: textList[5],
-                                   classRoomDistrict: textList[6],
-                                   description: textList[7]))
+                result.append(
+                    Exam(
+                        lessonCode: textList[0],
+                        courseName: textList[2],
+                        typeName: textList[1],
+                        startDate: parsed.startTime,
+                        endDate: parsed.endTime,
+                        classRoomName: textList[4],
+                        classRoomBuildingName: textList[5],
+                        classRoomDistrict: textList[6],
+                        description: textList[7]
+                    )
+                )
             }
         }
         return result
