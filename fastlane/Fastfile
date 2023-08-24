@@ -99,16 +99,15 @@ platform :ios do
     # )
 
     upload_to_testflight(
-      distribute_external: true,
       changelog: ENV["COMMIT_MESSAGE"],
-      distribute_only: false,
+      distribute_external: true,
       groups: [
-        "Internal",
-        "External",
+        "e95dd2d2-06df-4dcf-8361-eaa442132b5f",
+        "1d88df5c-6668-4ff9-a352-814fa5cd1692",
       ],
-      skip_submission: true,
+      skip_submission: false,
       notify_external_testers: true,
-      skip_waiting_for_build_processing: true,
+      skip_waiting_for_build_processing: false,
     )
   end
 
