@@ -47,11 +47,10 @@ struct ScoreView: View {
         ForEach(courses, id: \.lessonCode) { course in
             SingleScoreView(
                 courseScore: course,
-                color: ((course.gpa ?? 0.0) >= 1.0 ?
-                        (course.gpa! >= score.gpa ?
-                            .cyan.opacity(0.6) :
-                                .orange.opacity(0.6)) :
-                        .red.opacity(0.6))
+                color: ((course.gpa ?? 0.0) >= 1.0
+                    ? (course.gpa! >= score.gpa
+                        ? .cyan.opacity(0.6) : .orange.opacity(0.6))
+                    : .red.opacity(0.6))
             )
         }
     }
@@ -131,7 +130,8 @@ extension ScoreView {
         String(
             semesterList.filter { name in
                 !semesterNameToRemove.contains(name)
-            }.map { $0.truncated(length: 6) }.joined(separator: ", ")
+            }
+            .map { $0.truncated(length: 6) }.joined(separator: ", ")
         )
     }
 }
