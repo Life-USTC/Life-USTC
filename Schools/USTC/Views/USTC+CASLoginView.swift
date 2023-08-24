@@ -7,129 +7,131 @@
 
 import SwiftUI
 
-struct USTCCASLoginView: View {
-    static func sheet(isPresented: Binding<Bool>) -> USTCCASLoginView {
-        USTCCASLoginView(
-            title: "One more step...",
-            isInSheet: true,
-            casLoginSheet: isPresented
-        )
+extension View {
+    fileprivate func customizeShape() -> some View {
+        frame(width: 80, height: 80)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(radius: 4)
     }
+}
 
-    static var newPage = USTCCASLoginView(casLoginSheet: .constant(false))
-
-    var title: LocalizedStringKey = "CAS Settings"
-    var isInSheet = false
-
+struct USTCCASLoginView: View {
     enum Field: Int, Hashable {
         case username
         case password
     }
 
-    @StateObject var ustcCASVoewModel = UstcCasViewModel.shared
     @Binding var casLoginSheet: Bool  // used to signal the sheet to close
+    @StateObject var ustcCASViewModel = UstcCasViewModel.shared
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
     @FocusState var foucusField: Field?
 
+    var title: LocalizedStringKey = "CAS Settings"
+    var isInSheet = false
+
+    var iconView: some View {
+        HStack(spacing: 50) {
+            Image("Icon")
+                .resizable()
+                .customizeShape()
+            Image(systemName: "link")
+                .resizable()
+                .frame(width: 33, height: 33)
+            Image(systemName: "person.crop.square.filled.and.at.rectangle")
+                .resizable()
+                .foregroundColor(.init(hex: "#004075"))
+                .frame(width: 40, height: 30)
+                .background {
+                    Color.white
+                        .customizeShape()
+                }
+        }
+    }
+
+    var formView: some View {
+        VStack {
+            HStack(alignment: .top) {
+                Text("Username:")
+                    .font(.system(.body, design: .monospaced, weight: .bold))
+                VStack(alignment: .leading) {
+                    TextField(
+                        "Username",
+                        text: $ustcCASViewModel.inputUsername
+                    )
+                    .focused($foucusField, equals: .username)
+                    .onSubmit {
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + 0.1
+                        ) {
+                            foucusField = .password
+                        }
+                    }
+                    .submitLabel(.next)
+                    .autocorrectionDisabled(true)
+                    .keyboardType(.asciiCapable)
+
+                    Divider()
+                }
+                .frame(width: 220)
+            }
+
+            HStack(alignment: .top) {
+                Text("Password:")
+                    .font(.system(.body, design: .monospaced, weight: .bold))
+                VStack(alignment: .leading) {
+                    SecureField(
+                        "Password",
+                        text: $ustcCASViewModel.inputPassword
+                    )
+                    .focused($foucusField, equals: .password)
+                    .onSubmit {
+                        checkAndLogin()
+                    }
+                    .submitLabel(.done)
+
+                    Divider()
+                }
+                .frame(width: 220)
+            }
+        }
+    }
+
+    var loginButton: some View {
+        Button {
+            checkAndLogin()
+        } label: {
+            Text("Check & Login").foregroundColor(.white).padding()
+                .frame(maxWidth: .infinity)
+                .background {
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Color.accentColor)
+                }
+                .frame(maxWidth: .infinity)
+        }
+        .keyboardShortcut(.defaultAction)
+    }
+
     var body: some View {
         NavigationStack {
             VStack {
-                VStack {
-                    Spacer().frame(height: 30)
-                    HStack {
-                        Spacer()
-                        Image("Icon").resizable().frame(width: 80, height: 80)
-                            .onTapGesture(count: 5) {
-                                UIPasteboard.general.string = String(
-                                    describing: Array(
-                                        UserDefaults.appGroup
-                                            .dictionaryRepresentation()
-                                    )
-                                )
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                            .shadow(radius: 4)
-                        Spacer()
-                        Image(systemName: "link").resizable()
-                            .frame(width: 33, height: 33)
-                        Spacer()
-                        ZStack {
-                            Rectangle().fill(Color.white)
-                                .frame(width: 80, height: 80)
-                            Image(
-                                systemName:
-                                    "person.crop.square.filled.and.at.rectangle"
-                            )
-                            .resizable().frame(width: 40, height: 30)
-                            .foregroundColor(Color.secondary)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .shadow(radius: 4)
-                        Spacer()
-                    }
+                iconView
+                    .padding(.vertical, 30)
 
-                    Spacer().frame(height: 30)
+                Text("casHint")
+                    .font(.system(.caption, design: .rounded, weight: .bold))
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 30)
 
-                    Text("casHint").font(.caption).bold().foregroundColor(.gray)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top)
-                    Spacer().frame(height: 30)
+                formView
 
-                    HStack(alignment: .top) {
-                        Text("Username:").bold()
-                        VStack(alignment: .leading) {
-                            TextField(
-                                "Username",
-                                text: $ustcCASVoewModel.inputUsername
-                            )
-                            .focused($foucusField, equals: .username)
-                            .onSubmit {
-                                DispatchQueue.main.asyncAfter(
-                                    deadline: .now() + 0.1
-                                ) { foucusField = .password }
-                            }
-                            .submitLabel(.next).autocorrectionDisabled(true)
-                            .keyboardType(.asciiCapable)
+                Spacer()
 
-                            Divider().padding(.vertical, 0)
-                        }
-                        .frame(width: 220)
-                    }
-
-                    HStack(alignment: .top) {
-                        Text("Password:").bold()
-                        VStack(alignment: .leading) {
-                            SecureField(
-                                "Password",
-                                text: $ustcCASVoewModel.inputPassword
-                            )
-                            .focused($foucusField, equals: .password)
-                            .submitLabel(.done).onSubmit { checkAndLogin() }
-                            .padding(.horizontal, 3)
-                            Divider()
-                        }
-                        .frame(width: 220)
-                    }
-
-                    Spacer()
-
-                    Button {
-                        checkAndLogin()
-                    } label: {
-                        Text("Check & Login").foregroundColor(.white).padding()
-                            .frame(maxWidth: .infinity)
-                            .background {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(Color.accentColor)
-                            }
-                            .frame(maxWidth: .infinity)
-                    }
-                    .keyboardShortcut(.defaultAction)
-                }
-                .padding().padding(.top)
+                loginButton
             }
-            .padding(.horizontal)
+            .padding([.top, .horizontal])
             .alert(
                 "Login Failed".localized,
                 isPresented: $showFailedAlert,
@@ -148,10 +150,10 @@ struct USTCCASLoginView: View {
         }
     }
 
-    private func checkAndLogin() {
+    func checkAndLogin() {
         Task {
             do {
-                let result = try await ustcCASVoewModel.checkAndLogin()
+                let result = try await ustcCASViewModel.checkAndLogin()
                 if result, isInSheet {
                     showSuccessAlert = true
 
@@ -174,11 +176,21 @@ struct USTCCASLoginView: View {
     }
 }
 
+extension USTCCASLoginView {
+    static func sheet(isPresented: Binding<Bool>) -> USTCCASLoginView {
+        USTCCASLoginView(
+            casLoginSheet: isPresented,
+            title: "One more step...",
+            isInSheet: true
+        )
+    }
+
+    static var newPage = USTCCASLoginView(casLoginSheet: .constant(false))
+}
+
 struct USTCCASLoginView_Previews: PreviewProvider {
     static var previews: some View {
         USTCCASLoginView.newPage
-        #if os(iOS)
         USTCCASLoginView.sheet(isPresented: .constant(false))
-        #endif
     }
 }

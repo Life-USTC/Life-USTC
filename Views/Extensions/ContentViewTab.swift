@@ -44,14 +44,21 @@ struct ContentViewTabBarItemModifier: ViewModifier {
     @Binding var selection: ContentViewTab
 
     func body(content: Content) -> some View {
-        if selection == tab { content } else { EmptyView() }
+        if selection == tab {
+            content
+        } else {
+            EmptyView()
+        }
     }
 }
 
 extension View {
-    func tabBarItem(tab: ContentViewTab, selection: Binding<ContentViewTab>)
-        -> some View
-    { modifier(ContentViewTabBarItemModifier(tab: tab, selection: selection)) }
+    func tabBarItem(
+        tab: ContentViewTab,
+        selection: Binding<ContentViewTab>
+    ) -> some View {
+        modifier(ContentViewTabBarItemModifier(tab: tab, selection: selection))
+    }
 }
 
 struct ContentViewTabBarContainerView<Content: View>: View {
@@ -67,10 +74,12 @@ struct ContentViewTabBarContainerView<Content: View>: View {
     }
 
     var body: some View {
-        ZStack { content }
-            .overlay(alignment: .bottom) {
-                ContentViewTabBarView(selection: $selection)
-            }
+        ZStack {
+            content
+        }
+        .overlay(alignment: .bottom) {
+            ContentViewTabBarView(selection: $selection)
+        }
     }
 }
 
@@ -80,25 +89,30 @@ struct ContentViewTabBarView: View {
     @Namespace var namespace
 
     func tabView(tab: ContentViewTab) -> some View {
-        tab.label.foregroundColor(selection == tab ? tab.color : Color.gray)
-            .padding(.vertical, 12).frame(maxWidth: .infinity)
-            .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.2)) { selection = tab }
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                selection = tab
             }
-            .background {
-                if selection == tab {
-                    VStack {
-                        Spacer()
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(tab.color.opacity(0.2))
-                            .frame(width: 80, height: 5)
-                            .matchedGeometryEffect(
-                                id: "background_rectangle",
-                                in: namespace
-                            )
+        } label: {
+            tab.label
+                .foregroundColor(selection == tab ? tab.color : Color.gray)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .background {
+                    if selection == tab {
+                        VStack {
+                            Spacer()
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(tab.color.opacity(0.2))
+                                .frame(width: 80, height: 5)
+                                .matchedGeometryEffect(
+                                    id: "background_rectangle",
+                                    in: namespace
+                                )
+                        }
                     }
                 }
-            }
+        }
     }
 
     var body: some View {
@@ -107,11 +121,14 @@ struct ContentViewTabBarView: View {
                 tabView(tab: tab)
             }
         }
-        .padding(6).background(colorScheme == .dark ? Color.black : Color.white)
+        .padding(6)
+        .background(colorScheme == .dark ? Color.black : Color.white)
         .cornerRadius(20)
         .overlay {
-            RoundedRectangle(cornerRadius: 20).stroke(.gray.opacity(0.2))
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(.gray.opacity(0.2))
         }
-        .padding(.horizontal).ignoresSafeArea(.keyboard)
+        .padding(.horizontal)
+        .ignoresSafeArea(.keyboard)
     }
 }

@@ -18,6 +18,7 @@ struct Feed: Codable, Identifiable, Equatable {
     var datePosted: Date
     var url: URL
     var imageURL: URL?
+    var colorHex: String?
 
     static let example = Feed(
         title: Lorem.sentence,
@@ -26,17 +27,19 @@ struct Feed: Codable, Identifiable, Equatable {
         description: Lorem.sentences(2),
         datePosted: Date(),
         url: exampleURL,
-        imageURL: URL(string: "https://picsum.photos/300/300")!
+        imageURL: URL(string: "https://picsum.photos/300/300")!,
+        colorHex: "ff0000"
     )
 }
 
 extension Feed {
-    init(item: RSSFeedItem, source: String) {
+    init(item: RSSFeedItem, source: FeedSource) {
         title = item.title ?? "!!No title found for this Feed"
-        self.source = source
+        self.source = source.name
         keywords = Set(item.categories?.map { $0.value ?? "" } ?? [])
         description = item.description
         datePosted = item.pubDate ?? Date()
         url = URL(string: item.link!)!
+        colorHex = source.colorHex
     }
 }

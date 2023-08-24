@@ -15,9 +15,10 @@ import SwiftUI
     @State var flipped = false
     @State var _date: Date = .init()
     @State var lectures: [Lecture] = []
-    var date: Date { _date.startOfWeek() }
 
+    var date: Date { _date.startOfWeek() }
     var flippedDegrees: Double { flipped ? 180 : 0 }
+    var behavior: CurriculumBehavior { SchoolExport.shared.curriculumBehavior }
 
     func updateLectures() {
         lectures =
@@ -31,8 +32,7 @@ import SwiftUI
     }
 
     var mergedTimes: [Int] {
-        (Curriculum.behviour.shownTimes + Curriculum.behviour.highLightTimes)
-            .sorted()
+        (behavior.shownTimes + behavior.highLightTimes).sorted()
     }
 
     var settingsView: some View {
@@ -67,12 +67,12 @@ import SwiftUI
                 BarMark(
                     xStart: .value(
                         "Start Time",
-                        Curriculum.behviour.convertTo(lecture.startDate.HHMM)
+                        behavior.convertTo(lecture.startDate.HHMM)
                     ),
 
                     xEnd: .value(
                         "End Time",
-                        Curriculum.behviour.convertTo(lecture.endDate.HHMM)
+                        behavior.convertTo(lecture.endDate.HHMM)
                     ),
                     y: .value("Date", lecture.startDate.stripTime(), unit: .day)
                 )
@@ -83,10 +83,9 @@ import SwiftUI
             }
         }
         .chartXAxis {
-            AxisMarks(position: .top, values: Curriculum.behviour.shownTimes) {
-                value in
+            AxisMarks(position: .top, values: behavior.shownTimes) { value in
                 if let _hhmm = value.as(Int.self) {
-                    let hhmm = Curriculum.behviour.convertFrom(_hhmm)
+                    let hhmm = behavior.convertFrom(_hhmm)
                     AxisValueLabel {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
@@ -98,7 +97,7 @@ import SwiftUI
 
             AxisMarks(
                 position: .bottom,
-                values: [Curriculum.behviour.convertTo(Date().stripDate().HHMM)]
+                values: [behavior.convertTo(Date().stripDate().HHMM)]
             ) { _ in
                 AxisValueLabel(anchor: .topTrailing) {
                     Text("Now").foregroundColor(.red)
@@ -106,12 +105,10 @@ import SwiftUI
                 AxisGridLine().foregroundStyle(.red)
             }
 
-            AxisMarks(
-                position: .bottom,
-                values: Curriculum.behviour.highLightTimes
-            ) { value in
+            AxisMarks(position: .bottom, values: behavior.highLightTimes) {
+                value in
                 if let _hhmm = value.as(Int.self) {
-                    let hhmm = Curriculum.behviour.convertFrom(_hhmm)
+                    let hhmm = behavior.convertFrom(_hhmm)
                     AxisValueLabel(anchor: .topTrailing) {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"

@@ -12,13 +12,19 @@ struct FeedView: View {
     @AppStorage("useReeed") var useReeed = true
     let feed: Feed
 
-    var body: some View {
-        NavigationLink {
+    var destinationView: some View {
+        Group {
             if useReeed {
                 ReeeederView(url: feed.url)
             } else {
                 Browser(url: feed.url)
             }
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            destinationView
         } label: {
             FeedViewPreview(feed: feed)
                 .contextMenu {
@@ -26,11 +32,8 @@ struct FeedView: View {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                 } preview: {
-                    if useReeed {
-                        ReeeederView(url: feed.url).frame(minWidth: 400)
-                    } else {
-                        Browser(url: feed.url).frame(minWidth: 400)
-                    }
+                    destinationView
+                        .frame(height: 250)
                 }
         }
     }
@@ -38,20 +41,24 @@ struct FeedView: View {
 
 struct FeedViewPreview: View {
     let feed: Feed
-    let color: Color = .secondary
+    var color: Color {
+        Color(hex: feed.colorHex ?? "#FFFFFF")
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(feed.source).font(.system(.caption2, weight: .heavy))
-                    .padding(.horizontal, 6).padding(.vertical, 3)
+                Text(feed.source)
+                    .font(.system(.caption2, weight: .heavy))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
                             .fill(color.opacity(0.9))
                     }
 
-                Text(feed.datePosted.formatted())
+                Text(feed.datePosted, style: .timer)
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.secondary)
             }
@@ -68,8 +75,11 @@ struct FeedViewPreview: View {
                 Spacer(minLength: 2)
             }
 
-            Text(feed.title).multilineTextAlignment(.leading).lineLimit(2)
-                .font(.system(.title3, weight: .bold)).foregroundColor(.primary)
+            Text(feed.title)
+                .font(.system(.title3, weight: .bold))
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
         }
         .padding(.vertical, 5)
     }

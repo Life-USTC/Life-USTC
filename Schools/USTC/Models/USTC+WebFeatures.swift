@@ -7,6 +7,48 @@
 
 import SwiftUI
 
+struct USTCWebFeature: Identifiable {
+    var id = UUID()
+    var name: String
+    var image: String
+    var description: String
+    var url: URL
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        image: String,
+        description: String,
+        url: String,
+        markUp: Bool = false
+    ) {
+        self.id = id
+        self.name = name
+        self.image = image
+        self.description = description
+        if markUp {
+            self.url = URL(string: url)!.ustcCASLoginMarkup()
+        } else {
+            self.url = URL(string: url)!
+        }
+    }
+}
+
+extension FeatureWithView {
+    init(_ feature: USTCWebFeature) {
+        self.init(
+            image: feature.image,
+            title: feature.name,
+            subTitle: feature.description,
+            destinationView: {
+                AnyView(
+                    Browser(url: feature.url, title: feature.name.localized)
+                )
+            }
+        )
+    }
+}
+
 extension USTCExports {
     var ustcWebFeatures: [USTCWebFeature] {
         [
@@ -75,47 +117,5 @@ extension USTCExports {
                 markUp: true
             ),
         ]
-    }
-}
-
-struct USTCWebFeature: Identifiable {
-    var id = UUID()
-    var name: String
-    var image: String
-    var description: String
-    var url: URL
-
-    init(
-        id: UUID = UUID(),
-        name: String,
-        image: String,
-        description: String,
-        url: String,
-        markUp: Bool = false
-    ) {
-        self.id = id
-        self.name = name
-        self.image = image
-        self.description = description
-        if markUp {
-            self.url = URL(string: url)!.ustcCASLoginMarkup()
-        } else {
-            self.url = URL(string: url)!
-        }
-    }
-}
-
-extension FeatureWithView {
-    init(_ feature: USTCWebFeature) {
-        self.init(
-            image: feature.image,
-            title: feature.name,
-            subTitle: feature.description,
-            destinationView: {
-                AnyView(
-                    Browser(url: feature.url, title: feature.name.localized)
-                )
-            }
-        )
     }
 }

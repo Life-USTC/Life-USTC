@@ -13,12 +13,14 @@ struct AsyncStatusLight: View {
     var status: AsyncStatus?
 
     var localStatusLight: some View {
-        Circle().fill(status?.local?.color ?? .gray)
+        Circle()
+            .fill(status?.local?.color ?? .gray)
             .frame(width: lightSize, height: lightSize)
     }
 
     var refreshStatusLight: some View {
-        Rectangle().fill(status?.refresh?.color ?? .gray)
+        Rectangle()
+            .fill(status?.refresh?.color ?? .gray)
             .frame(width: lightSize, height: lightSize)
     }
 
@@ -49,32 +51,19 @@ struct AsyncStatusMask: ViewModifier {
             case .notFound: content.redacted(reason: .placeholder)
             }
         }
-        .overlay { if status?.refresh == .waiting { ProgressView() } }
+        .if(status?.refresh == .waiting) {
+            $0.overlay {
+                ProgressView()
+            }
+        }
     }
 }
 
 extension View {
-    func asyncStatusOverlay(_ status: AsyncStatus?, showLight: Bool = true)
-        -> some View
-    { modifier(AsyncStatusMask(status: status, showLight: showLight)) }
-}
-
-extension LocalAsyncStatus {
-    fileprivate var color: Color {
-        switch self {
-        case .valid: return .green
-        case .notFound: return .red
-        case .outDated: return .yellow
-        }
-    }
-}
-
-extension RefreshAsyncStatus {
-    fileprivate var color: Color {
-        switch self {
-        case .waiting: return .yellow
-        case .success: return .green
-        case .error: return .red
-        }
+    func asyncStatusOverlay(
+        _ status: AsyncStatus?,
+        showLight: Bool = true
+    ) -> some View {
+        modifier(AsyncStatusMask(status: status, showLight: showLight))
     }
 }

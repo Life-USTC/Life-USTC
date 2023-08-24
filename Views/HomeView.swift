@@ -27,13 +27,29 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if #available(iOS 17.0, *) { CurriculumWeekView() }
+            if #available(iOS 17.0, *) {
+                CurriculumWeekView()
+            }
+
+            ExamPreview(exams: [])
         }
-        .padding(.horizontal).navigationTitle("Life@USTC")
-        .navigationBarTitleDisplayMode(.inline)
+        .padding(.horizontal)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    navigationToSettingsView = true
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
+        }
         .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack { SettingsView() }
+            NavigationStack {
+                SettingsView()
+            }
         }
+        .navigationTitle("Life@USTC")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

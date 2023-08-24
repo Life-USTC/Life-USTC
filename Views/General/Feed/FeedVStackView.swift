@@ -15,9 +15,12 @@ struct FeedVStackView: View {
             ForEach(
                 feeds.sorted(by: { $0.datePosted > $1.datePosted }),
                 id: \.id
-            ) { FeedView(feed: $0) }
+            ) {
+                FeedView(feed: $0)
+            }
 
-            Spacer().frame(height: 70)
+            Spacer()
+                .frame(height: 70)
         }
         .scrollContentBackground(.hidden)
     }

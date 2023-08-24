@@ -9,7 +9,7 @@ import Reeeed
 import SwiftUI
 
 struct FeaturesView: View {
-    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
+    @ManagedData(.feedSource) var feedSourceList: [FeedSource]
 
     @State var searchText = ""
 

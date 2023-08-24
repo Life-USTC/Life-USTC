@@ -23,6 +23,7 @@ struct InAppNotification: Identifiable, Equatable {
 
 class InAppNotificationDelegate: ObservableObject {
     static let shared: InAppNotificationDelegate = .init()
+
     @Published var notifications: [InAppNotification] = []
 
     func addMessage(message: String, color: Color) {
