@@ -151,7 +151,18 @@ import SwiftUI
         VStack {
             topBar
 
-            chartView.asyncStatusOverlay(_curriculum.status, showLight: false)
+            chartView
+                .asyncStatusOverlay(_curriculum.status, showLight: false)
+                .if(lectures.isEmpty) {
+                    $0
+                        .redacted(reason: .placeholder)
+                        .blur(radius: 2)
+                        .overlay {
+                            Text("No Lectures for this week")
+                                .font(.system(.title2, design: .rounded))
+                                .foregroundColor(.secondary)
+                        }
+                }
         }
     }
 
@@ -178,9 +189,12 @@ import SwiftUI
 
     var body: some View {
         ZStack {
-            mainView.card().flipRotate(flippedDegrees).opacity(flipped ? 0 : 1)
+            mainView.card()
+                .flipRotate(flippedDegrees)
+                .opacity(flipped ? 0 : 1)
 
-            settingsView.card().flipRotate(-180 + flippedDegrees)
+            settingsView.card()
+                .flipRotate(-180 + flippedDegrees)
                 .opacity(flipped ? 1 : 0)
         }
         .onChange(of: currentSemester) { _ in updateLectures() }
