@@ -63,19 +63,25 @@ class FeedSource: ObservableObject {
     }
 }
 
+extension FeatureWithView {
+    init(_ feedSource: FeedSource) {
+        self.init(
+            image: feedSource.image ?? "doc.richtext",
+            title: feedSource.name,
+            subTitle: feedSource.description ?? "",
+            destinationView: {
+                AnyView(FeedSourceView(feedSource: feedSource))
+            }
+        )
+    }
+}
+
 extension FeedSource {
     var requireUpdate: Bool {
         guard let cache = FeedCache.feedSourceCache(using: id) else {
             return true
         }
         return cache.feeds.isEmpty || cache.lastUpdated.addingTimeInterval(7200) < Date()
-    }
-
-    var featureWithView: FeatureWithView {
-        .init(image: image ?? "doc.richtext",
-              title: name,
-              subTitle: description ?? "",
-              destinationView: FeedSourceView(feedSource: self))
     }
 
     /// Return a given amount of Feed from cache, which should contain all posts

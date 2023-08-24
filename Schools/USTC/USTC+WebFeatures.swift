@@ -5,7 +5,7 @@
 //  Created by Tiankai Ma on 2023/7/9.
 //
 
-import Foundation
+import SwiftUI
 
 extension USTCExports {
     var ustcWebFeatures: [USTCWebFeature] {
@@ -100,10 +100,14 @@ extension FeatureWithView {
             image: feature.image,
             title: feature.name,
             subTitle: feature.description,
-            destinationView: Browser(
-                url: feature.url,
-                title: feature.name.localized
-            )
+            destinationView: {
+                AnyView(
+                    Browser(
+                        url: feature.url,
+                        title: feature.name.localized
+                    )
+                )
+            }
         )
     }
 }

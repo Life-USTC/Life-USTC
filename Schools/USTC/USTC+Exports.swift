@@ -26,8 +26,12 @@ class USTCExports: SchoolExport {
 
     override var settings: [SettingWithView] {
         [
-            .init(name: "CAS Settings",
-                  destinationView: .init(USTCCASLoginView.newPage)),
+            .init(
+                name: "CAS Settings",
+                destinationView: {
+                    AnyView(USTCCASLoginView.newPage)
+                }
+            ),
         ]
     }
 
@@ -79,10 +83,16 @@ class USTCExports: SchoolExport {
     override var features: [String: [FeatureWithView]] {
         [
             "Web": ustcWebFeatures.map { FeatureWithView($0) },
-            "Public": [.init(image: "doc.text.magnifyingglass",
-                             title: "Classroom Status".localized,
-                             subTitle: "",
-                             destinationView: USTCClassroomView())],
+            "Public": [
+                .init(
+                    image: "doc.text.magnifyingglass",
+                    title: "Classroom Status".localized,
+                    subTitle: "",
+                    destinationView: {
+                        AnyView(USTCClassroomView())
+                    }
+                ),
+            ],
         ]
     }
 }
