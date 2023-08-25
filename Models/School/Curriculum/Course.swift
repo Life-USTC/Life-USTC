@@ -27,10 +27,3 @@ struct Course: Codable, Identifiable, Equatable {
         lectures: [.example]
     )
 }
-
-extension Course {
-    /// Convert to EKEvent
-    func events(in store: EKEventStore = EKEventStore()) -> [EKEvent] {
-        lectures.map { EKEvent($0, in: store) }
-    }
-}
