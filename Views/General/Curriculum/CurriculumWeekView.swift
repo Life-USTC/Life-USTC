@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-@available(iOS 17.0, *) struct CurriculumWeekView: View {
+struct CurriculumWeekView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
     @State var currentSemester: Semester?
@@ -149,7 +149,6 @@ import SwiftUI
                 AxisGridLine()
             }
         }
-        .chartYVisibleDomain(length: 3600 * 24 * 7)
         .chartYScale(domain: date ... date.add(day: 7)).frame(height: 230)
     }
 
