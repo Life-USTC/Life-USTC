@@ -27,9 +27,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if #available(iOS 17.0, *) {
-                CurriculumWeekView()
-            }
+            CurriculumWeekView()
 
             ExamPreview(exams: [])
         }
