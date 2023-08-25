@@ -26,9 +26,7 @@ struct ExamView: View {
                 } else {
                     ForEach(exams, id: \.lessonCode) { exam in
                         SingleExamView(exam: exam)
-                        Divider()
                     }
-                    .padding(.top, 5)
                 }
             } header: {
                 AsyncStatusLight(status: _exams.status)

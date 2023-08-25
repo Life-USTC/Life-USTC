@@ -58,15 +58,3 @@ import SwiftUI
         remote = source.remote
     }
 }
-
-/// Protocol to access D.example to build related view
-protocol ExampleDataProtocol {
-    static var example: Self { get }
-}
-
-/// Avoid writing `extension [D] { static var example }`, just implement ExampleDataProtocol for D instead.
-extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
-    static var example: Self {
-        [Element.example]
-    }
-}

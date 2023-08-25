@@ -53,10 +53,12 @@ struct SingleExamView: View {
                     Text(exam.detailLocation)
                 }
 
-                HStack {
+                HStack(alignment: .top) {
                     Image(systemName: "calendar.badge.clock")
-                    Text(exam.startDate, style: .date)
-                    Text(exam.startDate ... exam.endDate)
+                    VStack(alignment: .leading) {
+                        Text(exam.startDate, style: .date)
+                        Text(exam.startDate ... exam.endDate)
+                    }
                     Spacer()
                 }
             }
