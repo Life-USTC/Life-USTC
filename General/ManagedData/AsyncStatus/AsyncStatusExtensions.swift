@@ -16,6 +16,7 @@ extension RefreshAsyncStatus {
             try await action()
             self = .success
         } catch {
+            print(error.localizedDescription)
             self = .error(error.localizedDescription)
         }
     }
@@ -29,6 +30,7 @@ extension RefreshAsyncStatus? {
             try await action()
             self = .success
         } catch {
+            print(error.localizedDescription)
             self = .error(error.localizedDescription)
         }
     }
