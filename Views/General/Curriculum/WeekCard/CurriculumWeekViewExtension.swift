@@ -79,6 +79,8 @@ extension CurriculumWeekCard {
                         to: date
                     )
                     .weekOfYear ?? 0) + 1
+        } else {
+            weekNumber = nil
         }
     }
 

@@ -16,7 +16,7 @@ struct CurriculumProvider: TimelineProvider {
         CurriculumEntry.example
     }
 
-    func fetchLectures(for _date: Date = Date()) async throws -> [Lecture] {
+    func makeEntry(for _date: Date = Date()) async throws -> CurriculumEntry {
         let date = _date.startOfWeek()
         let curriculum = try await _curriculum.retrive()!
         let currentSemester: Semester? =
@@ -33,7 +33,27 @@ struct CurriculumProvider: TimelineProvider {
                     .contains($0.startDate.stripTime().timeIntervalSince(date))
             }
 
-        return lectures
+        var weekNumber: Int? = nil
+
+        if let currentSemester {
+            weekNumber =
+                (Calendar(identifier: .gregorian)
+                    .dateComponents(
+                        [.weekOfYear],
+                        from: currentSemester.startDate,
+                        to: date
+                    )
+                    .weekOfYear ?? 0) + 1
+        } else {
+            weekNumber = nil
+        }
+
+        return .init(
+            lectures: lectures,
+            date: date,
+            currentSemesterName: currentSemester?.name ?? "All",
+            weekNumber: weekNumber
+        )
     }
 
     func getSnapshot(
@@ -42,8 +62,7 @@ struct CurriculumProvider: TimelineProvider {
     ) {
         Task {
             let date = Date().add(day: 21)
-            let lectures = try await fetchLectures(for: date)
-            let entry = CurriculumEntry(date: date, lectures: lectures)
+            let entry = try await makeEntry(for: date)
             completion(entry)
         }
     }
@@ -54,8 +73,7 @@ struct CurriculumProvider: TimelineProvider {
     ) {
         Task {
             let date = Date().add(day: 21)
-            let lectures = try await fetchLectures(for: date)
-            let entry = CurriculumEntry(date: date, lectures: lectures)
+            let entry = try await makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -64,21 +82,32 @@ struct CurriculumProvider: TimelineProvider {
 }
 
 struct CurriculumEntry: TimelineEntry {
-    var date: Date = .now
     var lectures: [Lecture]
+    var date: Date = .now
+    var currentSemesterName: String
+    var weekNumber: Int?
 
-    static let example = CurriculumEntry(lectures: [.example])
+    static let example = CurriculumEntry(
+        lectures: [.example],
+        currentSemesterName: Semester.example.name
+    )
 }
 
 struct CurriculumWidgetEntryView: View {
+    @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumProvider.Entry
 
     var body: some View {
         CurriculumWeekView(
-            lectures: .constant(entry.lectures),
-            _date: .constant(entry.date)
+            lectures: entry.lectures,
+            _date: entry.date,
+            currentSemesterName: entry.currentSemesterName,
+            weekNumber: entry.weekNumber,
+            fontSize: widgetFamily == .systemExtraLarge ? 15 : 10
         )
-        .widgetBackground(Color.black)
+        .widgetBackground(
+            Color.clear
+        )
     }
 }
 

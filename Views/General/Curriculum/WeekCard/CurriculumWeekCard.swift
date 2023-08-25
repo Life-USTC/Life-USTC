@@ -15,7 +15,7 @@ struct CurriculumWeekCard: View {
     @State var flipped = false
     @State var _date: Date = .now
     @State var lectures: [Lecture] = []
-    @State var weekNumber: Int = 0
+    @State var weekNumber: Int?
 
     var date: Date { _date.startOfWeek() }
     var flippedDegrees: Double { flipped ? 180 : 0 }
@@ -87,29 +87,17 @@ extension CurriculumWeekCard {
         }
     }
 
-    var infoBar: some View {
-        HStack {
-            Text(date ... date.add(day: 6))
-
-            if currentSemester != nil {
-                Spacer()
-
-                Text("Week \(weekNumber)")
-            }
-
-            Spacer()
-
-            Text(currentSemester?.name ?? "All")
-        }
-        .font(.system(.caption2, design: .monospaced, weight: .light))
-    }
-
     var mainView: some View {
         VStack {
             topBar
-            infoBar
-            CurriculumWeekView(lectures: $lectures, _date: $_date)
-                .asyncStatusOverlay(_curriculum.status, showLight: false)
+            CurriculumWeekView(
+                lectures: lectures,
+                _date: _date,
+                currentSemesterName: currentSemester?.name ?? "All",
+                weekNumber: weekNumber
+            )
+            .frame(height: 230)
+            .asyncStatusOverlay(_curriculum.status, showLight: false)
         }
         .gesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
