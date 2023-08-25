@@ -36,7 +36,7 @@ struct CurriculumWeekView: View {
 
         if let currentSemester {
             weekNumber =
-                (Calendar.current
+                (Calendar(identifier: .gregorian)
                     .dateComponents(
                         [.weekOfYear],
                         from: currentSemester.startDate,
@@ -52,22 +52,46 @@ struct CurriculumWeekView: View {
             .filter {
                 ($0.startDate ... $0.endDate).contains(_date)
             }
-            .first ?? curriculum.semesters.first
+            .first
     }
 
     var settingsView: some View {
         VStack(alignment: .leading) {
             topBar
 
-            DatePicker("Date", selection: $_date, displayedComponents: .date)
-                .datePickerStyle(.compact)
+            Spacer()
+                .frame(height: 20)
+
+            DatePicker(selection: $_date, displayedComponents: .date) {
+                VStack(alignment: .leading) {
+                    Text("Date")
+
+                    Text("You can also swipe left/right to switch weeks")
+                        .font(.system(.caption, weight: .light))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Divider()
 
             HStack {
-                Text("Semester")
+                VStack(alignment: .leading) {
+                    Text("Semester")
+
+                    Text(
+                        "Semester selection is automatically updated based on current date"
+                    )
+                    .font(.system(.caption, weight: .light))
+                    .foregroundColor(.secondary)
+                }
+
                 Spacer()
+
                 Menu {
                     ForEach(curriculum.semesters) { semester in
-                        Button(semester.name) { currentSemester = semester }
+                        Button(semester.name) {
+                            currentSemester = semester
+                        }
                     }
                     Button("All") { currentSemester = nil }
                 } label: {
@@ -119,10 +143,8 @@ struct CurriculumWeekView: View {
                 position: .bottom,
                 values: [behavior.convertTo(Date().stripDate().HHMM)]
             ) { _ in
-                AxisValueLabel(anchor: .topTrailing) {
-                    Text("Now").foregroundColor(.red)
-                }
-                AxisGridLine().foregroundStyle(.red)
+                AxisGridLine(stroke: .init(dash: []))
+                    .foregroundStyle(.red)
             }
 
             AxisMarks(position: .bottom, values: behavior.highLightTimes) {
@@ -135,7 +157,8 @@ struct CurriculumWeekView: View {
                         )
                         .foregroundColor(.blue)
                     }
-                    AxisGridLine(stroke: .init(dash: [])).foregroundStyle(.blue)
+                    AxisGridLine()
+                        .foregroundStyle(.blue)
                 }
             }
         }
@@ -168,7 +191,7 @@ struct CurriculumWeekView: View {
 
     var infoBar: some View {
         HStack {
-            Text(date ... date.add(day: 7))
+            Text(date ... date.add(day: 6))
 
             if currentSemester != nil {
                 Spacer()
@@ -188,7 +211,6 @@ struct CurriculumWeekView: View {
             topBar
             infoBar
             chartView
-                .asyncStatusOverlay(_curriculum.status, showLight: false)
                 .if(lectures.isEmpty) {
                     $0
                         .redacted(reason: .placeholder)
@@ -199,7 +221,23 @@ struct CurriculumWeekView: View {
                                 .foregroundColor(.secondary)
                         }
                 }
+                .asyncStatusOverlay(_curriculum.status, showLight: false)
         }
+        .gesture(
+            DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                .onEnded { value in
+                    if abs(value.translation.width) < 20 {
+                        // too small a swipe
+                        return
+                    }
+
+                    if value.translation.width < 0 {
+                        _date = _date.add(day: 7)
+                    } else {
+                        _date = _date.add(day: -7)
+                    }
+                }
+        )
     }
 
     var refreshButton: some View {
