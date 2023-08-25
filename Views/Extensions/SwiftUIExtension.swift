@@ -117,11 +117,14 @@ let exampleGradientList: [[Color]] = [
 
 extension View {
     func widgetBackground(_ backgroundView: some View) -> some View {
-        guard #available(iOSApplicationExtension 17.0, iOS 17, *) else {
-            return background(backgroundView)
-        }
-        return containerBackground(for: .widget) {
-            backgroundView
+        if #available(iOSApplicationExtension 17.0, iOS 17, *) {
+            AnyView(
+                containerBackground(for: .widget) {
+                    backgroundView
+                }
+            )
+        } else {
+            AnyView(background(backgroundView))
         }
     }
 }
