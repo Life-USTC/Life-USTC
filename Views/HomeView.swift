@@ -47,7 +47,7 @@ struct HomeView: View {
             }
         }
         .navigationTitle("Life@USTC")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
