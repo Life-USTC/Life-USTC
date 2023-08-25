@@ -5,7 +5,9 @@
 //  Created by Tiankai Ma on 2023/8/24.
 //
 
+import EventKit
 import Foundation
+import SwiftUI
 
 struct CurriculumBehavior {
     var shownTimes: [Int] = []
@@ -68,5 +70,49 @@ extension CurriculumProtocolB {
             .sorted { $0.startDate > $1.startDate }
 
         return result
+    }
+}
+
+extension Curriculum {
+    func saveToCalendar() async throws {
+        let eventStore = EKEventStore()
+        if #available(iOS 17.0, *) {
+            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
+                try await eventStore.requestFullAccessToEvents()
+            }
+        } else {
+            // Fallback on earlier versions
+            if try await !eventStore.requestAccess(to: .event) {
+                throw BaseError.runtimeError("Calendar access problem")
+            }
+        }
+
+        let calendarName = "Curriculum".localized
+        let calendars = eventStore.calendars(for: .event)
+            .filter {
+                $0.title == calendarName.localized
+            }
+
+        // try remove everything with that name in it
+        for calendar in calendars {
+            try eventStore.removeCalendar(calendar, commit: true)
+        }
+
+        let calendar = EKCalendar(for: .event, eventStore: eventStore)
+        calendar.title = calendarName
+        calendar.cgColor = Color.accentColor.cgColor
+        calendar.source = eventStore.defaultCalendarForNewEvents?.source
+        try! eventStore.saveCalendar(calendar, commit: true)
+
+        for lecture in semesters.flatMap(\.courses).flatMap(\.lectures) {
+            let event = EKEvent(lecture, in: eventStore)
+            event.calendar = calendar
+            try eventStore.save(
+                event,
+                span: .thisEvent,
+                commit: false
+            )
+        }
+        try eventStore.commit()
     }
 }

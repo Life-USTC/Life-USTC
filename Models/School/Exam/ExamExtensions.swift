@@ -34,8 +34,8 @@ extension EKEvent {
     }
 }
 
-extension Exam {
-    static func clean(_ exams: [Exam]) -> [Exam] {
+extension [Exam] {
+    func clean() -> [Exam] {
         let hiddenExamName =
             ([String]
             .init(
@@ -43,61 +43,72 @@ extension Exam {
                     ?? ""
             ) ?? [])
             .filter { !$0.isEmpty }
-        let result = exams.filter { exam in
+        let result = self.filter { exam in
             for name in hiddenExamName {
                 if exam.courseName.contains(name) { return false }
             }
             return true
         }
-        let hiddenResult = exams.filter { exam in
+        let hiddenResult = self.filter { exam in
             for name in hiddenExamName {
                 if exam.courseName.contains(name) { return true }
             }
             return false
         }
-        return Exam.show(result) + Exam.show(hiddenResult)
+        return result.sort() + hiddenResult.sort()
     }
 
     /// Sort given exams by time(ascending), and put the ones that are already over to the end of the array
-    static func show(_ exams: [Exam]) -> [Exam] {
-        exams.filter { !$0.isFinished }.sorted { $0.startDate < $1.endDate }
-            + exams.filter(\.isFinished).sorted { $0.startDate > $1.endDate }
+    func sort() -> [Exam] {
+        self.filter { !$0.isFinished }.sorted { $0.startDate < $1.endDate }
+            + self.filter(\.isFinished).sorted { $0.startDate > $1.endDate }
     }
 
     /// Merge two list of exam (addition only)
-    static func merge(_ original: [Exam], with new: [Exam]) -> [Exam] {
-        var result = original
-        for exam in new {
+    func merge(with exams: [Exam]) -> [Exam] {
+        var result = self
+        for exam in exams {
             if !result.filter({ $0 == exam }).isEmpty { continue }
             result.append(exam)
         }
         return result
     }
 
-    static func saveToCalendar(_ exams: [Exam]) async throws {
+    func saveToCalendar() async throws {
         let eventStore = EKEventStore()
-        if try await !eventStore.requestAccess(to: .event) {
-            throw BaseError.runtimeError("Calendar access problem")
+        if #available(iOS 17.0, *) {
+            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
+                try await eventStore.requestFullAccessToEvents()
+            }
+        } else {
+            // Fallback on earlier versions
+            if try await !eventStore.requestAccess(to: .event) {
+                throw BaseError.runtimeError("Calendar access problem")
+            }
         }
 
-        let calendarName = "Upcoming Exams"
-        var calendar: EKCalendar? = eventStore.calendars(for: .event)
-            .first(where: { $0.title == calendarName.localized })
+        let calendarName = "Curriculum".localized
+        let calendars = eventStore.calendars(for: .event)
+            .filter {
+                $0.title == calendarName.localized
+            }
 
         // try remove everything with that name in it
-        if calendar != nil {
-            try eventStore.removeCalendar(calendar!, commit: true)
+        for calendar in calendars {
+            try eventStore.removeCalendar(calendar, commit: true)
         }
 
-        calendar = EKCalendar(for: .event, eventStore: eventStore)
-        calendar!.title = calendarName
-        calendar!.cgColor = Color.accentColor.cgColor
-        calendar!.source = eventStore.defaultCalendarForNewEvents?.source
-        try! eventStore.saveCalendar(calendar!, commit: true)
+        let calendar = EKCalendar(for: .event, eventStore: eventStore)
+        calendar.title = calendarName
+        calendar.cgColor = Color.accentColor.cgColor
+        calendar.source = eventStore.defaultCalendarForNewEvents?.source
+        try! eventStore.saveCalendar(calendar, commit: true)
 
-        for exam in exams {
+        for exam in self {
+            let event = EKEvent(exam, in: eventStore)
+            event.calendar = calendar
             try eventStore.save(
-                EKEvent(exam, in: eventStore),
+                event,
                 span: .thisEvent,
                 commit: false
             )

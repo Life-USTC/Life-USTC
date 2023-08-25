@@ -31,7 +31,7 @@
 		5647386F2A8E23D700608E46 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
 		5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565345892A98D2480010B78C /* CurriculumWeekCard.swift */; };
 		5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458B2A98D43E0010B78C /* AllSourceView.swift */; };
-		5653458F2A98D6C40010B78C /* CurriculumWeekViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */; };
+		5653458F2A98D6C40010B78C /* CurriculumWeekCardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */; };
 		565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569600142A92337E00677F15 /* CurriculumWeekView.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
@@ -112,7 +112,6 @@
 		56BE91F72963EF1600822C98 /* ExceptionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionExtension.swift */; };
 		56BE91F92965D05A00822C98 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 56BE91F82965D05A00822C98 /* README.md */; };
 		56BE91FB296677A300822C98 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* StringExtension.swift */; };
-		56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FC2966799200822C98 /* CourseCardView.swift */; };
 		56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
 		56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425029F64618007D9BD4 /* PushNotification.swift */; };
 		56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425329F648A6007D9BD4 /* TPNSClient.swift */; };
@@ -210,7 +209,7 @@
 		5647386E2A8E23D700608E46 /* AsyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatus.swift; sourceTree = "<group>"; };
 		565345892A98D2480010B78C /* CurriculumWeekCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCard.swift; sourceTree = "<group>"; };
 		5653458B2A98D43E0010B78C /* AllSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSourceView.swift; sourceTree = "<group>"; };
-		5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekViewExtension.swift; sourceTree = "<group>"; };
+		5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCardExtension.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		565587B7294AE7910010E060 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		565587E6294B43BD0010E060 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -264,7 +263,6 @@
 		56BE91F62963EF1600822C98 /* ExceptionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionExtension.swift; sourceTree = "<group>"; };
 		56BE91F82965D05A00822C98 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56BE91FA296677A300822C98 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
-		56BE91FC2966799200822C98 /* CourseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCardView.swift; sourceTree = "<group>"; };
 		56BE91FE296679BC00822C98 /* CurriculumPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreview.swift; sourceTree = "<group>"; };
 		56C1425029F64618007D9BD4 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		56C1425329F648A6007D9BD4 /* TPNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TPNSClient.swift; sourceTree = "<group>"; };
@@ -407,8 +405,8 @@
 			isa = PBXGroup;
 			children = (
 				565345892A98D2480010B78C /* CurriculumWeekCard.swift */,
+				5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */,
 				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
-				5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */,
 			);
 			path = WeekCard;
 			sourceTree = "<group>";
@@ -679,7 +677,6 @@
 			children = (
 				567ED62C2A9535A100F3A38B /* Details */,
 				5653458D2A98D6830010B78C /* WeekCard */,
-				56BE91FC2966799200822C98 /* CourseCardView.swift */,
 				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
 			);
 			path = Curriculum;
@@ -1020,7 +1017,6 @@
 				562169222955BEDE00DF46BE /* ContentView.swift in Sources */,
 				569967292A97431600CC1EBB /* ContentViewTab.swift in Sources */,
 				5694D91829668191009CFCDF /* Course.swift in Sources */,
-				56BE91FD2966799200822C98 /* CourseCardView.swift in Sources */,
 				569600132A9117C100677F15 /* CourseDetailView.swift in Sources */,
 				56A8FC272A97AE51009D94A3 /* CourseScore.swift in Sources */,
 				56A0C1962A8E0EE000BFEAB9 /* Curriculum.swift in Sources */,
@@ -1028,8 +1024,8 @@
 				56A8FC2A2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */,
+				5653458F2A98D6C40010B78C /* CurriculumWeekCardExtension.swift in Sources */,
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
-				5653458F2A98D6C40010B78C /* CurriculumWeekViewExtension.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				56A8FC242A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
@@ -1422,7 +1418,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表/考试信息";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "向日历中添加课表/考试信息";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1475,7 +1472,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表信息";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "向日历中添加课表/考试信息";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "向日历中添加课表/考试信息";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

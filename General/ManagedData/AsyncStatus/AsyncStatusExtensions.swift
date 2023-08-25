@@ -42,6 +42,7 @@ extension Binding<RefreshAsyncStatus?> {
             try await action()
             wrappedValue = .success
         } catch {
+            print(error.localizedDescription)
             wrappedValue = .error(error.localizedDescription)
         }
     }

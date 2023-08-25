@@ -63,7 +63,7 @@ extension CurriculumWeekCard {
     func updateLecturesAndWeekNumber() {
         lectures =
             (currentSemester == nil
-            ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
+            ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
             : currentSemester!.courses.flatMap(\.lectures))
             .filter {
                 (0.0 ..< 3600.0 * 24 * 7)

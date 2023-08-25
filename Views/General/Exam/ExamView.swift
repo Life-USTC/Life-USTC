@@ -11,17 +11,6 @@ struct ExamView: View {
     @ManagedData(.exam) var exams: [Exam]
 
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
-    var saveButton: some View {
-        Button {
-            Task {
-                try await $saveToCalendarStatus.exec {
-                    try await Exam.saveToCalendar(exams)
-                }
-            }
-        } label: {
-            Image(systemName: "square.and.arrow.down")
-        }
-    }
 
     var body: some View {
         List {
@@ -53,7 +42,15 @@ struct ExamView: View {
             _exams.triggerRefresh()
         }
         .toolbar {
-            saveButton
+            Button {
+                Task {
+                    try await $saveToCalendarStatus.exec {
+                        try await exams.saveToCalendar()
+                    }
+                }
+            } label: {
+                Label("Save", systemImage: "square.and.arrow.down")
+            }
         }
         .navigationTitle("Exam")
         .navigationBarTitleDisplayMode(.inline)

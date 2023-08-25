@@ -28,7 +28,7 @@ struct ExamProvider: TimelineProvider {
     ) {
         Task {
             var exams = try await _exams.retrive() ?? []
-            exams = Exam.show(exams)
+            exams = exams.sort()
             let entry = SimpleEntry(exams: exams)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
