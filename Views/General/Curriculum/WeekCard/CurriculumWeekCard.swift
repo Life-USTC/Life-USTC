@@ -93,7 +93,7 @@ extension CurriculumWeekCard {
             CurriculumWeekView(
                 lectures: lectures,
                 _date: _date,
-                currentSemesterName: currentSemester?.name ?? "All",
+                currentSemesterName: currentSemester?.name ?? "All".localized,
                 weekNumber: weekNumber
             )
             .frame(height: 230)

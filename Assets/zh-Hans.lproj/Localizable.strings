@@ -161,3 +161,13 @@
 "%@ have update" = "「%@」有更新";
 
 "disclaimer" = "请自行与学校网站上提供的信息校对。此处展示的信息可能是错误的或是过时的，我们不对此承担任何责任。";
+
+"No lectures this week" = "本周无课";
+"Refresh" = "刷新";
+"Date" = "日期";
+"You can also swipe left/right to switch weeks" = "您也可以左右滑动来切换周";
+"Semester selection is automatically updated based on current date" = "学期自动基于日期更新";
+"Semester" = "学期";
+"Chart" = "图表";
+"Credits" = "学分";
+"TBC" = "待定";
