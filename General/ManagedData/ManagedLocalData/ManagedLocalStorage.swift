@@ -15,7 +15,11 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     let validDuration: TimeInterval
 
     var url: URL {
-        fm.urls(for: .documentDirectory, in: .userDomainMask).first!
+        fm
+            .containerURL(
+                forSecurityApplicationGroupIdentifier:
+                    "group.dev.tiankaima.Life-USTC"
+            )!
             .appendingPathComponent("ManagedLocalStorage/\(key).json")
     }
 

@@ -114,3 +114,14 @@ let exampleGradientList: [[Color]] = [
     [.init(hex: "#3D6585"), .init(hex: "#99D587")],
     [.init(hex: "#D5AF8D"), .init(hex: "#6FA3A3")],
 ]
+
+extension View {
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        guard #available(iOSApplicationExtension 17.0, iOS 17, *) else {
+            return background(backgroundView)
+        }
+        return containerBackground(for: .widget) {
+            backgroundView
+        }
+    }
+}

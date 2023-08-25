@@ -26,6 +26,10 @@ class LoginClientProtocol {
     var loginTask: Task<Bool, Error>?
 
     func requireLogin() async throws -> Bool {
+        if let lastLogined, Date().timeIntervalSince(lastLogined) < 5 * 60 {
+            return true
+        }
+
         // Waiting random time to avoid racing condition
         try await Task.sleep(
             nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000)
@@ -33,10 +37,6 @@ class LoginClientProtocol {
 
         if let loginTask {
             return try await loginTask.value
-        }
-
-        if let lastLogined, Date().timeIntervalSince(lastLogined) < 5 * 60 {
-            return true
         }
 
         loginTask = Task {

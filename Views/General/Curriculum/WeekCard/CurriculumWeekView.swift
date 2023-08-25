@@ -9,8 +9,8 @@ import Charts
 import SwiftUI
 
 struct CurriculumWeekView: View {
-    @State var lectures: [Lecture] = []
-    @State var _date: Date = .now
+    @Binding var lectures: [Lecture]
+    @Binding var _date: Date
 
     var date: Date {
         _date.startOfWeek()
@@ -91,5 +91,15 @@ struct CurriculumWeekView: View {
         }
         .chartYScale(domain: date ... date.add(day: 7))
         .frame(height: 230)
+        .if(lectures.isEmpty) {
+            $0
+                .redacted(reason: .placeholder)
+                .blur(radius: 2)
+                .overlay {
+                    Text("No Lectures this week")
+                        .font(.system(.title2, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+        }
     }
 }

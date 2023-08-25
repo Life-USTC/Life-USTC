@@ -32,6 +32,7 @@
 		5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565345892A98D2480010B78C /* CurriculumWeekCard.swift */; };
 		5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458B2A98D43E0010B78C /* AllSourceView.swift */; };
 		5653458F2A98D6C40010B78C /* CurriculumWeekViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */; };
+		565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569600142A92337E00677F15 /* CurriculumWeekView.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
@@ -1103,6 +1104,7 @@
 				56A8FC282A97AE51009D94A3 /* CourseScore.swift in Sources */,
 				56A0C1972A8E0EE000BFEAB9 /* Curriculum.swift in Sources */,
 				56A8FC2B2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
+				565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
