@@ -20,7 +20,9 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     override var data: D? {
-        get { try? JSONDecoder().decode(D.self, from: Data(contentsOf: url)) }
+        get {
+            try? JSONDecoder().decode(D.self, from: Data(contentsOf: url))
+        }
         set {
             if !fm.fileExists(atPath: url.path) {
                 try? fm.createDirectory(
@@ -32,12 +34,14 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
 
             try? JSONEncoder().encode(newValue).write(to: url)
             lastUpdated = Date()
-            self.objectWillChange.send()
+            objectWillChange.send()
         }
     }
 
     override var status: LocalAsyncStatus {
-        guard data != nil, let lastUpdated else { return .notFound }
+        guard data != nil, let lastUpdated else {
+            return .notFound
+        }
         guard Date().timeIntervalSince(lastUpdated) < validDuration else {
             return .outDated
         }
@@ -45,7 +49,9 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     var lastUpdated: Date? {
-        get { userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date }
+        get {
+            userDefaults.object(forKey: "fm_\(key)_lastUpdated") as? Date
+        }
         set {
             userDefaults.set(newValue, forKey: "fm_\(key)_lastUpdated")
             objectWillChange.send()

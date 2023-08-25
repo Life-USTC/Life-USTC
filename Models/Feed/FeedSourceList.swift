@@ -35,6 +35,7 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
     }
 
     init() {
+        // Note: Init is guararenteed to run before Wrapper.wrappedValue is accessible.
         // If "ManagedLocalStorage/feedSourceList.json" isn't found locally
         // copy it from main Bundle SchoolExport.shared.localFeedJSOName
         if FeedSourceListLocalStorage.data == nil {

@@ -15,7 +15,9 @@ extension RefreshAsyncStatus {
         do {
             try await action()
             self = .success
-        } catch { self = .error(error.localizedDescription) }
+        } catch {
+            self = .error(error.localizedDescription)
+        }
     }
 }
 
@@ -26,17 +28,22 @@ extension RefreshAsyncStatus? {
         do {
             try await action()
             self = .success
-        } catch { self = .error(error.localizedDescription) }
+        } catch {
+            self = .error(error.localizedDescription)
+        }
     }
 }
 
+// Used in SwiftUI struct View where modifying self.wrappedValue might not be possible
 extension Binding<RefreshAsyncStatus?> {
     func exec(_ action: @escaping () async throws -> Void) async throws {
         wrappedValue = .waiting
         do {
             try await action()
             wrappedValue = .success
-        } catch { wrappedValue = .error(error.localizedDescription) }
+        } catch {
+            wrappedValue = .error(error.localizedDescription)
+        }
     }
 }
 

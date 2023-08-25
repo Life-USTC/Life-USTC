@@ -9,14 +9,19 @@ import SwiftUI
 
 class LoginClientProtocol {
     /// Return True if login success
-    func login() async throws -> Bool { false }
+    func login() async throws -> Bool {
+        assert(true)
+        return false
+    }
 }
 
 @propertyWrapper class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
 
-    @AppStorage("\(T.self)_lastLogined", store: .appGroup) var lastLogined:
-        Date?
+    @AppStorage(
+        "\(T.self)_lastLogined",
+        store: .appGroup
+    ) var lastLogined: Date?
 
     var loginTask: Task<Bool, Error>?
 
@@ -25,7 +30,10 @@ class LoginClientProtocol {
         try await Task.sleep(
             nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000)
         )
-        if let loginTask { return try await loginTask.value }
+
+        if let loginTask {
+            return try await loginTask.value
+        }
 
         if let lastLogined, Date().timeIntervalSince(lastLogined) < 5 * 60 {
             return true
@@ -48,9 +56,13 @@ class LoginClientProtocol {
         return try await loginTask!.value
     }
 
-    func clearLoginStatus() { lastLogined = nil }
+    func clearLoginStatus() {
+        lastLogined = nil
+    }
 
-    init(_ wrappedValue: T) { self.wrappedValue = wrappedValue }
+    init(_ wrappedValue: T) {
+        self.wrappedValue = wrappedValue
+    }
 }
 
 extension URL {

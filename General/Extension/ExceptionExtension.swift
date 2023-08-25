@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-enum BaseError: Error { case runtimeError(String) }
+enum BaseError: Error {
+    case runtimeError(String)
+}
 
 extension BaseError: LocalizedError {
     var errorDescription: String? {

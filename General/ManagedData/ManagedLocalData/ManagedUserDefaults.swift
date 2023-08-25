@@ -15,7 +15,9 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
 
     override var data: D? {
         get {
-            guard let data = userDefaults.data(forKey: key) else { return nil }
+            guard let data = userDefaults.data(forKey: key) else {
+                return nil
+            }
             return try? JSONDecoder().decode(D.self, from: data)
         }
         set {
@@ -25,13 +27,15 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
                     forKey: key
                 )
                 lastUpdated = Date()
-                self.objectWillChange.send()
+                objectWillChange.send()
             }
         }
     }
 
     override var status: LocalAsyncStatus {
-        guard data != nil, let lastUpdated else { return .notFound }
+        guard data != nil, let lastUpdated else {
+            return .notFound
+        }
         guard Date().timeIntervalSince(lastUpdated) < validDuration else {
             return .outDated
         }
@@ -39,7 +43,9 @@ class ManagedUserDefaults<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     var lastUpdated: Date? {
-        get { userDefaults.object(forKey: key + "_lastUpdated") as? Date }
+        get {
+            userDefaults.object(forKey: key + "_lastUpdated") as? Date
+        }
         set {
             userDefaults.set(newValue, forKey: key + "_lastUpdated")
             objectWillChange.send()

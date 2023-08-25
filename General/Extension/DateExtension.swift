@@ -13,7 +13,9 @@ func + (lhs: Date, rhs: DateComponents) -> Date {
 
 extension Date {
     /// Base time at 1970
-    static var zero: Date { Date(timeIntervalSince1970: 0) }
+    static var zero: Date {
+        Date(timeIntervalSince1970: 0)
+    }
 
     /// Keep year month and day components only
     func stripTime() -> Date {
@@ -24,6 +26,7 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 
+    /// Keep hour minute second. nanosecond components only
     func stripDate() -> Date {
         let components = Calendar.current.dateComponents(
             [.hour, .minute, .second, .nanosecond],
@@ -32,6 +35,7 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 
+    /// hour * 60 + minute
     var HHMM: Int {
         let components = Calendar.current.dateComponents(
             [.hour, .minute],
@@ -45,6 +49,7 @@ extension Date {
         self + DateComponents(year: year, month: month, day: day)
     }
 
+    /// Start of this week
     func startOfWeek() -> Date {
         Calendar.current
             .dateComponents(
@@ -56,6 +61,7 @@ extension Date {
 }
 
 extension DateComponents {
+    @available(*, deprecated, message: "Use String/Text to format instead")
     var clockTime: String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .short
@@ -64,6 +70,7 @@ extension DateComponents {
     }
 }
 
+// Enable @AppStorage ... Date
 extension Date: RawRepresentable {
     public var rawValue: String { timeIntervalSinceReferenceDate.description }
 

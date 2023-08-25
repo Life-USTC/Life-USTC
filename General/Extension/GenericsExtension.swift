@@ -7,6 +7,7 @@
 
 import Foundation
 
+//  Enable @AppStorage for [Codable]
 extension Array: RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
@@ -23,12 +24,14 @@ extension Array: RawRepresentable where Element: Codable {
     }
 }
 
+// Access Array with ...[safe: index] -> Element? to avoid index out of range issue
 extension Collection where Indices.Iterator.Element == Index {
     public subscript(safe index: Index) -> Iterator.Element? {
         (startIndex <= index && index < endIndex) ? self[index] : nil
     }
 }
 
+// Provide .next() methof for CaseIterable
 extension CaseIterable where Self: Equatable {
     func next() -> Self {
         let all = Self.allCases
@@ -38,6 +41,7 @@ extension CaseIterable where Self: Equatable {
     }
 }
 
+// Shorthand to convert array to dict, like group in pandas
 extension Sequence {
     public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U:
         [Iterator.Element]]
