@@ -48,7 +48,7 @@ extension CurriculumWeekCard {
                     }
                     Button("All") { currentSemester = nil }
                 } label: {
-                    Text(currentSemester?.name ?? "All")
+                    Text(currentSemester?.name ?? "All".localized)
                 }
             }
 

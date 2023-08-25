@@ -122,7 +122,7 @@ struct CurriculumWeekView: View {
                 .redacted(reason: .placeholder)
                 .blur(radius: 2)
                 .overlay {
-                    Text("No Lectures this week")
+                    Text("No lectures this week")
                         .font(.system(.title2, design: .rounded))
                         .foregroundColor(.secondary)
                 }
