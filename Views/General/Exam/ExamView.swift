@@ -32,6 +32,10 @@ struct ExamView: View {
                 }
             } header: {
                 AsyncStatusLight(status: _exams.status)
+            } footer: {
+                Text("disclaimer")
+                    .font(.system(.caption, weight: .semibold))
+                    .foregroundColor(.secondary)
             }
         }
         .listStyle(.plain)
