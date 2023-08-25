@@ -108,17 +108,7 @@ extension CurriculumWeekCard {
         VStack {
             topBar
             infoBar
-            CurriculumWeekView(lectures: lectures, _date: _date)
-                .if(lectures.isEmpty) {
-                    $0
-                        .redacted(reason: .placeholder)
-                        .blur(radius: 2)
-                        .overlay {
-                            Text("No Lectures this week")
-                                .font(.system(.title2, design: .rounded))
-                                .foregroundColor(.secondary)
-                        }
-                }
+            CurriculumWeekView(lectures: $lectures, _date: $_date)
                 .asyncStatusOverlay(_curriculum.status, showLight: false)
         }
         .gesture(
