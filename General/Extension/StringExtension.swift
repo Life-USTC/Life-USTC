@@ -9,19 +9,23 @@ import CryptoKit
 import SwiftUI
 
 extension String {
-    var localized: String { NSLocalizedString(self, comment: "") }
+    var localized: String {
+        NSLocalizedString(self, comment: "")
+    }
 
     var urlEncoded: String? {
         addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 
+    /// Limit length of string
     func truncated(length: Int = 6) -> String {
         guard count > length else { return self }
         let endIndex = index(startIndex, offsetBy: length)
         return String(self[..<endIndex]) + "..."
     }
 
-    /// Credit: https://sarunw.com/posts/how-to-compare-two-app-version-strings-in-swift/
+    /// Compare version number: (1.0.1 , 2.1.0, ....)
+    /// - Description: Credit: https://sarunw.com/posts/how-to-compare-two-app-version-strings-in-swift/
     func versionCompare(_ otherVersion: String) -> ComparisonResult {
         let versionDelimiter = "."
         var versionComponents = components(separatedBy: versionDelimiter)

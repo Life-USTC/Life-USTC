@@ -8,6 +8,8 @@
 import Foundation
 
 extension UserDefaults {
+    /// Use .appGroup for storing data that widget and app shares.
+    /// Use .default for UI settings though.
     static let appGroup = UserDefaults(
         suiteName: "group.dev.tiankaima.Life-USTC"
     )!

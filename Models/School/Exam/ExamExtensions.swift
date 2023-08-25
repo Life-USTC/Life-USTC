@@ -26,7 +26,7 @@ extension EKEvent {
     convenience init(_ exam: Exam, in store: EKEventStore = EKEventStore()) {
         self.init(eventStore: store)
         title = exam.courseName + " " + exam.typeName
-        location = exam.classRoomName + "@" + exam.classRoomBuildingName
+        location = exam.detailLocation
         notes = exam.description
 
         startDate = exam.startDate

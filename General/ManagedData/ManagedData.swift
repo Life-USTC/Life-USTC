@@ -7,20 +7,16 @@
 
 import SwiftUI
 
-protocol ExampleDataProtocol { static var example: Self { get } }
-
-extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
-    static var example: Self { [Element.example] }
-}
-
+/// Wrapper for local-cached data
 @propertyWrapper struct ManagedData<D: ExampleDataProtocol>: DynamicProperty {
     @ObservedObject var local: ManagedLocalDataProtocol<D>
     var remote: any ManagedRemoteUpdateProtocol<D>
 
+    /// - Warning: When not mounted in view, you should always call retrive() function instead of directly get` wrappedValue` to prevent get placeholder data. When async context isn't available, call `retriveLocal()`
     var wrappedValue: D {
-        if local.status != .valid, refresh == nil { triggerRefresh() }
-
-        return local.data ?? D.example
+        // Returning .example data to build view
+        // always wrap the view with .redacted(.placeholder) to prevent showing placeholder data
+        return retriveLocal() ?? .example
     }
 
     @State var refresh: RefreshAsyncStatus? = nil
@@ -28,19 +24,49 @@ extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
         AsyncStatus(local: local.status, refresh: refresh)
     }
 
+    func retriveLocal() -> D? {
+        if local.status != .valid, refresh == nil {
+            triggerRefresh()
+        }
+
+        return local.data
+    }
+
     func retrive() async throws -> D? {
-        if status.local != .valid { try await refresh() }
-        return wrappedValue
+        if status.local != .valid {
+            try await refresh()
+        }
+
+        return local.data
     }
 
     func refresh() async throws {
-        try await $refresh.exec { local.data = try await remote.refresh() }
+        try await $refresh.exec {
+            local.data = try await remote.refresh()
+        }
     }
 
-    func triggerRefresh() { Task { @MainActor in try await self.refresh() } }
+    /// Can act like viewController, access on view.refreshable with `_data.triggerRefresh()`
+    func triggerRefresh() {
+        Task { @MainActor in
+            try await self.refresh()
+        }
+    }
 
     init(_ source: ManagedDataSource<D>) {
         _local = .init(wrappedValue: source.local)
         remote = source.remote
+    }
+}
+
+/// Protocol to access D.example to build related view
+protocol ExampleDataProtocol {
+    static var example: Self { get }
+}
+
+/// Avoid writing `extension [D] { static var example }`, just implement ExampleDataProtocol for D instead.
+extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
+    static var example: Self {
+        [Element.example]
     }
 }
