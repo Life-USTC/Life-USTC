@@ -9,8 +9,11 @@ import Charts
 import SwiftUI
 
 struct CurriculumWeekView: View {
-    @Binding var lectures: [Lecture]
-    @Binding var _date: Date
+    var lectures: [Lecture]
+    var _date: Date
+    var currentSemesterName: String
+    var weekNumber: Int?
+    var fontSize: Double = 10
 
     var date: Date {
         _date.startOfWeek()
@@ -23,6 +26,27 @@ struct CurriculumWeekView: View {
     }
 
     var body: some View {
+        VStack {
+            HStack {
+                Text(date ... date.add(day: 6))
+
+                if let weekNumber {
+                    Spacer()
+
+                    Text("Week \(weekNumber)")
+                }
+
+                Spacer()
+
+                Text(currentSemesterName)
+            }
+            .font(.system(.caption2, design: .monospaced, weight: .light))
+
+            mainView
+        }
+    }
+
+    var mainView: some View {
         Chart {
             ForEach(lectures) { lecture in
                 BarMark(
@@ -39,7 +63,9 @@ struct CurriculumWeekView: View {
                 )
                 .foregroundStyle(by: .value("Course Name", lecture.name))
                 .annotation(position: .overlay) {
-                    Text(lecture.name).font(.caption).foregroundColor(.white)
+                    Text(lecture.name)
+                        .font(.system(size: fontSize))
+                        .foregroundColor(.white)
                 }
             }
         }
@@ -51,6 +77,7 @@ struct CurriculumWeekView: View {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
                         )
+                        .font(.system(size: fontSize - 1))
                     }
                     AxisGridLine()
                 }
@@ -90,7 +117,6 @@ struct CurriculumWeekView: View {
             }
         }
         .chartYScale(domain: date ... date.add(day: 7))
-        .frame(height: 230)
         .if(lectures.isEmpty) {
             $0
                 .redacted(reason: .placeholder)
