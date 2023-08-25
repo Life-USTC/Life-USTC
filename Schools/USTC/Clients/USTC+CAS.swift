@@ -7,8 +7,8 @@
 
 import Foundation
 
-let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
-let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
+private let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
+private let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
 
 /// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient: LoginClientProtocol {
@@ -20,11 +20,15 @@ class UstcCasClient: LoginClientProtocol {
     var precheckFails: Bool { username.isEmpty || password.isEmpty }
     var session: URLSession = .shared
 
-    func getLtTokenFromCAS(url: URL = ustcLoginUrl) async throws -> (
-        ltToken: String, cookie: [HTTPCookie]
+    func getLtTokenFromCAS(
+        url: URL = ustcLoginUrl
+    ) async throws -> (
+        ltToken: String,
+        cookie: [HTTPCookie]
     ) {
         let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
-        // loading the LT-Token requires a non-logined status, which shared Session could have not provide
+
+        // loading the LT-Token requires a non-logined status
         // using a ephemeral session would achieve this.
         let session = URLSession(configuration: .ephemeral)
         var request = URLRequest(url: url)
@@ -33,7 +37,9 @@ class UstcCasClient: LoginClientProtocol {
 
         guard let dataString = String(data: data, encoding: .utf8),
             let match = dataString.firstMatch(of: findLtStringRegex)
-        else { throw BaseError.runtimeError("Failed to fetch raw LT-Token") }
+        else {
+            throw BaseError.runtimeError("Failed to fetch raw LT-Token")
+        }
 
         return (
             String(match.0),
@@ -49,10 +55,16 @@ class UstcCasClient: LoginClientProtocol {
         let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
 
         let queries: [String: String] = [
-            "model": "uplogin.jsp", "CAS_LT": ltToken,
-            "service": service?.absoluteString ?? "", "warn": "",
-            "showCode": "", "qrcode": "", "username": username,
-            "password": password, "LT": "", "button": "",
+            "model": "uplogin.jsp",
+            "CAS_LT": ltToken,
+            "service": service?.absoluteString ?? "",
+            "warn": "",
+            "showCode": "",
+            "qrcode": "",
+            "username": username,
+            "password": password,
+            "LT": "",
+            "button": "",
         ]
 
         var request = URLRequest(url: ustcLoginUrl)
@@ -75,13 +87,19 @@ class UstcCasClient: LoginClientProtocol {
             ?? false
     }
 
-    override func login() async throws -> Bool { try await loginToCAS() }
+    override func login() async throws -> Bool {
+        try await loginToCAS()
+    }
 
     override init() {}
 }
 
-extension LoginClientProtocol { static let ustcCAS = UstcCasClient.shared }
+extension LoginClientProtocol {
+    static let ustcCAS = UstcCasClient.shared
+}
 
 extension URL {
-    func ustcCASLoginMarkup() -> URL { CASLoginMarkup(casServer: ustcCasUrl) }
+    func ustcCASLoginMarkup() -> URL {
+        CASLoginMarkup(casServer: ustcCasUrl)
+    }
 }
