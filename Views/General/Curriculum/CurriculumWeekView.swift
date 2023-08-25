@@ -15,12 +15,16 @@ import SwiftUI
     @State var flipped = false
     @State var _date: Date = .init()
     @State var lectures: [Lecture] = []
+    @State var weekNumber: Int = 0
 
     var date: Date { _date.startOfWeek() }
     var flippedDegrees: Double { flipped ? 180 : 0 }
     var behavior: CurriculumBehavior { SchoolExport.shared.curriculumBehavior }
+    var mergedTimes: [Int] {
+        (behavior.shownTimes + behavior.highLightTimes).sorted()
+    }
 
-    func updateLectures() {
+    func updateLecturesAndWeekNumber() {
         lectures =
             (currentSemester == nil
             ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
@@ -29,10 +33,26 @@ import SwiftUI
                 (0.0 ..< 3600.0 * 24 * 7)
                     .contains($0.startDate.stripTime().timeIntervalSince(date))
             }
+
+        if let currentSemester {
+            weekNumber =
+                (Calendar.current
+                    .dateComponents(
+                        [.weekOfYear],
+                        from: currentSemester.startDate,
+                        to: date
+                    )
+                    .weekOfYear ?? 0) + 1
+        }
     }
 
-    var mergedTimes: [Int] {
-        (behavior.shownTimes + behavior.highLightTimes).sorted()
+    func updateSemester() {
+        currentSemester =
+            curriculum.semesters
+            .filter {
+                ($0.startDate ... $0.endDate).contains(_date)
+            }
+            .first ?? curriculum.semesters.first
     }
 
     var settingsView: some View {
@@ -135,8 +155,8 @@ import SwiftUI
 
     var topBar: some View {
         HStack {
-            Text("Curriculum").font(.caption).fontWeight(.bold)
-                .fontDesign(.monospaced)
+            Text("Curriculum")
+                .font(.system(.caption, design: .monospaced, weight: .bold))
 
             AsyncStatusLight(status: _curriculum.status)
 
@@ -147,10 +167,27 @@ import SwiftUI
         }
     }
 
+    var infoBar: some View {
+        HStack {
+            Text(date ... date.add(day: 7))
+
+            if currentSemester != nil {
+                Spacer()
+
+                Text("Week \(weekNumber)")
+            }
+
+            Spacer()
+
+            Text(currentSemester?.name ?? "All")
+        }
+        .font(.system(.caption2, design: .monospaced, weight: .light))
+    }
+
     var mainView: some View {
         VStack {
             topBar
-
+            infoBar
             chartView
                 .asyncStatusOverlay(_curriculum.status, showLight: false)
                 .if(lectures.isEmpty) {
@@ -158,7 +195,7 @@ import SwiftUI
                         .redacted(reason: .placeholder)
                         .blur(radius: 2)
                         .overlay {
-                            Text("No Lectures for this week")
+                            Text("No Lectures this week")
                                 .font(.system(.title2, design: .rounded))
                                 .foregroundColor(.secondary)
                         }
@@ -169,7 +206,7 @@ import SwiftUI
     var refreshButton: some View {
         Button {
             _curriculum.triggerRefresh()
-            updateLectures()
+            updateLecturesAndWeekNumber()
         } label: {
             Label("Refresh", systemImage: "arrow.clockwise").font(.caption)
         }
@@ -197,10 +234,21 @@ import SwiftUI
                 .flipRotate(-180 + flippedDegrees)
                 .opacity(flipped ? 1 : 0)
         }
-        .onChange(of: currentSemester) { _ in updateLectures() }
-        .onChange(of: curriculum) { _ in updateLectures() }
-        .onChange(of: _date) { _ in updateLectures() }
-        .onAppear { updateLectures() }
+        .onChange(of: currentSemester) {
+            _ in updateLecturesAndWeekNumber()
+        }
+        .onChange(of: curriculum) { _ in
+            updateLecturesAndWeekNumber()
+            updateSemester()
+        }
+        .onChange(of: _date) { _ in
+            updateLecturesAndWeekNumber()
+            updateSemester()
+        }
+        .onAppear {
+            updateLecturesAndWeekNumber()
+            updateSemester()
+        }
     }
 }
 
