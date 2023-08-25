@@ -11,8 +11,11 @@ import SwiftyJSON
 class UstcCatalogClient: LoginClientProtocol {
     static let shared = UstcCatalogClient()
 
-    @AppStorage("UstcCatalogClient_token", store: .appGroup) var token: String =
-        ""
+    @AppStorage(
+        "UstcCatalogClient_token",
+        store: .appGroup
+    ) var token: String = ""
+
     var session: URLSession = .shared
 
     override func login() async throws -> Bool {
