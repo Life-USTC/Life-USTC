@@ -30,7 +30,7 @@ struct ScoreView: View {
                     Spacer()
 
                     Text(
-                        "\("Rating:".localized) \(score.majorRank) / \(score.majorStdCount)"
+                        "\("Ranking:".localized) \(score.majorRank) / \(score.majorStdCount)"
                     )
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)

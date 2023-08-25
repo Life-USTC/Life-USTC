@@ -111,7 +111,7 @@
 "Semester: %@" = "选择学期: %@";
 "Sort by: %@" = "按%@排序";
 "Course Code" = "课程号";
-"Rating:" = "排名:";
+"Ranking:" = "排名:";
 
 "Public" = "公开";
 "Classroom Status" = "教室状态";
