@@ -18,10 +18,17 @@ struct FeedVStackView: View {
             ) {
                 FeedView(feed: $0)
             }
-
-            Spacer()
-                .frame(height: 70)
         }
         .scrollContentBackground(.hidden)
+    }
+}
+
+struct FeedSourceView: View {
+    var feedSource: FeedSource
+
+    var body: some View {
+        FeedVStackView(feeds: feedSource.feed)
+            .navigationTitle(feedSource.name)
+            .navigationBarTitleDisplayMode(.inline)
     }
 }

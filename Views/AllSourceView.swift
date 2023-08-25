@@ -1,21 +1,11 @@
 //
-//  FeedSourceView.swift
-//  Life@USTC (iOS)
+//  AllSourceView.swift
+//  Life@USTC
 //
-//  Created by TiankaiMa on 2022/12/22.
+//  Created by Tiankai Ma on 2023/8/25.
 //
 
 import SwiftUI
-
-struct FeedSourceView: View {
-    var feedSource: FeedSource
-
-    var body: some View {
-        FeedVStackView(feeds: feedSource.feed)
-            .navigationTitle(feedSource.name)
-            .navigationBarTitleDisplayMode(.inline)
-    }
-}
 
 struct AllSourceView: View {
     @ManagedData(.feedSource) var feedSources: [FeedSource]
@@ -27,17 +17,13 @@ struct AllSourceView: View {
         List {
             Section {
                 ForEach(
-                    feeds.sorted(by: { $0.datePosted > $1.datePosted }),
-                    id: \.id
+                    feeds.sorted(by: { $0.datePosted > $1.datePosted })
                 ) {
                     FeedView(feed: $0)
                 }
             } header: {
                 AsyncStatusLight(status: _feedSources.status)
             }
-
-            Spacer()
-                .frame(height: 70)
         }
         .scrollContentBackground(.hidden)
         .asyncStatusOverlay(_feedSources.status, showLight: false)
@@ -45,6 +31,6 @@ struct AllSourceView: View {
             _feedSources.triggerRefresh()
         }
         .navigationTitle("Feed")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
     }
 }

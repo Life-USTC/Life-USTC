@@ -54,14 +54,12 @@ struct FeaturesView: View {
                     Text(key.localized)
                 }
             }
-
-            Spacer().frame(height: 70)
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
         .searchable(text: $searchText, placement: .automatic)
         .navigationTitle("Features")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
     }
 
     init() { features = collectFeatures() }
@@ -77,7 +75,12 @@ extension FeaturesView {
                     image: "doc.richtext",
                     title: "Feed".localized,
                     subTitle: "",
-                    destinationView: { AnyView(AllSourceView()) }
+                    destinationView: {
+                        AnyView(
+                            AllSourceView()
+                                .navigationBarTitleDisplayMode(.inline)
+                        )
+                    }
                 )
             ] + feedSourceList.map { FeatureWithView($0) }
 

@@ -27,7 +27,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            CurriculumWeekView()
+            CurriculumWeekCard()
 
             ExamPreview(exams: [])
         }

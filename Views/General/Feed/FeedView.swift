@@ -87,7 +87,10 @@ struct FeedViewPreview: View {
 
 struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
-        VStack { List { FeedView(feed: .example) }.frame(height: 500) }
-            .padding()
+        List {
+            FeedView(feed: .example)
+        }
+        .frame(height: 500)
+        .padding()
     }
 }

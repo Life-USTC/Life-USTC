@@ -29,6 +29,9 @@
 		5638E2802A581CD6001967D9 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		5638E2822A58251A001967D9 /* SingleScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5638E2812A58251A001967D9 /* SingleScoreView.swift */; };
 		5647386F2A8E23D700608E46 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
+		5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565345892A98D2480010B78C /* CurriculumWeekCard.swift */; };
+		5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458B2A98D43E0010B78C /* AllSourceView.swift */; };
+		5653458F2A98D6C40010B78C /* CurriculumWeekViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
 		565587E7294B43BD0010E060 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587E6294B43BD0010E060 /* HomeView.swift */; };
@@ -120,7 +123,6 @@
 		56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 56D175BC295044FF0070778F /* SwiftyJSON */; };
 		56D175C0295048A10070778F /* CurriculumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175BF295048A10070778F /* CurriculumDetailView.swift */; };
 		56D175C8295438E20070778F /* FeedSourceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175C7295438E20070778F /* FeedSourceExtensions.swift */; };
-		56D175CC295457100070778F /* FeedSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CB295457100070778F /* FeedSourceView.swift */; };
 		56D175CE295457810070778F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CD295457810070778F /* FeedView.swift */; };
 		56D175D02954589D0070778F /* FeedVStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedVStackView.swift */; };
 		56D18BBE29E140DE002C6677 /* RectangleProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */; };
@@ -205,6 +207,9 @@
 		563542CC2A4B02D700C5BD7A /* CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CAS.swift; sourceTree = "<group>"; };
 		5638E2812A58251A001967D9 /* SingleScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleScoreView.swift; sourceTree = "<group>"; };
 		5647386E2A8E23D700608E46 /* AsyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatus.swift; sourceTree = "<group>"; };
+		565345892A98D2480010B78C /* CurriculumWeekCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCard.swift; sourceTree = "<group>"; };
+		5653458B2A98D43E0010B78C /* AllSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSourceView.swift; sourceTree = "<group>"; };
+		5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekViewExtension.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		565587B7294AE7910010E060 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		565587E6294B43BD0010E060 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -264,7 +269,6 @@
 		56C1425329F648A6007D9BD4 /* TPNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TPNSClient.swift; sourceTree = "<group>"; };
 		56D175BF295048A10070778F /* CurriculumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumDetailView.swift; sourceTree = "<group>"; };
 		56D175C7295438E20070778F /* FeedSourceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceExtensions.swift; sourceTree = "<group>"; };
-		56D175CB295457100070778F /* FeedSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceView.swift; sourceTree = "<group>"; };
 		56D175CD295457810070778F /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		56D175CF2954589D0070778F /* FeedVStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVStackView.swift; sourceTree = "<group>"; };
 		56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleProgressBar.swift; sourceTree = "<group>"; };
@@ -398,6 +402,16 @@
 			path = School;
 			sourceTree = "<group>";
 		};
+		5653458D2A98D6830010B78C /* WeekCard */ = {
+			isa = PBXGroup;
+			children = (
+				565345892A98D2480010B78C /* CurriculumWeekCard.swift */,
+				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
+				5653458E2A98D6C40010B78C /* CurriculumWeekViewExtension.swift */,
+			);
+			path = WeekCard;
+			sourceTree = "<group>";
+		};
 		565587F4294D632D0010E060 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -405,6 +419,7 @@
 				565587FC294D65E30010E060 /* General */,
 				56E94E21298A775C0085241B /* Settings */,
 				565A11B629FF563600310C8B /* StartUp */,
+				5653458B2A98D43E0010B78C /* AllSourceView.swift */,
 				562169212955BEDE00DF46BE /* ContentView.swift */,
 				56558803294D93810010E060 /* FeaturesView.swift */,
 				565587E6294B43BD0010E060 /* HomeView.swift */,
@@ -662,9 +677,9 @@
 			isa = PBXGroup;
 			children = (
 				567ED62C2A9535A100F3A38B /* Details */,
+				5653458D2A98D6830010B78C /* WeekCard */,
 				56BE91FC2966799200822C98 /* CourseCardView.swift */,
 				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
-				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
 			);
 			path = Curriculum;
 			sourceTree = "<group>";
@@ -712,7 +727,6 @@
 		56D175CA295456F10070778F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
-				56D175CB295457100070778F /* FeedSourceView.swift */,
 				56D175CD295457810070778F /* FeedView.swift */,
 				56D175CF2954589D0070778F /* FeedVStackView.swift */,
 			);
@@ -994,6 +1008,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56E94E23298A77790085241B /* AboutPage.swift in Sources */,
+				5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */,
 				56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */,
 				567FA93129D083180003050F /* AppPage.swift in Sources */,
 				5647386F2A8E23D700608E46 /* AsyncStatus.swift in Sources */,
@@ -1011,7 +1026,9 @@
 				56D175C0295048A10070778F /* CurriculumDetailView.swift in Sources */,
 				56A8FC2A2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
+				5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */,
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
+				5653458F2A98D6C40010B78C /* CurriculumWeekViewExtension.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
 				56A8FC242A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
@@ -1025,7 +1042,6 @@
 				5699672E2A976FC200CC1EBB /* FeedSource.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSourceExtensions.swift in Sources */,
 				569967302A976FD700CC1EBB /* FeedSourceList.swift in Sources */,
-				56D175CC295457100070778F /* FeedSourceView.swift in Sources */,
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
 				5699672B2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
