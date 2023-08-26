@@ -20,10 +20,10 @@ struct Course: Codable, Identifiable, Equatable {
     var additionalInfo: [String: String] = [:]
 
     static let example = Course(
-        name: "Example Course",
-        courseCode: "Example-0001",
-        lessonCode: "Example-0001.01",
-        teacherName: "Example Teacher",
+        name: "数学分析B1",
+        courseCode: "MATH10001",
+        lessonCode: "MATH10001.01",
+        teacherName: "程艺",
         lectures: [.example]
     )
 }

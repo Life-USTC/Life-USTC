@@ -5,7 +5,6 @@
 //  Created by Tiankai Ma on 2023/8/25.
 //
 
-import Charts
 import SwiftUI
 
 struct CurriculumWeekCard: View {
@@ -18,17 +17,12 @@ struct CurriculumWeekCard: View {
     @State var weekNumber: Int?
 
     var date: Date { _date.startOfWeek() }
-    var flippedDegrees: Double { flipped ? 180 : 0 }
 
     var body: some View {
-        ZStack {
-            mainView.card()
-                .flipRotate(flippedDegrees)
-                .opacity(flipped ? 0 : 1)
-
-            settingsView.card()
-                .flipRotate(-180 + flippedDegrees)
-                .opacity(flipped ? 1 : 0)
+        FlipableCard(flipped: $flipped) {
+            mainView
+        } settingsView: {
+            settingsView
         }
         .onChange(of: currentSemester) {
             _ in updateLecturesAndWeekNumber()
@@ -73,32 +67,14 @@ extension CurriculumWeekCard {
         }
     }
 
-    var topBar: some View {
-        HStack {
-            Text("Curriculum")
-                .font(.system(.caption, design: .monospaced, weight: .bold))
-
-            AsyncStatusLight(status: _curriculum.status)
-
-            Spacer()
-
-            refreshButton
-            flipButton
-        }
-    }
-
     var mainView: some View {
-        VStack {
-            topBar
-            CurriculumWeekView(
-                lectures: lectures,
-                _date: _date,
-                currentSemesterName: currentSemester?.name ?? "All".localized,
-                weekNumber: weekNumber
-            )
-            .frame(height: 230)
-            .asyncStatusOverlay(_curriculum.status, showLight: false)
-        }
+        CurriculumWeekView(
+            lectures: lectures,
+            _date: _date,
+            currentSemesterName: currentSemester?.name ?? "All".localized,
+            weekNumber: weekNumber
+        )
+        .frame(height: 230)
         .gesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
@@ -114,22 +90,98 @@ extension CurriculumWeekCard {
                     }
                 }
         )
-    }
-}
-
-extension View {
-    fileprivate func card() -> some View {
-        padding()
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(Color.secondary, lineWidth: 0.2)
+        .asyncStatusOverlay(_curriculum.status, text: "Curriculum") {
+            HStack {
+                refreshButton
+                flipButton
             }
+        }
     }
 
-    fileprivate func flipRotate(_ degrees: Double) -> some View {
-        rotation3DEffect(
-            Angle(degrees: degrees),
-            axis: (x: 0.0, y: 1.0, z: 0.0)
-        )
+    var settingsView: some View {
+        VStack(alignment: .leading) {
+            Spacer()
+                .frame(height: 20)
+
+            DatePicker(selection: $_date, displayedComponents: .date) {
+                VStack(alignment: .leading) {
+                    Text("Date")
+
+                    Text("You can also swipe left/right to switch weeks")
+                        .font(.system(.caption, weight: .light))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Divider()
+
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Semester")
+
+                    Text(
+                        "Semester selection is automatically updated based on current date"
+                    )
+                    .font(.system(.caption, weight: .light))
+                    .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Menu {
+                    ForEach(curriculum.semesters) { semester in
+                        Button(semester.name) {
+                            currentSemester = semester
+                        }
+                    }
+                    Button("All") { currentSemester = nil }
+                } label: {
+                    Text(currentSemester?.name ?? "All".localized)
+                }
+            }
+
+            Divider()
+
+            Spacer()
+        }
+        .asyncStatusOverlay(_curriculum.status, text: "Curriculum") {
+            HStack {
+                refreshButton
+                flipButton
+            }
+        }
+    }
+
+    func updateLecturesAndWeekNumber() {
+        lectures =
+            (currentSemester == nil
+            ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
+            : currentSemester!.courses.flatMap(\.lectures))
+            .filter {
+                (0.0 ..< 3600.0 * 24 * 7)
+                    .contains($0.startDate.stripTime().timeIntervalSince(date))
+            }
+
+        if let currentSemester {
+            weekNumber =
+                (Calendar(identifier: .gregorian)
+                    .dateComponents(
+                        [.weekOfYear],
+                        from: currentSemester.startDate,
+                        to: date
+                    )
+                    .weekOfYear ?? 0) + 1
+        } else {
+            weekNumber = nil
+        }
+    }
+
+    func updateSemester() {
+        currentSemester =
+            curriculum.semesters
+            .filter {
+                ($0.startDate ... $0.endDate).contains(_date)
+            }
+            .first
     }
 }

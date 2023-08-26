@@ -41,7 +41,7 @@ struct FeaturesView: View {
                 Section {
                     ForEach(features, id: \.id) { feature in
                         NavigationLink {
-                            feature.destinationView()
+                            AnyView(feature.destinationView())
                         } label: {
                             Label(
                                 feature.title.localized,
@@ -53,6 +53,13 @@ struct FeaturesView: View {
                 } header: {
                     Text(key.localized)
                 }
+            }
+
+            Section {
+
+            } footer: {
+                Spacer()
+                    .frame(height: 70)
             }
         }
         .listStyle(.sidebar)
@@ -76,10 +83,8 @@ extension FeaturesView {
                     title: "Feed".localized,
                     subTitle: "",
                     destinationView: {
-                        AnyView(
-                            AllSourceView()
-                                .navigationBarTitleDisplayMode(.inline)
-                        )
+                        AllSourceView()
+                            .navigationBarTitleDisplayMode(.inline)
                     }
                 )
             ] + feedSourceList.map { FeatureWithView($0) }
@@ -89,19 +94,19 @@ extension FeaturesView {
                 image: "book",
                 title: "Curriculum".localized,
                 subTitle: "",
-                destinationView: { AnyView(CurriculumDetailView()) }
+                destinationView: { CurriculumDetailView() }
             ),
             .init(
                 image: "calendar.badge.clock",
                 title: "Exam".localized,
                 subTitle: "",
-                destinationView: { AnyView(ExamView()) }
+                destinationView: { ExamView() }
             ),
             .init(
                 image: "graduationcap",
                 title: "Score".localized,
                 subTitle: "",
-                destinationView: { AnyView(ScoreView()) }
+                destinationView: { ScoreView() }
             ),
         ]
 

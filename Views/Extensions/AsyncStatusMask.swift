@@ -34,14 +34,33 @@ struct AsyncStatusLight: View {
 
 struct AsyncStatusMask: ViewModifier {
     var status: AsyncStatus?
+    var text: String?
     var showLight: Bool = true
+    var settingsView: (() -> any View)?
 
     func body(content: Content) -> some View {
         VStack {
             if showLight {
                 HStack {
+                    if let text {
+                        Text(text.localized)
+                            .font(
+                                .system(
+                                    .caption,
+                                    design: .monospaced,
+                                    weight: .bold
+                                )
+                            )
+                    }
+
                     AsyncStatusLight(status: status)
                     Spacer()
+
+                    if let settingsView {
+                        AnyView(
+                            settingsView()
+                        )
+                    }
                 }
             }
 
@@ -62,8 +81,17 @@ struct AsyncStatusMask: ViewModifier {
 extension View {
     func asyncStatusOverlay(
         _ status: AsyncStatus?,
-        showLight: Bool = true
+        text: String? = nil,
+        showLight: Bool = true,
+        settingsView: @escaping () -> any View = { EmptyView() }
     ) -> some View {
-        modifier(AsyncStatusMask(status: status, showLight: showLight))
+        modifier(
+            AsyncStatusMask(
+                status: status,
+                text: text,
+                showLight: showLight,
+                settingsView: settingsView
+            )
+        )
     }
 }

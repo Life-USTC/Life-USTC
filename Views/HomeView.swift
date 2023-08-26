@@ -7,37 +7,21 @@
 
 import SwiftUI
 
-private struct HomeFeature {
-    var title: String
-    var subTitle: String
-    var destination: AnyView
-    var preview: AnyView
-}
-
 struct HomeView: View {
-    @State var date = Date()
     @State var navigationToSettingsView = false
 
-    var mmddFormatter: DateFormatter {
-        let tmp = DateFormatter()
-        tmp.dateStyle = .short
-        tmp.timeStyle = .none
-        return tmp
-    }
-
     var body: some View {
-        List {
-            CurriculumWeekCard()
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 30) {
+                CurriculumTodayCard()
+                CurriculumWeekCard()
+                ExamPreview(exams: [])
+            }
 
-            CurriculumPreview(
-                lectureListA: [.example],
-                lectureListB: [.example]
-            )
-
-            ExamPreview(exams: [])
+            Spacer()
+                .frame(height: 70)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .padding(.horizontal)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

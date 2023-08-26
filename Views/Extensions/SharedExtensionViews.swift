@@ -12,11 +12,11 @@ struct FeatureWithView: Identifiable {
     var image: String
     var title: String
     var subTitle: String
-    var destinationView: () -> AnyView
+    var destinationView: () -> any View
 }
 
 struct SettingWithView: Identifiable {
     var id = UUID()
     var name: String
-    var destinationView: () -> AnyView
+    var destinationView: () -> any View
 }

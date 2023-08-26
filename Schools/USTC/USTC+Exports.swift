@@ -26,7 +26,7 @@ class USTCExports: SchoolExport {
         [
             .init(
                 name: "CAS Settings",
-                destinationView: { AnyView(USTCCASLoginView.newPage) }
+                destinationView: { USTCCASLoginView.newPage }
             )
         ]
     }
@@ -55,8 +55,8 @@ class USTCExports: SchoolExport {
     //        USTCBaseModifier()
     //    }
 
-    override var firstLoginView: (Binding<Bool>) -> AnyView {
-        { .init(USTCCASLoginView.sheet(isPresented: $0)) }
+    override var firstLoginView: (Binding<Bool>) -> any View {
+        { USTCCASLoginView.sheet(isPresented: $0) }
     }
 
     override var features: [String: [FeatureWithView]] {

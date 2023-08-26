@@ -38,8 +38,8 @@ class SchoolExport {
     //        USTCBaseModifier()
     //    }
 
-    var firstLoginView: (Binding<Bool>) -> AnyView {
-        { .init(USTCCASLoginView.sheet(isPresented: $0)) }
+    var firstLoginView: (Binding<Bool>) -> any View {
+        { USTCCASLoginView.sheet(isPresented: $0) }
     }
 
     var features: [String: [FeatureWithView]] { [:] }
