@@ -59,7 +59,6 @@ struct CurriculumPreview: View {
         VStack(alignment: .leading) {
             if let text {
                 Text(text.localized)
-                    .fontWeight(.bold)
                     .font(.system(.body, design: .monospaced, weight: .light))
             }
 
