@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         // Update on developing: if previousVersion <= version
         if let previousVersion = UserDefaults.appGroup.string(
             forKey: "version"
-        ), previousVersion.versionCompare(version) == .orderedAscending {
+        ), previousVersion.versionCompare(version) == .orderedDescending {
             return false
         }
         #else
@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         if let previousVersion = UserDefaults.appGroup.string(
             forKey: "version"
         ),
-            previousVersion.versionCompare(version) == .orderedAscending
+            previousVersion.versionCompare(version) == .orderedDescending
                 || previousVersion.versionCompare(version) == .orderedSame
         {
             return false
@@ -43,6 +43,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
 
         print("Version <= \(version); Updating to version \(version)")
         return true
+    }
+
+    /// What to execute after 1.0.3 update
+    func version1_0_3Update() {
+        if !shouldRunUpdate(on: "1.0.3") { return }
+
+        // Remove everything in UserDefaults
+        for key in UserDefaults.appGroup.dictionaryRepresentation().keys {
+            print(key)
+            UserDefaults.appGroup.removeObject(forKey: key)
+        }
+
+        for key in UserDefaults.standard.dictionaryRepresentation().keys {
+            print(key)
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+
+        // set version to 1.0.2
+        UserDefaults.appGroup.set("1.0.3", forKey: "version")
     }
 
     /// What to execute after 1.0.2 update
@@ -88,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
+        version1_0_3Update()
 
         preparePreviews()
         return true
@@ -105,6 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
+        version1_0_3Update()
         if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool
             ?? true
         {
