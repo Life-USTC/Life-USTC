@@ -67,7 +67,7 @@ class USTCExports: SchoolExport {
                     image: "doc.text.magnifyingglass",
                     title: "Classroom Status".localized,
                     subTitle: "",
-                    destinationView: { AnyView(USTCClassroomView()) }
+                    destinationView: { USTCClassroomView() }
                 )
             ],
         ]

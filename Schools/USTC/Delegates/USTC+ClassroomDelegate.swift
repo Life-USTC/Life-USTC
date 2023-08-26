@@ -31,6 +31,20 @@ func loadBuildingInfo() -> [String: [String]] {
     return result
 }
 
+let ustcBuildingRooms: [String: [String]] = loadBuildingInfo()
+let ustcBuildingNames: [String: String] = [
+    "1": "第一教学楼",
+    "2": "第二教学楼",
+    "3": "第三教学楼",
+    "5": "第五教学楼",
+    "17": "先研院未来中心",
+    "11": "高新校区图书教育中心A楼",
+    "12": "高新校区图书教育中心B楼",
+    "13": "高新校区图书教育中心C楼",
+    "14": "高新校区师生活动中心",
+    "22": "高新校区信智楼",
+]
+
 class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
     static let shared = USTCClassroomDelegate()
 
@@ -42,20 +56,6 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         return dateFormatter.string(from: date)
     }
-
-    var buildingRooms: [String: [String]] = loadBuildingInfo()
-    var buildingNames: [String: String] = [
-        "1": "第一教学楼",
-        "2": "第二教学楼",
-        "3": "第三教学楼",
-        "5": "第五教学楼",
-        "17": "先研院未来中心",
-        "11": "高新校区图书教育中心A楼",
-        "12": "高新校区图书教育中心B楼",
-        "13": "高新校区图书教育中心C楼",
-        "14": "高新校区师生活动中心",
-        "22": "高新校区信智楼",
-    ]
 
     func parseDate(_ time: String) -> Date {
         // time format: hh:mm, add that to date
@@ -72,7 +72,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
         let validToken = catalogClient.token
 
         var cache: [String: JSON] = [:]
-        for building in buildingNames.keys {
+        for building in ustcBuildingNames.keys {
             let url = URL(
                 string:
                     "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)"
@@ -84,7 +84,8 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
         }
 
         var result: [String: [Lecture]] = [:]
-        for building in buildingNames.keys {
+        for building in ustcBuildingNames.keys {
+            result[building] = []
             if let json = cache[building] {
                 for (_, subJson) in json["timetable"]["lessons"] {
                     let tmp = Lecture(
@@ -94,11 +95,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
                         location: subJson["classroomName"].stringValue,
                         additionalInfo: ["Color": "blue"]
                     )
-                    if result.keys.contains(building) {
-                        result[building]?.append(tmp)
-                    } else {
-                        result[building] = [tmp]
-                    }
+                    result[building]?.append(tmp)
                 }
 
                 for (_, subJson) in json["timetable"]["tmpLessons"] {
@@ -109,11 +106,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
                         location: subJson["classroomName"].stringValue,
                         additionalInfo: ["Color": "green"]
                     )
-                    if result.keys.contains(building) {
-                        result[building]?.append(tmp)
-                    } else {
-                        result[building] = [tmp]
-                    }
+                    result[building]?.append(tmp)
                 }
 
                 for (_, subJson) in json["timetable"]["exams"] {
@@ -124,16 +117,16 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
                         location: subJson["classroomName"].stringValue,
                         additionalInfo: ["Color": "green"]
                     )
-                    if result.keys.contains(building) {
-                        result[building]?.append(tmp)
-                    } else {
-                        result[building] = [tmp]
-                    }
+                    result[building]?.append(tmp)
                 }
             }
         }
         return result
     }
+}
+
+extension [String: [Lecture]]: ExampleDataProtocol {
+    static let example: [String: [Lecture]] = ["2": [.example]]
 }
 
 extension ManagedDataSource<[String: [Lecture]]> {
