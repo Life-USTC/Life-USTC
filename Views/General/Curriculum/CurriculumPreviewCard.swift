@@ -10,7 +10,7 @@ import SwiftUI
 struct CurriculumTodayCard: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
-    var _date: Date = .now.add(day: 23)
+    var _date: Date = .now
 
     var date: Date { _date.stripTime() }
 

@@ -47,7 +47,7 @@ struct CurriculumPreviewProvider: TimelineProvider {
         completion: @escaping (CurriculumPreviewEntry) -> Void
     ) {
         Task {
-            let date = Date().add(day: 23)
+            let date = Date()
             let entry = try await makeEntry(for: date)
             completion(entry)
         }
@@ -58,7 +58,7 @@ struct CurriculumPreviewProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            let date = Date().add(day: 23)
+            let date = Date()
             let entry = try await makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
@@ -85,20 +85,29 @@ struct CurriculumPreviewWidgetEntryView: View {
 
     var body: some View {
         Group {
-            if widgetFamily == .systemLarge || entry.todayLectures.count <= 2 {
+            if widgetFamily == .systemLarge
+                || (widgetFamily == .systemMedium
+                    && entry.todayLectures.count <= 2)
+            {
                 CurriculumPreview(
                     lectureListA: entry.todayLectures,
                     lectureListB: entry.tomorrowLectures
                 )
-            } else {
+            } else if widgetFamily == .systemMedium {
                 CurriculumPreview(
                     lectureListA: Array(entry.todayLectures.prefix(2)),
                     lectureListB: Array(
                         entry.todayLectures.dropFirst(2).prefix(2)
                     ),
                     listAText: "Today",
-                    listBText: "More"
+                    listBText: nil
                 )
+            } else if widgetFamily == .systemSmall {
+                CurriculumPreview()
+                    .makeView(
+                        with: Array(entry.todayLectures.prefix(2)),
+                        text: "Today"
+                    )
             }
         }
         .widgetBackground(
@@ -114,7 +123,11 @@ struct CurriculumPreviewWidget: Widget {
         StaticConfiguration(kind: kind, provider: CurriculumPreviewProvider()) {
             CurriculumPreviewWidgetEntryView(entry: $0)
         }
-        .supportedFamilies([.systemMedium, .systemLarge])
+        .supportedFamilies([
+            .systemSmall,
+            .systemMedium,
+            .systemLarge,
+        ])
         .configurationDisplayName("Curriculum")
         .description("Show today & tomorrow's lectures")
     }
