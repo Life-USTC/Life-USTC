@@ -23,7 +23,7 @@ private enum ClassRoomColor: String {
 }
 
 struct USTCClassroomView: View {
-    enum Selection: String {
+    enum Selection: String, CaseIterable {
         case morning
         case afternoon
         case night
@@ -90,12 +90,23 @@ struct USTCClassroomView: View {
                     }
                 }
 
+                Picker(
+                    "Time",
+                    selection: $selection
+                ) {
+                    ForEach(Selection.allCases, id: \.self) {
+                        Text($0.rawValue.capitalized)
+                    }
+                }
+                .pickerStyle(.segmented)
+
                 Chart {
                     ForEach(buildingRooms, id: \.self) { room in
                         BarMark(
                             xStart: .value("Start time", date),
                             xEnd: .value("End time", date.add(day: 1)),
-                            y: .value("Room", room)
+                            y: .value("Room", room),
+                            height: .ratio(0.8)
                         )
                         .foregroundStyle(.clear)
                     }
@@ -104,9 +115,11 @@ struct USTCClassroomView: View {
                         BarMark(
                             xStart: .value("Start time", lecture.startDate),
                             xEnd: .value("End time", lecture.endDate),
-                            y: .value("Room", lecture.location)
+                            y: .value("Room", lecture.location),
+                            height: .ratio(0.8)
                         )
                         .foregroundStyle(.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
                         .annotation(position: .overlay) {
                             Text(lecture.name)
                                 .font(.system(size: 10))
@@ -115,22 +128,39 @@ struct USTCClassroomView: View {
                     }
                 }
                 .chartXScale(domain: dateRange)
+                .chartXAxis {
+                    AxisMarks(
+                        preset: .automatic,
+                        position: .top,
+                        values: .stride(by: .hour, count: 1)
+                    ) {
+                        AxisValueLabel(format: .dateTime.hour())
+                        AxisGridLine()
+                    }
+                    AxisMarks(values: [Date()]) {
+                        AxisGridLine()
+                            .foregroundStyle(.red)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(values: buildingRooms)
+                }
                 .chartLegend(.hidden)
                 .if(true) { content -> AnyView in
-                    guard #available(iOS 17, *) else {
-                        return AnyView(
-                            content
-                                .frame(
-                                    height: Double(buildingRooms.count) * 50.0
-                                        + 10.0
-                                )
-                        )
-                    }
+                    //                    guard #available(iOS 17, *) else {
                     return AnyView(
                         content
-                            .chartScrollableAxes(.vertical)
-                            .frame(height: 500)
+                            .frame(
+                                height: Double(buildingRooms.count) * 50.0
+                                    + 10.0
+                            )
                     )
+                    //                    }
+                    //                    return AnyView(
+                    //                        content
+                    //                            .chartScrollableAxes(.vertical)
+                    //                            .frame(height: 500)
+                    //                    )
                 }
             } header: {
                 AsyncStatusLight(status: _classroom.status)
