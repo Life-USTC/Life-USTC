@@ -39,3 +39,9 @@ extension EKEvent {
         location = lecture.location
     }
 }
+
+extension [Lecture] {
+    func sort() -> [Lecture] {
+        sorted { $0.startDate < $1.startDate }
+    }
+}

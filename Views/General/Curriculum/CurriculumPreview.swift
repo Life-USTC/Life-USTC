@@ -21,19 +21,23 @@ struct LectureView: View {
             VStack(alignment: .leading) {
                 Text(lecture.name)
                     .lineLimit(1)
-                    .font(.system(.body, weight: .bold))
+                    .font(.system(.body, weight: .semibold))
 
                 HStack {
                     Text(lecture.location)
-                    Text(lecture.name)
+                    Text(lecture.teacher)
                 }
                 .lineLimit(1)
-                .font(.system(.callout, weight: .light))
+                .font(.system(.caption, weight: .light))
 
                 Text(lecture.startDate ... lecture.endDate)
                     .lineLimit(1)
-                    .font(.system(.caption, weight: .light))
+                    .font(
+                        .system(.caption, design: .monospaced, weight: .medium)
+                    )
             }
+
+            Spacer()
         }
     }
 }
@@ -49,7 +53,8 @@ struct CurriculumPreview: View {
         -> some View
     {
         VStack(alignment: .leading) {
-            Text(text)
+            Text(text.localized)
+                .fontWeight(.bold)
                 .font(.system(.body, design: .monospaced, weight: .light))
 
             ForEach(lectures) { lecture in
@@ -62,7 +67,6 @@ struct CurriculumPreview: View {
 
             Spacer()
         }
-        .padding(.horizontal)
     }
 
     var body: some View {
@@ -79,43 +83,5 @@ struct CurriculumPreview: View {
                 color: .blue
             )
         }
-    }
-}
-
-struct CurriculumTodayCard: View {
-    @ManagedData(.curriculum) var curriculum: Curriculum
-
-    var _date: Date = .now
-
-    var date: Date { _date.stripTime() }
-
-    var todayLectures: [Lecture] {
-        curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date ..< date.add(day: 1)).contains($0.startDate)
-            }
-    }
-
-    var tomorrowLectures: [Lecture] {
-        curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date.add(day: 1) ..< date.add(day: 2)).contains($0.startDate)
-            }
-    }
-
-    var body: some View {
-        CurriculumPreview(
-            lectureListA: todayLectures,
-            lectureListB: tomorrowLectures
-        )
-        .asyncStatusOverlay(_curriculum.status, text: "Curriculum") {
-            Button {
-                _curriculum.triggerRefresh()
-            } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
-                    .font(.caption)
-            }
-        }
-        .card()
     }
 }
