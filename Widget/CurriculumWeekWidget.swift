@@ -1,6 +1,6 @@
 //
-//  CurriculumWidget.swift
-//  CurriculumWidget
+//  CurriculumWeekWidget.swift
+//  Widget
 //
 //  Created by Ode on 2023/3/7.
 //
@@ -9,14 +9,15 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-struct CurriculumProvider: TimelineProvider {
+struct CurriculumWeekProvider: TimelineProvider {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
-    func placeholder(in _: Context) -> CurriculumEntry {
-        CurriculumEntry.example
+    func placeholder(in _: Context) -> CurriculumWeekEntry {
+        CurriculumWeekEntry.example
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> CurriculumEntry {
+    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry
+    {
         let date = _date.startOfWeek()
         let curriculum = try await _curriculum.retrive()!
         let currentSemester: Semester? =
@@ -58,7 +59,7 @@ struct CurriculumProvider: TimelineProvider {
 
     func getSnapshot(
         in _: Context,
-        completion: @escaping (CurriculumEntry) -> Void
+        completion: @escaping (CurriculumWeekEntry) -> Void
     ) {
         Task {
             let date = Date().add(day: 21)
@@ -81,21 +82,23 @@ struct CurriculumProvider: TimelineProvider {
     }
 }
 
-struct CurriculumEntry: TimelineEntry {
+struct CurriculumWeekEntry: TimelineEntry {
     var lectures: [Lecture]
-    var date: Date = .now
+    var date: Date
     var currentSemesterName: String
     var weekNumber: Int?
 
-    static let example = CurriculumEntry(
+    static let example = CurriculumWeekEntry(
         lectures: [.example],
-        currentSemesterName: Semester.example.name
+        date: .now,
+        currentSemesterName: Semester.example.name,
+        weekNumber: nil
     )
 }
 
-struct CurriculumWidgetEntryView: View {
+struct CurriculumWeekWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
-    var entry: CurriculumProvider.Entry
+    var entry: CurriculumWeekProvider.Entry
 
     var body: some View {
         CurriculumWeekView(
@@ -111,23 +114,23 @@ struct CurriculumWidgetEntryView: View {
     }
 }
 
-struct CurriculumWidget: Widget {
-    let kind: String = "CurriculumWidget"
+struct CurriculumWeekWidget: Widget {
+    let kind: String = "CurriculumWeekWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: CurriculumProvider()) {
-            CurriculumWidgetEntryView(entry: $0)
+        StaticConfiguration(kind: kind, provider: CurriculumWeekProvider()) {
+            CurriculumWeekWidgetEntryView(entry: $0)
         }
         .supportedFamilies([.systemLarge, .systemExtraLarge])
         .configurationDisplayName("Curriculum")
-        .description("Show today's curriculum.")
+        .description("Show this week's curriculum.")
     }
 }
 
-struct CurriculumWidget_Previews: PreviewProvider {
+struct CurriculumWeekWidget_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWidgetEntryView(entry: .example)
+            CurriculumWeekWidgetEntryView(entry: .example)
                 .previewContext(WidgetPreviewContext(family: family))
                 .previewDisplayName(family.description)
         }

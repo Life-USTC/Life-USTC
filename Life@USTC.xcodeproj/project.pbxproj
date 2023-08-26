@@ -114,7 +114,7 @@
 		56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
 		56C1425129F64618007D9BD4 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425029F64618007D9BD4 /* PushNotification.swift */; };
 		56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1425329F648A6007D9BD4 /* TPNSClient.swift */; };
-		56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */; };
+		56C3A72629BDA10400A5017A /* CurriculumWeekWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AAF0F829B71C34007BFC60 /* CurriculumWeekWidget.swift */; };
 		56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627958A2A08F382009D398E /* JSRuntime.swift */; };
 		56CAA6352A6D6825003AFA1B /* XGMTACloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8374F92F03832B8097F86E2D /* XGMTACloud.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */; };
@@ -158,6 +158,9 @@
 		56E9A09D2A8F1CAC00A12B29 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
 		56F16E0B2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
 		56F16E0C2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
+		56F16E0D2A99F26600DBB3CA /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
+		56F16E0F2A99F3A800DBB3CA /* CurriculumPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0E2A99F3A800DBB3CA /* CurriculumPreviewCard.swift */; };
+		56F16E122A99F5B200DBB3CA /* CurriculumPreviewWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E102A99F49C00DBB3CA /* CurriculumPreviewWidget.swift */; };
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
@@ -253,7 +256,7 @@
 		56A8FC2E2A97AFC3009D94A3 /* USTCBaseModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USTCBaseModifier.swift; sourceTree = "<group>"; };
 		56A8FC312A97B168009D94A3 /* AsyncStatusExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatusExtensions.swift; sourceTree = "<group>"; };
 		56AAAB172A968A68000561FE /* SchoolExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolExport.swift; sourceTree = "<group>"; };
-		56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWidget.swift; sourceTree = "<group>"; };
+		56AAF0F829B71C34007BFC60 /* CurriculumWeekWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekWidget.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56B86B852A8F47E6003440D2 /* Lesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lesson.swift; sourceTree = "<group>"; };
@@ -291,6 +294,8 @@
 		56E9A0952A8F1A9A00A12B29 /* ManagedUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedUserDefaults.swift; sourceTree = "<group>"; };
 		56E9A0972A8F1C9B00A12B29 /* ManagedLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedLocalStorage.swift; sourceTree = "<group>"; };
 		56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedDataExample.swift; sourceTree = "<group>"; };
+		56F16E0E2A99F3A800DBB3CA /* CurriculumPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreviewCard.swift; sourceTree = "<group>"; };
+		56F16E102A99F49C00DBB3CA /* CurriculumPreviewWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreviewWidget.swift; sourceTree = "<group>"; };
 		56F1734F2A1C871D00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173502A1C881300C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F173512A1C892C00C79E53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -678,6 +683,7 @@
 				567ED62C2A9535A100F3A38B /* Details */,
 				5653458D2A98D6830010B78C /* WeekCard */,
 				56BE91FE296679BC00822C98 /* CurriculumPreview.swift */,
+				56F16E0E2A99F3A800DBB3CA /* CurriculumPreviewCard.swift */,
 			);
 			path = Curriculum;
 			sourceTree = "<group>";
@@ -806,7 +812,8 @@
 			isa = PBXGroup;
 			children = (
 				569CFE4D297EBCFA0072C094 /* Assets */,
-				56AAF0F829B71C34007BFC60 /* CurriculumWidget.swift */,
+				56F16E102A99F49C00DBB3CA /* CurriculumPreviewWidget.swift */,
+				56AAF0F829B71C34007BFC60 /* CurriculumWeekWidget.swift */,
 				56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */,
 				56FA8E84297D7264000AC3A9 /* Info.plist */,
 				569CFE4B297E85F30072C094 /* Widget.entitlements */,
@@ -1024,6 +1031,7 @@
 				56D175C0295048A10070778F /* CurriculumDetailView.swift in Sources */,
 				56A8FC2A2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
+				56F16E0F2A99F3A800DBB3CA /* CurriculumPreviewCard.swift in Sources */,
 				5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */,
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
@@ -1101,8 +1109,10 @@
 				56A8FC282A97AE51009D94A3 /* CourseScore.swift in Sources */,
 				56A0C1972A8E0EE000BFEAB9 /* Curriculum.swift in Sources */,
 				56A8FC2B2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
+				56F16E0D2A99F26600DBB3CA /* CurriculumPreview.swift in Sources */,
+				56F16E122A99F5B200DBB3CA /* CurriculumPreviewWidget.swift in Sources */,
 				565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */,
-				56C3A72629BDA10400A5017A /* CurriculumWidget.swift in Sources */,
+				56C3A72629BDA10400A5017A /* CurriculumWeekWidget.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
 				56A8FC252A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
