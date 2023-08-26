@@ -43,19 +43,25 @@ struct LectureView: View {
 }
 
 struct CurriculumPreview: View {
-    var lectureListA: [Lecture]
-    var lectureListB: [Lecture]
-    var listAText: String = "Today"
-    var listBText: String = "Tomorrow"
+    var lectureListA: [Lecture] = []
+    var lectureListB: [Lecture] = []
+    var listAText: String? = "Today"
+    var listBText: String? = "Tomorrow"
 
     @ViewBuilder
-    func makeView(with lectures: [Lecture], text: String, color: Color = .blue)
+    func makeView(
+        with lectures: [Lecture],
+        text: String? = nil,
+        color: Color = .blue
+    )
         -> some View
     {
         VStack(alignment: .leading) {
-            Text(text.localized)
-                .fontWeight(.bold)
-                .font(.system(.body, design: .monospaced, weight: .light))
+            if let text {
+                Text(text.localized)
+                    .fontWeight(.bold)
+                    .font(.system(.body, design: .monospaced, weight: .light))
+            }
 
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)

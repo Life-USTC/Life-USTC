@@ -62,7 +62,7 @@ struct CurriculumWeekProvider: TimelineProvider {
         completion: @escaping (CurriculumWeekEntry) -> Void
     ) {
         Task {
-            let date = Date().add(day: 21)
+            let date = Date()
             let entry = try await makeEntry(for: date)
             completion(entry)
         }
@@ -73,7 +73,7 @@ struct CurriculumWeekProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            let date = Date().add(day: 21)
+            let date = Date()
             let entry = try await makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
