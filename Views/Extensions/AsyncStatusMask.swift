@@ -38,41 +38,43 @@ struct AsyncStatusMask: ViewModifier {
     var showLight: Bool = true
     var settingsView: (() -> any View)?
 
+    var topBar: some View {
+        HStack {
+            if let text {
+                Text(text.localized)
+                    .font(
+                        .system(.caption, design: .monospaced, weight: .bold)
+                    )
+            }
+
+            AsyncStatusLight(status: status)
+            Spacer()
+
+            if let settingsView {
+                AnyView(
+                    settingsView()
+                )
+            }
+        }
+    }
+
+    var shouldGrayScale: Bool {
+        status?.local == .outDated || status?.refresh == .waiting
+    }
+
+    var shouldRedact: Bool {
+        status?.local ?? .notFound == .notFound
+    }
+
     func body(content: Content) -> some View {
         VStack {
             if showLight {
-                HStack {
-                    if let text {
-                        Text(text.localized)
-                            .font(
-                                .system(
-                                    .caption,
-                                    design: .monospaced,
-                                    weight: .bold
-                                )
-                            )
-                    }
-
-                    AsyncStatusLight(status: status)
-                    Spacer()
-
-                    if let settingsView {
-                        AnyView(
-                            settingsView()
-                        )
-                    }
-                }
+                topBar
             }
 
             content
-                .grayscale(
-                    status?.local == .outDated || status?.refresh == .waiting
-                        ? 0.8 : 0
-                )
-                .redacted(
-                    reason: status?.local ?? .notFound == .notFound
-                        ? .placeholder : []
-                )
+                .grayscale(shouldGrayScale ? 0.8 : 0)
+                .redacted(reason: shouldRedact ? .placeholder : [])
         }
         .overlay {
             if status?.refresh == .waiting {

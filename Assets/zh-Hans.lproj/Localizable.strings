@@ -184,7 +184,7 @@
 "%@+%@D" = "%@%@天后";
 "Exams" = "考试";
 "Exam" = "考试";
-"Show upcoming exam." = "显示接下来的考试安排";
+"Show upcoming exam" = "显示接下来的考试安排";
 "Curriculum" = "课表";
 "Show today's curriculum." = "显示今天的课程表";
 "Finished" = "已完成";

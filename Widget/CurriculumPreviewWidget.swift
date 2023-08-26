@@ -84,14 +84,17 @@ struct CurriculumPreviewWidgetEntryView: View {
     var entry: CurriculumPreviewProvider.Entry
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading) {
+            Text("Curriculum")
+                .font(.system(.caption, design: .monospaced, weight: .bold))
             if widgetFamily == .systemLarge
                 || (widgetFamily == .systemMedium
-                    && entry.todayLectures.count <= 2)
+                    && entry.todayLectures.count <= 2
+                    && entry.tomorrowLectures.count <= 2)
             {
                 CurriculumPreview(
-                    lectureListA: entry.todayLectures,
-                    lectureListB: entry.tomorrowLectures
+                    lectureListA: Array(entry.todayLectures.prefix(6)),
+                    lectureListB: Array(entry.tomorrowLectures.prefix(6))
                 )
             } else if widgetFamily == .systemMedium {
                 CurriculumPreview(
@@ -120,7 +123,10 @@ struct CurriculumPreviewWidget: Widget {
     let kind: String = "CurriculumPreviewWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: CurriculumPreviewProvider()) {
+        StaticConfiguration(
+            kind: kind,
+            provider: CurriculumPreviewProvider()
+        ) {
             CurriculumPreviewWidgetEntryView(entry: $0)
         }
         .supportedFamilies([
