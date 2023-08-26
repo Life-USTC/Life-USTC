@@ -52,6 +52,10 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
             )
         }
 
+        if result.isEmpty {
+            throw BaseError.runtimeError("No semester found")
+        }
+
         return result
     }
 

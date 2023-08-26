@@ -33,6 +33,28 @@ struct HStackModifier: ViewModifier {
     }
 }
 
+struct FlipableCard: View {
+    @Binding var flipped: Bool
+    var flippedDegrees: Double { flipped ? 180 : 0 }
+
+    var mainView: () -> any View
+    var settingsView: () -> any View
+
+    var body: some View {
+        ZStack {
+            AnyView(mainView())
+                .card()
+                .flipRotate(flippedDegrees)
+                .opacity(flipped ? 0 : 1)
+
+            AnyView(settingsView())
+                .card()
+                .flipRotate(-180 + flippedDegrees)
+                .opacity(flipped ? 1 : 0)
+        }
+    }
+}
+
 extension View {
     func hStackLeading() -> some View {
         modifier(HStackModifier())
@@ -59,6 +81,34 @@ extension View {
             transform(self)
         } else {
             self
+        }
+    }
+
+    func card() -> some View {
+        self
+            .padding()
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(Color.secondary, lineWidth: 0.2)
+            }
+    }
+
+    func flipRotate(_ degrees: Double) -> some View {
+        rotation3DEffect(
+            Angle(degrees: degrees),
+            axis: (x: 0.0, y: 1.0, z: 0.0)
+        )
+    }
+
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        if #available(iOSApplicationExtension 17.0, iOS 17, *) {
+            AnyView(
+                containerBackground(for: .widget) {
+                    backgroundView
+                }
+            )
+        } else {
+            AnyView(background(backgroundView))
         }
     }
 }
@@ -121,16 +171,75 @@ let exampleGradientList: [[Color]] = [
     [.init(hex: "#D5AF8D"), .init(hex: "#6FA3A3")],
 ]
 
-extension View {
-    func widgetBackground(_ backgroundView: some View) -> some View {
-        if #available(iOSApplicationExtension 17.0, iOS 17, *) {
-            AnyView(
-                containerBackground(for: .widget) {
-                    backgroundView
-                }
-            )
-        } else {
-            AnyView(background(backgroundView))
+struct EqualWidthHStack: Layout {
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+
+        let maxSize = maxSize(subviews: subviews)
+        let spacing = spacing(subviews: subviews)
+        let totalSpacing = spacing.reduce(0.0, +)
+
+        return CGSize(
+            width: maxSize.width * CGFloat(subviews.count) + totalSpacing,
+            height: maxSize.height
+        )
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+
+        let maxSize = maxSize(subviews: subviews)
+        let spacing = spacing(subviews: subviews)
+
+        let sizeProposal = ProposedViewSize(
+            width: maxSize.width,
+            height: maxSize.height
+        )
+
+        var x = bounds.minX + maxSize.width / 2
+
+        for index in subviews.indices {
+            subviews[index]
+                .place(
+                    at: CGPoint(x: x, y: bounds.midY),
+                    anchor: .center,
+                    proposal: sizeProposal
+                )
+            x += maxSize.width + spacing[index]
         }
+    }
+
+    private func spacing(subviews: Subviews) -> [CGFloat] {
+        subviews.indices.map { index in
+            guard index < subviews.count - 1 else { return 0.0 }
+
+            return subviews[index].spacing
+                .distance(
+                    to: subviews[index + 1].spacing,
+                    along: .horizontal
+                )
+        }
+    }
+
+    private func maxSize(subviews: Subviews) -> CGSize {
+        let subviewSizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        let maxSize: CGSize = subviewSizes.reduce(
+            .zero,
+            { result, size in
+                CGSize(
+                    width: max(result.width, size.width),
+                    height: max(result.height, size.height)
+                )
+            }
+        )
+
+        return maxSize
     }
 }

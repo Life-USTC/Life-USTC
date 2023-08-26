@@ -23,6 +23,9 @@ struct AllSourceView: View {
                 }
             } header: {
                 AsyncStatusLight(status: _feedSources.status)
+            } footer: {
+                Spacer()
+                    .frame(height: 70)
             }
         }
         .scrollContentBackground(.hidden)

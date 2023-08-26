@@ -41,9 +41,7 @@ extension FeatureWithView {
             title: feature.name,
             subTitle: feature.description,
             destinationView: {
-                AnyView(
-                    Browser(url: feature.url, title: feature.name.localized)
-                )
+                Browser(url: feature.url, title: feature.name.localized)
             }
         )
     }

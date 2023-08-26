@@ -35,10 +35,11 @@ struct SettingsView: View {
 
             Section {
                 ForEach(SchoolExport.shared.settings) { setting in
-                    NavigationLink(
-                        setting.name.localized,
-                        destination: setting.destinationView
-                    )
+                    NavigationLink(setting.name.localized) {
+                        AnyView(
+                            setting.destinationView()
+                        )
+                    }
                 }
             } header: {
                 Text("School")

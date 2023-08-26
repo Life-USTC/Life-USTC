@@ -90,10 +90,13 @@ struct ContentView: View {
     }
 
     @AppStorage("firstLogin") var firstLogin: Bool = true
+
     var body: some View {
         // When user first login, present the view here,
         if firstLogin {
-            SchoolExport.shared.firstLoginView($firstLogin)
+            AnyView(
+                SchoolExport.shared.firstLoginView($firstLogin)
+            )
         } else {
             ZStack {
                 // Keep LUJSRuntime in backend and keep alive

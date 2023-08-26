@@ -31,7 +31,6 @@
 		5647386F2A8E23D700608E46 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
 		5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565345892A98D2480010B78C /* CurriculumWeekCard.swift */; };
 		5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458B2A98D43E0010B78C /* AllSourceView.swift */; };
-		5653458F2A98D6C40010B78C /* CurriculumWeekCardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */; };
 		565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569600142A92337E00677F15 /* CurriculumWeekView.swift */; };
 		565587B6294ACEFD0010E060 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		565587B8294AE7910010E060 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B7294AE7910010E060 /* Feed.swift */; };
@@ -211,7 +210,6 @@
 		5647386E2A8E23D700608E46 /* AsyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatus.swift; sourceTree = "<group>"; };
 		565345892A98D2480010B78C /* CurriculumWeekCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCard.swift; sourceTree = "<group>"; };
 		5653458B2A98D43E0010B78C /* AllSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSourceView.swift; sourceTree = "<group>"; };
-		5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCardExtension.swift; sourceTree = "<group>"; };
 		565587B5294ACEFD0010E060 /* Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		565587B7294AE7910010E060 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		565587E6294B43BD0010E060 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -408,7 +406,6 @@
 			isa = PBXGroup;
 			children = (
 				565345892A98D2480010B78C /* CurriculumWeekCard.swift */,
-				5653458E2A98D6C40010B78C /* CurriculumWeekCardExtension.swift */,
 				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
 			);
 			path = WeekCard;
@@ -1028,7 +1025,6 @@
 				56A8FC2A2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
 				56BE91FF296679BC00822C98 /* CurriculumPreview.swift in Sources */,
 				5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */,
-				5653458F2A98D6C40010B78C /* CurriculumWeekCardExtension.swift in Sources */,
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
