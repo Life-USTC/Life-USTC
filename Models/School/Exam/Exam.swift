@@ -8,7 +8,8 @@
 import EventKit
 import SwiftUI
 
-struct Exam: Codable, Equatable, ExampleDataProtocol {
+struct Exam: Codable, Identifiable, Equatable, ExampleDataProtocol {
+    var id = UUID()
     // MARK: - Information about the course
 
     /// Code to indicate which exact lesson the student is tanking, like MATH1000.01

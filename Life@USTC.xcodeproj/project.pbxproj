@@ -156,6 +156,8 @@
 		56E9A09C2A8F1CA700A12B29 /* ManagedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E9A0912A8F0E6400A12B29 /* ManagedData.swift */; };
 		56E9A09D2A8F1CAC00A12B29 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
 		56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 565587EC294B46900010E060 /* Localizable.strings */; };
+		56EEA65C2A9A303E0034EE33 /* ExamPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */; };
+		56EEA65D2A9A30400034EE33 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
 		56F16E0B2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
 		56F16E0C2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
 		56F16E0D2A99F26600DBB3CA /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
@@ -164,7 +166,7 @@
 		56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 56F3EAD3296EAF020095AEF4 /* SwiftSoup */; };
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
-		56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EADB296EB9EA0095AEF4 /* ExamView.swift */; };
+		56F3EADC296EB9EA0095AEF4 /* ExamDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EADB296EB9EA0095AEF4 /* ExamDetailView.swift */; };
 		56F681992A4D324B00B77C48 /* Header.h in Headers */ = {isa = PBXBuildFile; fileRef = 56F681982A4D324600B77C48 /* Header.h */; };
 		56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */; };
 		56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */; };
@@ -291,6 +293,7 @@
 		56E9A0932A8F12BF00A12B29 /* ManagedDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedDataSource.swift; sourceTree = "<group>"; };
 		56E9A0952A8F1A9A00A12B29 /* ManagedUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedUserDefaults.swift; sourceTree = "<group>"; };
 		56E9A0972A8F1C9B00A12B29 /* ManagedLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedLocalStorage.swift; sourceTree = "<group>"; };
+		56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreviewCard.swift; sourceTree = "<group>"; };
 		56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedDataExample.swift; sourceTree = "<group>"; };
 		56F16E0E2A99F3A800DBB3CA /* CurriculumPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreviewCard.swift; sourceTree = "<group>"; };
 		56F16E102A99F49C00DBB3CA /* CurriculumPreviewWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumPreviewWidget.swift; sourceTree = "<group>"; };
@@ -300,7 +303,7 @@
 		56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Life@USTC.entitlements"; sourceTree = "<group>"; };
 		56F3EAD5296EB3B70095AEF4 /* Exam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exam.swift; sourceTree = "<group>"; };
 		56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamPreview.swift; sourceTree = "<group>"; };
-		56F3EADB296EB9EA0095AEF4 /* ExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamView.swift; sourceTree = "<group>"; };
+		56F3EADB296EB9EA0095AEF4 /* ExamDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamDetailView.swift; sourceTree = "<group>"; };
 		56F681962A4D30DC00B77C48 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		56F681982A4D324600B77C48 /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		56FA8E75297D7263000AC3A9 /* Widget iOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Widget iOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -781,8 +784,9 @@
 		56F3EAD7296EB7E60095AEF4 /* Exam */ = {
 			isa = PBXGroup;
 			children = (
+				56F3EADB296EB9EA0095AEF4 /* ExamDetailView.swift */,
 				56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */,
-				56F3EADB296EB9EA0095AEF4 /* ExamView.swift */,
+				56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */,
 				5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */,
 			);
 			path = Exam;
@@ -988,9 +992,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */,
 				56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */,
 				567E6FA92A121CB50056BE5F /* console.js in Resources */,
+				56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */,
 				56311A702A16394A009D7A34 /* Runtime.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1033,10 +1037,11 @@
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
 				56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */,
+				56F3EADC296EB9EA0095AEF4 /* ExamDetailView.swift in Sources */,
 				56A8FC242A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
 				56E94E2B298AA3720085241B /* ExamPage.swift in Sources */,
 				56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */,
-				56F3EADC296EB9EA0095AEF4 /* ExamView.swift in Sources */,
+				56EEA65C2A9A303E0034EE33 /* ExamPreviewCard.swift in Sources */,
 				56BE91F72963EF1600822C98 /* ExceptionExtension.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
@@ -1113,6 +1118,7 @@
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
 				56A8FC252A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
+				56EEA65D2A9A30400034EE33 /* ExamPreview.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionExtension.swift in Sources */,
 				5699672C2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,

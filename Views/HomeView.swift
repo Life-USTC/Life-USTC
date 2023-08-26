@@ -15,7 +15,7 @@ struct HomeView: View {
             VStack(spacing: 30) {
                 CurriculumTodayCard()
                 CurriculumWeekCard()
-                ExamPreview(exams: [])
+                ExamPreviewCard()
             }
 
             Spacer()

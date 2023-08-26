@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated, message: "")
 struct RectangleProgressBar: View {
     var width = 400.0
     var height = 50.0
@@ -164,6 +165,7 @@ struct RectangleProgressBar: View {
     }
 }
 
+@available(*, deprecated, message: "")
 struct RectangleProgressBar_Previews: PreviewProvider {
     static var previews: some View {
         VStack {

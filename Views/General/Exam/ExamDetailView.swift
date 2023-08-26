@@ -1,5 +1,5 @@
 //
-//  ExamView.swift
+//  ExamDetailView.swift
 //  Life@USTC (iOS)
 //
 //  Created by TiankaiMa on 2023/1/11.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ExamView: View {
+struct ExamDetailView: View {
     @ManagedData(.exam) var exams: [Exam]
 
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
@@ -61,6 +61,6 @@ struct ExamView: View {
 
 struct ExamView_Previews: PreviewProvider {
     static var previews: some View {
-        ExamView()
+        ExamDetailView()
     }
 }
