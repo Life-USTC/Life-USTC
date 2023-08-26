@@ -108,7 +108,14 @@ struct CurriculumTodayCard: View {
             lectureListA: todayLectures,
             lectureListB: tomorrowLectures
         )
-        .asyncStatusOverlay(_curriculum.status, text: "Curriculum")
+        .asyncStatusOverlay(_curriculum.status, text: "Curriculum") {
+            Button {
+                _curriculum.triggerRefresh()
+            } label: {
+                Label("Refresh", systemImage: "arrow.clockwise")
+                    .font(.caption)
+            }
+        }
         .card()
     }
 }
