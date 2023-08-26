@@ -14,8 +14,8 @@ struct HomeView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 30) {
                 CurriculumTodayCard()
-                CurriculumWeekCard()
                 ExamPreviewCard()
+                CurriculumWeekCard()
             }
 
             Spacer()
