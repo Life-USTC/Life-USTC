@@ -50,6 +50,8 @@ struct ExamPreview: View {
                 ExamView(exam: .example)
                     .redacted(reason: .placeholder)
             }
+
+            Spacer()
         }
     }
 }
