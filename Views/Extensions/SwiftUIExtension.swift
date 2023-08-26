@@ -105,6 +105,12 @@ extension Color {
     }
 }
 
+struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
+    init(seed: Int) { srand48(seed) }
+    func next() -> UInt64 { UInt64(drand48() * Double(UInt64.max)) }
+}
+
+@available(*, deprecated, message: "NOT recommended to use.")
 let exampleGradientList: [[Color]] = [
     [.init(hex: "#6A95A9"), .init(hex: "#4577C7")],
     [.init(hex: "#9AE0E9"), .init(hex: "#89AFE8")],
