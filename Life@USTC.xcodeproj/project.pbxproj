@@ -76,7 +76,6 @@
 		569CFE44297D87620072C094 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE43297D87620072C094 /* SwiftyJSON */; };
 		569CFE48297D87660072C094 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE47297D87660072C094 /* SwiftSoup */; };
 		569CFE4A297D87690072C094 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 569CFE49297D87690072C094 /* Reeeed */; };
-		569CFE50297EBD240072C094 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 569CFE52297EBD240072C094 /* Localizable.strings */; };
 		56A0C18F2A8E0AAA00BFEAB9 /* Lecture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0C18E2A8E0AAA00BFEAB9 /* Lecture.swift */; };
 		56A0C1902A8E0AAA00BFEAB9 /* Lecture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0C18E2A8E0AAA00BFEAB9 /* Lecture.swift */; };
 		56A0C1922A8E0B7700BFEAB9 /* Semester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0C1912A8E0B7700BFEAB9 /* Semester.swift */; };
@@ -156,6 +155,7 @@
 		56E9A09B2A8F1CA400A12B29 /* ManagedDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E9A0932A8F12BF00A12B29 /* ManagedDataSource.swift */; };
 		56E9A09C2A8F1CA700A12B29 /* ManagedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E9A0912A8F0E6400A12B29 /* ManagedData.swift */; };
 		56E9A09D2A8F1CAC00A12B29 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
+		56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 565587EC294B46900010E060 /* Localizable.strings */; };
 		56F16E0B2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
 		56F16E0C2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0A2A991C8C00DBB3CA /* ManagedDataExample.swift */; };
 		56F16E0D2A99F26600DBB3CA /* CurriculumPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FE296679BC00822C98 /* CurriculumPreview.swift */; };
@@ -242,8 +242,6 @@
 		5699672F2A976FD700CC1EBB /* FeedSourceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSourceList.swift; sourceTree = "<group>"; };
 		569967322A97A2E200CC1EBB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		569CFE4B297E85F30072C094 /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
-		569CFE51297EBD240072C094 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		569CFE53297EBD2E0072C094 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		56A0C18E2A8E0AAA00BFEAB9 /* Lecture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lecture.swift; sourceTree = "<group>"; };
 		56A0C1912A8E0B7700BFEAB9 /* Semester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Semester.swift; sourceTree = "<group>"; };
 		56A0C1952A8E0EE000BFEAB9 /* Curriculum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Curriculum.swift; sourceTree = "<group>"; };
@@ -558,7 +556,6 @@
 			isa = PBXGroup;
 			children = (
 				56FA8E82297D7264000AC3A9 /* Assets.xcassets */,
-				569CFE52297EBD240072C094 /* Localizable.strings */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -991,9 +988,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */,
 				56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */,
 				567E6FA92A121CB50056BE5F /* console.js in Resources */,
-				569CFE50297EBD240072C094 /* Localizable.strings in Resources */,
 				56311A702A16394A009D7A34 /* Runtime.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1174,15 +1171,6 @@
 			children = (
 				565587EB294B46900010E060 /* en */,
 				565587EF294B46BB0010E060 /* zh-Hans */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		569CFE52297EBD240072C094 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				569CFE51297EBD240072C094 /* en */,
-				569CFE53297EBD2E0072C094 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

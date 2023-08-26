@@ -123,7 +123,7 @@ struct CurriculumWeekWidget: Widget {
         }
         .supportedFamilies([.systemLarge, .systemExtraLarge])
         .configurationDisplayName("Curriculum")
-        .description("Show this week's curriculum.")
+        .description("Show this week's curriculum")
     }
 }
 
