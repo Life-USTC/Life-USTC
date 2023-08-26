@@ -103,7 +103,7 @@
 "Building" = "教学楼";
 "Campus" = "校区";
 "Description" = "说明";
-"More" = "展开";
+"More" = "更多";
 "Less" = "收起";
 "No More Exam!" = "暂无考试！";
 
@@ -191,8 +191,9 @@
 "%@ days left" = "%@天后";
 "Today's Course" = "今日课程";
 "No more course today!" = "今日无其他课程";
-"Class" = "课程2";
+"Class" = "课堂";
 "Today" = "今天";
 "Tomorrow" = "明天";
 "Show this week's curriculum" = "显示本周课程表";
 "Show today & tomorrow's lectures" = "显示今天和明天的课程";
+"School" = "学校";
