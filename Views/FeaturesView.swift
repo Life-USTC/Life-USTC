@@ -100,7 +100,7 @@ extension FeaturesView {
                 image: "calendar.badge.clock",
                 title: "Exam".localized,
                 subTitle: "",
-                destinationView: { ExamView() }
+                destinationView: { ExamDetailView() }
             ),
             .init(
                 image: "graduationcap",

@@ -8,112 +8,48 @@
 import Combine
 import SwiftUI
 
+struct ExamView: View {
+    var exam: Exam
+    var body: some View {
+        HStack {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(exam.isFinished ? .gray : .red)
+                .frame(width: 5)
+                .frame(maxHeight: 50)
+            VStack(alignment: .leading) {
+                Text(exam.courseName)
+                    .fontWeight(.bold)
+                    .strikethrough(exam.isFinished)
+                Text(exam.classRoomName)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing) {
+                Text(exam.startDate, style: .date)
+                    .font(.system(.body, design: .monospaced))
+                Text(exam.startDate ... exam.endDate)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+}
+
 struct ExamPreview: View {
     var exams: [Exam]
-    @State var randomColor = exampleGradientList.randomElement() ?? []
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading) {
+            ForEach(exams) { exam in
+                ExamView(exam: exam)
+            }
             if exams.isEmpty {
-                happyView
-            } else {
-                makeView(with: exams)
+                ExamView(exam: .example)
+                    .redacted(reason: .placeholder)
             }
         }
-    }
-
-    func makeView(with exam: Exam) -> some View {
-        makeRectangleView(colors: exam.isFinished ? [.gray] : randomColor) {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(exam.courseName)
-                        .fontWeight(.bold)
-                        .strikethrough(exam.isFinished)
-                    Text(exam.classRoomName)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing) {
-                    Text(exam.startDate, style: .date)
-                        .font(.system(.body, design: .monospaced))
-                    Text(exam.startDate ... exam.endDate)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-    }
-
-    var happyView: some View {
-        makeView(with: Exam.example)
-            .blur(radius: 2)
-            .redacted(reason: .placeholder)
-            .overlay {
-                HStack {
-                    Image(systemName: "checklist.checked")
-                        .symbolRenderingMode(.hierarchical)
-                        .font(.system(.largeTitle, weight: .light))
-                        .foregroundStyle(Color.orange)
-
-                    Spacer()
-
-                    Text("No More Exam!")
-                        .font(.system(.body, design: .monospaced))
-                }
-                .padding()
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(style: .init(lineWidth: 1))
-                    .fill(Color.gray.opacity(0.3))
-            }
-    }
-
-    func makeView(with exams: [Exam]) -> some View {
-        VStack {
-            ForEach(exams, id: \.lessonCode) { exam in
-                makeView(with: exam)
-            }
-        }
-    }
-}
-
-@ViewBuilder
-private func makeRectangleView(
-    colors: [Color] = [.gray],
-    mainView: @escaping () -> any View
-) -> some View {
-    VStack {
-        AnyView(mainView())
-            .frame(height: 50)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-
-        RoundedRectangle(cornerRadius: 2)
-            .fill(
-                LinearGradient(
-                    colors: colors,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .frame(height: 5)
-    }
-    .overlay {
-        RoundedRectangle(cornerRadius: 5)
-            .stroke(style: .init(lineWidth: 1))
-            .fill(Color.gray.opacity(0.3))
-    }
-    .clipped()
-    .frame(height: 60)
-}
-
-struct ExamPreview_Previews: PreviewProvider {
-    static var previews: some View {
-        ExamPreview(exams: [.example, .example])
-        ExamPreview(exams: [])
     }
 }
