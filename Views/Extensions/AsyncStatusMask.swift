@@ -64,14 +64,18 @@ struct AsyncStatusMask: ViewModifier {
                 }
             }
 
-            switch status?.local ?? .notFound {
-            case .valid: content
-            case .outDated: content.grayscale(0.8)
-            case .notFound: content.redacted(reason: .placeholder)
-            }
+            content
+                .grayscale(
+                    status?.local == .outDated || status?.refresh == .waiting
+                        ? 0.8 : 0
+                )
+                .redacted(
+                    reason: status?.local ?? .notFound == .notFound
+                        ? .placeholder : []
+                )
         }
-        .if(status?.refresh == .waiting) {
-            $0.overlay {
+        .overlay {
+            if status?.refresh == .waiting {
                 ProgressView()
             }
         }
