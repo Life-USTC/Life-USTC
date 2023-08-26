@@ -26,12 +26,18 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        List {
             CurriculumWeekCard()
+
+            CurriculumPreview(
+                lectureListA: [.example],
+                lectureListB: [.example]
+            )
 
             ExamPreview(exams: [])
         }
-        .padding(.horizontal)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
