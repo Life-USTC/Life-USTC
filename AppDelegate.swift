@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     func startJSRuntime() { let _ = LUJSRuntime.shared }
 
     func shouldRunUpdate(on version: String) -> Bool {
-        #if DEBUG
+        #if IOS_SIMULATOR
         // Update on developing: if previousVersion <= version
         if let previousVersion = UserDefaults.appGroup.string(
             forKey: "version"
@@ -107,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     ) -> Bool {
         startJSRuntime()
         version1_0_2Update()
-        version1_0_3Update()
+        //        version1_0_3Update()
 
         preparePreviews()
         return true
