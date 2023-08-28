@@ -13,6 +13,7 @@ struct HomeView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 30) {
+                CurriculumTodayCard_old()
                 CurriculumTodayCard()
                 ExamPreviewCard()
                 CurriculumWeekCard()
