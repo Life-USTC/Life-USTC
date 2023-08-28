@@ -548,8 +548,8 @@
 		56912ECF2A9C6D94003ACD8B /* TodayCard */ = {
 			isa = PBXGroup;
 			children = (
-				56BE91FE296679BC00822C98 /* CurriculumTodayView.swift */,
 				56F16E0E2A99F3A800DBB3CA /* CurriculumTodayCard.swift */,
+				56BE91FE296679BC00822C98 /* CurriculumTodayView.swift */,
 			);
 			path = TodayCard;
 			sourceTree = "<group>";
@@ -557,8 +557,8 @@
 		56912ED12A9C6DEC003ACD8B /* Card */ = {
 			isa = PBXGroup;
 			children = (
-				56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */,
 				56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */,
+				56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -809,8 +809,8 @@
 		56F3EAD7296EB7E60095AEF4 /* Exam */ = {
 			isa = PBXGroup;
 			children = (
-				56912ED22A9C6DF6003ACD8B /* Details */,
 				56912ED12A9C6DEC003ACD8B /* Card */,
+				56912ED22A9C6DF6003ACD8B /* Details */,
 			);
 			path = Exam;
 			sourceTree = "<group>";
@@ -1054,8 +1054,8 @@
 				56A0C1962A8E0EE000BFEAB9 /* Curriculum.swift in Sources */,
 				56D175C0295048A10070778F /* CurriculumDetailView.swift in Sources */,
 				56A8FC2A2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
-				56BE91FF296679BC00822C98 /* CurriculumTodayView.swift in Sources */,
 				56F16E0F2A99F3A800DBB3CA /* CurriculumTodayCard.swift in Sources */,
+				56BE91FF296679BC00822C98 /* CurriculumTodayView.swift in Sources */,
 				5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */,
 				569600152A92337E00677F15 /* CurriculumWeekView.swift in Sources */,
 				5621691C2955BEC500DF46BE /* DateExtension.swift in Sources */,
@@ -1134,15 +1134,16 @@
 				56A8FC282A97AE51009D94A3 /* CourseScore.swift in Sources */,
 				56A0C1972A8E0EE000BFEAB9 /* Curriculum.swift in Sources */,
 				56A8FC2B2A97AE78009D94A3 /* CurriculumExtensions.swift in Sources */,
-				56F16E0D2A99F26600DBB3CA /* CurriculumTodayView.swift in Sources */,
-				56912ED02A9C6DA0003ACD8B /* CurriculumTodayCard.swift in Sources */,
 				56F16E122A99F5B200DBB3CA /* CurriculumPreviewWidget.swift in Sources */,
+				56912ED02A9C6DA0003ACD8B /* CurriculumTodayCard.swift in Sources */,
+				56F16E0D2A99F26600DBB3CA /* CurriculumTodayView.swift in Sources */,
 				565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWeekWidget.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
 				56A8FC252A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
 				56EEA65D2A9A30400034EE33 /* ExamPreview.swift in Sources */,
+				56912ED32A9C6E04003ACD8B /* ExamPreviewCard.swift in Sources */,
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionExtension.swift in Sources */,
 				5699672C2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
@@ -1152,7 +1153,6 @@
 				56A0C1902A8E0AAA00BFEAB9 /* Lecture.swift in Sources */,
 				56E25CC42A8F2D210027E72F /* LoginClient.swift in Sources */,
 				56E9A09C2A8F1CA700A12B29 /* ManagedData.swift in Sources */,
-				56912ED32A9C6E04003ACD8B /* ExamPreviewCard.swift in Sources */,
 				56F16E0C2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */,
 				56E9A09B2A8F1CA400A12B29 /* ManagedDataSource.swift in Sources */,
 				56E9A0992A8F1C9E00A12B29 /* ManagedLocalStorage.swift in Sources */,
