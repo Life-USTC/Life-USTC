@@ -42,7 +42,7 @@ struct LectureView: View {
     }
 }
 
-struct CurriculumPreview: View {
+struct CurriculumTodayView: View {
     var lectureListA: [Lecture] = []
     var lectureListB: [Lecture] = []
     var listAText: String? = "Today"

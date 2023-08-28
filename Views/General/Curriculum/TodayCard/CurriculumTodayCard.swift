@@ -1,5 +1,5 @@
 //
-//  CurriculumPreviewCard.swift
+//  CurriculumTodayCard.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/8/26.
@@ -31,7 +31,7 @@ struct CurriculumTodayCard: View {
     }
 
     var body: some View {
-        CurriculumPreview(
+        CurriculumTodayView(
             lectureListA: todayLectures,
             lectureListB: tomorrowLectures
         )
