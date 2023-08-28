@@ -92,12 +92,12 @@ struct CurriculumPreviewWidgetEntryView: View {
                     && entry.todayLectures.count <= 2
                     && entry.tomorrowLectures.count <= 2)
             {
-                CurriculumPreview(
+                CurriculumTodayView(
                     lectureListA: Array(entry.todayLectures.prefix(6)),
                     lectureListB: Array(entry.tomorrowLectures.prefix(6))
                 )
             } else if widgetFamily == .systemMedium {
-                CurriculumPreview(
+                CurriculumTodayView(
                     lectureListA: Array(entry.todayLectures.prefix(2)),
                     lectureListB: Array(
                         entry.todayLectures.dropFirst(2).prefix(2)
@@ -106,7 +106,7 @@ struct CurriculumPreviewWidgetEntryView: View {
                     listBText: nil
                 )
             } else if widgetFamily == .systemSmall {
-                CurriculumPreview()
+                CurriculumTodayView()
                     .makeView(
                         with: Array(entry.todayLectures.prefix(2)),
                         text: "Today"
