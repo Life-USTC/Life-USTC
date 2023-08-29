@@ -1,9 +1,9 @@
-name: Build
+name: Build & Beta
 
 on:
     push:
-        branches:
-            - "*"
+        tags:
+            - v*
     workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
         steps:
           - uses: actions/checkout@v2
           - name: Build
-            run: fastlane ios build > build.log
+            run: fastlane ios beta > build.log
             env:
                 MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
                 MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
