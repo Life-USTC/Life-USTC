@@ -47,7 +47,10 @@ struct AsyncStatusMask: ViewModifier {
                     )
             }
 
-            AsyncStatusLight(status: status)
+            if showLight {
+                AsyncStatusLight(status: status)
+            }
+
             Spacer()
 
             if let settingsView {
@@ -68,9 +71,7 @@ struct AsyncStatusMask: ViewModifier {
 
     func body(content: Content) -> some View {
         VStack {
-            if showLight {
-                topBar
-            }
+            topBar
 
             content
                 .grayscale(shouldGrayScale ? 0.8 : 0)

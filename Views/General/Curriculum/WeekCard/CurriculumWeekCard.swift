@@ -90,11 +90,12 @@ extension CurriculumWeekCard {
                     }
                 }
         )
-        .asyncStatusOverlay(_curriculum.status, text: "Curriculum") {
-            HStack {
-                refreshButton
-                flipButton
-            }
+        .asyncStatusOverlay(
+            _curriculum.status,
+            text: "Curriculum",
+            showLight: false
+        ) {
+            flipButton
         }
     }
 

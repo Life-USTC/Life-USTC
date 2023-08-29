@@ -12,14 +12,7 @@ struct ExamPreviewCard: View {
 
     var body: some View {
         ExamPreview(exams: exams)
-            .asyncStatusOverlay(_exams.status, text: "Exams") {
-                Button {
-                    _exams.triggerRefresh()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                        .font(.caption)
-                }
-            }
+            .asyncStatusOverlay(_exams.status, text: "Exams", showLight: false)
             .card()
     }
 }
