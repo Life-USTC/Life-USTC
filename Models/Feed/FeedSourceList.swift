@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftyJSON
 
 let FeedSourceListLocalStorage = ManagedLocalStorage<[FeedSource]>(
@@ -16,6 +17,8 @@ let FeedSourceListLocalStorage = ManagedLocalStorage<[FeedSource]>(
 class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
     static let shared = FeedSourceListDelegate()
 
+    @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
+
     func refresh() async throws -> [FeedSource] {
         let (data, _) = try await URLSession.shared.data(
             from: SchoolExport.shared.remoteFeedURL
@@ -23,14 +26,17 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
         let json = try JSON(data: data)
 
         return json["sources"].arrayValue
-            .map { feedSource in
+            .map { subJson in
                 FeedSource(
-                    url: URL(string: feedSource["url"].stringValue)!,
-                    name: feedSource["locales"]["zh"].stringValue,
-                    description: feedSource["description"].stringValue,
-                    image: feedSource["icons"]["sf-symbols"].stringValue,
-                    colorHex: feedSource["color"].stringValue
+                    url: URL(string: subJson["url"].stringValue)!,
+                    name: subJson["locales"]["zh"].stringValue,
+                    description: subJson["description"].stringValue,
+                    image: subJson["icons"]["sf-symbols"].stringValue,
+                    colorHex: subJson["color"].stringValue
                 )
+            }
+            .filter { feedSource in
+                !removedNameList.contains(feedSource.name)
             }
     }
 
