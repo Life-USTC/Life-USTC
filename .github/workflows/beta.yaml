@@ -11,7 +11,7 @@ jobs:
         runs-on: macos-13
         steps:
           - uses: actions/checkout@v2
-          - name: Build
+          - name: Build & Beta
             run: fastlane ios beta > build.log
             env:
                 MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
