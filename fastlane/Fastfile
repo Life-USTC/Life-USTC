@@ -20,6 +20,14 @@ platform :ios do
       is_key_content_base64: true,
       in_house: false,
     )
+    increment_build_number({
+      build_number: latest_testflight_build_number(
+        version: get_version_number(
+          target: "Life@USTC",
+        ),
+        app_identifier: "dev.tiankaima.Life-USTC",
+      ) + 1,
+    })
     gym(scheme: "Life@USTC", export_method: "app-store")
     pilot(skip_waiting_for_build_processing: true)
   end
