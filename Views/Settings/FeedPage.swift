@@ -44,11 +44,24 @@ struct FeedSettingView: View {
                     }
                 }
             } header: {
-                Text("Feed source to show").textCase(.none)
+                HStack {
+                    Text("Feed source to show").textCase(.none)
+                    AsyncStatusLight(status: _feedSourceList.status)
+                }
             } footer: {
                 Text("A reload may be required for this to take effect.")
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    _feedSourceList.triggerRefresh()
+                } label: {
+                    Label("Refresh List", systemImage: "arrow.clockwise")
+                }
+            }
+        }
+        .asyncStatusOverlay(_feedSourceList.status, showLight: false)
         .scrollContentBackground(.hidden)
         .navigationBarTitle("Feed Source Settings", displayMode: .inline)
     }

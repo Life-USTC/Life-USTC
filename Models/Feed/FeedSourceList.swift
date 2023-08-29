@@ -17,8 +17,6 @@ let FeedSourceListLocalStorage = ManagedLocalStorage<[FeedSource]>(
 class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
     static let shared = FeedSourceListDelegate()
 
-    @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
-
     func refresh() async throws -> [FeedSource] {
         let (data, _) = try await URLSession.shared.data(
             from: SchoolExport.shared.remoteFeedURL
@@ -34,9 +32,6 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
                     image: subJson["icons"]["sf-symbols"].stringValue,
                     colorHex: subJson["color"].stringValue
                 )
-            }
-            .filter { feedSource in
-                !removedNameList.contains(feedSource.name)
             }
     }
 

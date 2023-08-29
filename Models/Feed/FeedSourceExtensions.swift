@@ -12,6 +12,7 @@ import SwiftyJSON
 class FeedSourceDelegate: ManagedRemoteUpdateProtocol {
     static let shared = FeedSourceDelegate()
 
+    @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
 
     func refresh() async throws -> [FeedSource] {
@@ -20,6 +21,10 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol {
         }
 
         for source in feedSourceList {
+            if removedNameList.contains(source.name) {
+                continue
+            }
+
             var source = source
             let parseResult = try await withCheckedThrowingContinuation {
                 continuation in
