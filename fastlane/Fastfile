@@ -12,6 +12,7 @@ platform :ios do
     setup_ci if is_ci
     xcode_select("/Applications/Xcode_15.0.app") if is_ci
     match(type: "appstore", readonly: is_ci)
+    match(type: "development", readonly: is_ci)
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
