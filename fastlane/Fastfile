@@ -1,73 +1,94 @@
 platform :ios do
   # ! Local methods:
-  desc "Generate new certificates"
+  desc "[Local] Generate new certificates"
   lane :generate_new_certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ["dev.tiankaima.Life-USTC", "dev.tiankaima.Life-USTC.Widget"],
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
       force_for_new_devices: true,
       readonly: false,
     )
 
     sync_code_signing(
       type: "appstore",
-      app_identifier: ["dev.tiankaima.Life-USTC", "dev.tiankaima.Life-USTC.Widget"],
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
       readonly: false,
     )
-  end
-
-  desc "Register new device"
-    lane :register_new_device do  |options|
-      device_name = prompt(text: "Enter the device name: ")
-      device_udid = prompt(text: "Enter the device UDID: ")
-      device_hash = {}
-      device_hash[device_name] = device_udid
-      register_devices(
-                       devices: device_hash
-                       )
-    refresh_profiles
   end
 
   lane :refresh_profiles do
     match(
       type: "development",
-      force: true)
+      force: true,
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
+    )
     match(
       type: "adhoc",
-      force: true)
+      force: true,
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
+    )
   end
 
-  #! Local testings:
+  desc "[Local] Register new device"
+  lane :register_new_device do |options|
+    device_name = prompt(text: "Enter the device name: ")
+    device_udid = prompt(text: "Enter the device UDID: ")
+    device_hash = {}
+    device_hash[device_name] = device_udid
+    register_devices(
+      devices: device_hash,
+    )
+    refresh_profiles
+  end
+
   desc "Build"
   lane :build do
     certificates
     xcversion
-    build_app(
-      scheme: "Life@USTC",
-      export_options: {
-        method: "app-store",
-        uploadSymbols: true,
-        provisioningProfiles: {
-          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
-          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
-        },
-      },
-    )
+    build_app(scheme: "Life@USTC")
   end
 
   # ! CI methods:
+  desc "Update version number (if env['GITHUB-TAG'] contains tag in format v1.2.3)"
+  lane :update_version_number do
+    tag = ENV["GITHUB_TAG"]
+    if tag.start_with?("v")
+      increment_version_number(
+        version_number: tag[1..],
+      )
+    end
+  end
+
   desc "Get certificates"
   lane :certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ["dev.tiankaima.Life-USTC", "dev.tiankaima.Life-USTC.Widget"],
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
       force_for_new_devices: true,
       readonly: true,
     )
 
     sync_code_signing(
       type: "appstore",
-      app_identifier: ["dev.tiankaima.Life-USTC", "dev.tiankaima.Life-USTC.Widget"],
+      app_identifier: [
+        "dev.tiankaima.Life-USTC",
+        "dev.tiankaima.Life-USTC.Widget",
+      ],
       readonly: true,
     )
   end
@@ -104,7 +125,7 @@ platform :ios do
   end
 
   desc "Deploy to Testflight"
-  lane :deploy do
+  lane :deploy_to_testflight do
     setup_ci
     load_asc_api_key
     certificates
@@ -112,12 +133,6 @@ platform :ios do
     fetch_and_increment_build_number
     xcversion
     build_app(scheme: "Life@USTC")
-
-    # upload_to_app_store(
-    #   force: true,
-    #   run_precheck_before_submit: false,
-    #   submit_for_review: false,
-    # )
 
     upload_to_testflight(
       changelog: ENV["COMMIT_MESSAGE"],
@@ -130,16 +145,6 @@ platform :ios do
       notify_external_testers: true,
       skip_waiting_for_build_processing: false,
     )
-  end
-
-  desc "Update version number (if env['GITHUB-TAG'] contains tag in format v1.2.3)"
-  lane :update_version_number do
-    tag = ENV["GITHUB_TAG"]
-    if tag.start_with?("v")
-      increment_version_number(
-        version_number: tag[1..],
-      )
-    end
   end
 
   desc "Deploy to App Store"
