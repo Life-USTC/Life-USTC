@@ -7,17 +7,46 @@
 
 import SwiftUI
 
+enum HomeViewCardType: String, CaseIterable, Codable {
+    case curriculumToday
+    case examPreview
+    case curriculumWeek
+
+    case curriculumToday_old
+    case examPreview_old
+}
+
+extension HomeViewCardType {
+    var view: any View {
+        switch self {
+        case .curriculumToday:
+            CurriculumTodayCard()
+        case .examPreview:
+            ExamPreviewCard()
+        case .curriculumWeek:
+            CurriculumWeekCard()
+        case .curriculumToday_old:
+            CurriculumTodayCard_old()
+        case .examPreview_old:
+            ExamPreviewCard_old()
+        }
+    }
+}
+
 struct HomeView: View {
+    @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = [
+        .curriculumToday, .examPreview, .curriculumWeek,
+    ]
     @State var navigationToSettingsView = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 30) {
-                CurriculumTodayCard_old()
-                CurriculumTodayCard()
-                ExamPreviewCard_old()
-                ExamPreviewCard()
-                CurriculumWeekCard()
+                ForEach(homeViewOrder, id: \.self) { cardType in
+                    AnyView(
+                        cardType.view
+                    )
+                }
             }
 
             Spacer()
