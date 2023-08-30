@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct AppSettingPage: View {
-    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool =
-        false
+    @AppStorage(
+        "scoreViewPreventScreenShot"
+    ) var preventScreenShot: Bool = false
+
     var body: some View {
         List {
             Section {
@@ -18,7 +20,8 @@ struct AppSettingPage: View {
                     isOn: $preventScreenShot
                 )
             } header: {
-                Text("General").textCase(.none)
+                Text("General")
+                    .textCase(.none)
             }
         }
         .scrollContentBackground(.hidden)

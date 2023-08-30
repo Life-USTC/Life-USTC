@@ -17,6 +17,10 @@ struct SettingsView: View {
                     destination: AppSettingPage()
                 )
                 NavigationLink(
+                    "Home Page Settings",
+                    destination: HomeSettingPage()
+                )
+                NavigationLink(
                     "Feed Source Settings",
                     destination: FeedSettingView()
                 )

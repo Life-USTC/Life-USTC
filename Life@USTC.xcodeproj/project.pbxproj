@@ -134,6 +134,7 @@
 		56D8A49D2A6D21F10027224C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D8A49C2A6D21ED0027224C /* Keychain.swift */; };
 		56D8A49E2A6D21F10027224C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D8A49C2A6D21ED0027224C /* Keychain.swift */; };
 		56DD03A8296D0924004C358C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD03A7296D0924004C358C /* AppDelegate.swift */; };
+		56E22BDE2A9F2A310078455B /* HomeSettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */; };
 		56E25CC32A8F29E50027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
 		56E25CC42A8F2D210027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
 		56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
@@ -284,6 +285,7 @@
 		56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleProgressBar.swift; sourceTree = "<group>"; };
 		56D8A49C2A6D21ED0027224C /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSettingPage.swift; sourceTree = "<group>"; };
 		56E25CC22A8F29E50027E72F /* LoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginClient.swift; sourceTree = "<group>"; };
 		56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ClassroomDelegate.swift"; sourceTree = "<group>"; };
 		56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CASViewModel.swift"; sourceTree = "<group>"; };
@@ -815,6 +817,7 @@
 				567FA93029D083180003050F /* AppPage.swift */,
 				56E94E2A298AA3720085241B /* ExamPage.swift */,
 				56E94E28298A77F80085241B /* FeedPage.swift */,
+				56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */,
 				56E94E24298A77990085241B /* LegalPage.swift */,
 				56E94E26298A77D00085241B /* NotificationPage.swift */,
 			);
@@ -1107,6 +1110,7 @@
 				56D175CE295457810070778F /* FeedView.swift in Sources */,
 				56D175D02954589D0070778F /* FeedVStackView.swift in Sources */,
 				5699672B2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
+				56E22BDE2A9F2A310078455B /* HomeSettingPage.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
 				5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */,
 				5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */,
