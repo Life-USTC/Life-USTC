@@ -31,6 +31,21 @@ extension HomeViewCardType {
             ExamPreviewCard_old()
         }
     }
+
+    var name: String {
+        switch self {
+        case .curriculumToday:
+            return "Curriculum"
+        case .examPreview:
+            return "Exam Arrangement"
+        case .curriculumWeek:
+            return "Week Schedule"
+        case .curriculumToday_old:
+            return "Curriculum (old)"
+        case .examPreview_old:
+            return "Exam Arrangement (old)"
+        }
+    }
 }
 
 struct HomeView: View {
