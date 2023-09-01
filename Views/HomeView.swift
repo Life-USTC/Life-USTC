@@ -60,7 +60,7 @@ struct HomeView: View {
                 VStack {
                     Spacer()
                         .frame(height: 42)
-                    
+
                     HStack {
                         Text("Life@USTC")
                             .font(.largeTitle.bold())
@@ -72,10 +72,10 @@ struct HomeView: View {
                                 .font(.title2)
                         }
                     }
-                    
+
                     Spacer()
                         .frame(height: 30)
-                    
+
                     VStack(spacing: 40) {
                         ForEach(homeViewOrder, id: \.self) { cardType in
                             AnyView(
@@ -83,7 +83,7 @@ struct HomeView: View {
                             )
                         }
                     }
-                    
+
                     Spacer()
                         .frame(height: 70)
                 }

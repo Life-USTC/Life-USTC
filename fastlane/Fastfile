@@ -3,15 +3,23 @@ platform :ios do
   lane :build do
     setup_ci if is_ci
     xcode_select("/Applications/Xcode_15.0.app") if is_ci
-    match(type: "development", readonly: is_ci)
-    gym(scheme: "Life@USTC", export_method: "development")
+    match(type: "appstore", readonly: is_ci)
+    gym(
+      scheme: "Life@USTC",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
+          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
+        },
+      },
+    )
   end
 
   desc "Submit a new Beta Build to Apple TestFlight"
   lane :beta do
     setup_ci if is_ci
     xcode_select("/Applications/Xcode_15.0.app") if is_ci
-    match(type: "development", readonly: is_ci)
     match(type: "appstore", readonly: is_ci)
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
@@ -28,7 +36,16 @@ platform :ios do
         app_identifier: "dev.tiankaima.Life-USTC",
       ) + 1,
     })
-    gym(scheme: "Life@USTC", export_method: "app-store")
+    gym(
+      scheme: "Life@USTC",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
+          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
+        },
+      },
+    )
     pilot(skip_waiting_for_build_processing: true)
   end
 end
