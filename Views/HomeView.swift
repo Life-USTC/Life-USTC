@@ -55,35 +55,46 @@ struct HomeView: View {
     @State var navigationToSettingsView = false
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 30) {
-                ForEach(homeViewOrder, id: \.self) { cardType in
-                    AnyView(
-                        cardType.view
-                    )
+        GeometryReader { geo in
+            ScrollView(showsIndicators: false) {
+                VStack {
+                    Spacer()
+                        .frame(height: 42)
+                    
+                    HStack {
+                        Text("Life@USTC")
+                            .font(.largeTitle.bold())
+                        Spacer()
+                        Button {
+                            navigationToSettingsView = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .font(.title2)
+                        }
+                    }
+                    
+                    Spacer()
+                        .frame(height: 30)
+                    
+                    VStack(spacing: 40) {
+                        ForEach(homeViewOrder, id: \.self) { cardType in
+                            AnyView(
+                                cardType.view
+                            )
+                        }
+                    }
+                    
+                    Spacer()
+                        .frame(height: 70)
+                }
+                .padding(.horizontal, 20)
+            }
+            .sheet(isPresented: $navigationToSettingsView) {
+                NavigationStack {
+                    SettingsView()
                 }
             }
-
-            Spacer()
-                .frame(height: 70)
         }
-        .padding(.horizontal)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    navigationToSettingsView = true
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-            }
-        }
-        .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack {
-                SettingsView()
-            }
-        }
-        .navigationTitle("Life@USTC")
-        .navigationBarTitleDisplayMode(.large)
     }
 }
 

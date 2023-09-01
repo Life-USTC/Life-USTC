@@ -39,6 +39,7 @@ struct AllSourceView: View {
                     .frame(height: 70)
             }
         }
+        .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
         .asyncStatusOverlay(_feedSources.status, showLight: false)
         .refreshable {
