@@ -87,9 +87,10 @@ extension View {
     func card() -> some View {
         self
             .padding()
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(Color.secondary, lineWidth: 0.2)
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(Color.white)
+                    .shadow(color: Color("ShadowGray"), radius: 12)
             }
     }
 

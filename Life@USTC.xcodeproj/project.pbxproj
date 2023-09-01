@@ -1470,7 +1470,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
@@ -1530,7 +1530,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Life@USTC.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = VUW8FV5HN5;
 				ENABLE_PREVIEWS = YES;
