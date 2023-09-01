@@ -9,22 +9,14 @@ import Reeeed
 import SwiftUI
 
 struct FeedView: View {
-    @AppStorage("useReeed") var useReeed = true
     let feed: Feed
-
-    var destinationView: some View {
-        Group {
-            if useReeed {
-                ReeeederView(url: feed.url)
-            } else {
-                Browser(url: feed.url)
-            }
-        }
-    }
 
     var body: some View {
         NavigationLink {
-            destinationView
+            Browser(
+                url: feed.url,
+                title: feed.title
+            )
         } label: {
             FeedViewPreview(feed: feed)
                 .contextMenu {
@@ -32,8 +24,8 @@ struct FeedView: View {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                 } preview: {
-                    destinationView
-                        .frame(height: 250)
+                    ReeeederView(url: feed.url)
+                        .frame(width: 350, height: 600)
                 }
         }
     }
