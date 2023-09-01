@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/15.
 //
 
+import Reeeed
 import SwiftUI
 import WebKit
 
@@ -34,16 +35,34 @@ struct SwiftUIWebView: UIViewRepresentable {
 }
 
 struct Browser: View {
+    @State var useReeed = false
     var url: URL
     var title: String = "Detail"
 
     var body: some View {
-        SwiftUIWebView(url: url).padding([.leading, .trailing], 2)
-            .toolbar {
-                ShareLink(item: self.url) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
+        Group {
+            if useReeed {
+                ReeeederView(url: url)
+            } else {
+                SwiftUIWebView(url: url)
             }
-            .navigationBarTitle(title, displayMode: .inline)
+        }
+        .padding([.leading, .trailing], 2)
+        .toolbar {
+            Button {
+                useReeed.toggle()
+            } label: {
+                Label(
+                    "Reeed",
+                    systemImage: useReeed
+                        ? "doc.plaintext.fill" : "doc.plaintext"
+                )
+            }
+            ShareLink(item: self.url) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        }
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
