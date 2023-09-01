@@ -11,20 +11,9 @@ struct FeedSettingView: View {
     @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
 
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
-    @AppStorage("useReeed") var useReeed = true
 
     var body: some View {
         List {
-            Section {
-                Toggle("Use reader", isOn: $useReeed)
-            } header: {
-                Text("UI Preference").textCase(.none)
-            } footer: {
-                Text(
-                    "Reader would generaly improve reading experience for web page that aren't optimized for mobile."
-                )
-            }
-
             Section {
                 ForEach(feedSourceList.map(\.name), id: \.self) { name in
                     Button {
