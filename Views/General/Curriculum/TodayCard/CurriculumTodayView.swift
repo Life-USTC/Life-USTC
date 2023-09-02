@@ -66,7 +66,7 @@ struct CurriculumTodayView: View {
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)
             }
-            
+
             if lectures.isEmpty {
                 HStack {
                     RoundedRectangle(cornerRadius: 2)
@@ -79,11 +79,14 @@ struct CurriculumTodayView: View {
                             .lineLimit(1)
                             .font(.system(.body, weight: .semibold))
 
-
                         Text("Enjoy!")
                             .lineLimit(1)
                             .font(
-                                .system(.caption, design: .monospaced, weight: .medium)
+                                .system(
+                                    .caption,
+                                    design: .monospaced,
+                                    weight: .medium
+                                )
                             )
                             .foregroundColor(.gray)
                     }
