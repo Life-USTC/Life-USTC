@@ -43,7 +43,7 @@ struct AsyncStatusMask: ViewModifier {
             if let text {
                 Text(text.localized)
                     .font(
-                        .system(.caption, design: .monospaced, weight: .bold)
+                        .system(.title, design: .monospaced, weight: .heavy)
                     )
             }
 
@@ -59,6 +59,7 @@ struct AsyncStatusMask: ViewModifier {
                 )
             }
         }
+        .padding(.bottom, 5)
     }
 
     var shouldGrayScale: Bool {

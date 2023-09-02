@@ -47,8 +47,22 @@ struct ExamPreview: View {
                 ExamView(exam: exam)
             }
             if exams.isEmpty {
-                ExamView(exam: .example)
-                    .redacted(reason: .placeholder)
+                HStack {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color("AccentColor"))
+                        .frame(width: 5)
+                        .frame(minHeight:40, maxHeight: 50)
+                    VStack(alignment: .leading) {
+                        Text("No More Exam!")
+                            .fontWeight(.bold)
+                        Text("Enjoy!")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+
+                }
             }
 
             Spacer()
