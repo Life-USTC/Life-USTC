@@ -16,7 +16,7 @@ struct LectureView: View {
             RoundedRectangle(cornerRadius: 2)
                 .fill(color)
                 .frame(width: 5)
-                .frame(maxHeight: 50)
+                .frame(minHeight: 40, maxHeight: 50)
 
             VStack(alignment: .leading) {
                 Text(lecture.name)
@@ -59,15 +59,37 @@ struct CurriculumTodayView: View {
         VStack(alignment: .leading) {
             if let text {
                 Text(text.localized)
-                    .font(.system(.body, design: .monospaced, weight: .light))
+                    .foregroundColor(.gray)
+                    .font(.system(.title3, design: .monospaced, weight: .bold))
             }
 
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)
             }
+            
             if lectures.isEmpty {
-                LectureView(lecture: .example, color: .orange)
-                    .redacted(reason: .placeholder)
+                HStack {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color("AccentColor"))
+                        .frame(width: 5)
+                        .frame(minHeight: 40, maxHeight: 50)
+
+                    VStack(alignment: .leading) {
+                        Text("Nothing here")
+                            .lineLimit(1)
+                            .font(.system(.body, weight: .semibold))
+
+
+                        Text("Enjoy!")
+                            .lineLimit(1)
+                            .font(
+                                .system(.caption, design: .monospaced, weight: .medium)
+                            )
+                            .foregroundColor(.gray)
+                    }
+
+                    Spacer()
+                }
             }
 
             Spacer()
@@ -75,7 +97,7 @@ struct CurriculumTodayView: View {
     }
 
     var body: some View {
-        HStack {
+        VStack {
             makeView(
                 with: lectureListA,
                 text: listAText,

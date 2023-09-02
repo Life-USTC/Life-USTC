@@ -86,7 +86,7 @@ extension View {
 
     func card() -> some View {
         self
-            .padding()
+            .padding(20)
             .background {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.white)
