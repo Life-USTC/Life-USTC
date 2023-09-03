@@ -84,7 +84,6 @@ struct ContentViewTabBarContainerView<Content: View>: View {
 }
 
 struct ContentViewTabBarView: View {
-    @Environment(\.colorScheme) var colorScheme
     @Binding var selection: ContentViewTab
     @Namespace var namespace
 
@@ -122,7 +121,7 @@ struct ContentViewTabBarView: View {
             }
         }
         .padding(6)
-        .background(colorScheme == .dark ? Color.black : Color.white)
+        .background(Color(uiColor: UIColor.systemBackground))
         .cornerRadius(20)
         .overlay {
             RoundedRectangle(cornerRadius: 20)
