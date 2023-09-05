@@ -22,10 +22,7 @@ let exampleURL = URL(string: "https://example.com")!
 
 var appShouldPresentDemo: Bool {
     get {
-        UserDefaults.appGroup.register(
-            defaults: ["appShouldPresentDemo": false]
-        )
-        return UserDefaults.appGroup.bool(forKey: "appShouldPresentDemo")
+        UserDefaults.appGroup.object(forKey: "appShouldPresentDemo") as? Bool ?? false
     }
     set {
         UserDefaults.appGroup.set(newValue, forKey: "appShouldPresentDemo")
