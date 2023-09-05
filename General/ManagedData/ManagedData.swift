@@ -24,7 +24,11 @@ import SwiftUI
 
     @State var refresh: RefreshAsyncStatus? = nil
     var status: AsyncStatus {
-        AsyncStatus(local: local.status, refresh: refresh)
+        if appShouldPresentDemo {
+            return .init(local: .valid, refresh: .success)
+        } else {
+            return .init(local: local.status, refresh: refresh)
+        }
     }
 
     func retriveLocal() -> D? {
