@@ -44,4 +44,24 @@ extension [Lecture] {
     func sort() -> [Lecture] {
         sorted { $0.startDate < $1.startDate }
     }
+    func union() -> [Lecture] {
+        var unionedLectures: [Lecture] = []
+        for lecture in self {
+            if let lastLecture = unionedLectures.last {
+                if lecture.startDate == lastLecture.startDate,
+                   lecture.endDate == lastLecture.endDate,
+                   lecture.name == lastLecture.name,
+                   lecture.location == lastLecture.location,
+                   lecture.periods == lastLecture.periods,
+                   lecture.additionalInfo == lastLecture.additionalInfo {
+                    unionedLectures[unionedLectures.count - 1].teacher += ("、" + lecture.teacher)
+                } else {
+                    unionedLectures.append(lecture)
+                }
+            } else {
+                unionedLectures.append(lecture)
+            }
+        }
+        return unionedLectures
+    }
 }

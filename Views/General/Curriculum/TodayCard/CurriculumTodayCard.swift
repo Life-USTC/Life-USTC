@@ -20,6 +20,7 @@ struct CurriculumTodayCard: View {
                 (date ..< date.add(day: 1)).contains($0.startDate)
             }
             .sort()
+            .union()
     }
 
     var tomorrowLectures: [Lecture] {
@@ -28,6 +29,7 @@ struct CurriculumTodayCard: View {
                 (date.add(day: 1) ..< date.add(day: 2)).contains($0.startDate)
             }
             .sort()
+            .union()
     }
 
     var body: some View {
