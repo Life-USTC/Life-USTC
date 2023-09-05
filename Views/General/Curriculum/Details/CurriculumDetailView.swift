@@ -12,96 +12,35 @@ struct CurriculumDetailView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+    @State var _date: Date = .now
+    @State var lectures: [Lecture] = []
+    @State var currentSemester: Semester?
+    @State var weekNumber: Int?
+    var heightPerClass = 10;
+    
+    var date: Date { _date.startOfWeek() }
 
     var body: some View {
-        List {
-            Section {
-                HStack {
-                    Text("Semester")
-                    Spacer()
-                    Menu {
-                        ForEach(curriculum.semesters) { semester in
-                            Button {
-                                self.semester = semester
-                            } label: {
-                                Text(semester.name)
-                            }
-                        }
-                    } label: {
-                        Text(semester?.name ?? "Choose")
-                    }
-                }
-            } header: {
-                AsyncStatusLight(status: _curriculum.status)
-            }
-
-            if let semester {
-                Section(header: Text(semester.name)) {
-                    VStack(alignment: .leading) {
-                        Text("Credits")
-                            .font(
-                                .system(
-                                    .caption,
-                                    design: .monospaced,
-                                    weight: .semibold
-                                )
-                            )
-                            .foregroundColor(.accentColor)
-                        if #available(iOS 17, *) {
-                            Chart {
-                                ForEach(semester.courses) { course in
-                                    SectorMark(
-                                        angle: .value("Credit", course.credit),
-                                        innerRadius: .ratio(0.65),
-                                        angularInset: 2.0
-                                    )
-                                    .foregroundStyle(
-                                        by: .value(
-                                            "Name",
-                                            course.name.truncated()
-                                        )
-                                    )
-                                }
-                            }
-                            .chartScrollableAxes(.horizontal)
-                            .chartLegend(position: .trailing)
-                        }
-
-                        HStack(alignment: .top) {
-                            Image(systemName: "calendar.badge.clock")
-                            Spacer()
-                            Text(semester.startDate, style: .date)
-                            Text("~")
-                            Text(semester.endDate, style: .date)
-                        }
-                        .font(
-                            .system(
-                                .callout,
-                                design: .monospaced,
-                                weight: .bold
-                            )
-                        )
-                        .foregroundColor(.secondary)
-                        .padding(.vertical)
-                    }
-
-                    ForEach(semester.courses, id: \.lessonCode) { course in
-                        HStack {
-                            Text(course.name)
-                            Text(String(course.credit))
-                                .font(.system(.caption, weight: .semibold))
-                                .foregroundColor(.secondary)
-
-                            Spacer()
-
-                            Text(course.description)
-                                .lineLimit(2)
-                                .font(.system(.caption2, weight: .light))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-            }
+        CurriculumWeekViewVertical(
+            lectures: lectures,
+            _date: _date,
+            currentSemesterName: currentSemester?.name ?? "All".localized,
+            weekNumber: weekNumber
+        )
+        .onChange(of: currentSemester) {
+            _ in updateLecturesAndWeekNumber()
+        }
+        .onChange(of: curriculum) { _ in
+            updateLecturesAndWeekNumber()
+            updateSemester()
+        }
+        .onChange(of: _date) { _ in
+            updateLecturesAndWeekNumber()
+            updateSemester()
+        }
+        .onAppear {
+            updateLecturesAndWeekNumber()
+            updateSemester()
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -127,5 +66,40 @@ struct CurriculumDetailView: View {
             }
         }
         .navigationTitle("Curriculum").navigationBarTitleDisplayMode(.inline)
+        .padding(.horizontal, 20)
+    }
+    
+    
+    func updateLecturesAndWeekNumber() {
+        lectures =
+            (currentSemester == nil
+            ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
+            : currentSemester!.courses.flatMap(\.lectures))
+            .filter {
+                (0.0 ..< 3600.0 * 24 * 7)
+                    .contains($0.startDate.stripTime().timeIntervalSince(date))
+            }
+
+        if let currentSemester {
+            weekNumber =
+                (Calendar(identifier: .gregorian)
+                    .dateComponents(
+                        [.weekOfYear],
+                        from: currentSemester.startDate,
+                        to: date
+                    )
+                    .weekOfYear ?? 0) + 1
+        } else {
+            weekNumber = nil
+        }
+    }
+    
+    func updateSemester() {
+        currentSemester =
+            curriculum.semesters
+            .filter {
+                ($0.startDate ... $0.endDate).contains(_date)
+            }
+            .first
     }
 }

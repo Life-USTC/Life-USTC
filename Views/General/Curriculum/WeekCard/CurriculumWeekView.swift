@@ -129,3 +129,110 @@ struct CurriculumWeekView: View {
         }
     }
 }
+
+
+struct CurriculumWeekViewVertical: View {
+    var lectures: [Lecture]
+    var _date: Date
+    var currentSemesterName: String
+    var weekNumber: Int?
+    var fontSize: Double = 10
+
+    var date: Date {
+        _date.startOfWeek()
+    }
+    var behavior: CurriculumBehavior {
+        SchoolExport.shared.curriculumBehavior
+    }
+    var mergedTimes: [Int] {
+        (behavior.shownTimes + behavior.highLightTimes).sorted()
+    }
+
+    var body: some View {
+        VStack (alignment: .center) {
+            HStack {
+                Text(date ... date.add(day: 6))
+
+                if let weekNumber {
+                    Spacer()
+
+                    Text("Week \(weekNumber)")
+                }
+
+                Spacer()
+
+                Text(currentSemesterName)
+            }
+            .font(.system(.caption2, design: .monospaced, weight: .light))
+
+            mainView
+                .padding(.leading, 25)
+        }
+    }
+    var mainView: some View {
+        Chart {
+            ForEach(lectures) { lecture in
+                BarMark(
+                    x: .value("Date", lecture.startDate.stripTime(), unit: .day),
+                    yStart: .value(
+                        "Start Time",
+                        -behavior.convertTo(lecture.startDate.HHMM)
+                    ),
+
+                    yEnd: .value(
+                        "End Time",
+                        -behavior.convertTo(lecture.endDate.HHMM)
+                    )
+                )
+                //.foregroundStyle(by: .value("Course Name", lecture.name))
+                .foregroundStyle(Color("AccentColor"))
+                .cornerRadius(5)
+                .annotation(position: .overlay) {
+                    Text(lecture.name)
+                        .font(.system(size: fontSize))
+                        .foregroundColor(.white)
+                }
+            }
+        }
+        .chartYAxis {
+            AxisMarks(position: .leading, values: behavior.shownTimes.map { -$0 }) { value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = behavior.convertFrom(-_hhmm)
+                    AxisValueLabel {
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        )
+                        .font(.system(size: fontSize - 1))
+                    }
+                    AxisGridLine()
+                }
+            }
+
+            AxisMarks(position: .trailing, values: behavior.highLightTimes.map { -$0 }) {
+                value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = behavior.convertFrom(-_hhmm)
+                    AxisValueLabel(anchor: .topTrailing) {
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        )
+                        .foregroundColor(.blue)
+                    }
+                    AxisGridLine()
+                        .foregroundStyle(.blue)
+                }
+            }
+        }
+        .chartYScale(domain: -mergedTimes.last! ... -mergedTimes.first!)
+        .if(lectures.isEmpty) {
+            $0
+                .redacted(reason: .placeholder)
+                .blur(radius: 2)
+                .overlay {
+                    Text("No lectures this week")
+                        .font(.system(.title2, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+        }
+    }
+}
