@@ -16,6 +16,9 @@ import SwiftUI
     var wrappedValue: D {
         // Returning .example data to build view
         // always wrap the view with .redacted(.placeholder) to prevent showing placeholder data
+        if appShouldPresentDemo {
+            return .example
+        }
         return retriveLocal() ?? .example
     }
 
@@ -25,6 +28,10 @@ import SwiftUI
     }
 
     func retriveLocal() -> D? {
+        if appShouldPresentDemo {
+            return .example
+        }
+
         if local.status != .valid, refresh == nil {
             triggerRefresh()
         }
@@ -33,6 +40,10 @@ import SwiftUI
     }
 
     func retrive() async throws -> D? {
+        if appShouldPresentDemo {
+            return .example
+        }
+
         if status.local != .valid {
             try await refresh()
         }
@@ -41,6 +52,10 @@ import SwiftUI
     }
 
     func refresh() async throws {
+        if appShouldPresentDemo {
+            return
+        }
+
         try await $refresh.exec {
             local.data = try await remote.refresh()
         }

@@ -26,6 +26,11 @@ class UstcCasViewModel: ObservableObject {
             return false
         }
 
+        if inputUsername == demoUserName && inputPassword == demoPassword {
+            appShouldPresentDemo = true
+            return true
+        }
+
         username = inputUsername
         password = inputPassword
 
