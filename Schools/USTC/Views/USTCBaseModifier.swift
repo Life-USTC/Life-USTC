@@ -22,6 +22,10 @@ struct USTCBaseModifier: ViewModifier {
 
     func onLoadFunction() {
         Task {
+            if appShouldPresentDemo {
+                return
+            }
+
             _casClient.clearLoginStatus()
             _ugAASClient.clearLoginStatus()
 
