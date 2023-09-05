@@ -69,6 +69,7 @@ struct USTCCASLoginView: View {
                     }
                     .submitLabel(.next)
                     .autocorrectionDisabled(true)
+                    .textInputAutocapitalization(.never)
                     .keyboardType(.asciiCapable)
 
                     Divider()
