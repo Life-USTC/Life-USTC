@@ -60,7 +60,10 @@ class USTCExports: SchoolExport {
     }
 
     override var features: [String: [FeatureWithView]] {
-        [
+        if appShouldPresentDemo {
+            return [:]
+        }
+        return [
             "Web": ustcWebFeatures.map { FeatureWithView($0) },
             "Public": [
                 .init(
