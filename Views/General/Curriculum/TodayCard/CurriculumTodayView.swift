@@ -90,12 +90,77 @@ struct CurriculumTodayView: View {
                             )
                             .foregroundColor(.gray)
                     }
-
                     Spacer()
                 }
             }
 
             Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    func makeWidget(
+        with lecture: Lecture?,
+        text: String? = nil,
+        color: Color = .blue
+    )
+        -> some View
+    {
+        if let lecture {
+            VStack(alignment: .leading) {
+                VStack (alignment: .leading) {
+                    HStack {
+                        Text("Class")
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 3)
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .background(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(.mint.opacity(0.8))
+                            )
+                        Text(lecture.location)
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                            .lineLimit(1)
+                            .foregroundColor(.mint)
+                    }
+                    Text(lecture.name)
+                        .lineLimit(2)
+                        .fontWeight(.bold)
+                }
+                Spacer()
+                VStack(alignment: .leading) {
+                    Text(lecture.startDate.stripHMwithTimezone())
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.mint)
+                    HStack {
+                        Text(lecture.endDate.stripHMwithTimezone())
+                        Spacer()
+                        Text(lecture.teacher)
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.regular)
+                    .foregroundColor(.gray.opacity(0.8))
+                }
+            }
+        }
+        else {
+            VStack(alignment: .center, spacing: 20) {
+                        Image(systemName: "moon.stars")
+                            .font(.system(size: 50))
+                            .fontWeight(.regular)
+                            .frame(width: 60, height: 60)
+                            .padding(5)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.mint.opacity(0.8))
+                        Text("No courses today!")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
         }
     }
 

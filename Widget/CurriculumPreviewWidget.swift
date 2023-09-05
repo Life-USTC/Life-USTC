@@ -84,38 +84,31 @@ struct CurriculumPreviewWidgetEntryView: View {
     var entry: CurriculumPreviewProvider.Entry
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Curriculum")
-                .font(.system(.caption, design: .monospaced, weight: .bold))
-            if widgetFamily == .systemLarge
-                || (widgetFamily == .systemMedium
-                    && entry.todayLectures.count <= 2
-                    && entry.tomorrowLectures.count <= 2)
-            {
-                CurriculumTodayView(
-                    lectureListA: Array(entry.todayLectures.prefix(6)),
-                    lectureListB: Array(entry.tomorrowLectures.prefix(6))
+        if widgetFamily == .systemLarge
+            || (widgetFamily == .systemMedium
+                && entry.todayLectures.count <= 2
+                && entry.tomorrowLectures.count <= 2)
+        {
+            CurriculumTodayView(
+                lectureListA: Array(entry.todayLectures.prefix(6)),
+                lectureListB: Array(entry.tomorrowLectures.prefix(6))
+            )
+        } else if widgetFamily == .systemMedium {
+            CurriculumTodayView(
+                lectureListA: Array(entry.todayLectures.prefix(2)),
+                lectureListB: Array(
+                    entry.todayLectures.dropFirst(2).prefix(2)
+                ),
+                listAText: "Today",
+                listBText: nil
+            )
+        } else if widgetFamily == .systemSmall {
+            CurriculumTodayView()
+                .makeWidget(
+                    with: entry.todayLectures.first,
+                    text: "Today"
                 )
-            } else if widgetFamily == .systemMedium {
-                CurriculumTodayView(
-                    lectureListA: Array(entry.todayLectures.prefix(2)),
-                    lectureListB: Array(
-                        entry.todayLectures.dropFirst(2).prefix(2)
-                    ),
-                    listAText: "Today",
-                    listBText: nil
-                )
-            } else if widgetFamily == .systemSmall {
-                CurriculumTodayView()
-                    .makeView(
-                        with: Array(entry.todayLectures.prefix(2)),
-                        text: "Today"
-                    )
-            }
         }
-        .widgetBackground(
-            Color.clear
-        )
     }
 }
 
