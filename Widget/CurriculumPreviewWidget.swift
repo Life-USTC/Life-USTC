@@ -85,28 +85,22 @@ struct CurriculumPreviewWidgetEntryView: View {
 
     var body: some View {
         if widgetFamily == .systemLarge
-            || (widgetFamily == .systemMedium
-                && entry.todayLectures.count <= 2
-                && entry.tomorrowLectures.count <= 2)
         {
-            CurriculumTodayView(
-                lectureListA: Array(entry.todayLectures.prefix(6)),
-                lectureListB: Array(entry.tomorrowLectures.prefix(6))
-            )
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: entry.todayLectures,
+                    numberToShow: 4
+                )
         } else if widgetFamily == .systemMedium {
-            CurriculumTodayView(
-                lectureListA: Array(entry.todayLectures.prefix(2)),
-                lectureListB: Array(
-                    entry.todayLectures.dropFirst(2).prefix(2)
-                ),
-                listAText: "Today",
-                listBText: nil
-            )
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: entry.todayLectures,
+                    numberToShow: 2
+                )
         } else if widgetFamily == .systemSmall {
             CurriculumTodayView()
                 .makeWidget(
-                    with: entry.todayLectures.first,
-                    text: "Today"
+                    with: entry.todayLectures.first
                 )
         }
     }

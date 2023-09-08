@@ -42,19 +42,49 @@ struct LectureView: View {
     }
 }
 
+struct LectureWidgetView: View {
+    var lecture: Lecture
+    var color: Color = .red
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(lecture.name)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                HStack {
+                    Text("\(lecture.teacher) @ \(lecture.location)")
+                        .font(.caption)
+                        .foregroundColor(.gray.opacity(0.8))
+                }
+            }
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text(lecture.startDate.stripHMwithTimezone())
+                    .font(.subheadline)
+                    .fontWeight(.heavy)
+                    .foregroundColor(.mint)
+                Text(lecture.endDate.stripHMwithTimezone())
+                    .font(.caption)
+                    .foregroundColor(.gray.opacity(0.8))
+            }
+        }
+    }
+}
+
 struct CurriculumTodayView: View {
     var lectureListA: [Lecture] = []
     var lectureListB: [Lecture] = []
     var listAText: String? = "Today"
     var listBText: String? = "Tomorrow"
-
+    
     @ViewBuilder
     func makeView(
         with lectures: [Lecture],
         text: String? = nil,
-        color: Color = .blue
+        color: Color = Color("AccentColor")
     )
-        -> some View
+    -> some View
     {
         VStack(alignment: .leading) {
             if let text {
@@ -62,23 +92,23 @@ struct CurriculumTodayView: View {
                     .foregroundColor(.gray)
                     .font(.system(.title3, design: .monospaced, weight: .bold))
             }
-
+            
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)
             }
-
+            
             if lectures.isEmpty {
                 HStack {
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color("AccentColor"))
                         .frame(width: 5)
                         .frame(minHeight: 40, maxHeight: 50)
-
+                    
                     VStack(alignment: .leading) {
                         Text("Nothing here")
                             .lineLimit(1)
                             .font(.system(.body, weight: .semibold))
-
+                        
                         Text("Enjoy!")
                             .lineLimit(1)
                             .font(
@@ -93,7 +123,7 @@ struct CurriculumTodayView: View {
                     Spacer()
                 }
             }
-
+            
             Spacer()
         }
     }
@@ -101,8 +131,7 @@ struct CurriculumTodayView: View {
     @ViewBuilder
     func makeWidget(
         with lecture: Lecture?,
-        text: String? = nil,
-        color: Color = .blue
+        color: Color = Color("AccentColor")
     )
         -> some View
     {
@@ -163,6 +192,53 @@ struct CurriculumTodayView: View {
                     .padding()
         }
     }
+    
+    @ViewBuilder
+    func makeListWidget(
+        with lectures: [Lecture],
+        color: Color = Color("AccentColor"),
+        numberToShow: Int = 2
+    )
+        -> some View
+    {
+        ZStack (alignment: .center){
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("Class")
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(.mint)
+                        )
+                    Spacer()
+                }
+                    .padding(.bottom, 10)
+                if !lectures.isEmpty {
+                    ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
+                        LectureWidgetView(lecture: lecture, color: color)
+                        
+                        if index < lectures.count - 1 {
+                            Divider()
+                                .padding(.vertical, 7)
+                        }
+                    }
+                }
+                Spacer()
+            }
+            if lectures.isEmpty {
+                Text("Free today!")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+        }
+        
+        
+    }
+
 
     var body: some View {
         VStack {
