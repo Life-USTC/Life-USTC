@@ -230,13 +230,11 @@ struct CurriculumTodayView: View {
                 Spacer()
             }
             if lectures.isEmpty {
-                Text("Free today!")
+                Text("No courses today!")
                     .font(.system(.body, design: .monospaced))
                     .foregroundColor(.secondary)
             }
         }
-        
-        
     }
 
 

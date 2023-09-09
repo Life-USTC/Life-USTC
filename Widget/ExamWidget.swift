@@ -55,18 +55,26 @@ struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: ExamProvider.Entry
 
+    let a = [Exam.example]
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Exam")
-                .font(.system(.caption, design: .monospaced, weight: .bold))
+        VStack() {
             if widgetFamily == .systemMedium {
-                ExamPreview(
-                    exams: Array(entry.exams.prefix(2))
-                )
+                ExamPreview()
+                    .makeListWidget(
+                        with: a,
+                        numberToShow: 2
+                    )
             } else if widgetFamily == .systemLarge {
-                ExamPreview(
-                    exams: Array(entry.exams.prefix(6))
-                )
+                ExamPreview()
+                    .makeListWidget(
+                        with: entry.exams,
+                        numberToShow: 6
+                    )
+            } else if widgetFamily == .systemSmall {
+                ExamPreview()
+                    .makeWidget(
+                        with: entry.exams.first
+                    )
             }
         }
         .widgetBackground(
@@ -82,7 +90,11 @@ struct ExamWidget: Widget {
         StaticConfiguration(kind: kind, provider: ExamProvider()) { entry in
             ExamWidgetEntryView(entry: entry)
         }
-        .supportedFamilies([.systemMedium, .systemLarge])
+        .supportedFamilies([
+            .systemSmall,
+            .systemMedium,
+            .systemLarge
+        ])
         .configurationDisplayName("Exams")
         .description("Show upcoming exam")
     }
