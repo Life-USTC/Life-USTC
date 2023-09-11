@@ -53,6 +53,8 @@ struct HomeView: View {
         .curriculumToday, .examPreview, .curriculumWeek,
     ]
     @State var navigationToSettingsView = false
+    @State private var textToBeDisplay = true
+
 
     var body: some View {
         GeometryReader { geo in
@@ -62,8 +64,13 @@ struct HomeView: View {
                         .frame(height: 42)
 
                     HStack {
-                        Text("Life@USTC")
+                        Text(textToBeDisplay ? "Life@USTC" : "Study@USTC")
                             .font(.largeTitle.bold())
+                            .onTapGesture {
+                                withAnimation (.easeInOut(duration: 0.3)){
+                                    textToBeDisplay.toggle()
+                                }
+                            }
                         Spacer()
                         Button {
                             navigationToSettingsView = true

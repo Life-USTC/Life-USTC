@@ -12,6 +12,7 @@
 "Before %@" = "%@ 之前";
 "" = "";
 "ustc.edu.cn" = "官网";
+"Study@USTC" = "学在科大";
 
 "App Settings" = "应用设置";
 "Feed Source Settings" = "通知设置";
@@ -67,7 +68,13 @@
 "Work-integrated Learning" = "学工一体化";
 "Hanhai Platform" = "瀚海教学网";
 "Meeting Room Appointment" = "中区研讨室预约";
+"Library" = "图书馆";
+"Calendar" = "教学日历";
+"TA" = "助教管理系统";
 "Library Appointment" = "图书馆讨论室预约";
+"Teacher Homepage" = "教师主页";
+"Vista" = "国际交流";
+"Teaching Secretary" = "教秘联系方式";
 
 
 
