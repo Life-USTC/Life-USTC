@@ -29,5 +29,14 @@ var appShouldPresentDemo: Bool {
     }
 }
 
+var appShouldNOTUpdate: Bool {
+    get {
+        UserDefaults.appGroup.object(forKey: "appShouldNOTUpdateAnything") as? Bool ?? false
+    }
+    set {
+        UserDefaults.appGroup.set(newValue, forKey: "appShouldNOTUpdateAnything")
+    }
+}
+
 let demoUserName = "demo"
 let demoPassword = "demo"

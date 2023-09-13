@@ -56,6 +56,10 @@ import SwiftUI
     }
 
     func refresh() async throws {
+        if appShouldNOTUpdate {
+            return
+        }
+
         if appShouldPresentDemo {
             return
         }

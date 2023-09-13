@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct AppSettingPage: View {
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
     @AppStorage(
-        "scoreViewPreventScreenShot"
-    ) var preventScreenShot: Bool = false
+        "appShouldNOTUpdateAnything",
+        store: .appGroup
+    ) var appShouldNOTUpdateAnything: Bool = false
 
     var body: some View {
         List {
@@ -18,6 +20,10 @@ struct AppSettingPage: View {
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
+                )
+                Toggle(
+                    "Disable update for everything",
+                    isOn: $appShouldNOTUpdateAnything
                 )
             } header: {
                 Text("General")
