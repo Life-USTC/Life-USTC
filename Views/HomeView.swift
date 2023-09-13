@@ -57,49 +57,48 @@ struct HomeView: View {
 
 
     var body: some View {
-        GeometryReader { geo in
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    Spacer()
-                        .frame(height: 42)
+        ScrollView(showsIndicators: false) {
+            VStack {
+                Spacer()
+                    .frame(height: 42)
 
-                    HStack {
-                        Text(textToBeDisplay ? "Life@USTC" : "Study@USTC")
-                            .font(.largeTitle.bold())
-                            .onTapGesture {
-                                withAnimation (.easeInOut(duration: 0.3)){
-                                    textToBeDisplay.toggle()
-                                }
+                HStack {
+                    Text(textToBeDisplay ? "Life@USTC" : "Study@USTC")
+                        .font(.largeTitle.bold())
+                        .onTapGesture {
+                            withAnimation (.easeInOut(duration: 0.3)){
+                                textToBeDisplay.toggle()
                             }
-                        Spacer()
-                        Button {
-                            navigationToSettingsView = true
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(.title2)
                         }
-                    }
-
                     Spacer()
-                        .frame(height: 30)
-
-                    VStack(spacing: 40) {
-                        ForEach(homeViewOrder, id: \.self) { cardType in
-                            AnyView(
-                                cardType.view
-                            )
-                        }
+                    Button {
+                        navigationToSettingsView = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.title2)
                     }
-
-                    Spacer()
-                        .frame(height: 70)
                 }
-                .padding(.horizontal, 20)
+
+                Spacer()
+                    .frame(height: 30)
+
+                VStack(spacing: 40) {
+                    ForEach(homeViewOrder, id: \.self) { cardType in
+                        AnyView(
+                            cardType.view
+                        )
+                    }
+                }
+
+                Spacer()
+                    .frame(height: 70)
             }
-            .sheet(isPresented: $navigationToSettingsView) {
-                NavigationStack {
-                    SettingsView()
-                }
+            .padding(.horizontal, 20)
+        }
+        .padding(.top, 0.1)
+        .sheet(isPresented: $navigationToSettingsView) {
+            NavigationStack {
+                SettingsView()
             }
         }
     }
