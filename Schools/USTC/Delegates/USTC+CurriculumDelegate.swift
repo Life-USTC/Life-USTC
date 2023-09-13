@@ -16,8 +16,7 @@ private func convertYYMMDD(_ date: String) -> Date {
     return dateFormatter.date(from: date)!
 }
 
-class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol
-{
+class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol {
     static let shared = USTCCurriculumDelegate()
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient

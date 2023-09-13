@@ -34,7 +34,7 @@ struct ExamView: View {
                 }
             }
             Spacer()
-            
+
             VStack(alignment: .trailing) {
                 Text(exam.startDate, style: .date)
                     .font(.system(.body, design: .monospaced))
@@ -48,8 +48,8 @@ struct ExamView: View {
 struct ExamWidgetView: View {
     var exam: Exam
     var body: some View {
-        HStack (alignment: .bottom) {
-            VStack (alignment: .leading) {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading) {
                 Text(exam.courseName)
                     .font(.headline)
                     .strikethrough(exam.isFinished)
@@ -73,12 +73,13 @@ struct ExamWidgetView: View {
                     .font(.subheadline)
                     .fontWeight(.heavy)
             } else {
-                Text(exam.daysLeft == 1 ?
-                    "1 day left".localized :
-                    String(format: "%@ days left".localized, String(exam.daysLeft)))
-                    .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-                    .font(.subheadline)
-                    .fontWeight(.heavy)
+                Text(
+                    exam.daysLeft == 1
+                        ? "1 day left".localized : String(format: "%@ days left".localized, String(exam.daysLeft))
+                )
+                .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                .font(.subheadline)
+                .fontWeight(.heavy)
             }
         }
     }
@@ -92,11 +93,11 @@ struct ExamPreview: View {
         with exam: Exam?,
         color: Color = .blue.opacity(0.8)
     )
-    -> some View
+        -> some View
     {
         if let exam {
             VStack(alignment: .leading) {
-                VStack (alignment: .leading) {
+                VStack(alignment: .leading) {
                     HStack {
                         Text("Exam")
                             .padding(.horizontal, 5)
@@ -120,10 +121,12 @@ struct ExamPreview: View {
                 }
                 Spacer()
                 VStack(alignment: .leading) {
-                    HStack (alignment: .lastTextBaseline) {
-                        Text(exam.daysLeft == 1 ?
-                             "1 day left".localized :
-                                String(format: "%@ days left".localized, String(exam.daysLeft)))
+                    HStack(alignment: .lastTextBaseline) {
+                        Text(
+                            exam.daysLeft == 1
+                                ? "1 day left".localized
+                                : String(format: "%@ days left".localized, String(exam.daysLeft))
+                        )
                         .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
                         .font(.title3)
                         .fontWeight(.semibold)
@@ -139,8 +142,7 @@ struct ExamPreview: View {
                     .fontWeight(.regular)
                 }
             }
-        }
-        else {
+        } else {
             VStack(alignment: .center, spacing: 20) {
                 Image(systemName: "moon.stars")
                     .font(.system(size: 50))
@@ -156,16 +158,16 @@ struct ExamPreview: View {
             .padding()
         }
     }
-    
+
     @ViewBuilder
     func makeListWidget(
         with exams: [Exam],
         color: Color = .blue.opacity(0.8),
         numberToShow: Int = 2
     )
-    -> some View
+        -> some View
     {
-        ZStack (alignment: .center){
+        ZStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text("Exam")
@@ -184,7 +186,7 @@ struct ExamPreview: View {
                 if !exams.isEmpty {
                     ForEach(Array(exams.prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
                         ExamWidgetView(exam: exam)
-                        
+
                         if index < exams.count - 1 {
                             Divider()
                                 .padding(.vertical, 7)
@@ -200,7 +202,7 @@ struct ExamPreview: View {
             }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             ForEach(exams) { exam in

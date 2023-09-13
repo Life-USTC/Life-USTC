@@ -49,11 +49,12 @@ extension [Lecture] {
         for lecture in self {
             if let lastLecture = unionedLectures.last {
                 if lecture.startDate == lastLecture.startDate,
-                   lecture.endDate == lastLecture.endDate,
-                   lecture.name == lastLecture.name,
-                   lecture.location == lastLecture.location,
-                   lecture.periods == lastLecture.periods,
-                   lecture.additionalInfo == lastLecture.additionalInfo {
+                    lecture.endDate == lastLecture.endDate,
+                    lecture.name == lastLecture.name,
+                    lecture.location == lastLecture.location,
+                    lecture.periods == lastLecture.periods,
+                    lecture.additionalInfo == lastLecture.additionalInfo
+                {
                     unionedLectures[unionedLectures.count - 1].teacher += ("、" + lecture.teacher)
                 } else {
                     unionedLectures.append(lecture)

@@ -55,7 +55,6 @@ struct HomeView: View {
     @State var navigationToSettingsView = false
     @State private var textToBeDisplay = true
 
-
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack {
@@ -66,7 +65,7 @@ struct HomeView: View {
                     Text(textToBeDisplay ? "Life@USTC" : "Study@USTC")
                         .font(.largeTitle.bold())
                         .onTapGesture {
-                            withAnimation (.easeInOut(duration: 0.3)){
+                            withAnimation(.easeInOut(duration: 0.3)) {
                                 textToBeDisplay.toggle()
                             }
                         }

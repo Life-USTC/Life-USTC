@@ -16,8 +16,8 @@ struct CurriculumDetailView: View {
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
     @State var weekNumber: Int?
-    var heightPerClass = 10;
-    
+    var heightPerClass = 10
+
     var date: Date { _date.startOfWeek() }
 
     var body: some View {
@@ -68,8 +68,7 @@ struct CurriculumDetailView: View {
         .navigationTitle("Curriculum").navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, 20)
     }
-    
-    
+
     func updateLecturesAndWeekNumber() {
         lectures =
             (currentSemester == nil
@@ -93,7 +92,7 @@ struct CurriculumDetailView: View {
             weekNumber = nil
         }
     }
-    
+
     func updateSemester() {
         currentSemester =
             curriculum.semesters

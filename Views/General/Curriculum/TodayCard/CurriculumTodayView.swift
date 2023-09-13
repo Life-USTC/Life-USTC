@@ -77,14 +77,14 @@ struct CurriculumTodayView: View {
     var lectureListB: [Lecture] = []
     var listAText: String? = "Today"
     var listBText: String? = "Tomorrow"
-    
+
     @ViewBuilder
     func makeView(
         with lectures: [Lecture],
         text: String? = nil,
         color: Color = Color("AccentColor")
     )
-    -> some View
+        -> some View
     {
         VStack(alignment: .leading) {
             if let text {
@@ -92,23 +92,23 @@ struct CurriculumTodayView: View {
                     .foregroundColor(.gray)
                     .font(.system(.title3, design: .monospaced, weight: .bold))
             }
-            
+
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)
             }
-            
+
             if lectures.isEmpty {
                 HStack {
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color("AccentColor"))
                         .frame(width: 5)
                         .frame(minHeight: 40, maxHeight: 50)
-                    
+
                     VStack(alignment: .leading) {
                         Text("Nothing here")
                             .lineLimit(1)
                             .font(.system(.body, weight: .semibold))
-                        
+
                         Text("Enjoy!")
                             .lineLimit(1)
                             .font(
@@ -123,11 +123,11 @@ struct CurriculumTodayView: View {
                     Spacer()
                 }
             }
-            
+
             Spacer()
         }
     }
-    
+
     @ViewBuilder
     func makeWidget(
         with lecture: Lecture?,
@@ -137,7 +137,7 @@ struct CurriculumTodayView: View {
     {
         if let lecture {
             VStack(alignment: .leading) {
-                VStack (alignment: .leading) {
+                VStack(alignment: .leading) {
                     HStack {
                         Text("Class")
                             .padding(.horizontal, 5)
@@ -175,24 +175,23 @@ struct CurriculumTodayView: View {
                     .foregroundColor(.gray.opacity(0.8))
                 }
             }
-        }
-        else {
+        } else {
             VStack(alignment: .center, spacing: 20) {
-                        Image(systemName: "moon.stars")
-                            .font(.system(size: 50))
-                            .fontWeight(.regular)
-                            .frame(width: 60, height: 60)
-                            .padding(5)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.mint.opacity(0.8))
-                        Text("No courses today!")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
+                Image(systemName: "moon.stars")
+                    .font(.system(size: 50))
+                    .fontWeight(.regular)
+                    .frame(width: 60, height: 60)
+                    .padding(5)
+                    .fontWeight(.heavy)
+                    .foregroundColor(.mint.opacity(0.8))
+                Text("No courses today!")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+            .padding()
         }
     }
-    
+
     @ViewBuilder
     func makeListWidget(
         with lectures: [Lecture],
@@ -201,7 +200,7 @@ struct CurriculumTodayView: View {
     )
         -> some View
     {
-        ZStack (alignment: .center){
+        ZStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text("Class")
@@ -216,11 +215,11 @@ struct CurriculumTodayView: View {
                         )
                     Spacer()
                 }
-                    .padding(.bottom, 10)
+                .padding(.bottom, 10)
                 if !lectures.isEmpty {
                     ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
                         LectureWidgetView(lecture: lecture, color: color)
-                        
+
                         if index < lectures.count - 1 {
                             Divider()
                                 .padding(.vertical, 7)
@@ -236,7 +235,6 @@ struct CurriculumTodayView: View {
             }
         }
     }
-
 
     var body: some View {
         VStack {

@@ -14,8 +14,7 @@ struct RectangleProgressBar: View {
     var startDate: Date
     var endDate: Date
     var colors = exampleGradientList.randomElement() ?? []
-    var textWithPositionList:
-        [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
+    var textWithPositionList: [(text: Text, at: (CGSize) -> CGPoint, anchor: UnitPoint)]
 
     init(
         width: Double = 400.0,

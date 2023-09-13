@@ -16,7 +16,7 @@ extension Date {
     static var zero: Date {
         Date(timeIntervalSince1970: 0)
     }
-    
+
     /// Keep hour and minute only
     func stripHMwithTimezone() -> String {
         let components = Calendar.current.dateComponents(

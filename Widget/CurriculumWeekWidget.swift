@@ -16,8 +16,7 @@ struct CurriculumWeekProvider: TimelineProvider {
         CurriculumWeekEntry.example
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry
-    {
+    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
         let date = _date.startOfWeek()
         let curriculum = try await _curriculum.retrive()!
         let currentSemester: Semester? =

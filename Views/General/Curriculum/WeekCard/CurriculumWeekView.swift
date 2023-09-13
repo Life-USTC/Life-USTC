@@ -130,7 +130,6 @@ struct CurriculumWeekView: View {
     }
 }
 
-
 struct CurriculumWeekViewVertical: View {
     var lectures: [Lecture]
     var _date: Date
@@ -149,7 +148,7 @@ struct CurriculumWeekViewVertical: View {
     }
 
     var body: some View {
-        VStack (alignment: .center) {
+        VStack(alignment: .center) {
             HStack {
                 Text(date ... date.add(day: 6))
 

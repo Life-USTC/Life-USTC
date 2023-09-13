@@ -84,8 +84,7 @@ struct CurriculumPreviewWidgetEntryView: View {
     var entry: CurriculumPreviewProvider.Entry
 
     var body: some View {
-        if widgetFamily == .systemLarge
-        {
+        if widgetFamily == .systemLarge {
             CurriculumTodayView()
                 .makeListWidget(
                     with: entry.todayLectures,

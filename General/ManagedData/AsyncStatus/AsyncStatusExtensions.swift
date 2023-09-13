@@ -9,8 +9,7 @@ import SwiftUI
 
 extension RefreshAsyncStatus {
     /// - Warning: Always consider exec on `Opentional<RereshAsyncStatus>` instead of `RefreshAsyncStatus`.
-    mutating func exec(_ action: @escaping () async throws -> Void) async throws
-    {
+    mutating func exec(_ action: @escaping () async throws -> Void) async throws {
         self = .waiting
         do {
             try await action()
@@ -23,8 +22,7 @@ extension RefreshAsyncStatus {
 }
 
 extension RefreshAsyncStatus? {
-    mutating func exec(_ action: @escaping () async throws -> Void) async throws
-    {
+    mutating func exec(_ action: @escaping () async throws -> Void) async throws {
         self = .waiting
         do {
             try await action()

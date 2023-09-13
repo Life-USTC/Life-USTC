@@ -57,7 +57,7 @@ struct ExamWidgetEntryView: View {
 
     let a = [Exam.example]
     var body: some View {
-        VStack() {
+        VStack {
             if widgetFamily == .systemMedium {
                 ExamPreview()
                     .makeListWidget(
@@ -93,7 +93,7 @@ struct ExamWidget: Widget {
         .supportedFamilies([
             .systemSmall,
             .systemMedium,
-            .systemLarge
+            .systemLarge,
         ])
         .configurationDisplayName("Exams")
         .description("Show upcoming exam")
