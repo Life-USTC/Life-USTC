@@ -30,6 +30,7 @@ class UstcCasViewModel: ObservableObject {
             appShouldPresentDemo = true
             return true
         }
+        appShouldPresentDemo = false
 
         username = inputUsername
         password = inputPassword
