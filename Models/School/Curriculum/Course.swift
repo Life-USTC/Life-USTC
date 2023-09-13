@@ -24,6 +24,7 @@ struct Course: Codable, Identifiable, Equatable {
         courseCode: "MATH10001",
         lessonCode: "MATH10001.01",
         teacherName: "程艺",
-        lectures: [.example]
+        lectures: [.example],
+        credit: 6
     )
 }

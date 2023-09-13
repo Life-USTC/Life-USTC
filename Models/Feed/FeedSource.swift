@@ -19,10 +19,11 @@ struct FeedSource: Codable, Identifiable, Equatable, ExampleDataProtocol {
 
     static let example = FeedSource(
         url: exampleURL,
-        name: "Example Feed Source",
+        name: "School News",
         description: "This is an example feed source",
         image: "doc.richtext",
-        colorHex: "ff0000"
+        colorHex: "ff0000",
+        feed: [.example]
     )
 }
 

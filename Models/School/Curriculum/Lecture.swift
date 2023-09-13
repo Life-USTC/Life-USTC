@@ -21,7 +21,7 @@ struct Lecture: Codable, Identifiable, Equatable {
 
     static let example = Lecture(
         startDate: Date(),
-        endDate: Date() + DateComponents(hour: 1),
+        endDate: Date() + DateComponents(hour: 3),
         name: "数学分析B1",
         location: "5104"
     )
