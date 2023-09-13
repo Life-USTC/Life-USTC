@@ -61,8 +61,8 @@ extension USTCExports {
                 name: "Library",
                 image: "book",
                 description: "图书馆",
-                url: "https:/lib.ustc.edu.cn",
-                markUp: true
+                url: "https://lib.ustc.edu.cn",
+                markUp: false
             ),
             .init(
                 name: "Library Appointment",
@@ -70,7 +70,7 @@ extension USTCExports {
                 description: "预约西区/高新区图书馆自习室",
                 url:
                     "https://lib.ustc.edu.cn/%e5%9b%be%e4%b9%a6%e9%a6%86%e7%a0%94%e4%bf%ae%e9%97%b4%e9%a2%84%e7%ba%a6%e7%b3%bb%e7%bb%9f/",
-                markUp: true
+                markUp: false
             ),
             .init(
                 name: "Teaching Secretary",
@@ -78,20 +78,20 @@ extension USTCExports {
                 description: "教学秘书联系方式",
                 url:
                     "https://www.teach.ustc.edu.cn/service/svc-student/4427.html",
-                markUp: true
+                markUp: false
             ),
             .init(
                 name: "Calendar",
                 image: "calendar",
                 description: "教学日历",
-                url: "https:/lib.ustc.edu.cn",
-                markUp: true
+                url: "https://lib.ustc.edu.cn",
+                markUp: false
             ),
             .init(
                 name: "TA",
                 image: "person.3",
                 description: "助教管理系统",
-                url: "https://ta.cmet.ustc.edu.cn/zjlogin.do",
+                url: "https://ta.cmet.ustc.edu.cn/casLogin.do",
                 markUp: true
             ),
             .init(
@@ -99,14 +99,14 @@ extension USTCExports {
                 image: "person.crop.square",
                 description: "教师主页",
                 url: "https://faculty.ustc.edu.cn/",
-                markUp: true
+                markUp: false
             ),
             .init(
                 name: "Vista",
                 image: "globe.asia.australia",
                 description: "国际交流",
                 url: "https://vista.ustc.edu.cn/",
-                markUp: true
+                markUp: false
             ),
             .init(
                 name: "Meeting Room Appointment",
