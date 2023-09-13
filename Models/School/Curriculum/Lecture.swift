@@ -20,8 +20,8 @@ struct Lecture: Codable, Identifiable, Equatable {
     var additionalInfo: [String: String] = [:]
 
     static let example = Lecture(
-        startDate: Date(),
-        endDate: Date() + DateComponents(hour: 3),
+        startDate: Date().stripTime() + DateComponents(hour: 7, minute: 50),
+        endDate: Date().stripTime() + DateComponents(hour: 12, minute: 10),
         name: "数学分析B1",
         location: "5104"
     )
