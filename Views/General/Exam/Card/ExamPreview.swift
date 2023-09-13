@@ -31,9 +31,6 @@ struct ExamView: View {
                     Text(exam.startDate ... exam.endDate)
                         .font(.caption)
                         .foregroundColor(.gray.opacity(0.8))
-                    Text(exam.classRoomName)
-                        .font(.caption)
-                        .foregroundColor(.gray.opacity(0.8))
                 }
             }
             Spacer()
