@@ -183,6 +183,7 @@
 		E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
 		E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
+		E559036B2AB322790028C611 /* BusTimetable.json in Resources */ = {isa = PBXBuildFile; fileRef = E559036A2AB322790028C611 /* BusTimetable.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -334,6 +335,7 @@
 		E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusView.swift"; sourceTree = "<group>"; };
 		E5162ED02AB2F26C00C34CA3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusDelegate.swift"; sourceTree = "<group>"; };
+		E559036A2AB322790028C611 /* BusTimetable.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BusTimetable.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -503,6 +505,7 @@
 				56E25CC52A8F2E200027E72F /* Clients */,
 				56B86B882A8F49F4003440D2 /* Delegates */,
 				5677E11D2A5AB4F000EDCB53 /* Models */,
+				E55903692AB3223B0028C611 /* Statics */,
 				5677E11E2A5AB51400EDCB53 /* Views */,
 				5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */,
 			);
@@ -897,6 +900,14 @@
 			path = Bus;
 			sourceTree = "<group>";
 		};
+		E55903692AB3223B0028C611 /* Statics */ = {
+			isa = PBXGroup;
+			children = (
+				E559036A2AB322790028C611 /* BusTimetable.json */,
+			);
+			path = Statics;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1053,6 +1064,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
+				E559036B2AB322790028C611 /* BusTimetable.json in Resources */,
 				567E6FA82A121CB50056BE5F /* console.js in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
