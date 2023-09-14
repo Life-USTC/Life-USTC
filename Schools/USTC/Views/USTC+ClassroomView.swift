@@ -118,7 +118,7 @@ struct USTCClassroomView: View {
                             y: .value("Room", lecture.location),
                             height: .ratio(0.8)
                         )
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.blue.opacity(0.8))
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                         .annotation(position: .overlay) {
                             Text(lecture.name)

@@ -71,6 +71,12 @@ class USTCExports: SchoolExport {
                     title: "Classroom Status".localized,
                     subTitle: "",
                     destinationView: { USTCClassroomView() }
+                ),
+                .init(
+                    image: "bus",
+                    title: "Bus Timetable".localized,
+                    subTitle: "",
+                    destinationView: { USTC_SchoolBusView() }
                 )
             ],
         ]

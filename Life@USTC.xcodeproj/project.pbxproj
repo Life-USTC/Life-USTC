@@ -177,6 +177,12 @@
 		56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */; };
 		56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */; };
 		56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FA8E82297D7264000AC3A9 /* Assets.xcassets */; };
+		E5162ECA2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */; };
+		E5162ECB2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */; };
+		E5162ED12AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
+		E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
+		E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
+		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -325,6 +331,9 @@
 		8374F92F03832B8097F86E2D /* XGMTACloud.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = XGMTACloud.framework; path = "/Users/tiankaima/Source/Life-USTC/TPNS/XGMTACloud.framework"; sourceTree = "<group>"; };
 		9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = archive.ar; path = "libXG-SDK-Cloud.a"; sourceTree = "<group>"; };
 		A5FC807DBEE87641A452BC5E /* XGPushPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XGPushPrivate.h; sourceTree = "<group>"; };
+		E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusView.swift"; sourceTree = "<group>"; };
+		E5162ED02AB2F26C00C34CA3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusDelegate.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -411,6 +420,7 @@
 		5638E27C2A5812BD001967D9 /* School */ = {
 			isa = PBXGroup;
 			children = (
+				E5162ECF2AB2F25F00C34CA3 /* Bus */,
 				56A0C1942A8E0CF500BFEAB9 /* Curriculum */,
 				56A8FC2C2A97AF4A009D94A3 /* Exam */,
 				56A8FC2D2A97AF52009D94A3 /* Score */,
@@ -511,6 +521,7 @@
 		5677E11E2A5AB51400EDCB53 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */,
 				56558800294D74BB0010E060 /* USTC+CASLoginView.swift */,
 				56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */,
 				56A8FC2E2A97AFC3009D94A3 /* USTCBaseModifier.swift */,
@@ -702,6 +713,7 @@
 		56B86B882A8F49F4003440D2 /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
+				E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */,
 				56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */,
 				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
 				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
@@ -875,6 +887,14 @@
 				56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */,
 			);
 			path = Widget;
+			sourceTree = "<group>";
+		};
+		E5162ECF2AB2F25F00C34CA3 /* Bus */ = {
+			isa = PBXGroup;
+			children = (
+				E5162ED02AB2F26C00C34CA3 /* Bus.swift */,
+			);
+			path = Bus;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1076,6 +1096,7 @@
 				56A8FC322A97B168009D94A3 /* AsyncStatusExtensions.swift in Sources */,
 				56B86B8A2A8F58AD003440D2 /* AsyncStatusMask.swift in Sources */,
 				565587B6294ACEFD0010E060 /* Browser.swift in Sources */,
+				E5162ED12AB2F26C00C34CA3 /* Bus.swift in Sources */,
 				56143F6B295EDEA5008CE454 /* Constants.swift in Sources */,
 				562169222955BEDE00DF46BE /* ContentView.swift in Sources */,
 				569967292A97431600CC1EBB /* ContentViewTab.swift in Sources */,
@@ -1140,6 +1161,8 @@
 				5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
+				E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
+				E5162ECA2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
 				56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */,
 				56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
@@ -1165,6 +1188,7 @@
 				56A8FC332A97B168009D94A3 /* AsyncStatusExtensions.swift in Sources */,
 				566933032A9A4B70002AFB91 /* AsyncStatusMask.swift in Sources */,
 				5677E1392A5AF20500EDCB53 /* Browser.swift in Sources */,
+				E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */,
 				56734CEF297D871500DBB45F /* Constants.swift in Sources */,
 				5638E27D2A581324001967D9 /* Course.swift in Sources */,
 				56A8FC282A97AE51009D94A3 /* CourseScore.swift in Sources */,
@@ -1199,6 +1223,8 @@
 				5677E1382A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */,
 				56734CEB297D871500DBB45F /* StringExtension.swift in Sources */,
 				5677E1352A5AF13D00EDCB53 /* SwiftUIExtension.swift in Sources */,
+				E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
+				E5162ECB2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,
 				5677E1232A5AB66F00EDCB53 /* USTC+CASLoginView.swift in Sources */,
 				56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,

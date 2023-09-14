@@ -89,7 +89,7 @@ extension View {
             .padding(20)
             .background {
                 RoundedRectangle(cornerRadius: 15)
-                    .fill(Color(uiColor: UIColor.systemBackground))
+                    .fill(Color("BackgroundWhite"))
                     .shadow(color: Color("ShadowGray"), radius: 12)
             }
     }

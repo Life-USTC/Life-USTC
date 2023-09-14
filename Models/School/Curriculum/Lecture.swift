@@ -44,6 +44,7 @@ extension [Lecture] {
     func sort() -> [Lecture] {
         sorted { $0.startDate < $1.startDate }
     }
+    
     func union() -> [Lecture] {
         var unionedLectures: [Lecture] = []
         for lecture in self {
