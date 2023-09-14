@@ -18,11 +18,8 @@
         }
       ],
       "color" : {
-        "color-space" : "gray-gamma-22",
-        "components" : {
-          "alpha" : "1.000",
-          "white" : "0.071"
-        }
+        "platform" : "ios",
+        "reference" : "systemGray6Color"
       },
       "idiom" : "universal"
     }
