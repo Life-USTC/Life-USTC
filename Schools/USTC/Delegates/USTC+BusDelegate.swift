@@ -121,6 +121,91 @@ class USTCBusDelegate: ManagedRemoteUpdateProtocol {
         timeTable = [5, 0, 45]
         result.append(Bus (id: 22, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
         
+        from = "东区"
+        to = "西区"
+        stationNum = 3
+        timeTable = [0, 10]
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 07, minute: 25))
+        result.append(Bus (id: 23, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 09, minute: 20))
+        result.append(Bus (id: 24, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "bus"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 09, minute: 35))
+        result.append(Bus (id: 25, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 11, minute: 35))
+        result.append(Bus (id: 24, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 12, minute: 20))
+        result.append(Bus (id: 25, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 13, minute: 30))
+        result.append(Bus (id: 26, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 15, minute: 30))
+        result.append(Bus (id: 27, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 15, minute: 50))
+        result.append(Bus (id: 28, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 18, minute: 40))
+        result.append(Bus (id: 29, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 20, minute: 10))
+        result.append(Bus (id: 30, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 21, minute: 15))
+        result.append(Bus (id: 31, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 22, minute: 10))
+        result.append(Bus (id: 32, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        
+        from = "西区"
+        to = "东区"
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 07, minute: 35))
+        result.append(Bus (id: 33, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 09, minute: 30))
+        result.append(Bus (id: 34, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 09, minute: 45))
+        result.append(Bus (id: 35, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 11, minute: 45))
+        result.append(Bus (id: 36, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 12, minute: 30))
+        result.append(Bus (id: 37, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 13, minute: 40))
+        result.append(Bus (id: 38, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 15, minute: 40))
+        result.append(Bus (id: 39, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 16, minute: 00))
+        result.append(Bus (id: 40, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 17, minute: 40))
+        result.append(Bus (id: 41, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 18, minute: 00))
+        result.append(Bus (id: 42, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 18, minute: 50))
+        result.append(Bus (id: 43, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 20, minute: 20))
+        result.append(Bus (id: 44, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "all"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 21, minute: 25))
+        result.append(Bus (id: 45, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
+        type = "weekday"
+        startTime = calendar.date(from: DateComponents (calendar: calendar, timeZone: TimeZone(identifier: "Asia/Shanghai"), hour: 22, minute: 20))
+        result.append(Bus (id: 46, from: from, to: to, startTime: startTime!, timeTable: timeTable, type: type, stationNum: stationNum))
         
         return result
     }

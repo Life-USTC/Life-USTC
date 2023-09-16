@@ -60,8 +60,9 @@
 
 "Classroom Status" = "教室情况";
 "Bus Timetable" = "校车时间表";
-"5 min" = "5 分";
-"10 min" = "10 分";
+"Weekday" = "工作日";
+"Weekend" = "周末";
+"Show departed buses" = "显示已出发校车";
 "UG AAS" = "本科生教务";
 "AAS(UG)" = "教务系统（本科）";
 "Public Query" = "公共查询";
