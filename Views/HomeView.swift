@@ -10,10 +10,12 @@ import SwiftUI
 enum HomeViewCardType: String, CaseIterable, Codable {
     case curriculumToday
     case examPreview
+    case featurePreview
     case curriculumWeek
 
     case curriculumToday_old
     case examPreview_old
+
 }
 
 extension HomeViewCardType {
@@ -23,6 +25,8 @@ extension HomeViewCardType {
             CurriculumTodayCard()
         case .examPreview:
             ExamPreviewCard()
+        case .featurePreview:
+            FeaturePreviewCard()
         case .curriculumWeek:
             CurriculumWeekCard()
         case .curriculumToday_old:
@@ -38,6 +42,8 @@ extension HomeViewCardType {
             return "Curriculum"
         case .examPreview:
             return "Exam Arrangement"
+        case .featurePreview:
+            return "Features"
         case .curriculumWeek:
             return "Week Schedule"
         case .curriculumToday_old:
@@ -50,7 +56,7 @@ extension HomeViewCardType {
 
 struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = [
-        .curriculumToday, .examPreview, .curriculumWeek,
+        .featurePreview, .curriculumToday, .examPreview, .curriculumWeek,
     ]
     @State var navigationToSettingsView = false
     @State private var textToBeDisplay = true

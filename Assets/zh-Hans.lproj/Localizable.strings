@@ -58,11 +58,14 @@
 "All" = "全部";
 "See More" = "查看更多";
 
+"Features" = "功能";
 "Classroom Status" = "教室情况";
 "Bus Timetable" = "校车时间表";
 "Weekday" = "工作日";
 "Weekend" = "周末";
 "Show departed buses" = "显示已出发校车";
+"Email" = "邮箱";
+"Course Rating" = "评课社区";
 "UG AAS" = "本科生教务";
 "AAS(UG)" = "教务系统（本科）";
 "Public Query" = "公共查询";

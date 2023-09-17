@@ -183,6 +183,8 @@
 		E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
 		E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
+		E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA042AB7498C00DA0368 /* FeaturePreview.swift */; };
+		E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */; };
 		E559036B2AB322790028C611 /* BusTimetable.json in Resources */ = {isa = PBXBuildFile; fileRef = E559036A2AB322790028C611 /* BusTimetable.json */; };
 /* End PBXBuildFile section */
 
@@ -335,6 +337,8 @@
 		E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusView.swift"; sourceTree = "<group>"; };
 		E5162ED02AB2F26C00C34CA3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusDelegate.swift"; sourceTree = "<group>"; };
+		E534DA042AB7498C00DA0368 /* FeaturePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreview.swift; sourceTree = "<group>"; };
+		E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreviewCard.swift; sourceTree = "<group>"; };
 		E559036A2AB322790028C611 /* BusTimetable.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BusTimetable.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -472,6 +476,7 @@
 			children = (
 				56BE9200296679DB00822C98 /* Curriculum */,
 				56F3EAD7296EB7E60095AEF4 /* Exam */,
+				E534DA022AB7496600DA0368 /* Feature */,
 				56D175CA295456F10070778F /* Feed */,
 				56C1424F29F64602007D9BD4 /* PushNotification */,
 				56E8AD6B296FEEDD009006D0 /* Score */,
@@ -900,6 +905,23 @@
 			path = Bus;
 			sourceTree = "<group>";
 		};
+		E534DA022AB7496600DA0368 /* Feature */ = {
+			isa = PBXGroup;
+			children = (
+				E534DA032AB7497300DA0368 /* Card */,
+			);
+			path = Feature;
+			sourceTree = "<group>";
+		};
+		E534DA032AB7497300DA0368 /* Card */ = {
+			isa = PBXGroup;
+			children = (
+				E534DA042AB7498C00DA0368 /* FeaturePreview.swift */,
+				E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */,
+			);
+			path = Card;
+			sourceTree = "<group>";
+		};
 		E55903692AB3223B0028C611 /* Statics */ = {
 			isa = PBXGroup;
 			children = (
@@ -1134,6 +1156,8 @@
 				56912EDD2A9C72CF003ACD8B /* ExamPreviewCard.old.swift in Sources */,
 				56EEA65C2A9A303E0034EE33 /* ExamPreviewCard.swift in Sources */,
 				56BE91F72963EF1600822C98 /* ExceptionExtension.swift in Sources */,
+				E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */,
+				E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
 				56E94E29298A77F80085241B /* FeedPage.swift in Sources */,
