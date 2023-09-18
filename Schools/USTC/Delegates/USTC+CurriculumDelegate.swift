@@ -59,6 +59,10 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
     }
 
     func refreshSemester(inComplete: Semester) async throws -> Semester {
+        return try await refreshUnderGraduateSemester(inComplete: inComplete)
+    }
+
+    func refreshUnderGraduateSemester(inComplete: Semester) async throws -> Semester {
         let queryURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/course-table"
         )!
@@ -173,6 +177,42 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
 
         var result = inComplete
         result.courses = courses
+        return result
+    }
+
+    func refreshGraduateSemester(inComplete: Semester) async throws -> Semester {
+        let queryURL = URL(
+            string: "https://jw.ustc.edu.cn/for-std/course-select"
+        )!
+
+        // Step 0: Check login
+        if try await !_ugAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
+
+        // Step 1: Get tableID, (usually 353802)
+        var request = URLRequest(url: queryURL)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        let match = response.url?.absoluteString
+            .matches(of: try! Regex(#"\d+"#))
+        var studentID = "0"
+        if let match { if !match.isEmpty { studentID = String(match.first!.0) } }
+
+
+        // Step 2: Get lessons
+        let url = URL(
+            string: "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns?studentID=\(studentID)&bizTypeId=3&semesterId=\(inComplete.id)"
+        )!
+        request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (baseData, _) = try await URLSession.shared.data(for: request)
+        let baseJSON = try JSON(data: baseData)
+
+
+        var result = inComplete
+        result.courses = []
         return result
     }
 }
