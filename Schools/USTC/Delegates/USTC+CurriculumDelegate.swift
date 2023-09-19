@@ -23,38 +23,9 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
 
     func refreshSemesterBase() async throws -> [Semester] {
-        if try await !_catalogClient.requireLogin() {
-            throw BaseError.runtimeError("UstcCatalog Not logined")
-        }
-        let validToken = catalogClient.token
-
-        let url = URL(
-            string:
-                "https://catalog.ustc.edu.cn/api/teach/semester/list?access_token=\(validToken)"
-        )!
-
-        var request = URLRequest(url: url)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let request = URLRequest(url: URL(string: "https://life-ustc.tiankaima.dev/semester_list.json")!)
         let (data, _) = try await URLSession.shared.data(for: request)
-        let json = try JSON(data: data)
-
-        var result: [Semester] = []
-        for (_, subJson) in json {
-            result.append(
-                Semester(
-                    id: subJson["id"].stringValue,
-                    courses: [],
-                    name: subJson["nameZh"].stringValue,
-                    startDate: convertYYMMDD(subJson["start"].stringValue),
-                    endDate: convertYYMMDD(subJson["end"].stringValue)
-                )
-            )
-        }
-
-        if result.isEmpty {
-            throw BaseError.runtimeError("No semester found")
-        }
-
+        let result = try JSONDecoder().decode([Semester].self, from: data)
         return result
     }
 
