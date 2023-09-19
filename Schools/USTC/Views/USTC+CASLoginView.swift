@@ -16,6 +16,9 @@ extension View {
 }
 
 struct USTCCASLoginView: View {
+    @AppStorage("ustcIsUserGraduate", store: .appGroup) var isUserGraduate: Bool = false
+    @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
+
     enum Field: Int, Hashable {
         case username
         case password
@@ -51,6 +54,21 @@ struct USTCCASLoginView: View {
 
     var formView: some View {
         VStack {
+            VStack {
+                Toggle(isOn: $isUserGraduate) {
+                    Text("Graduate?")
+                        .font(.system(.body, design: .monospaced, weight: .bold))
+                }
+                Toggle(isOn: $appShouldPresentDemo) {
+                    Text("Demo?")
+                        .font(.system(.body, design: .monospaced, weight: .bold))
+                }
+            }
+            .frame(width: 220)
+
+            Spacer()
+                .frame(height: 30)
+
             HStack(alignment: .top) {
                 Text("Username:")
                     .font(.system(.body, design: .monospaced, weight: .bold))

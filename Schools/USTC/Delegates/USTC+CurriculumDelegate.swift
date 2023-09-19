@@ -22,6 +22,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
+    @AppStorage("ustcIsUserGraduate", store: .appGroup) var isUserGraduate: Bool = false
 
     func refreshSemesterBase() async throws -> [Semester] {
         if try await !_catalogClient.requireLogin() {
@@ -60,7 +61,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
     }
 
     func refreshSemester(inComplete: Semester) async throws -> Semester {
-        return try await refreshUnderGraduateSemester(inComplete: inComplete)
+        if isUserGraduate {
+            return try await refreshUnderGraduateSemester(inComplete: inComplete)
+        } else {
+            return try await refreshGraduateSemester(inComplete: inComplete)
+        }
     }
 
     func refreshUnderGraduateSemester(inComplete: Semester) async throws -> Semester {
