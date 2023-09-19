@@ -165,7 +165,6 @@ struct CurriculumWeekViewVertical: View {
             .font(.system(.caption2, design: .monospaced, weight: .light))
 
             mainView
-                .padding(.leading, 25)
         }
     }
     var mainView: some View {
@@ -183,35 +182,42 @@ struct CurriculumWeekViewVertical: View {
                         -behavior.convertTo(lecture.endDate.HHMM)
                     )
                 )
-                //.foregroundStyle(by: .value("Course Name", lecture.name))
                 .foregroundStyle(Color("AccentColor"))
-                .cornerRadius(5)
                 .annotation(position: .overlay) {
-                    Text(lecture.name)
-                        .font(.system(size: fontSize))
-                        .foregroundColor(.white)
+                    VStack {
+                        Text(lecture.name)
+                            .font(.system(size: fontSize))
+                            .multilineTextAlignment(.center)
+                        Text(lecture.location)
+                            .font(.system(size: fontSize - 1))
+                    }
+                    .foregroundColor(.white)
                 }
+            }
+        }
+        .chartXAxis {
+            AxisMarks(position: .bottom, values: .stride(by: .day)) { _ in
+                AxisGridLine()
             }
         }
         .chartYAxis {
             AxisMarks(position: .leading, values: behavior.shownTimes.map { -$0 }) { value in
                 if let _hhmm = value.as(Int.self) {
                     let hhmm = behavior.convertFrom(-_hhmm)
-                    AxisValueLabel {
+                    AxisValueLabel(anchor: .topTrailing) {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
                         )
-                        .font(.system(size: fontSize - 1))
                     }
                     AxisGridLine()
                 }
             }
 
-            AxisMarks(position: .trailing, values: behavior.highLightTimes.map { -$0 }) {
+            AxisMarks(position: .leading, values: behavior.highLightTimes.map { -$0 }) {
                 value in
                 if let _hhmm = value.as(Int.self) {
                     let hhmm = behavior.convertFrom(-_hhmm)
-                    AxisValueLabel(anchor: .topTrailing) {
+                    AxisValueLabel(anchor: .bottomTrailing) {
                         Text(
                             "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
                         )

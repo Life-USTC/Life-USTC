@@ -21,12 +21,38 @@ struct CurriculumDetailView: View {
     var date: Date { _date.startOfWeek() }
 
     var body: some View {
-        CurriculumWeekViewVertical(
-            lectures: lectures,
-            _date: _date,
-            currentSemesterName: currentSemester?.name ?? "All".localized,
-            weekNumber: weekNumber
-        )
+        VStack {
+            HStack(alignment: .bottom) {
+                AsyncStatusLight(status: _curriculum.status)
+
+                Spacer()
+
+//                VStack(alignment: .trailing) {
+                    DatePicker(selection: $_date, displayedComponents: .date) {}
+
+//                    Menu {
+//                        ForEach(curriculum.semesters) { semester in
+//                            Button(semester.name) {
+//                                currentSemester = semester
+//                            }
+//                        }
+//                        Button("All") {
+//                            currentSemester = nil
+//                        }
+//                    } label: {
+//                        Text(currentSemester?.name ?? "All".localized)
+//                    }
+//                }
+            }
+
+            CurriculumWeekViewVertical(
+                lectures: lectures,
+                _date: _date,
+                currentSemesterName: currentSemester?.name ?? "All".localized,
+                weekNumber: weekNumber
+            )
+        }
+        .frame(maxWidth: .infinity)
         .onChange(of: currentSemester) {
             _ in updateLecturesAndWeekNumber()
         }
@@ -65,28 +91,29 @@ struct CurriculumDetailView: View {
                 Label("Save", systemImage: "square.and.arrow.down")
             }
         }
-        .navigationTitle("Curriculum").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Curriculum")
+        .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, 20)
     }
 
     func updateLecturesAndWeekNumber() {
         lectures =
-            (currentSemester == nil
-            ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            : currentSemester!.courses.flatMap(\.lectures))
-            .filter {
-                (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(date))
-            }
+        (currentSemester == nil
+         ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
+         : currentSemester!.courses.flatMap(\.lectures))
+        .filter {
+            (0.0 ..< 3600.0 * 24 * 7)
+                .contains($0.startDate.stripTime().timeIntervalSince(date))
+        }
 
         if let currentSemester {
             weekNumber =
-                (Calendar(identifier: .gregorian)
-                    .dateComponents(
-                        [.weekOfYear],
-                        from: currentSemester.startDate,
-                        to: date
-                    )
+            (Calendar(identifier: .gregorian)
+                .dateComponents(
+                    [.weekOfYear],
+                    from: currentSemester.startDate,
+                    to: date
+                )
                     .weekOfYear ?? 0) + 1
         } else {
             weekNumber = nil
@@ -95,7 +122,7 @@ struct CurriculumDetailView: View {
 
     func updateSemester() {
         currentSemester =
-            curriculum.semesters
+        curriculum.semesters
             .filter {
                 ($0.startDate ... $0.endDate).contains(_date)
             }
