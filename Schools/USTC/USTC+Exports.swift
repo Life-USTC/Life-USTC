@@ -68,13 +68,13 @@ class USTCExports: SchoolExport {
             "Public": [
                 .init(
                     image: "doc.text.magnifyingglass",
-                    title: "Classroom Status".localized,
+                    title: "Classroom Status",
                     subTitle: "",
                     destinationView: { USTCClassroomView() }
                 ),
                 .init(
                     image: "bus",
-                    title: "Bus Timetable".localized,
+                    title: "Bus Timetable",
                     subTitle: "",
                     destinationView: { USTC_SchoolBusView() }
                 )

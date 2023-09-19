@@ -18,7 +18,7 @@ struct SingleFeaturePreview: View {
                     .font(.title)
                     .foregroundColor(Color("AccentColor"))
                     .frame(height: 34)
-                Text(feature.title)
+                Text(feature.title.localized)
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -31,31 +31,31 @@ struct FeaturePreview: View {
     var features: [FeatureWithView] = [
         .init(
             image: "book",
-            title: "Curriculum".localized,
+            title: "Curriculum",
             subTitle: "",
             destinationView: { CurriculumDetailView() }
         ),
         .init(
             image: "calendar.badge.clock",
-            title: "Exam".localized,
+            title: "Exam",
             subTitle: "",
             destinationView: { ExamDetailView() }
         ),
         .init(
             image: "graduationcap",
-            title: "Score".localized,
+            title: "Score",
             subTitle: "",
             destinationView: { ScoreView() }
         ),
         .init(
             image: "doc.text.magnifyingglass",
-            title: "Classroom Status".localized,
+            title: "Classroom Status",
             subTitle: "",
             destinationView: { USTCClassroomView() }
         ),
         .init(
             image: "bus",
-            title: "Bus Timetable".localized,
+            title: "Bus Timetable",
             subTitle: "",
             destinationView: { USTC_SchoolBusView() }
         ),
@@ -68,7 +68,7 @@ struct FeaturePreview: View {
             markUp: false
         )),
         FeatureWithView(.init(
-            name: "AAS(UG)",
+            name: "AAS",
             image: "person.2",
             description: "本科生教务系统",
             url: "https://jw.ustc.edu.cn/ucas-sso/login",
