@@ -1,0 +1,495 @@
+{
+    "update_time": "20230920",
+    "buses": [
+        {
+            "id": "1",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 6,
+            "startMin": 50,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "2",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 8,
+            "startMin": 0,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "3",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 12,
+            "startMin": 40,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "4",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 14,
+            "startMin": 30,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "5",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 18,
+            "startMin": 25,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "6",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 21,
+            "startMin": 20,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "7",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 22,
+            "startMin": 5,
+            "timeTable": [
+                10,
+                0,
+                45
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "8",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 6,
+            "startMin": 40,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "9",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 8,
+            "startMin": 0,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "10",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 9,
+            "startMin": 35,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "11",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 12,
+            "startMin": 40,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "12",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 14,
+            "startMin": 10,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "13",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 18,
+            "startMin": 5,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "14",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 21,
+            "startMin": 45,
+            "timeTable": [
+                5,
+                0,
+                40
+            ],
+            "type": "weekday",
+            "stationNum": 4
+        },
+        {
+            "id": "15",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 7,
+            "startMin": 0,
+            "timeTable": [
+                10,
+                0,
+                50
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "16",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 12,
+            "startMin": 40,
+            "timeTable": [
+                10,
+                0,
+                50
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "17",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 18,
+            "startMin": 30,
+            "timeTable": [
+                10,
+                0,
+                50
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "18",
+            "from": "\u4e1c\u533a",
+            "to": "\u9ad8\u65b0",
+            "startHour": 21,
+            "startMin": 50,
+            "timeTable": [
+                10,
+                0,
+                50
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "19",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 8,
+            "startMin": 0,
+            "timeTable": [
+                5,
+                0,
+                45
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "20",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 13,
+            "startMin": 40,
+            "timeTable": [
+                5,
+                0,
+                45
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "21",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 16,
+            "startMin": 0,
+            "timeTable": [
+                5,
+                0,
+                45
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "22",
+            "from": "\u9ad8\u65b0",
+            "to": "\u4e1c\u533a",
+            "startHour": 21,
+            "startMin": 50,
+            "timeTable": [
+                5,
+                0,
+                45
+            ],
+            "type": "weekend",
+            "stationNum": 4
+        },
+        {
+            "id": "23",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 7,
+            "startMin": 25,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "24",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 11,
+            "startMin": 35,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "25",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 13,
+            "startMin": 30,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "26",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 15,
+            "startMin": 30,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "27",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 16,
+            "startMin": 20,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "28",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 18,
+            "startMin": 55,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "all",
+            "stationNum": 3
+        },
+        {
+            "id": "29",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 9,
+            "startMin": 20,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "30",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 9,
+            "startMin": 35,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "31",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 12,
+            "startMin": 20,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "32",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 15,
+            "startMin": 30,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "33",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 15,
+            "startMin": 50,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "34",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 17,
+            "startMin": 50,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "35",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 20,
+            "startMin": 30,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        },
+        {
+            "id": "36",
+            "from": "\u4e1c\u533a",
+            "to": "\u897f\u533a",
+            "startHour": 22,
+            "startMin": 30,
+            "timeTable": [
+                0,
+                10
+            ],
+            "type": "weekday",
+            "stationNum": 3
+        }
+    ]
+}

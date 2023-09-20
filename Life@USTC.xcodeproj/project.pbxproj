@@ -186,6 +186,7 @@
 		E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA042AB7498C00DA0368 /* FeaturePreview.swift */; };
 		E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */; };
 		E559036B2AB322790028C611 /* BusTimetable.json in Resources */ = {isa = PBXBuildFile; fileRef = E559036A2AB322790028C611 /* BusTimetable.json */; };
+		E59A26602ABAF5DB00163B9C /* bus_data.json in Resources */ = {isa = PBXBuildFile; fileRef = E59A265F2ABAF5DB00163B9C /* bus_data.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -340,6 +341,7 @@
 		E534DA042AB7498C00DA0368 /* FeaturePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreview.swift; sourceTree = "<group>"; };
 		E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreviewCard.swift; sourceTree = "<group>"; };
 		E559036A2AB322790028C611 /* BusTimetable.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BusTimetable.json; sourceTree = "<group>"; };
+		E59A265F2ABAF5DB00163B9C /* bus_data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bus_data.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -490,6 +492,7 @@
 			isa = PBXGroup;
 			children = (
 				56AC72FB294A012F00A60F47 /* Assets.xcassets */,
+				E59A265F2ABAF5DB00163B9C /* bus_data.json */,
 				565587EC294B46900010E060 /* Localizable.strings */,
 			);
 			path = Assets;
@@ -1086,6 +1089,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
+				E59A26602ABAF5DB00163B9C /* bus_data.json in Resources */,
 				E559036B2AB322790028C611 /* BusTimetable.json in Resources */,
 				567E6FA82A121CB50056BE5F /* console.js in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
