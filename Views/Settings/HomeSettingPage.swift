@@ -37,6 +37,7 @@ struct HomeSettingPage: View {
                 EditButton()
             }
         }
+        .scrollContentBackground(.hidden)
         .navigationTitle("Home Settings")
         .navigationBarTitleDisplayMode(.inline)
     }
