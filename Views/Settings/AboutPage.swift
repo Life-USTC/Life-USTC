@@ -112,7 +112,7 @@ struct AboutApp: View {
         .task {
             onLoadFunc()
         }
-        .navigationTitle("Title")
+        .navigationTitle("About Life@USTC")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
