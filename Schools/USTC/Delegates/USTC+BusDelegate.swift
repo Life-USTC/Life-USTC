@@ -13,7 +13,6 @@ class USTCBusDelegate: ManagedRemoteUpdateProtocol {
     static let shared = USTCBusDelegate()
     @AppStorage("ustcBusSelectedDate") var date: Date = .now
 
-
     func refresh() async throws -> [Bus] {
         var result: [Bus] = []
         let calendar = Calendar(identifier: .gregorian)
@@ -24,24 +23,26 @@ class USTCBusDelegate: ManagedRemoteUpdateProtocol {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path))
                 let jsonData = try JSON(data: data)
-                for (id, subJson):(String, JSON) in jsonData["buses"] {
+                for (id, subJson): (String, JSON) in jsonData["buses"] {
                     print(id)
                     from = subJson["from"].stringValue
                     to = subJson["to"].stringValue
-                    startTime = calendar.date(from: DateComponents (
-                        calendar: calendar,
-                        timeZone: TimeZone(identifier: "Asia/Shanghai"),
-                        hour: Int(subJson["startHour"].stringValue),
-                        minute: Int(subJson["startMin"].stringValue)
-                    ))!
-                    
+                    startTime = calendar.date(
+                        from: DateComponents(
+                            calendar: calendar,
+                            timeZone: TimeZone(identifier: "Asia/Shanghai"),
+                            hour: Int(subJson["startHour"].stringValue),
+                            minute: Int(subJson["startMin"].stringValue)
+                        )
+                    )!
+
                     result.append(
                         Bus(
                             id: Int(id)!,
                             from: from,
                             to: to,
                             startTime: startTime,
-                            timeTable: subJson["timeTable"].arrayValue.map{Int($0.stringValue)!},
+                            timeTable: subJson["timeTable"].arrayValue.map { Int($0.stringValue)! },
                             type: subJson["type"].stringValue,
                             stationNum: Int(subJson["stationNum"].stringValue)!
                         )

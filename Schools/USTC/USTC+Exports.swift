@@ -77,7 +77,7 @@ class USTCExports: SchoolExport {
                     title: "Bus Timetable",
                     subTitle: "",
                     destinationView: { USTC_SchoolBusView() }
-                )
+                ),
             ],
         ]
     }

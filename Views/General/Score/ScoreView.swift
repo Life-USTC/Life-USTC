@@ -40,7 +40,7 @@ struct ScoreView: View {
         } header: {
             HStack(alignment: .bottom) {
                 AsyncStatusLight(status: _score.status)
-                
+
                 Spacer()
 
                 HStack {

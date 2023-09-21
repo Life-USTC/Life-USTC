@@ -13,7 +13,7 @@ struct SingleFeaturePreview: View {
         NavigationLink {
             AnyView(feature.destinationView())
         } label: {
-            VStack (spacing: 5){
+            VStack(spacing: 5) {
                 Image(systemName: feature.image)
                     .font(.title)
                     .foregroundColor(Color("AccentColor"))
@@ -21,7 +21,7 @@ struct SingleFeaturePreview: View {
                 Text(feature.title.localized)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
             }
         }
     }
@@ -59,39 +59,48 @@ struct FeaturePreview: View {
             subTitle: "",
             destinationView: { USTC_SchoolBusView() }
         ),
-        FeatureWithView(.init(
-            name: "Email",
-            image: "mail.stack",
-            description: "科大邮箱",
-            url:
-                "https://mail.ustc.edu.cn",
-            markUp: false
-        )),
-        FeatureWithView(.init(
-            name: "AAS",
-            image: "person.2",
-            description: "本科生教务系统",
-            url: "https://jw.ustc.edu.cn/ucas-sso/login",
-            markUp: true
-        )),
-        FeatureWithView(.init(
-            name: "Library",
-            image: "book",
-            description: "图书馆",
-            url: "https://lib.ustc.edu.cn",
-            markUp: false
-        )),
-        
+        FeatureWithView(
+            .init(
+                name: "Email",
+                image: "mail.stack",
+                description: "科大邮箱",
+                url:
+                    "https://mail.ustc.edu.cn",
+                markUp: false
+            )
+        ),
+        FeatureWithView(
+            .init(
+                name: "AAS",
+                image: "person.2",
+                description: "本科生教务系统",
+                url: "https://jw.ustc.edu.cn/ucas-sso/login",
+                markUp: true
+            )
+        ),
+        FeatureWithView(
+            .init(
+                name: "Library",
+                image: "book",
+                description: "图书馆",
+                url: "https://lib.ustc.edu.cn",
+                markUp: false
+            )
+        ),
+
     ]
     var body: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                ForEach(features) { feature in
-                    SingleFeaturePreview(feature: feature)
-                }
+        LazyVGrid(
+            columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
+            spacing: 10
+        ) {
+            ForEach(features) { feature in
+                SingleFeaturePreview(feature: feature)
+            }
         }
     }
 }
 
-#Preview {
+#Preview{
     FeaturePreview()
 }
