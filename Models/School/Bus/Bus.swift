@@ -11,7 +11,6 @@ enum BusType {
     case weekend, weekday
 }
 
-
 struct Bus: Codable, Identifiable {
     var id: Int
     var from: String
@@ -22,15 +21,17 @@ struct Bus: Codable, Identifiable {
     var stationNum: Int
 }
 
-extension Bus:  ExampleDataProtocol {
+extension Bus: ExampleDataProtocol {
     static var example: Bus {
         let calendar = Calendar(identifier: .gregorian)
-        let startTime = calendar.date(from: DateComponents (
-            calendar: calendar,
-            timeZone: TimeZone(identifier: "Asia/Shanghai"),
-            hour: 08,
-            minute: 00
-        ))
+        let startTime = calendar.date(
+            from: DateComponents(
+                calendar: calendar,
+                timeZone: TimeZone(identifier: "Asia/Shanghai"),
+                hour: 08,
+                minute: 00
+            )
+        )
         return Bus(
             id: 1,
             from: "东区",
@@ -41,6 +42,5 @@ extension Bus:  ExampleDataProtocol {
             stationNum: 4
         )
     }
-    
-    
+
 }

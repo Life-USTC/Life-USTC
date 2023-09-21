@@ -90,7 +90,7 @@ extension View {
             .background {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color("BackgroundWhite"))
-                    .shadow(color: Color("ShadowGray"), radius: 12)
+                    .shadow(color: Color("ShadowGray"), radius: 10)
             }
     }
 

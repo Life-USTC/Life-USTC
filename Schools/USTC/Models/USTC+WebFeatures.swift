@@ -51,7 +51,7 @@ extension USTCExports {
     var ustcWebFeatures: [USTCWebFeature] {
         [
             .init(
-                name: "AAS(UG)",
+                name: "AAS",
                 image: "person.2",
                 description: "本科生教务系统",
                 url: "https://jw.ustc.edu.cn/ucas-sso/login",

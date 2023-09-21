@@ -80,7 +80,7 @@ extension FeaturesView {
             [
                 .init(
                     image: "doc.richtext",
-                    title: "Feed".localized,
+                    title: "Feed",
                     subTitle: "",
                     destinationView: {
                         AllSourceView()
@@ -92,19 +92,19 @@ extension FeaturesView {
         results["UG AAS"] = [
             .init(
                 image: "book",
-                title: "Curriculum".localized,
+                title: "Curriculum",
                 subTitle: "",
                 destinationView: { CurriculumDetailView() }
             ),
             .init(
                 image: "calendar.badge.clock",
-                title: "Exam".localized,
+                title: "Exam",
                 subTitle: "",
                 destinationView: { ExamDetailView() }
             ),
             .init(
                 image: "graduationcap",
-                title: "Score".localized,
+                title: "Score",
                 subTitle: "",
                 destinationView: { ScoreView() }
             ),

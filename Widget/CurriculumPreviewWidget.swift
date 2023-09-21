@@ -16,9 +16,10 @@ struct CurriculumPreviewProvider: TimelineProvider {
         CurriculumPreviewEntry.example
     }
 
-    func makeEntry(for date: Date = Date()) async throws
+    func makeEntry(for _date: Date = Date()) async throws
         -> CurriculumPreviewEntry
     {
+        let date = _date.stripTime()
         let curriculum = try await _curriculum.retrive()!
 
         let todayLectures =

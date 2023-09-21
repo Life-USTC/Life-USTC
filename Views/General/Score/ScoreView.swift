@@ -17,7 +17,6 @@ struct ScoreView: View {
 
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
-    @State var showSettings: Bool = false
 
     var rankingView: some View {
         Section {
@@ -39,7 +38,16 @@ struct ScoreView: View {
                     .font(.title2).bold()
             }
         } header: {
-            AsyncStatusLight(status: _score.status)
+            HStack(alignment: .bottom) {
+                AsyncStatusLight(status: _score.status)
+
+                Spacer()
+
+                HStack {
+                    semesterButton
+                    sortButton
+                }
+            }
         }
     }
 
@@ -67,14 +75,6 @@ struct ScoreView: View {
         }
     }
 
-    var settingButton: some View {
-        Button {
-            showSettings.toggle()
-        } label: {
-            Label("Settings", systemImage: "gearshape")
-        }
-    }
-
     var body: some View {
         List {
             rankingView
@@ -85,12 +85,6 @@ struct ScoreView: View {
         .asyncStatusOverlay(_score.status, showLight: false)
         .refreshable {
             _score.triggerRefresh()
-        }
-        .sheet(isPresented: $showSettings) {
-            sheet
-        }
-        .toolbar {
-            settingButton
         }
         .navigationTitle("Score")
         .navigationBarTitleDisplayMode(.inline)
@@ -122,24 +116,22 @@ extension ScoreView {
             .map { ($0.key, $0.value) }
     }
 
-    var semesterList: [String] {
-        Array(Set(score.courses.map(\.semesterName)))
-    }
-
-    var selectedSemesterNames: String {
-        String(
-            semesterList.filter { name in
-                !semesterNameToRemove.contains(name)
+    var semesterNameList: [String] {
+        score.courses
+            .categorise { course in
+                course.semesterName
             }
-            .map { $0.truncated(length: 6) }.joined(separator: ", ")
-        )
+            .sorted(by: { lhs, rhs in
+                lhs.value[0].semesterID > rhs.value[0].semesterID
+            })
+            .map { $0.key }
     }
 }
 
 extension ScoreView {
     var semesterButton: some View {
         Menu {
-            ForEach(semesterList, id: \.self) { semester in
+            ForEach(semesterNameList, id: \.self) { semester in
                 Button {
                     if semesterNameToRemove.contains(semester) {
                         semesterNameToRemove.removeAll(where: { $0 == semester }
@@ -159,10 +151,10 @@ extension ScoreView {
             }
         } label: {
             Label(
-                "Semester: \(selectedSemesterNames)",
+                "Choose Semester",
                 systemImage: "square.dashed.inset.filled"
             )
-            .lineLimit(1).hStackLeading()
+            .lineLimit(1)
         }
     }
 
@@ -194,21 +186,8 @@ extension ScoreView {
                     "Sort by: \(sortPreference!.rawValue.localized)",
                     systemImage: "number.square"
                 )
-                .hStackLeading()
             }
         }
-    }
-
-    var sheet: some View {
-        NavigationStack {
-            List {
-                semesterButton
-                sortButton
-            }
-            .listStyle(.plain)
-            .navigationBarTitle("Settings", displayMode: .inline)
-        }
-        .presentationDetents([.fraction(0.2)])
     }
 }
 
