@@ -11,8 +11,6 @@ import SwiftyJSON
 
 class USTCBusDelegate: ManagedRemoteUpdateProtocol {
     static let shared = USTCBusDelegate()
-
-    @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
     @AppStorage("ustcBusSelectedDate") var date: Date = .now
 
 
@@ -22,7 +20,7 @@ class USTCBusDelegate: ManagedRemoteUpdateProtocol {
         var from: String
         var to: String
         var startTime: Date
-        if let path = Bundle.main.path(forResource: "bus_data", ofType: "json") {
+        if let path = Bundle.main.path(forResource: "ustc_bus_data", ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path))
                 let jsonData = try JSON(data: data)
