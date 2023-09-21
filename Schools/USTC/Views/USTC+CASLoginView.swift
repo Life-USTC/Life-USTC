@@ -53,67 +53,73 @@ struct USTCCASLoginView: View {
     }
 
     var formView: some View {
-        VStack {
-            VStack {
-                Toggle(isOn: $isUserGraduate) {
-                    Text("Graduate?")
+        VStack (spacing: 20){
+            VStack(alignment: .leading) {
+                HStack(alignment: .center) {
+                    Text("Username:")
                         .font(.system(.body, design: .monospaced, weight: .bold))
+                    Spacer()
+                    VStack {
+                        TextField(
+                            "Username",
+                            text: $ustcCASViewModel.inputUsername
+                        )
+                        .focused($foucusField, equals: .username)
+                        .onSubmit {
+                            DispatchQueue.main.asyncAfter(
+                                deadline: .now() + 0.1
+                            ) {
+                                foucusField = .password
+                            }
+                        }
+                        .submitLabel(.next)
+                        .autocorrectionDisabled(true)
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.asciiCapable)
+                        Divider()
+                    }
+                    .frame(width: 200)
                 }
-                Toggle(isOn: $appShouldPresentDemo) {
-                    Text("Demo?")
+                HStack(alignment: .center) {
+                    Text("Password:")
                         .font(.system(.body, design: .monospaced, weight: .bold))
+                    Spacer()
+                    VStack {
+                        SecureField(
+                            "Password",
+                            text: $ustcCASViewModel.inputPassword
+                        )
+                        .focused($foucusField, equals: .password)
+                        .onSubmit {
+                            checkAndLogin()
+                        }
+                        .submitLabel(.done)
+                        Divider()
+                    }
+                    .frame(width: 200)
                 }
+
             }
-            .frame(width: 220)
-
-            Spacer()
-                .frame(height: 30)
-
-            HStack(alignment: .top) {
-                Text("Username:")
-                    .font(.system(.body, design: .monospaced, weight: .bold))
-                VStack(alignment: .leading) {
-                    TextField(
-                        "Username",
-                        text: $ustcCASViewModel.inputUsername
-                    )
-                    .focused($foucusField, equals: .username)
-                    .onSubmit {
-                        DispatchQueue.main.asyncAfter(
-                            deadline: .now() + 0.1
-                        ) {
-                            foucusField = .password
+            VStack (alignment: .leading, spacing: 10){
+                Button {
+                    isUserGraduate = !isUserGraduate
+                } label: {
+                    HStack {
+                        Text("Graduate")
+                            .font(.system(.body, design: .monospaced, weight: .bold))
+                            .foregroundColor(.primary)
+                        Spacer()
+                        if isUserGraduate {
+                            Image(systemName: "checkmark.circle.fill")
+                        } else {
+                            Image(systemName: "circle")
                         }
                     }
-                    .submitLabel(.next)
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
-                    .keyboardType(.asciiCapable)
-
-                    Divider()
                 }
-                .frame(width: 220)
             }
-
-            HStack(alignment: .top) {
-                Text("Password:")
-                    .font(.system(.body, design: .monospaced, weight: .bold))
-                VStack(alignment: .leading) {
-                    SecureField(
-                        "Password",
-                        text: $ustcCASViewModel.inputPassword
-                    )
-                    .focused($foucusField, equals: .password)
-                    .onSubmit {
-                        checkAndLogin()
-                    }
-                    .submitLabel(.done)
-
-                    Divider()
-                }
-                .frame(width: 220)
-            }
+            
         }
+        .padding(.horizontal, 30)
     }
 
     var loginButton: some View {
@@ -185,7 +191,7 @@ struct USTCCASLoginView: View {
                     }
                     return
                 } else if result {
-                    showSuccessAlert = true
+                    showSuccessAlert =   true
                     return
                 }
 

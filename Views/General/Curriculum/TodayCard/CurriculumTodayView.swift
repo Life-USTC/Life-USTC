@@ -28,7 +28,9 @@ struct LectureView: View {
                     Text(lecture.teacher)
                 }
                 .lineLimit(1)
-                .font(.system(.caption, weight: .light))
+                .font(.system(.caption, design: .monospaced))
+                .foregroundColor(.secondary)
+                .bold()
 
                 Text(lecture.startDate ... lecture.endDate)
                     .lineLimit(1)
