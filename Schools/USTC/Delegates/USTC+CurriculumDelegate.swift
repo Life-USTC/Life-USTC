@@ -33,9 +33,9 @@ class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol 
 
     func refreshSemester(inComplete: Semester) async throws -> Semester {
         if isUserGraduate {
-            return try await refreshUnderGraduateSemester(inComplete: inComplete)
-        } else {
             return try await refreshGraduateSemester(inComplete: inComplete)
+        } else {
+            return try await refreshUnderGraduateSemester(inComplete: inComplete)
         }
     }
 
