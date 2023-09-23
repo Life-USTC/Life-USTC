@@ -164,6 +164,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
 
     func getCoursesForGraduate(semester selectedSemester: String = "", weekIndex: String = "") async throws -> [Course]
     {
+        // Step 0: Check login
+        if try await !_ugAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
+
         var response = await AF.request("https://jw.ustc.edu.cn/for-std/course-select", method: .get)
             .serializingString().response
         if (response.response?.statusCode ?? 0) != 200 {
