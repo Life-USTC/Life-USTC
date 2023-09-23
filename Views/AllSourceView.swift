@@ -40,7 +40,6 @@ struct AllSourceView: View {
             }
         }
         .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
         .asyncStatusOverlay(_feedSources.status, showLight: false)
         .refreshable {
             _feedSources.triggerRefresh()
@@ -48,5 +47,6 @@ struct AllSourceView: View {
         .searchable(text: $searchText)
         .navigationTitle("Feed")
         .navigationBarTitleDisplayMode(.large)
+        .background(Color(.systemGroupedBackground))
     }
 }

@@ -106,6 +106,7 @@ struct HomeView: View {
                 SettingsView()
             }
         }
+        .background(Color(.systemGroupedBackground))
     }
 }
 

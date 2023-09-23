@@ -63,7 +63,6 @@ struct FeaturesView: View {
             }
         }
         .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
         .searchable(text: $searchText, placement: .automatic)
         .navigationTitle("Features")
         .navigationBarTitleDisplayMode(.large)
