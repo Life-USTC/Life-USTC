@@ -102,7 +102,7 @@ extension Curriculum {
         calendar.title = calendarName
         calendar.cgColor = Color.accentColor.cgColor
         calendar.source = eventStore.defaultCalendarForNewEvents?.source
-        try! eventStore.saveCalendar(calendar, commit: true)
+        try eventStore.saveCalendar(calendar, commit: true)
 
         for lecture in semesters.flatMap(\.courses).flatMap(\.lectures) {
             let event = EKEvent(lecture, in: eventStore)

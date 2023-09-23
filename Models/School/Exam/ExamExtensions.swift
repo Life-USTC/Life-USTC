@@ -102,7 +102,7 @@ extension [Exam] {
         calendar.title = calendarName
         calendar.cgColor = Color.accentColor.cgColor
         calendar.source = eventStore.defaultCalendarForNewEvents?.source
-        try! eventStore.saveCalendar(calendar, commit: true)
+        try eventStore.saveCalendar(calendar, commit: true)
 
         for exam in self {
             let event = EKEvent(exam, in: eventStore)
