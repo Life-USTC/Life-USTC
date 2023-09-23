@@ -19,10 +19,7 @@ extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
     }
 }
 
-class ManagedLocalExampleData<D: ExampleDataProtocol>: ManagedLocalDataProtocol<
-    D
->
-{
+class ManagedLocalExampleData<D: ExampleDataProtocol>: ManagedLocalDataProtocol<D> {
     override var data: D? {
         get {
             D.example
@@ -33,14 +30,17 @@ class ManagedLocalExampleData<D: ExampleDataProtocol>: ManagedLocalDataProtocol<
     }
 
     override var status: LocalAsyncStatus {
-        .valid
+        get {
+            .valid
+        }
+        set {
+            assert(true)
+        }
     }
 }
 
-class ManagedRemoteExampleUpdateDelegate<D: ExampleDataProtocol>:
-    ManagedRemoteUpdateProtocol
-{
-    func refresh() async throws -> D {
+class ManagedRemoteExampleUpdateDelegate<D: ExampleDataProtocol>: ManagedRemoteUpdateProtocol<D> {
+    override func refresh() async throws -> D {
         D.example
     }
 }

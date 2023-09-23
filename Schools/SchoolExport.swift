@@ -24,15 +24,19 @@ class SchoolExport {
 
     var localFeedJSOName: String { "" }
 
-    var examDelegate: any ExamDelegateProtocol { USTCExamDelegate.shared }
+    var examDelegate: ExamDelegateProtocol {
+        USTCExamDelegate.shared
+    }
 
-    var curriculumDelegate: any CurriculumProtocol {
+    var curriculumDelegate: CurriculumProtocol {
         USTCCurriculumDelegate.shared
     }
 
     var curriculumBehavior: CurriculumBehavior { CurriculumBehavior() }
 
-    var scoreDelegate: any ScoreDelegateProtocol { USTCScoreDelegate.shared }
+    var scoreDelegate: ScoreDelegateProtocol {
+        USTCScoreDelegate.shared
+    }
 
     //    var baseModifier: some ViewModifier {
     //        USTCBaseModifier()

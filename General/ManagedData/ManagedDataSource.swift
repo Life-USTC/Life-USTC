@@ -9,24 +9,39 @@ import Foundation
 
 // Using class so that ObservableObject can function properly
 class ManagedLocalDataProtocol<D>: ObservableObject {
-    var data: D?
-    var status: LocalAsyncStatus { .notFound }
-
-    init(data: D? = nil) {
+    var data: D? = {
         assert(true)
-        self.data = data
+        return nil
+    }()
+
+    var status: LocalAsyncStatus = {
+        assert(true)
+        return .notFound
+    }()
+
+    init() {
+        assert(true)
     }
 }
 
-/// Simple protocol to wrap a refresh() func, inherit the protocol with class filled with variables to store inside
-protocol ManagedRemoteUpdateProtocol<D> {
-    associatedtype D
+class ManagedRemoteUpdateProtocol<D>: ObservableObject {
+    var status: RefreshAsyncStatus? = {
+        assert(true)
+        return nil
+    }()
 
-    func refresh() async throws -> D
+    func refresh() async throws -> D {
+        assert(true)
+        throw BaseError.runtimeError("Not implemented")
+    }
+
+    init() {
+        assert(true)
+    }
 }
 
 // Source of truth
 struct ManagedDataSource<D> {
     var local: ManagedLocalDataProtocol<D>
-    var remote: any ManagedRemoteUpdateProtocol<D>
+    var remote: ManagedRemoteUpdateProtocol<D>
 }

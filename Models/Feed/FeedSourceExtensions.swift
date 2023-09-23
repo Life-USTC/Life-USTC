@@ -9,13 +9,13 @@ import FeedKit
 import SwiftUI
 import SwiftyJSON
 
-class FeedSourceDelegate: ManagedRemoteUpdateProtocol {
+class FeedSourceDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
     static let shared = FeedSourceDelegate()
 
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
 
-    func refresh() async throws -> [FeedSource] {
+    override func refresh() async throws -> [FeedSource] {
         guard var result = try await _feedSourceList.retrive() else {
             throw BaseError.runtimeError("Feed source list fetched failed")
         }

@@ -10,7 +10,7 @@ import SwiftUI
 /// Wrapper for local-cached data
 @propertyWrapper struct ManagedData<D: ExampleDataProtocol>: DynamicProperty {
     @ObservedObject var local: ManagedLocalDataProtocol<D>
-    var remote: any ManagedRemoteUpdateProtocol<D>
+    @ObservedObject var remote: ManagedRemoteUpdateProtocol<D>
 
     /// - Warning: When not mounted in view, you should always call retrive() function instead of directly get` wrappedValue` to prevent get placeholder data. When async context isn't available, call `retriveLocal()`
     var wrappedValue: D {
@@ -19,16 +19,16 @@ import SwiftUI
         if appShouldPresentDemo {
             return .example
         }
+
         return retriveLocal() ?? .example
     }
 
-    @State var refresh: RefreshAsyncStatus? = nil
     var status: AsyncStatus {
         if appShouldPresentDemo {
             return .init(local: .valid, refresh: .success)
         }
 
-        return .init(local: local.status, refresh: refresh)
+        return .init(local: local.status, refresh: remote.status)
     }
 
     func retriveLocal() -> D? {
@@ -36,7 +36,7 @@ import SwiftUI
             return .example
         }
 
-        if local.status != .valid, refresh == nil {
+        if local.status != .valid, remote.status == nil {
             triggerRefresh()
         }
 
@@ -48,7 +48,7 @@ import SwiftUI
             return .example
         }
 
-        if status.local != .valid {
+        if status.local != .valid, remote.status == nil {
             try await refresh()
         }
 
@@ -64,8 +64,13 @@ import SwiftUI
             return
         }
 
-        try await $refresh.exec {
+        remote.status = .waiting
+        do {
             local.data = try await remote.refresh()
+            remote.status = .success
+        } catch {
+            print(error.localizedDescription)
+            remote.status = .error(error.localizedDescription)
         }
     }
 

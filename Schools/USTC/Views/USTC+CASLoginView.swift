@@ -53,7 +53,7 @@ struct USTCCASLoginView: View {
     }
 
     var formView: some View {
-        VStack (spacing: 20){
+        VStack(spacing: 20) {
             VStack(alignment: .leading) {
                 HStack(alignment: .center) {
                     Text("Username:")
@@ -100,7 +100,7 @@ struct USTCCASLoginView: View {
                 }
 
             }
-            VStack (alignment: .leading, spacing: 10){
+            VStack(alignment: .leading, spacing: 10) {
                 Button {
                     isUserGraduate = !isUserGraduate
                 } label: {
@@ -117,7 +117,7 @@ struct USTCCASLoginView: View {
                     }
                 }
             }
-            
+
         }
         .padding(.horizontal, 30)
     }
@@ -191,7 +191,7 @@ struct USTCCASLoginView: View {
                     }
                     return
                 } else if result {
-                    showSuccessAlert =   true
+                    showSuccessAlert = true
                     return
                 }
 
