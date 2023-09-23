@@ -77,7 +77,33 @@ import SwiftUI
     /// Can act like viewController, access on view.refreshable with `_data.triggerRefresh()`
     func triggerRefresh() {
         Task { @MainActor in
-            try await self.refresh()
+            // Waiting random time to avoid racing condition
+            try await Task.sleep(
+                nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000)
+            )
+
+            if remote.refreshTask != nil {
+                if try await !remote.refreshTask!.value {
+                    throw BaseError.runtimeError("Refresh failed")
+                }
+                return
+            }
+
+            remote.refreshTask = Task {
+                do {
+                    try await self.refresh()
+                    remote.refreshTask = nil
+                    return true
+                } catch {
+                    remote.refreshTask = nil
+                    print(error.localizedDescription)
+                    throw (error)
+                }
+            }
+
+            if try await !remote.refreshTask!.value {
+                throw BaseError.runtimeError("Refresh failed")
+            }
         }
     }
 

@@ -30,6 +30,11 @@ class ManagedRemoteUpdateProtocol<D>: ObservableObject {
         return nil
     }()
 
+    var refreshTask: Task<Bool, Error>? = {
+        assert(true)
+        return nil
+    }()
+
     func refresh() async throws -> D {
         assert(true)
         throw BaseError.runtimeError("Not implemented")
