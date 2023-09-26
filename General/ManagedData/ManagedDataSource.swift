@@ -14,6 +14,7 @@ class ManagedLocalDataProtocol<D>: ObservableObject {
         return nil
     }()
 
+    @Published
     var status: LocalAsyncStatus = {
         assert(true)
         return .notFound
@@ -25,6 +26,7 @@ class ManagedLocalDataProtocol<D>: ObservableObject {
 }
 
 class ManagedRemoteUpdateProtocol<D>: ObservableObject {
+    @Published
     var status: RefreshAsyncStatus? = {
         assert(true)
         return nil
