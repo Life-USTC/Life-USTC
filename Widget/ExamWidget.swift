@@ -55,13 +55,12 @@ struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: ExamProvider.Entry
 
-    let a = [Exam.example]
     var body: some View {
         VStack {
             if widgetFamily == .systemMedium {
                 ExamPreview()
                     .makeListWidget(
-                        with: a,
+                        with: entry.exams,
                         numberToShow: 2
                     )
             } else if widgetFamily == .systemLarge {
