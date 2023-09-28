@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 import SwiftyJSON
 
-class USTCBusDelegate: ManagedRemoteUpdateProtocol {
+class USTCBusDelegate: ManagedRemoteUpdateProtocol<[Bus]> {
     static let shared = USTCBusDelegate()
     @AppStorage("ustcBusSelectedDate") var date: Date = .now
 
-    func refresh() async throws -> [Bus] {
+    override func refresh() async throws -> [Bus] {
         var result: [Bus] = []
         let calendar = Calendar(identifier: .gregorian)
         var from: String

@@ -17,7 +17,10 @@ typealias CurriculumProtocol = ManagedRemoteUpdateProtocol<Curriculum>
 
 extension ManagedDataSource<Curriculum> {
     static let curriculum = ManagedDataSource(
-        local: ManagedLocalStorage("Curriculum"),
+        local: ManagedLocalStorage(
+            "Curriculum",
+            validDuration: TimeInterval(60 * 60 * 24 * 7)
+        ),
         remote: SchoolExport.shared.curriculumDelegate
     )
 }

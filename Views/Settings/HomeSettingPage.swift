@@ -7,10 +7,12 @@
 
 import SwiftUI
 
+let defaultHomeViewOrder: [HomeViewCardType] = [
+    .featurePreview, .curriculumToday, .examPreview, .curriculumWeek,
+]
+
 struct HomeSettingPage: View {
-    @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = [
-        .curriculumToday, .examPreview, .curriculumWeek,
-    ]
+    @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
 
     var body: some View {
         List($homeViewOrder, id: \.rawValue, editActions: .all) { $type in

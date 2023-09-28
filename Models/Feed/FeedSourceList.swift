@@ -14,10 +14,10 @@ let FeedSourceListLocalStorage = ManagedLocalStorage<[FeedSource]>(
     validDuration: 3600 * 24
 )
 
-class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
+class FeedSourceListDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
     static let shared = FeedSourceListDelegate()
 
-    func refresh() async throws -> [FeedSource] {
+    override func refresh() async throws -> [FeedSource] {
         let (data, _) = try await URLSession.shared.data(
             from: SchoolExport.shared.remoteFeedURL
         )
@@ -35,7 +35,7 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol {
             }
     }
 
-    init() {
+    override init() {
         // Note: Init is guararenteed to run before Wrapper.wrappedValue is accessible.
         // If "ManagedLocalStorage/feedSourceList.json" isn't found locally
         // copy it from main Bundle SchoolExport.shared.localFeedJSOName

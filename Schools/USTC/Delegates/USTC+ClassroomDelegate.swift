@@ -45,7 +45,7 @@ let ustcBuildingNames: [String: String] = [
     "22": "高新校区信智楼",
 ]
 
-class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
+class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
     static let shared = USTCClassroomDelegate()
 
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
@@ -65,7 +65,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol {
         return date
     }
 
-    func refresh() async throws -> [String: [Lecture]] {
+    override func refresh() async throws -> [String: [Lecture]] {
         if try await !_catalogClient.requireLogin() {
             throw BaseError.runtimeError("UstcCatalog Not logined")
         }

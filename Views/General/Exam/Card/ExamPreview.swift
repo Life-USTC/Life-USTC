@@ -26,22 +26,14 @@ struct ExamView: View {
                     .bold()
                 HStack {
                     Text(exam.startDate, format: .dateTime.day().month())
-                        .fontWeight(.heavy)
-                        .foregroundColor(.blue.opacity(0.8))
                     Text(exam.startDate ... exam.endDate)
-                        .font(.caption)
-                        .foregroundColor(.gray.opacity(0.8))
                 }
+                .lineLimit(1)
+                .font(
+                    .system(.caption, design: .monospaced, weight: .medium)
+                )
             }
             Spacer()
-
-            VStack(alignment: .trailing) {
-                Text(exam.startDate, style: .date)
-                    .font(.system(.body, design: .monospaced))
-                Text(exam.startDate ... exam.endDate)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.secondary)
-            }
         }
     }
 }

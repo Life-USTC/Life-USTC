@@ -43,13 +43,18 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
     }
 
     override var status: LocalAsyncStatus {
-        guard data != nil, let lastUpdated else {
-            return .notFound
+        get {
+            guard data != nil, let lastUpdated else {
+                return .notFound
+            }
+            guard Date().timeIntervalSince(lastUpdated) < validDuration else {
+                return .outDated
+            }
+            return .valid
         }
-        guard Date().timeIntervalSince(lastUpdated) < validDuration else {
-            return .outDated
+        set {
+            assert(true)
         }
-        return .valid
     }
 
     var lastUpdated: Date? {

@@ -55,9 +55,8 @@ extension HomeViewCardType {
 }
 
 struct HomeView: View {
-    @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = [
-        .featurePreview, .curriculumToday, .examPreview, .curriculumWeek,
-    ]
+    @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
+
     @State var navigationToSettingsView = false
     @State private var textToBeDisplay = true
 

@@ -16,20 +16,24 @@ private func convertYYMMDD(_ date: String) -> Date {
     return dateFormatter.date(from: date)!
 }
 
-class USTCCurriculumDelegate: CurriculumProtocolB & ManagedRemoteUpdateProtocol {
+class USTCCurriculumDelegate: CurriculumProtocolB {
     static let shared = USTCCurriculumDelegate()
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
 
-    func refreshSemesterBase() async throws -> [Semester] {
+    override func refreshSemesterBase() async throws -> [Semester] {
         let request = URLRequest(url: URL(string: "https://life-ustc.tiankaima.dev/semester_list.json")!)
         let (data, _) = try await URLSession.shared.data(for: request)
         let result = try JSONDecoder().decode([Semester].self, from: data)
         return result
     }
 
-    func refreshSemester(inComplete: Semester) async throws -> Semester {
+    override func refreshSemester(inComplete: Semester) async throws -> Semester {
+        return try await refreshUnderGraduateSemester(inComplete: inComplete)
+    }
+
+    func refreshUnderGraduateSemester(inComplete: Semester) async throws -> Semester {
         let queryURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/course-table"
         )!

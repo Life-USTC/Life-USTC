@@ -42,15 +42,20 @@ extension CurriculumProtocolA {
 }
 
 /// - Note: Useful when semester startDate is not provided in `refreshSemesterList`
-protocol CurriculumProtocolB {
+class CurriculumProtocolB: ManagedRemoteUpdateProtocol<Curriculum> {
     /// Return more info than just id and name, like start date and end date, but have empty courses
-    func refreshSemesterBase() async throws -> [Semester]
-    func refreshSemester(inComplete: Semester) async throws -> Semester
-}
+    func refreshSemesterBase() async throws -> [Semester] {
+        assert(true)
+        return []
+    }
 
-extension CurriculumProtocolB {
+    func refreshSemester(inComplete: Semester) async throws -> Semester {
+        assert(true)
+        return .example
+    }
+
     /// Parrallel refresh the whole curriculum
-    func refresh() async throws -> Curriculum {
+    override func refresh() async throws -> Curriculum {
         var result = Curriculum(semesters: [])
         let incompleteSemesters = try await refreshSemesterBase()
         await withTaskGroup(of: Semester?.self) { group in
@@ -102,7 +107,7 @@ extension Curriculum {
         calendar.title = calendarName
         calendar.cgColor = Color.accentColor.cgColor
         calendar.source = eventStore.defaultCalendarForNewEvents?.source
-        try! eventStore.saveCalendar(calendar, commit: true)
+        try eventStore.saveCalendar(calendar, commit: true)
 
         for lecture in semesters.flatMap(\.courses).flatMap(\.lectures) {
             let event = EKEvent(lecture, in: eventStore)

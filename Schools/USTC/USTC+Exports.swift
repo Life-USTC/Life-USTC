@@ -35,11 +35,11 @@ class USTCExports: SchoolExport {
 
     override var localFeedJSOName: String { "ustc_feed_source" }
 
-    override var examDelegate: any ExamDelegateProtocol {
+    override var examDelegate: ExamDelegateProtocol {
         USTCExamDelegate.shared
     }
 
-    override var curriculumDelegate: any CurriculumProtocol {
+    override var curriculumDelegate: CurriculumProtocol {
         USTCCurriculumDelegate.shared
     }
 
@@ -47,7 +47,7 @@ class USTCExports: SchoolExport {
         ustcCurriculumBehavior
     }
 
-    override var scoreDelegate: any ScoreDelegateProtocol {
+    override var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
 
