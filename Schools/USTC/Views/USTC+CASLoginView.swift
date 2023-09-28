@@ -16,7 +16,6 @@ extension View {
 }
 
 struct USTCCASLoginView: View {
-    @AppStorage("ustcIsUserGraduate", store: .appGroup) var isUserGraduate: Bool = false
     @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
 
     enum Field: Int, Hashable {
@@ -99,23 +98,6 @@ struct USTCCASLoginView: View {
                     .frame(width: 200)
                 }
 
-            }
-            VStack(alignment: .leading, spacing: 10) {
-                Button {
-                    isUserGraduate = !isUserGraduate
-                } label: {
-                    HStack {
-                        Text("Graduate")
-                            .font(.system(.body, design: .monospaced, weight: .bold))
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if isUserGraduate {
-                            Image(systemName: "checkmark.circle.fill")
-                        } else {
-                            Image(systemName: "circle")
-                        }
-                    }
-                }
             }
 
         }

@@ -5,7 +5,6 @@
 //  Created by Tiankai Ma on 2023/2/24.
 //
 
-import Alamofire
 import EventKit
 import SwiftUI
 import SwiftyJSON
@@ -22,7 +21,6 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
-    @AppStorage("ustcIsUserGraduate", store: .appGroup) var isUserGraduate: Bool = false
 
     override func refreshSemesterBase() async throws -> [Semester] {
         let request = URLRequest(url: URL(string: "https://life-ustc.tiankaima.dev/semester_list.json")!)
@@ -32,10 +30,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
     }
 
     override func refreshSemester(inComplete: Semester) async throws -> Semester {
-        guard isUserGraduate else {
-            return try await refreshUnderGraduateSemester(inComplete: inComplete)
-        }
-        return try await refreshGraduateSemester(inComplete: inComplete)
+        return try await refreshUnderGraduateSemester(inComplete: inComplete)
     }
 
     func refreshUnderGraduateSemester(inComplete: Semester) async throws -> Semester {
@@ -155,183 +150,6 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
         result.courses = courses
         return result
     }
-
-    func refreshGraduateSemester(inComplete: Semester) async throws -> Semester {
-        var result = inComplete
-        result.courses = try await getCoursesForGraduate(semester: result.id)
-        return result
-    }
-
-    func getCoursesForGraduate(semester selectedSemester: String = "", weekIndex: String = "") async throws -> [Course]
-    {
-        // Step 0: Check login
-        if try await !_ugAASClient.requireLogin() {
-            throw BaseError.runtimeError("UstcUgAAS Not logined")
-        }
-
-        var response = await AF.request("https://jw.ustc.edu.cn/for-std/course-select", method: .get)
-            .serializingString().response
-        if (response.response?.statusCode ?? 0) != 200 {
-            throw BaseError.runtimeError("")
-        }
-        var matches = RegularExpression(
-            regex: "https://jw\\.ustc\\.edu\\.cn/for-std/course-select/turns/(\\d+)",
-            validateString: response.response?.url?.absoluteString ?? ""
-        )
-        if matches.count < 2 {
-            throw BaseError.runtimeError("")
-        }
-        let id = matches[1]
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-        ]
-        var data = [
-            "studentId": id,
-            "bizTypeId": "3",
-        ]
-        response =
-            await AF.request(
-                "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns",
-                method: .post,
-                parameters: data,
-                headers: headers
-            )
-            .serializingString().response
-        if (response.response?.statusCode ?? 0) != 200 {
-            throw BaseError.runtimeError("")
-        }
-        var semester: String = selectedSemester
-        if semester.isEmpty {
-            switch response.result {
-            case let .success(responseBody):
-                matches = RegularExpression(regex: "\"id\":(\\d+),", validateString: responseBody)
-                if matches.count < 2 {
-                    throw BaseError.runtimeError("")
-                }
-                semester = matches[1]
-            case .failure:
-                throw BaseError.runtimeError("")
-            }
-        }
-        if semester.isEmpty {
-            throw BaseError.runtimeError("")
-        }
-        data = [
-            "studentId": id,
-            "turnId": semester,
-        ]
-        response =
-            await AF.request(
-                "https://jw.ustc.edu.cn/ws/for-std/course-select/selected-lessons",
-                method: .post,
-                parameters: data,
-                headers: headers
-            )
-            .serializingString().response
-        if (response.response?.statusCode ?? 0) != 200 {
-            throw BaseError.runtimeError("")
-        }
-        switch response.result {
-        case let .success(json):
-            guard let wrapper: GraduateCourseJsonWrapper = fromJson(json: json, defaultValue: nil) else {
-                throw BaseError.runtimeError("")
-            }
-            return wrapper.courses
-        case .failure:
-            throw BaseError.runtimeError("")
-        }
-    }
-}
-
-private struct GraduateCourseJsonWrapper: Decodable {
-    var courses: [Course]
-
-    private enum Keys: CodingKey {
-        case course, dateTimePlace, weekText
-    }
-
-    private enum InnerNameKeys: CodingKey {
-        case nameZh, nameEn
-    }
-
-    private enum InnerTextKeys: CodingKey {
-        case textZh, textEn, text
-    }
-
-    init(from decoder: Decoder) throws {
-        courses = [Course]()
-        var container = try decoder.unkeyedContainer()
-        while !container.isAtEnd {
-            let innerContainer = try container.nestedContainer(keyedBy: Keys.self)
-            let dateTimePlacesString =
-                try? innerContainer.nestedContainer(keyedBy: InnerTextKeys.self, forKey: .dateTimePlace)
-                .decode(String.self, forKey: .textZh)
-            if dateTimePlacesString == nil {
-                continue
-            }
-            let dateTimePlaces = dateTimePlacesString!.components(separatedBy: ";")
-            for dateTimePlace in dateTimePlaces {
-                let courseName =
-                    (try? innerContainer.nestedContainer(keyedBy: InnerNameKeys.self, forKey: .course)
-                        .decode(String.self, forKey: .nameZh)) ?? ""
-                let weeksStr =
-                    (try? innerContainer.nestedContainer(keyedBy: InnerTextKeys.self, forKey: .weekText)
-                        .decode(String.self, forKey: .textZh).replacingOccurrences(of: "~", with: "-")) ?? ""
-                let matches: [String] = RegularExpression(
-                    regex: "^(\\S*): (\\d)\\(([\\d,~:]+)\\)$",
-                    validateString: dateTimePlace
-                )
-                if matches.count > 3 {
-                    let customPlace = matches[1]
-                    let weekday = Int(matches[2]) ?? 0
-                    let unitString = matches[3]
-                    //                    let course = Course(courseName: courseName, weekday: weekday, unitString: unitString, weeksStr: weeksStr, customPlace: customPlace)
-                    let course = Course(
-                        name: courseName,
-                        courseCode: "",
-                        lessonCode: "",
-                        teacherName: "",
-                        lectures: []
-                    )
-                    courses.append(course)
-                }
-            }
-        }
-    }
-}
-
-private func RegularExpression(regex: String, validateString: String) -> [String] {
-    do {
-        let regex: NSRegularExpression = try NSRegularExpression(pattern: regex, options: [])
-        let matches = regex.matches(in: validateString, options: [], range: NSMakeRange(0, validateString.count))
-        var result: [String] = Array()
-        for match in matches {
-            for idx in 0 ..< match.numberOfRanges {
-                result.append((validateString as NSString).substring(with: match.range(at: idx)))
-            }
-        }
-        return result
-    } catch {
-        return []
-    }
-}
-
-private func fromJson<Element>(json: String, defaultValue: Element) -> Element where Element: Decodable {
-    guard let data = json.data(using: .utf8),
-        let element = try? JSONDecoder().decode(Element.self, from: data)
-    else {
-        return defaultValue
-    }
-    return element
-}
-
-private func fromJson<Element>(contentsOf url: URL, defaultValue: Element) -> Element where Element: Decodable {
-    guard let data = try? Data(contentsOf: url),
-        let element = try? JSONDecoder().decode(Element.self, from: data)
-    else {
-        return defaultValue
-    }
-    return element
 }
 
 extension USTCExports {
