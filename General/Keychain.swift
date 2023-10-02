@@ -12,7 +12,7 @@ import SwiftUI
     private let key: String
     private let keychain = Keychain(
         service:"com.linzihan.XZKDiOS",
-        accessGroup: "group."
+        accessGroup: "group.com.linzihan.XZKDiOS"
     )
 
     public var wrappedValue: String {
