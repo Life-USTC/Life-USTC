@@ -35,7 +35,7 @@ platform :ios do
         version: get_version_number(
           target: "Life@USTC",
         ),
-        app_identifier: "dev.tiankaima.Life-USTC",
+        app_identifier: "com.linzihan.XZKDiOS",
       ) + 1,
     })
     gym(
