@@ -19,7 +19,7 @@
 "CAS Settings" = "统一身份认证设置";
 "Change User Type" = "更改用户类型";
 "Notification Settings" = "消息设置";
-"About Life@USTC" = "关于 Life@USTC";
+"About Study@USTC" = "关于「学在科大」";
 "Legal Info" = "法律信息";
 
 "Use new UI for tabBar" = "在标签栏位置使用新版UI";
@@ -31,7 +31,6 @@
 "Password:" = "密码:";
 "Check & Login" = "确认 & 登陆";
 
-"Brought to you by @tiankaima" = "@tiankaima 敬上";
 "Icon source" = "图标来源";
 "Feedkit source" = "Feedkit 来源";
 "SwiftyJSON source" = "SwiftyJSON 来源";

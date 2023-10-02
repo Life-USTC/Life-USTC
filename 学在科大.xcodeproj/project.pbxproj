@@ -272,7 +272,7 @@
 		56AAAB172A968A68000561FE /* SchoolExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolExport.swift; sourceTree = "<group>"; };
 		56AAF0F829B71C34007BFC60 /* CurriculumWeekWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekWidget.swift; sourceTree = "<group>"; };
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		56AC7300294A012F00A60F47 /* Life@USTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Life@USTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		56AC7300294A012F00A60F47 /* 学在科大.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "学在科大.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatusMask.swift; sourceTree = "<group>"; };
 		56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ustc_feed_source.json; sourceTree = "<group>"; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
@@ -699,7 +699,7 @@
 		56AC7301294A012F00A60F47 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56AC7300294A012F00A60F47 /* Life@USTC.app */,
+				56AC7300294A012F00A60F47 /* 学在科大.app */,
 				56FA8E75297D7263000AC3A9 /* Widget iOS.appex */,
 			);
 			name = Products;
@@ -912,9 +912,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56AC72FF294A012F00A60F47 /* Life@USTC */ = {
+		56AC72FF294A012F00A60F47 /* 学在科大 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56AC7311294A012F00A60F47 /* Build configuration list for PBXNativeTarget "Life@USTC" */;
+			buildConfigurationList = 56AC7311294A012F00A60F47 /* Build configuration list for PBXNativeTarget "学在科大" */;
 			buildPhases = (
 				56AC72FC294A012F00A60F47 /* Sources */,
 				56AC72FD294A012F00A60F47 /* Frameworks */,
@@ -926,7 +926,7 @@
 			dependencies = (
 				5611272529813AAC00BB66EE /* PBXTargetDependency */,
 			);
-			name = "Life@USTC";
+			name = "学在科大";
 			packageProductDependencies = (
 				56D175B7294F01EA0070778F /* FeedKit */,
 				56D175BC295044FF0070778F /* SwiftyJSON */,
@@ -938,7 +938,7 @@
 				56D8A4982A6D21CA0027224C /* KeychainAccess */,
 			);
 			productName = "Life@USTC (iOS)";
-			productReference = 56AC7300294A012F00A60F47 /* Life@USTC.app */;
+			productReference = 56AC7300294A012F00A60F47 /* 学在科大.app */;
 			productType = "com.apple.product-type.application";
 		};
 		56FA8E74297D7263000AC3A9 /* Widget iOS */ = {
@@ -983,7 +983,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 56AC72F7294A012600A60F47 /* Build configuration list for PBXProject "Life@USTC" */;
+			buildConfigurationList = 56AC72F7294A012600A60F47 /* Build configuration list for PBXProject "学在科大" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1007,7 +1007,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				56AC72FF294A012F00A60F47 /* Life@USTC */,
+				56AC72FF294A012F00A60F47 /* 学在科大 */,
 				56FA8E74297D7263000AC3A9 /* Widget iOS */,
 			);
 		};
@@ -1397,7 +1397,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				"OTHER_SWIFT_FLAGS[sdk=iphonesimulator*]" = "-D IOS_SIMULATOR";
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS;
-				PRODUCT_NAME = "Life@USTC";
+				PRODUCT_NAME = "学在科大";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS 1696245195";
 				SDKROOT = iphoneos;
@@ -1451,7 +1451,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS;
-				PRODUCT_NAME = "Life@USTC";
+				PRODUCT_NAME = "学在科大";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS 1696245195";
 				SDKROOT = iphoneos;
@@ -1548,7 +1548,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56AC72F7294A012600A60F47 /* Build configuration list for PBXProject "Life@USTC" */ = {
+		56AC72F7294A012600A60F47 /* Build configuration list for PBXProject "学在科大" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56AC730F294A012F00A60F47 /* Debug */,
@@ -1557,7 +1557,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56AC7311294A012F00A60F47 /* Build configuration list for PBXNativeTarget "Life@USTC" */ = {
+		56AC7311294A012F00A60F47 /* Build configuration list for PBXNativeTarget "学在科大" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56AC7312294A012F00A60F47 /* Debug */,

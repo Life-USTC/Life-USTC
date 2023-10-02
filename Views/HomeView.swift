@@ -58,7 +58,6 @@ struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
 
     @State var navigationToSettingsView = false
-    @State private var textToBeDisplay = true
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -67,13 +66,8 @@ struct HomeView: View {
                     .frame(height: 42)
 
                 HStack {
-                    Text(textToBeDisplay ? "Life@USTC" : "Study@USTC")
+                    Text("Study@USTC")
                         .font(.largeTitle.bold())
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                textToBeDisplay.toggle()
-                            }
-                        }
                     Spacer()
                     Button {
                         navigationToSettingsView = true

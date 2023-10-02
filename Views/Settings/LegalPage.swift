@@ -19,11 +19,6 @@ struct LegalInfoView: View {
                     Text(credit).font(.caption).bold()
                         .foregroundColor(.secondary)
                 }
-                VStack(alignment: .leading) {
-                    Text("USTC CAS DISCLAIMER:").padding(.bottom, 2)
-                    Text("casFullHint").font(.caption).bold()
-                        .foregroundColor(.secondary)
-                }
             }
             .scrollContentBackground(.hidden)
         }
@@ -32,5 +27,7 @@ struct LegalInfoView: View {
 }
 
 struct LegalPage_Previews: PreviewProvider {
-    static var previews: some View { LegalInfoView() }
+    static var previews: some View {
+        LegalInfoView()
+    }
 }

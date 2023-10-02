@@ -24,9 +24,9 @@
                   <BuildableReference
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "56AC72FF294A012F00A60F47"
-                     BuildableName = "Life@USTC.app"
-                     BlueprintName = "Life@USTC"
-                     ReferencedContainer = "container:Life@USTC.xcodeproj">
+                     BuildableName = "&#x5b66;&#x5728;&#x79d1;&#x5927;.app"
+                     BlueprintName = "&#x5b66;&#x5728;&#x79d1;&#x5927;"
+                     ReferencedContainer = "container:&#x5b66;&#x5728;&#x79d1;&#x5927;.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>
@@ -42,9 +42,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "56AC72FF294A012F00A60F47"
-               BuildableName = "Life@USTC.app"
-               BlueprintName = "Life@USTC"
-               ReferencedContainer = "container:Life@USTC.xcodeproj">
+               BuildableName = "&#x5b66;&#x5728;&#x79d1;&#x5927;.app"
+               BlueprintName = "&#x5b66;&#x5728;&#x79d1;&#x5927;"
+               ReferencedContainer = "container:&#x5b66;&#x5728;&#x79d1;&#x5927;.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -63,7 +63,7 @@
                BlueprintIdentifier = "56EF851E2A4AF9BD005A0AAE"
                BuildableName = "USTC_APITests.xctest"
                BlueprintName = "USTC_APITests"
-               ReferencedContainer = "container:Life@USTC.xcodeproj">
+               ReferencedContainer = "container:&#x5b66;&#x5728;&#x79d1;&#x5927;.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -83,9 +83,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "56AC72FF294A012F00A60F47"
-            BuildableName = "Life@USTC.app"
-            BlueprintName = "Life@USTC"
-            ReferencedContainer = "container:Life@USTC.xcodeproj">
+            BuildableName = "&#x5b66;&#x5728;&#x79d1;&#x5927;.app"
+            BlueprintName = "&#x5b66;&#x5728;&#x79d1;&#x5927;"
+            ReferencedContainer = "container:&#x5b66;&#x5728;&#x79d1;&#x5927;.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -100,9 +100,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "56AC72FF294A012F00A60F47"
-            BuildableName = "Life@USTC.app"
-            BlueprintName = "Life@USTC"
-            ReferencedContainer = "container:Life@USTC.xcodeproj">
+            BuildableName = "&#x5b66;&#x5728;&#x79d1;&#x5927;.app"
+            BlueprintName = "&#x5b66;&#x5728;&#x79d1;&#x5927;"
+            ReferencedContainer = "container:&#x5b66;&#x5728;&#x79d1;&#x5927;.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -52,7 +52,7 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink(
-                    "About Life@USTC",
+                    "About Study@USTC",
                     destination: AboutApp()
                 )
                 NavigationLink(

@@ -6,7 +6,7 @@ platform :ios do
     match(type: "development", readonly: is_ci)
     match(type: "appstore", readonly: is_ci)
     gym(
-      scheme: "Life@USTC",
+      scheme: "学在科大",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
@@ -33,13 +33,13 @@ platform :ios do
     increment_build_number({
       build_number: latest_testflight_build_number(
         version: get_version_number(
-          target: "Life@USTC",
+          target: "学在科大",
         ),
         app_identifier: "com.linzihan.XZKDiOS",
       ) + 1,
     })
     gym(
-      scheme: "Life@USTC",
+      scheme: "学在科大",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {

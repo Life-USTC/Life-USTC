@@ -8,19 +8,7 @@
 import SwiftUI
 import SwiftyJSON
 
-// The following GitHub does nothing than access GitHub's API to fetch contributor list.
-private let githubDumbTokenA = "github_pat_11AV4QBHQ0I8IdqcDkTkvH_"
-private let githubDumbTokenB =
-    "gQyW7CGYb4OmlfJVApx3g7QsTo17d07SACsOAkpXkhBLN4NHZFZhg5zjWoy"
-
-private let links: [(label: String, url: String)] = [
-    ("GitHub:", "https://github.com/tiankaima/Life-USTC"),
-    ("Discord:", "https://discord.gg/BxdsySpkYP"),
-]
-
-let shareURL = URL(
-    string: "https://apps.apple.com/cn/app/life-ustc/id1660437438"
-)!
+let shareURL = URL(string: "https://xzkd.ustc.edu.cn/")!
 
 struct AboutApp: View {
     @State var contributorList: [(name: String, avatar: URL?)] = [
@@ -50,54 +38,50 @@ struct AboutApp: View {
             }
     }
 
-    var authorListView: some View {
-        HStack {
-            Text("Author:")
+    var linkView: some View {
+        VStack(alignment: .leading) {
+            Text("More Info:")
                 .font(.system(.title2, design: .monospaced, weight: .semibold))
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(contributorList, id: \.name) { contributor in
-                        AsyncImage(url: contributor.avatar) { image in
-                            image.resizable().aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 30, maxHeight: 30)
-                                .clipShape(Circle())
-                        } placeholder: {
-                            ProgressView()
-                        }
-                        Text(contributor.name).fontWeight(.medium)
-                            .font(.title3)
-                    }
+            Text(shareURL.absoluteString)
+                .font(.title3)
+                .foregroundColor(.accentColor)
+                .onTapGesture {
+                    UIApplication.shared.open(shareURL)
                 }
-            }
+                .frame(height: 30)
+                .padding(.leading, 30)
         }
+        .hStackLeading()
     }
 
-    var linksView: some View {
+    var authorListView: some View {
         VStack(alignment: .leading) {
-            ForEach(links, id: \.label) { link in
+            Text("Author:")
+                .font(.system(.title2, design: .monospaced, weight: .semibold))
+            
+            ForEach(contributorList, id: \.name) { contributor in
                 HStack {
-                    Text(link.label)
-                        .font(
-                            .system(
-                                .title2,
-                                design: .monospaced,
-                                weight: .semibold
-                            )
-                        )
-                    Text(link.url).foregroundColor(.gray)
-
-                    Spacer()
+                    AsyncImage(url: contributor.avatar) { image in
+                        image.resizable().aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: 30, maxHeight: 30)
+                            .clipShape(Circle())
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    Text(contributor.name)
+                        .fontWeight(.medium)
+                        .font(.title3)
                 }
             }
-            .frame(height: 40)
         }
+        .hStackLeading()
     }
 
     var body: some View {
         VStack {
             iconView
-            Text("Life@USTC")
+            Text("Study@USTC")
                 .font(.system(.title, weight: .bold))
             Text(Bundle.main.versionDescription)
                 .font(.system(.caption, weight: .bold))
@@ -105,57 +89,14 @@ struct AboutApp: View {
 
             Spacer()
 
+            linkView
             authorListView
-            linksView
+
+            Spacer()
         }
         .padding()
-        .task {
-            onLoadFunc()
-        }
-        .navigationTitle("About Life@USTC")
+        .navigationTitle("About Study@USTC")
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-extension AboutApp {
-    func onLoadFunc() {
-        Task {
-            var request = URLRequest(
-                url: URL(
-                    string:
-                        "https://api.github.com/repos/tiankaima/Life-USTC/contributors"
-                )!
-            )
-            request.httpMethod = "GET"
-            request.setValue(
-                "application/vnd.github+json",
-                forHTTPHeaderField: "Accept"
-            )
-            request.setValue(
-                "Bearer \(githubDumbTokenA + githubDumbTokenB)",
-                forHTTPHeaderField: "Authorization"
-            )
-            request.setValue(
-                "2022-11-28",
-                forHTTPHeaderField: "X-GitHub-Api-Version"
-            )
-
-            let (data, response) = try await URLSession.shared.data(
-                for: request
-            )
-            if (response as! HTTPURLResponse).statusCode == 401 {
-                // Token is expired for some reason
-                return
-            }
-
-            let dataJson = try JSON(data: data)
-            contributorList = dataJson.arrayValue.map {
-                (
-                    $0["login"].stringValue,
-                    URL(string: $0["avatar_url"].stringValue)
-                )
-            }
-        }
     }
 }
 

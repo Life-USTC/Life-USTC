@@ -40,7 +40,7 @@ struct HomeSettingPage: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .navigationTitle("Home Settings")
+        .navigationTitle("Home Page Settings")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
