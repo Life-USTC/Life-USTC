@@ -18,7 +18,7 @@ class ManagedLocalStorage<D: Codable>: ManagedLocalDataProtocol<D> {
         fm
             .containerURL(
                 forSecurityApplicationGroupIdentifier:
-                    "group.dev.tiankaima.Life-USTC"
+                    "group.com.linzihan.XZKDiOS"
             )!
             .appendingPathComponent("ManagedLocalStorage/\(key).json")
     }
