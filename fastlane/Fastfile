@@ -10,8 +10,8 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
-          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
+          "com.linzihan.XZKDiOS": "match AppStore com.linzihan.XZKDiOS",
+          "com.linzihan.XZKDiOS.Widget": "match AppStore com.linzihan.XZKDiOS.Widget",
         },
       },
     )
@@ -43,8 +43,8 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
-          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
+          "com.linzihan.XZKDiOS": "match AppStore com.linzihan.XZKDiOS",
+          "com.linzihan.XZKDiOS.Widget": "match AppStore com.linzihan.XZKDiOS.Widget",
         },
       },
     )
