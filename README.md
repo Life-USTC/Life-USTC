@@ -1,5 +1,8 @@
-# Life@USTC
-| <img src="./Docs/Assets/AppIcon.png" width="200" height="200"> | [![Build To TestFlight](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml/badge.svg)](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml)<br/> ![GitHub Repo stars](https://img.shields.io/github/stars/Life-USTC/Life-USTC)<br/> ![Code Size](https://img.shields.io/github/languages/code-size/Life-USTC/Life-USTC) |
+# ~~Life@USTC~~
+
+**Notice: this repo will no longer be maintained, see [this notice](https://life-ustc.tiankaima.dev/notices/migrate_to_xzkd/)**
+
+| <img src="./Docs/Assets/AppIcon.png" width="200" height="200"> | [![Build](https://github.com/Life-USTC/Life-USTC/actions/workflows/build.yaml/badge.svg)](https://github.com/Life-USTC/Life-USTC/actions/workflows/build.yaml) <br/> ![GitHub Repo stars](https://img.shields.io/github/stars/Life-USTC/Life-USTC)<br/> ![Code Size](https://img.shields.io/github/languages/code-size/Life-USTC/Life-USTC) |
 | :--- | :--- |
 
 ## Introduction
