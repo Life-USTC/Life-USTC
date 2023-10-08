@@ -181,6 +181,7 @@
 		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 		E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA042AB7498C00DA0368 /* FeaturePreview.swift */; };
 		E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */; };
+		E53E2D922AD24C2D00820C08 /* NavigationBarLargeTitleItems in Frameworks */ = {isa = PBXBuildFile; productRef = E53E2D912AD24C2D00820C08 /* NavigationBarLargeTitleItems */; };
 		E59A26602ABAF5DB00163B9C /* ustc_bus_data.json in Resources */ = {isa = PBXBuildFile; fileRef = E59A265F2ABAF5DB00163B9C /* ustc_bus_data.json */; };
 /* End PBXBuildFile section */
 
@@ -347,6 +348,7 @@
 				56D8A4992A6D21CA0027224C /* KeychainAccess in Frameworks */,
 				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
 				56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */,
+				E53E2D922AD24C2D00820C08 /* NavigationBarLargeTitleItems in Frameworks */,
 				56E8AD67296F069E009006D0 /* Reeeed in Frameworks */,
 				56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
@@ -936,6 +938,7 @@
 				56A7D71729DD20AD00EE7880 /* LoremSwiftum */,
 				56CCCABC2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI */,
 				56D8A4982A6D21CA0027224C /* KeychainAccess */,
+				E53E2D912AD24C2D00820C08 /* NavigationBarLargeTitleItems */,
 			);
 			productName = "Life@USTC (iOS)";
 			productReference = 56AC7300294A012F00A60F47 /* 学在科大.app */;
@@ -973,7 +976,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					56AC72FF294A012F00A60F47 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -1002,6 +1005,7 @@
 				56A7D71629DD20AD00EE7880 /* XCRemoteSwiftPackageReference "LoremSwiftum" */,
 				56CCCABB2A1CC07B0046AC6C /* XCRemoteSwiftPackageReference "ScreenshotPreventing" */,
 				56D8A4972A6D21CA0027224C /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				E53E2D902AD24B3B00820C08 /* XCRemoteSwiftPackageReference "NavigationBarLargeTitleItems" */,
 			);
 			productRefGroup = 56AC7301294A012F00A60F47 /* Products */;
 			projectDirPath = "";
@@ -1267,6 +1271,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1332,6 +1337,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1642,6 +1648,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		E53E2D902AD24B3B00820C08 /* XCRemoteSwiftPackageReference "NavigationBarLargeTitleItems" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markvanwijnen/NavigationBarLargeTitleItems";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1709,6 +1723,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 56F3EAD2296EAF020095AEF4 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
+		};
+		E53E2D912AD24C2D00820C08 /* NavigationBarLargeTitleItems */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E53E2D902AD24B3B00820C08 /* XCRemoteSwiftPackageReference "NavigationBarLargeTitleItems" */;
+			productName = NavigationBarLargeTitleItems;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

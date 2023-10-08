@@ -11,6 +11,7 @@ import SwiftyJSON
 let shareURL = URL(string: "https://xzkd.ustc.edu.cn/")!
 
 struct AboutApp: View {
+    @AppStorage("Life-USTC") var life_ustc: Bool = false
     @State var contributorList: [(name: String, avatar: URL?)] = [
         (
             "tiankaima",
@@ -25,9 +26,9 @@ struct AboutApp: View {
     var iconView: some View {
         Image("Icon")
             .resizable()
-            .frame(width: 200, height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 10)
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(radius: 2)
             .contextMenu {
                 ShareLink(item: shareURL) {
                     Label(
@@ -36,6 +37,14 @@ struct AboutApp: View {
                     )
                 }
             }
+    }
+    
+    var oldIconView: some View {
+        Image("OldIcon")
+            .resizable()
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(radius: 2)
     }
 
     var linkView: some View {
@@ -80,8 +89,20 @@ struct AboutApp: View {
 
     var body: some View {
         VStack {
-            iconView
-            Text("Study@USTC")
+            if life_ustc {
+                oldIconView
+                    .onTapGesture {
+                        life_ustc = !life_ustc
+                        changeAppIcon(to: "NewAppIcon")
+                    }
+            } else {
+                iconView
+                    .onTapGesture {
+                        life_ustc = !life_ustc
+                        changeAppIcon(to: "OldAppIcon")
+                    }
+            }
+            Text(life_ustc ? "Life@USTC" : "Study@USTC")
                 .font(.system(.title, weight: .bold))
             Text(Bundle.main.versionDescription)
                 .font(.system(.caption, weight: .bold))
@@ -95,8 +116,16 @@ struct AboutApp: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("About Study@USTC")
+        .navigationTitle(life_ustc ? "About Life@USTC" : "About Study@USTC")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func changeAppIcon(to iconName: String) {
+        UIApplication.shared.setAlternateIconName(iconName) { error in
+            if let error = error {
+                print("Error setting alternate icon \(error.localizedDescription)")
+            }
+        }
     }
 }
 

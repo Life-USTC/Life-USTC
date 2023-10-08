@@ -21,38 +21,45 @@ struct CurriculumDetailView: View {
     var date: Date { _date.startOfWeek() }
 
     var body: some View {
-        VStack {
-            HStack(alignment: .bottom) {
-                AsyncStatusLight(status: _curriculum.status)
+        GeometryReader { geo in
+            ScrollView  {
+                VStack {
+                    HStack(alignment: .bottom) {
+                        AsyncStatusLight(status: _curriculum.status)
 
-                Spacer()
+                        Spacer()
 
-                //                VStack(alignment: .trailing) {
-                DatePicker(selection: $_date, displayedComponents: .date) {}
+                        //                VStack(alignment: .trailing) {
+                        DatePicker(selection: $_date, displayedComponents: .date) {}
 
-                //                    Menu {
-                //                        ForEach(curriculum.semesters) { semester in
-                //                            Button(semester.name) {
-                //                                currentSemester = semester
-                //                            }
-                //                        }
-                //                        Button("All") {
-                //                            currentSemester = nil
-                //                        }
-                //                    } label: {
-                //                        Text(currentSemester?.name ?? "All".localized)
-                //                    }
-                //                }
+                        //                    Menu {
+                        //                        ForEach(curriculum.semesters) { semester in
+                        //                            Button(semester.name) {
+                        //                                currentSemester = semester
+                        //                            }
+                        //                        }
+                        //                        Button("All") {
+                        //                            currentSemester = nil
+                        //                        }
+                        //                    } label: {
+                        //                        Text(currentSemester?.name ?? "All".localized)
+                        //                    }
+                        //                }
+                    }
+
+                    CurriculumWeekViewVertical(
+                        lectures: lectures,
+                        _date: _date,
+                        currentSemesterName: currentSemester?.name ?? "All".localized,
+                        weekNumber: weekNumber
+                    )
+                }
+                .frame(
+                    minWidth: geo.size.width,
+                    minHeight: geo.size.height
+                )
             }
-
-            CurriculumWeekViewVertical(
-                lectures: lectures,
-                _date: _date,
-                currentSemesterName: currentSemester?.name ?? "All".localized,
-                weekNumber: weekNumber
-            )
         }
-        .frame(maxWidth: .infinity)
         .onChange(of: currentSemester) {
             _ in updateLecturesAndWeekNumber()
         }
@@ -70,7 +77,6 @@ struct CurriculumDetailView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .asyncStatusOverlay(_curriculum.status, showLight: false)
         .refreshable {
             _curriculum.triggerRefresh()
         }

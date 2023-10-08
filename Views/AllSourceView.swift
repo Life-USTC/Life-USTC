@@ -40,13 +40,12 @@ struct AllSourceView: View {
             }
         }
         .listStyle(.sidebar)
-        .asyncStatusOverlay(_feedSources.status, showLight: false)
+        //.asyncStatusOverlay(_feedSources.status, showLight: false)
         .refreshable {
             _feedSources.triggerRefresh()
         }
         .searchable(text: $searchText)
         .navigationTitle("Feed")
         .navigationBarTitleDisplayMode(.large)
-        .background(Color(.systemGroupedBackground))
     }
 }

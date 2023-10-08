@@ -39,7 +39,6 @@ struct ExamDetailView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .padding(.horizontal)
-        .asyncStatusOverlay(_exams.status, showLight: false)
         .refreshable {
             _exams.triggerRefresh()
         }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @State var searchText = ""
+    @AppStorage("Life-USTC") var life_ustc: Bool = false
     var body: some View {
         List {
             Section {
@@ -52,7 +53,7 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink(
-                    "About Study@USTC",
+                    life_ustc ? "About Life@USTC" : "About Study@USTC",
                     destination: AboutApp()
                 )
                 NavigationLink(
