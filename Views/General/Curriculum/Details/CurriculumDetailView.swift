@@ -12,6 +12,7 @@ struct CurriculumDetailView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+    @State var showLandscape: Bool = false
     @State var _date: Date = .now
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
@@ -20,31 +21,14 @@ struct CurriculumDetailView: View {
 
     var date: Date { _date.startOfWeek() }
 
-    var body: some View {
+    var normalView: some View {
         GeometryReader { geo in
             ScrollView  {
                 VStack {
                     HStack(alignment: .bottom) {
                         AsyncStatusLight(status: _curriculum.status)
-
                         Spacer()
-
-                        //                VStack(alignment: .trailing) {
                         DatePicker(selection: $_date, displayedComponents: .date) {}
-
-                        //                    Menu {
-                        //                        ForEach(curriculum.semesters) { semester in
-                        //                            Button(semester.name) {
-                        //                                currentSemester = semester
-                        //                            }
-                        //                        }
-                        //                        Button("All") {
-                        //                            currentSemester = nil
-                        //                        }
-                        //                    } label: {
-                        //                        Text(currentSemester?.name ?? "All".localized)
-                        //                    }
-                        //                }
                     }
 
                     CurriculumWeekViewVertical(
@@ -60,6 +44,44 @@ struct CurriculumDetailView: View {
                 )
             }
         }
+        .refreshable {
+            _curriculum.triggerRefresh()
+        }
+    }
+
+    var landscapeView: some View {
+        CurriculumWeekView(
+            lectures: lectures,
+            _date: _date,
+            currentSemesterName: currentSemester?.name ?? "All".localized,
+            weekNumber: weekNumber
+        )
+        .gesture(
+            DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                .onEnded { value in
+                    if abs(value.translation.width) < 20 {
+                        // too small a swipe
+                        return
+                    }
+
+                    if value.translation.width < 0 {
+                        _date = _date.add(day: 7)
+                    } else {
+                        _date = _date.add(day: -7)
+                    }
+                }
+        )
+        .asyncStatusOverlay(_curriculum.status)
+    }
+
+    var body: some View {
+        Group {
+            if showLandscape {
+                landscapeView
+            } else {
+                normalView
+            }
+        }
         .onChange(of: currentSemester) {
             _ in updateLecturesAndWeekNumber()
         }
@@ -71,30 +93,33 @@ struct CurriculumDetailView: View {
             updateLecturesAndWeekNumber()
             updateSemester()
         }
-        .onAppear {
-            updateLecturesAndWeekNumber()
-            updateSemester()
-        }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .refreshable {
-            _curriculum.triggerRefresh()
-        }
         .onChange(of: _curriculum.status) { _ in
             semester = curriculum.semesters.first
         }
         .onAppear {
             semester = curriculum.semesters.first
+            updateLecturesAndWeekNumber()
+            updateSemester()
         }
         .toolbar {
-            Button {
-                Task {
-                    try await $saveToCalendarStatus.exec {
-                        try await curriculum.saveToCalendar()
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await $saveToCalendarStatus.exec {
+                            try await curriculum.saveToCalendar()
+                        }
                     }
+                } label: {
+                    Label("Save", systemImage: "square.and.arrow.down")
                 }
-            } label: {
-                Label("Save", systemImage: "square.and.arrow.down")
+
+                Button {
+                    showLandscape.toggle()
+                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+                    windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
+                } label: {
+                    Label("Flip", systemImage: showLandscape ? "rectangle.grid.2x2" : "rectangle.grid.1x2.fill")
+                }
             }
         }
         .navigationTitle("Curriculum")
