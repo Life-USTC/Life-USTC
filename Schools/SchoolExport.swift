@@ -22,8 +22,6 @@ class SchoolExport {
 
     var remoteFeedURL: URL { exampleURL }
 
-    var localFeedJSOName: String { "" }
-
     var examDelegate: ExamDelegateProtocol {
         USTCExamDelegate.shared
     }

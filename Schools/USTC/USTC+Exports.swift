@@ -33,8 +33,6 @@ class USTCExports: SchoolExport {
 
     override var remoteFeedURL: URL { ustcFeedListURL }
 
-    override var localFeedJSOName: String { "ustc_feed_source" }
-
     override var examDelegate: ExamDelegateProtocol {
         USTCExamDelegate.shared
     }

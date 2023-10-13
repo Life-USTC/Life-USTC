@@ -34,28 +34,6 @@ class FeedSourceListDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
                 )
             }
     }
-
-    override init() {
-        // Note: Init is guararenteed to run before Wrapper.wrappedValue is accessible.
-        // If "ManagedLocalStorage/feedSourceList.json" isn't found locally
-        // copy it from main Bundle SchoolExport.shared.localFeedJSOName
-        if FeedSourceListLocalStorage.data == nil {
-            let path = Bundle.main.path(
-                forResource: SchoolExport.shared.localFeedJSOName,
-                ofType: "json"
-            )!
-            let data = try! Data(
-                contentsOf: URL(fileURLWithPath: path),
-                options: .mappedIfSafe
-            )
-            // Write to FeedSourceListLocalStorage.url
-            FileManager.default.createFile(
-                atPath: FeedSourceListLocalStorage.url.path,
-                contents: data,
-                attributes: nil
-            )
-        }
-    }
 }
 
 extension ManagedDataSource<[FeedSource]> {
