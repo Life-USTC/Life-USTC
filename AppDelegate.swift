@@ -126,11 +126,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         startJSRuntime()
         version1_0_2Update()
         version1_0_3Update()
-        if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool
-            ?? true
-        {
+        if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool ?? true {
             startTPNS()
         }
+
+        if UserDefaults.appGroup.value(forKey: "useBaiduStatistics") as? Bool ?? true {
+
+        }
+
         return true
     }
 
@@ -147,7 +150,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
             )
     }
 
-    func stopTPNS() { XGPush.defaultManager().stopXGNotification() }
+    func stopTPNS() {
+        XGPush.defaultManager().stopXGNotification()
+    }
+
+    func startBaiduStatistics() {
+        let statTracker = BaiduMobStat.default()
+        statTracker.shortAppVersion = Bundle.main.releaseNumber ?? "0.0.0"
+        statTracker.enableDebugOn = true
+        statTracker.start(withAppId: "000d3b0b91")
+    }
 
     func clearBadgeNumber() {
         XGPush.defaultManager().setBadge(0)

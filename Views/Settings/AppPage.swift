@@ -13,6 +13,7 @@ struct AppSettingPage: View {
         "appShouldNOTUpdateAnything",
         store: .appGroup
     ) var appShouldNOTUpdateAnything: Bool = false
+    @AppStorage("useBaiduStatistics") var useBaiduStatistics: Bool = true
 
     var body: some View {
         List {
@@ -22,9 +23,15 @@ struct AppSettingPage: View {
                     isOn: $preventScreenShot
                 )
                 Toggle(
+                    "Use Baidu Statistics",
+                    isOn: $useBaiduStatistics
+                )
+                #if DEBUG
+                Toggle(
                     "Disable update for everything",
                     isOn: $appShouldNOTUpdateAnything
                 )
+                #endif
             } header: {
                 Text("General")
                     .textCase(.none)

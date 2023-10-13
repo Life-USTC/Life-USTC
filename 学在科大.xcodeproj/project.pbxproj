@@ -21,6 +21,15 @@
 		5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
 		56311A6F2A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
 		56311A702A16394A009D7A34 /* Runtime.html in Resources */ = {isa = PBXBuildFile; fileRef = 56311A6E2A16394A009D7A34 /* Runtime.html */; };
+		56333F482AD99A280029F665 /* libBaiduMobStat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F472AD99A280029F665 /* libBaiduMobStat.a */; };
+		56333F4A2AD99A400029F665 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F492AD99A400029F665 /* JavaScriptCore.framework */; };
+		56333F4C2AD99A460029F665 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4B2AD99A460029F665 /* Security.framework */; };
+		56333F4E2AD99A4B0029F665 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4D2AD99A4B0029F665 /* CoreLocation.framework */; };
+		56333F502AD99A550029F665 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4F2AD99A550029F665 /* SystemConfiguration.framework */; };
+		56333F522AD99A5D0029F665 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F512AD99A5D0029F665 /* CoreTelephony.framework */; };
+		56333F542AD99A650029F665 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F532AD99A650029F665 /* CoreGraphics.framework */; };
+		56333F562AD99A6C0029F665 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F552AD99A6C0029F665 /* UIKit.framework */; };
+		56333F582AD99A710029F665 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F572AD99A710029F665 /* Foundation.framework */; };
 		5638E27D2A581324001967D9 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5694D91729668191009CFCDF /* Course.swift */; };
 		5638E27F2A581324001967D9 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		5638E2802A581CD6001967D9 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
@@ -219,6 +228,17 @@
 		5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotification.swift; sourceTree = "<group>"; };
 		5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationTabView.swift; sourceTree = "<group>"; };
 		56311A6E2A16394A009D7A34 /* Runtime.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Runtime.html; sourceTree = "<group>"; };
+		56333F462AD99A280029F665 /* BaiduMobStat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaiduMobStat.h; sourceTree = "<group>"; };
+		56333F472AD99A280029F665 /* libBaiduMobStat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libBaiduMobStat.a; sourceTree = "<group>"; };
+		56333F492AD99A400029F665 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		56333F4B2AD99A460029F665 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		56333F4D2AD99A4B0029F665 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		56333F4F2AD99A550029F665 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		56333F512AD99A5D0029F665 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		56333F532AD99A650029F665 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		56333F552AD99A6C0029F665 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		56333F572AD99A710029F665 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		56333F592AD99A7F0029F665 /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
 		563542B42A4AFFF800C5BD7A /* openapi.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = openapi.yml; sourceTree = "<group>"; };
 		563542B62A4B000900C5BD7A /* openapi-generator-config.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "openapi-generator-config.yaml"; sourceTree = "<group>"; };
 		563542CC2A4B02D700C5BD7A /* CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CAS.swift; sourceTree = "<group>"; };
@@ -343,16 +363,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56333F542AD99A650029F665 /* CoreGraphics.framework in Frameworks */,
+				56333F4E2AD99A4B0029F665 /* CoreLocation.framework in Frameworks */,
+				56333F522AD99A5D0029F665 /* CoreTelephony.framework in Frameworks */,
 				56D175B8294F01EA0070778F /* FeedKit in Frameworks */,
+				56333F582AD99A710029F665 /* Foundation.framework in Frameworks */,
 				56112707298126C100BB66EE /* Introspect in Frameworks */,
+				56333F4A2AD99A400029F665 /* JavaScriptCore.framework in Frameworks */,
 				56D8A4992A6D21CA0027224C /* KeychainAccess in Frameworks */,
+				56333F482AD99A280029F665 /* libBaiduMobStat.a in Frameworks */,
 				1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */,
 				56A7D71829DD20AD00EE7880 /* LoremSwiftum in Frameworks */,
 				E53E2D922AD24C2D00820C08 /* NavigationBarLargeTitleItems in Frameworks */,
 				56E8AD67296F069E009006D0 /* Reeeed in Frameworks */,
 				56CCCABD2A1CC07B0046AC6C /* ScreenshotPreventingSwiftUI in Frameworks */,
+				56333F4C2AD99A460029F665 /* Security.framework in Frameworks */,
 				56F3EAD4296EAF020095AEF4 /* SwiftSoup in Frameworks */,
 				56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */,
+				56333F502AD99A550029F665 /* SystemConfiguration.framework in Frameworks */,
+				56333F562AD99A6C0029F665 /* UIKit.framework in Frameworks */,
 				56CAA6352A6D6825003AFA1B /* XGMTACloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,6 +429,15 @@
 				569967322A97A2E200CC1EBB /* README.md */,
 			);
 			path = JSRuntime;
+			sourceTree = "<group>";
+		};
+		56333F452AD999F60029F665 /* Baidu */ = {
+			isa = PBXGroup;
+			children = (
+				56333F462AD99A280029F665 /* BaiduMobStat.h */,
+				56333F472AD99A280029F665 /* libBaiduMobStat.a */,
+			);
+			path = Baidu;
 			sourceTree = "<group>";
 		};
 		563542BE2A4B018000C5BD7A /* USTC-API */ = {
@@ -681,6 +719,7 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
+				56333F452AD999F60029F665 /* Baidu */,
 				56F681942A4D2FDA00B77C48 /* API */,
 				56558802294D75100010E060 /* Assets */,
 				56F3EAE2296EFC6C0095AEF4 /* Frameworks */,
@@ -858,6 +897,15 @@
 		56F3EAE2296EFC6C0095AEF4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				56333F532AD99A650029F665 /* CoreGraphics.framework */,
+				56333F4D2AD99A4B0029F665 /* CoreLocation.framework */,
+				56333F512AD99A5D0029F665 /* CoreTelephony.framework */,
+				56333F572AD99A710029F665 /* Foundation.framework */,
+				56333F492AD99A400029F665 /* JavaScriptCore.framework */,
+				56333F592AD99A7F0029F665 /* libz.1.2.5.tbd */,
+				56333F4B2AD99A460029F665 /* Security.framework */,
+				56333F4F2AD99A550029F665 /* SystemConfiguration.framework */,
+				56333F552AD99A6C0029F665 /* UIKit.framework */,
 				8374F92F03832B8097F86E2D /* XGMTACloud.framework */,
 			);
 			name = Frameworks;
@@ -1380,6 +1428,7 @@
 					"Life@USTC-Bridging-Header.h",
 					MTAConfig.o,
 					XGMTACloud.framework,
+					libBaiduMobStat.a,
 				);
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1396,7 +1445,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TPNS",
+					"$(PROJECT_DIR)/Baidu",
+					"\"$(inherited) $(PROJECT_DIR)\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 2.0.1;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1451,7 +1504,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TPNS",
+					"$(PROJECT_DIR)/Baidu",
+					"\"$(inherited) $(PROJECT_DIR)\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 2.0.1;
 				ONLY_ACTIVE_ARCH = YES;
