@@ -48,20 +48,22 @@ struct CurriculumWeekView: View {
 
     var mainView: some View {
         Chart {
-            // See GH#2
-            BarMark(
-                xStart: .value(
-                    "Start Time",
-                    mergedTimes.first!
-                ),
+            if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                // See GH#2
+                BarMark(
+                    xStart: .value(
+                        "Start Time",
+                        mergedTimes.first!
+                    ),
 
-                xEnd: .value(
-                    "End Time",
-                    mergedTimes.last!
-                ),
-                y: .value("Date", Date().stripTime(), unit: .day)
-            )
-            .foregroundStyle(Color.accentColor.opacity(0.2))
+                    xEnd: .value(
+                        "End Time",
+                        mergedTimes.last!
+                    ),
+                    y: .value("Date", Date().stripTime(), unit: .day)
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.2))
+            }
 
             ForEach(lectures) { lecture in
                 BarMark(
