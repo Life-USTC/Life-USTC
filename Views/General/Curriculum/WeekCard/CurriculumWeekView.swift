@@ -48,6 +48,21 @@ struct CurriculumWeekView: View {
 
     var mainView: some View {
         Chart {
+            // See GH#2
+            BarMark(
+                xStart: .value(
+                    "Start Time",
+                    mergedTimes.first!
+                ),
+
+                xEnd: .value(
+                    "End Time",
+                    mergedTimes.last!
+                ),
+                y: .value("Date", Date().stripTime(), unit: .day)
+            )
+            .foregroundStyle(Color.accentColor.opacity(0.2))
+
             ForEach(lectures) { lecture in
                 BarMark(
                     xStart: .value(
