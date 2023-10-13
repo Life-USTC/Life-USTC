@@ -8,6 +8,7 @@
 import EventKit
 import Foundation
 import SwiftUI
+import SwiftyJSON
 
 struct CurriculumBehavior {
     var shownTimes: [Int] = []
@@ -78,6 +79,89 @@ class CurriculumProtocolB: ManagedRemoteUpdateProtocol<Curriculum> {
     }
 }
 
+struct GeoLocationData: Codable, Equatable, ExampleDataProtocol {
+    var name: String
+    var latitude: Double
+    var longitude: Double
+
+    static let example = GeoLocationData(
+        name: "东区体育中心",
+        latitude: 31.835946350451458,
+        longitude: 117.2660348207498
+    )
+}
+
+class GeoLocationDelegate: ManagedRemoteUpdateProtocol<[GeoLocationData]> {
+    static let shared = GeoLocationDelegate()
+
+    override func refresh() async throws -> [GeoLocationData] {
+        let url = SchoolExport.shared.geoLocationDataURL
+
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let json = try JSON(data: data)
+        return json["locations"].arrayValue.map {
+            let name = $0["name"].stringValue
+            let latitude = $0["latitude"].doubleValue
+            let longitude = $0["longitude"].doubleValue
+            return GeoLocationData(
+                name: name,
+                latitude: latitude,
+                longitude: longitude
+            )
+        }
+    }
+}
+
+extension ManagedDataSource<[GeoLocationData]> {
+    static let geoLocation = ManagedDataSource(
+        local: ManagedLocalStorage(
+            "geoLocation",
+            validDuration: 60 * 60 * 24 * 30 * 3
+        ),
+        remote: GeoLocationDelegate.shared
+    )
+}
+
+struct LectureLocationFactory {
+    @ManagedData(.geoLocation) var geoLocation: [GeoLocationData]
+
+    func makeEventWithLocation(
+        from lectures: [Lecture],
+        in store: EKEventStore = EKEventStore()
+    ) async throws -> [EKEvent] {
+        let locations: [GeoLocationData] = (try? await _geoLocation.retrive()) ?? []
+
+        var result: [EKEvent] = []
+
+        for lecture in lectures {
+            let event = EKEvent(eventStore: store)
+            event.title = lecture.name
+            event.startDate = lecture.startDate
+            event.endDate = lecture.endDate
+
+            let locationName = lecture.location
+            let location = locations.first {
+                locationName.hasPrefix($0.name)
+            }
+            if let location {
+                let ekLocation = EKStructuredLocation(title: locationName)
+                ekLocation.geoLocation = CLLocation(
+                    latitude: location.latitude,
+                    longitude: location.longitude
+                )
+                event.structuredLocation = ekLocation
+            } else {
+                event.location = locationName
+            }
+
+            result.append(event)
+        }
+
+        return result
+    }
+}
+
+
 extension Curriculum {
     func saveToCalendar() async throws {
         let eventStore = EKEventStore()
@@ -109,8 +193,10 @@ extension Curriculum {
         calendar.source = eventStore.defaultCalendarForNewEvents?.source
         try eventStore.saveCalendar(calendar, commit: true)
 
-        for lecture in semesters.flatMap(\.courses).flatMap(\.lectures) {
-            let event = EKEvent(lecture, in: eventStore)
+        let lectures = semesters.flatMap(\.courses).flatMap(\.lectures).union()
+        let events = try await LectureLocationFactory().makeEventWithLocation(from: lectures, in: eventStore)
+
+        for event in events {
             event.calendar = calendar
             try eventStore.save(
                 event,

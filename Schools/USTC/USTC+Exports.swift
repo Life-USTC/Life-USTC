@@ -11,6 +11,10 @@ let ustcFeedListURL = URL(
     string: "https://life-ustc.tiankaima.dev/feed_source.json"
 )!
 
+let ustcGeoLocationDataURL = URL(
+    string: "https://static.xzkd.online/geo_data.json"
+)!
+
 class USTCExports: SchoolExport {
     override var abbrName: String { "USTC" }
 
@@ -43,6 +47,10 @@ class USTCExports: SchoolExport {
 
     override var curriculumBehavior: CurriculumBehavior {
         ustcCurriculumBehavior
+    }
+
+    override var geoLocationDataURL: URL {
+        ustcGeoLocationDataURL
     }
 
     override var scoreDelegate: ScoreDelegateProtocol {

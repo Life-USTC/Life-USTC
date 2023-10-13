@@ -32,6 +32,8 @@ class SchoolExport {
 
     var curriculumBehavior: CurriculumBehavior { CurriculumBehavior() }
 
+    var geoLocationDataURL: URL { exampleURL }
+
     var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
