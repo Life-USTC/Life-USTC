@@ -57,12 +57,11 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
         return dateFormatter.string(from: date)
     }
 
-    func parseDate(_ time: String) -> Date {
+    func parseDate(_ time: String) -> Date? {
         // time format: hh:mm, add that to date
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-        let date = dateFormatter.date(from: "\(dateString) \(time)")!
-        return date
+        return dateFormatter.date(from: "\(dateString) \(time)")
     }
 
     override func refresh() async throws -> [String: [Lecture]] {
@@ -88,36 +87,48 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
             result[building] = []
             if let json = cache[building] {
                 for (_, subJson) in json["timetable"]["lessons"] {
-                    let tmp = Lecture(
-                        startDate: parseDate(subJson["start"].stringValue),
-                        endDate: parseDate(subJson["end"].stringValue),
-                        name: subJson["courseName"].stringValue,
-                        location: subJson["classroomName"].stringValue,
-                        additionalInfo: ["Color": "blue"]
-                    )
-                    result[building]?.append(tmp)
+                    if let startDate = parseDate(subJson["start"].stringValue),
+                       let endDate = parseDate(subJson["end"].stringValue)
+                    {
+                        let tmp = Lecture(
+                            startDate: startDate,
+                            endDate: endDate,
+                            name: subJson["courseName"].stringValue,
+                            location: subJson["classroomName"].stringValue,
+                            additionalInfo: ["Color": "blue"]
+                        )
+                        result[building]?.append(tmp)
+                    }
                 }
 
                 for (_, subJson) in json["timetable"]["tmpLessons"] {
-                    let tmp = Lecture(
-                        startDate: parseDate(subJson["start"].stringValue),
-                        endDate: parseDate(subJson["end"].stringValue),
-                        name: subJson["courseName"].stringValue,
-                        location: subJson["classroomName"].stringValue,
-                        additionalInfo: ["Color": "green"]
-                    )
-                    result[building]?.append(tmp)
+                    if let startDate = parseDate(subJson["start"].stringValue),
+                       let endDate = parseDate(subJson["end"].stringValue)
+                    {
+                        let tmp = Lecture(
+                            startDate: startDate,
+                            endDate: endDate,
+                            name: subJson["courseName"].stringValue,
+                            location: subJson["classroomName"].stringValue,
+                            additionalInfo: ["Color": "red"]
+                        )
+                        result[building]?.append(tmp)
+                    }
                 }
 
                 for (_, subJson) in json["timetable"]["exams"] {
-                    let tmp = Lecture(
-                        startDate: parseDate(subJson["start"].stringValue),
-                        endDate: parseDate(subJson["end"].stringValue),
-                        name: subJson["lessons"][0]["nameZh"].stringValue,
-                        location: subJson["classroomName"].stringValue,
-                        additionalInfo: ["Color": "green"]
-                    )
-                    result[building]?.append(tmp)
+                    if let startDate = parseDate(subJson["start"].stringValue),
+                       let endDate = parseDate(subJson["end"].stringValue)
+                    {
+                        let tmp = Lecture(
+                            startDate: startDate,
+                            endDate: endDate,
+                            name: subJson["courseName"].stringValue,
+                            location: subJson["classroomName"].stringValue,
+                            additionalInfo: ["Color": "yellow"]
+                        )
+                        result[building]?.append(tmp)
+                    }
                 }
             }
         }
