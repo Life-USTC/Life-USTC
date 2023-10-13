@@ -87,7 +87,7 @@ extension [Exam] {
             }
         }
 
-        let calendarName = "Curriculum".localized
+        let calendarName = "Exam Arrangements".localized
         let calendars = eventStore.calendars(for: .event)
             .filter {
                 $0.title == calendarName.localized

@@ -195,6 +195,7 @@
 "Location: %@" = "地址: %@";
 "+%@ More Exam..." = "还有%@个考试";
 "Upcoming Exams" = "接下来的考试";
+"Exam Arrangements" = "考试安排";
 "Exams:" = "考试:";
 "+%@D" = "%@天后";
 "%@+%@D" = "%@%@天后";
