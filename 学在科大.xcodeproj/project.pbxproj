@@ -47,6 +47,7 @@
 		56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* USTC+CASLoginView.swift */; };
 		56558804294D93810010E060 /* FeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558803294D93810010E060 /* FeaturesView.swift */; };
 		56558809294DC9D40010E060 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558808294DC9D40010E060 /* SettingsView.swift */; };
+		565DE32C2ADA30CC00393A63 /* UserFeedBack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 565DE32B2ADA30CC00393A63 /* UserFeedBack.framework */; };
 		566933022A9A4B6B002AFB91 /* USTC+ClassroomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */; };
 		566933032A9A4B70002AFB91 /* AsyncStatusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */; };
 		56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* USTC+CAS.swift */; };
@@ -258,6 +259,7 @@
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* USTC+CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CAS.swift"; sourceTree = "<group>"; };
 		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		565DE32B2ADA30CC00393A63 /* UserFeedBack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UserFeedBack.framework; sourceTree = "<group>"; };
 		5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExamView.swift; sourceTree = "<group>"; };
 		5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Exports.swift"; sourceTree = "<group>"; };
 		5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedExtensionViews.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 				56D175BD295044FF0070778F /* SwiftyJSON in Frameworks */,
 				56333F502AD99A550029F665 /* SystemConfiguration.framework in Frameworks */,
 				56333F562AD99A6C0029F665 /* UIKit.framework in Frameworks */,
+				565DE32C2ADA30CC00393A63 /* UserFeedBack.framework in Frameworks */,
 				56CAA6352A6D6825003AFA1B /* XGMTACloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -436,6 +439,7 @@
 			children = (
 				56333F462AD99A280029F665 /* BaiduMobStat.h */,
 				56333F472AD99A280029F665 /* libBaiduMobStat.a */,
+				565DE32B2ADA30CC00393A63 /* UserFeedBack.framework */,
 			);
 			path = Baidu;
 			sourceTree = "<group>";
@@ -1430,7 +1434,10 @@
 					XGMTACloud.framework,
 					libBaiduMobStat.a,
 				);
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TPNS",
+					"$(PROJECT_DIR)/Baidu",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -1488,7 +1495,10 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QHVFWP949J;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/TPNS";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TPNS",
+					"$(PROJECT_DIR)/Baidu",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
