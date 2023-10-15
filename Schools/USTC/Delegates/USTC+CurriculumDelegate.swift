@@ -17,6 +17,7 @@ private func convertYYMMDD(_ date: String) -> Date {
 }
 
 class USTCCurriculumDelegate: CurriculumProtocolB {
+    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
     static let shared = USTCCurriculumDelegate()
 
     @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
@@ -63,7 +64,10 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (baseData, _) = try await URLSession.shared.data(for: request)
         let baseJSON = try JSON(data: baseData)
-        let lessonIDs = baseJSON["lessonIds"].arrayValue.map(\.stringValue)
+        var lessonIDs = baseJSON["lessonIds"].arrayValue.map(\.stringValue)
+        if additioanlCourseIDList.keys.contains(inComplete.id) {
+            lessonIDs = lessonIDs + additioanlCourseIDList[inComplete.id]!.map { String($0) }
+        }
         if lessonIDs.isEmpty { return inComplete }
 
         // Step3: Get courses details
