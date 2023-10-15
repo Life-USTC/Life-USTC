@@ -80,6 +80,7 @@ struct ScoreView: View {
             rankingView
             scoreListView
         }
+        .asyncStatusOverlay(_score.status, showLight: false)
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .refreshable {
