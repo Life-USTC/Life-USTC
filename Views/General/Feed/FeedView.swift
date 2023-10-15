@@ -50,7 +50,7 @@ struct FeedViewPreview: View {
                             .fill(color.opacity(0.9))
                     }
 
-                Text(feed.datePosted, style: .timer)
+                Text(feed.datePosted.formatted(.relative(presentation: .named)))
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.secondary)
             }
