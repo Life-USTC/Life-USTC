@@ -19,7 +19,7 @@ struct USTCAdditionalCourseView: View {
         List {
             ForEach(semesters) { semester in
                 NavigationLink {
-                    USTCAdditionalCourseSemesterView(semesterID: semester.id)
+                    USTCAdditionalCourseSemesterView(semester: semester)
                 } label: {
                     VStack(alignment: .leading) {
                         Text(semester.name)
@@ -46,46 +46,73 @@ struct USTCAdditionalCourseView: View {
 }
 
 struct USTCAdditionalCourseSemesterView: View {
-    var semesterID: String
+    var semester: Semester
 
-    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [Int] = []
+    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
+
+    var additionalCourseIDListForThisSemester: [Int]  {
+        get {
+            additioanlCourseIDList[semester.id] ?? []
+        }
+        set {
+            additioanlCourseIDList[semester.id] = newValue
+        }
+    }
+
     @State var courses: [Course] = []
+    @State var searchKeyword: String = ""
+
+    var coursesToShow: [Course] {
+        if searchKeyword.isEmpty {
+            return courses
+        } else {
+            return courses.filter({ $0.name.contains(searchKeyword) })
+        }
+    }
 
     var body: some View {
         List {
-            ForEach(courses) { course in
-                HStack {
-                    VStack(alignment: .leading) {
-                        HStack(alignment: .bottom) {
-                            Text(course.name)
-                            Text(course.teacherName)
-                                .font(.caption)
-                        }
-                        Text(course.courseCode)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    if additioanlCourseIDList.contains(course.id) {
-                        Spacer()
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.accentColor)
-                    }
-                }
-                .onTapGesture {
-                    if additioanlCourseIDList.contains(course.id) {
-                        additioanlCourseIDList.removeAll { $0 == course.id }
+            ForEach(coursesToShow) { course in
+                Button {
+                    if additionalCourseIDListForThisSemester.contains(course.id) {
+                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester.filter({ $0 != course.id })
                     } else {
-                        additioanlCourseIDList.append(course.id)
+                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester + [course.id]
+                    }
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            HStack(alignment: .bottom) {
+                                Text(course.name)
+                                Text(course.teacherName)
+                                    .font(.caption)
+                            }
+                            .foregroundColor(.primary)
+
+                            Text(course.courseCode)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
+
+                        if additionalCourseIDListForThisSemester.contains(course.id) {
+                            Spacer()
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.accentColor)
+                        }
                     }
                 }
+            }
+
+            if coursesToShow.isEmpty {
+                Text("No course found?")
+                    .foregroundStyle(.secondary)
             }
         }
         .task {
             Task {
-                let url = URL(string: "https://static.xzkd.online/curriculum/\(semesterID)/courses.json")
+                let url = URL(string: "https://static.xzkd.online/curriculum/\(semester.id)/courses.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
                 let decoder = JSONDecoder()
@@ -93,5 +120,8 @@ struct USTCAdditionalCourseSemesterView: View {
                 courses = try! decoder.decode([Course].self, from: data)
             }
         }
+        .searchable(text: $searchKeyword)
+        .navigationTitle(semester.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

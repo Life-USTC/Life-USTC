@@ -15,7 +15,7 @@ struct Course: Codable, Identifiable, Equatable {
     var lessonCode: String
     var teacherName: String
     var lectures: [Lecture]
-//    var description: String = ""
+    var description: String? = ""
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
 

@@ -24,6 +24,22 @@ extension Array: RawRepresentable where Element: Codable {
     }
 }
 
+extension Dictionary: RawRepresentable where Key == String, Value: Codable {
+    public init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+            let result = try? JSONDecoder().decode([Key: Value].self, from: data)
+        else { return nil }
+        self = result
+    }
+
+    public var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+            let result = String(data: data, encoding: .utf8)
+        else { return "{}" }
+        return result
+    }
+}
+
 // Access Array with ...[safe: index] -> Element? to avoid index out of range issue
 extension Collection where Indices.Iterator.Element == Index {
     public subscript(safe index: Index) -> Iterator.Element? {

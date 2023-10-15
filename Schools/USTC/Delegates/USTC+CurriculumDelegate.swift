@@ -142,7 +142,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
                 lessonCode: code,
                 teacherName: teacherName,
                 lectures: lectures,
-//                description: description,
+                description: description,
                 credit: credit
             )
             courses.append(course)

@@ -35,10 +35,12 @@ struct CourseDetailView: View {
                 Text("\(course.credit)")
             }
 
-            HStack {
-                Text("Description")
-                Spacer()
-//                Text(course.description)
+            if let description = course.description {
+                HStack {
+                    Text("Description")
+                    Spacer()
+                    Text(description)
+                }
             }
 
             ForEach(
