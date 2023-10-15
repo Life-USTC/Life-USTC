@@ -26,7 +26,7 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
             }
 
             var source = source
-            let parseResult = try await withCheckedThrowingContinuation {
+            let parseResult = try? await withCheckedThrowingContinuation {
                 continuation in
                 FeedParser(URL: source.url)
                     .parseAsync { result in
@@ -39,17 +39,13 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
                     }
             }
 
-            guard
-                let feeds = parseResult.rssFeed?.items?
-                    .map({ Feed(item: $0, source: source) })
-            else {
-                throw BaseError.runtimeError(
-                    "No feeds found for \(source.name)"
-                )
+            if let feeds = parseResult?.rssFeed?.items?.map({
+                Feed(item: $0, source: source)
+            }) {
+                source.feed = feeds
+                result.removeAll(where: { $0.name == source.name })
+                result.append(source)
             }
-            source.feed = feeds
-            result.removeAll(where: { $0.name == source.name })
-            result.append(source)
         }
 
         return result

@@ -8,7 +8,7 @@
 import SwiftUI
 
 let ustcFeedListURL = URL(
-    string: "https://life-ustc.tiankaima.dev/feed_source.json"
+    string: "https://static.xzkd.online/feed_source.json"
 )!
 
 let ustcGeoLocationDataURL = URL(
