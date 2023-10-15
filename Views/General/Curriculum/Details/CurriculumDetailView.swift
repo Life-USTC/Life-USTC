@@ -47,6 +47,7 @@ struct CurriculumDetailView: View {
         .refreshable {
             _curriculum.triggerRefresh()
         }
+        .asyncStatusOverlay(_curriculum.status, showLight: false)
     }
 
     var landscapeView: some View {

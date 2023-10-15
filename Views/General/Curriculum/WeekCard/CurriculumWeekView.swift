@@ -186,6 +186,23 @@ struct CurriculumWeekViewVertical: View {
     }
     var mainView: some View {
         Chart {
+            if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                // See GH#2
+                BarMark(
+                    x: .value("Date", Date().stripTime(), unit: .day),
+                    yStart: .value(
+                        "Start Time",
+                        -mergedTimes.first!
+                    ),
+
+                    yEnd: .value(
+                        "End Time",
+                        -mergedTimes.last!
+                    )
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.2))
+            }
+
             ForEach(lectures) { lecture in
                 BarMark(
                     x: .value("Date", lecture.startDate.stripTime(), unit: .day),
@@ -199,7 +216,7 @@ struct CurriculumWeekViewVertical: View {
                         -behavior.convertTo(lecture.endDate.HHMM)
                     )
                 )
-                .foregroundStyle(Color("AccentColor"))
+                .foregroundStyle(by: .value("Course Name", lecture.name))
                 .annotation(position: .overlay) {
                     VStack {
                         Text(lecture.name)
