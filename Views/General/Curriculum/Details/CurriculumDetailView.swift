@@ -101,6 +101,13 @@ struct CurriculumDetailView: View {
             updateLecturesAndWeekNumber()
             updateSemester()
         }
+        .onRotate { newOrientation in
+            if newOrientation.isLandscape {
+                showLandscape = true
+            } else {
+                showLandscape = false
+            }
+        }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
