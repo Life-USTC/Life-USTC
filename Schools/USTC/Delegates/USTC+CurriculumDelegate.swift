@@ -23,9 +23,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
     @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
 
     override func refreshSemesterBase() async throws -> [Semester] {
-        let request = URLRequest(url: URL(string: "http://static.xzkd.online/feed_source.json")!)
+        let request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
         let (data, _) = try await URLSession.shared.data(for: request)
-        let result = try JSONDecoder().decode([Semester].self, from: data)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        let result = try decoder.decode([Semester].self, from: data)
         return result
     }
 
