@@ -1433,6 +1433,7 @@
 					MTAConfig.o,
 					XGMTACloud.framework,
 					libBaiduMobStat.a,
+					UserFeedBack.framework,
 				);
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/TPNS",
