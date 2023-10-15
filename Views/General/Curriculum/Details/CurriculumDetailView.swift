@@ -56,6 +56,17 @@ struct CurriculumDetailView: View {
             currentSemesterName: currentSemester?.name ?? "All".localized,
             weekNumber: weekNumber
         )
+        .asyncStatusOverlay(_curriculum.status)
+    }
+
+    var body: some View {
+        Group {
+            if showLandscape {
+                landscapeView
+            } else {
+                normalView
+            }
+        }
         .gesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
@@ -71,17 +82,6 @@ struct CurriculumDetailView: View {
                     }
                 }
         )
-        .asyncStatusOverlay(_curriculum.status)
-    }
-
-    var body: some View {
-        Group {
-            if showLandscape {
-                landscapeView
-            } else {
-                normalView
-            }
-        }
         .onChange(of: currentSemester) {
             _ in updateLecturesAndWeekNumber()
         }

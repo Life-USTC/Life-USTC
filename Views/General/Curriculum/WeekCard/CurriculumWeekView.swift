@@ -217,6 +217,7 @@ struct CurriculumWeekViewVertical: View {
                 AxisGridLine()
             }
         }
+        .chartXScale(domain: date ... date.add(day: 7))
         .chartYAxis {
             AxisMarks(position: .leading, values: behavior.shownTimes.map { -$0 }) { value in
                 if let _hhmm = value.as(Int.self) {
