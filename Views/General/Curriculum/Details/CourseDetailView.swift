@@ -38,7 +38,7 @@ struct CourseDetailView: View {
             HStack {
                 Text("Description")
                 Spacer()
-                Text(course.description)
+//                Text(course.description)
             }
 
             ForEach(

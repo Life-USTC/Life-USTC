@@ -148,6 +148,8 @@
 		56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
 		56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
 		56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
+		56E6E5972ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */; };
+		56E6E5982ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */; };
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
@@ -316,6 +318,7 @@
 		56E25CC22A8F29E50027E72F /* LoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginClient.swift; sourceTree = "<group>"; };
 		56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ClassroomDelegate.swift"; sourceTree = "<group>"; };
 		56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CASViewModel.swift"; sourceTree = "<group>"; };
+		56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+AdditionalCourse.swift"; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Catalog.swift"; sourceTree = "<group>"; };
@@ -560,6 +563,7 @@
 		5677E11E2A5AB51400EDCB53 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */,
 				E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */,
 				56558800294D74BB0010E060 /* USTC+CASLoginView.swift */,
 				56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */,
@@ -1178,6 +1182,7 @@
 				5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */,
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
+				56E6E5972ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */,
 				E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
 				E5162ECA2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
@@ -1240,6 +1245,7 @@
 				5677E1382A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */,
 				56734CEB297D871500DBB45F /* StringExtension.swift in Sources */,
 				5677E1352A5AF13D00EDCB53 /* SwiftUIExtension.swift in Sources */,
+				56E6E5982ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */,
 				E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
 				E5162ECB2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,

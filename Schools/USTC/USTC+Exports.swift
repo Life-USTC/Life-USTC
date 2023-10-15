@@ -31,6 +31,10 @@ class USTCExports: SchoolExport {
             .init(
                 name: "CAS Settings",
                 destinationView: { USTCCASLoginView.newPage }
+            ),
+            .init(
+                name: "Additional Course",
+                destinationView: { USTCAdditionalCourseView() }
             )
         ]
     }
