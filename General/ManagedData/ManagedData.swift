@@ -31,12 +31,16 @@ import SwiftUI
         return .init(local: local.status, refresh: remote.status)
     }
 
+    var shouldRefresh: Bool {
+        local.status != .valid && remote.status != .waiting
+    }
+
     func retriveLocal() -> D? {
         if appShouldPresentDemo {
             return .example
         }
 
-        if local.status != .valid, remote.status == nil {
+        if shouldRefresh {
             triggerRefresh()
         }
 
@@ -48,14 +52,14 @@ import SwiftUI
             return .example
         }
 
-        if status.local != .valid, remote.status == nil {
+        if shouldRefresh {
             try await refresh()
         }
 
         return local.data
     }
 
-    func refresh() async throws {
+    private func refresh() async throws {
         if appShouldNOTUpdate {
             return
         }
