@@ -25,7 +25,7 @@ struct LectureView: View {
 
                 HStack {
                     Text(lecture.location)
-                    Text(lecture.teacher)
+                    Text(lecture.teacherName)
                 }
                 .lineLimit(1)
                 .font(.system(.caption, design: .monospaced))
@@ -55,7 +55,7 @@ struct LectureWidgetView: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 HStack {
-                    Text("\(lecture.teacher) @ \(lecture.location)")
+                    Text("\(lecture.teacherName) @ \(lecture.location)")
                         .font(.caption)
                         .foregroundColor(.gray.opacity(0.8))
                 }
@@ -170,7 +170,7 @@ struct CurriculumTodayView: View {
                     HStack {
                         Text(lecture.endDate.stripHMwithTimezone())
                         Spacer()
-                        Text(lecture.teacher)
+                        Text(lecture.teacherName)
                     }
                     .font(.subheadline)
                     .fontWeight(.regular)

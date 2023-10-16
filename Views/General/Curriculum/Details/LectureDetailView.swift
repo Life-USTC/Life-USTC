@@ -26,7 +26,7 @@ struct LectureDetailView: View {
             HStack {
                 Text("Teacher")
                 Spacer()
-                Text(lecture.teacher)
+                Text(lecture.teacherName)
             }
 
             HStack {

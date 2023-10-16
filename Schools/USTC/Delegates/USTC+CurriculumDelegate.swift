@@ -70,91 +70,21 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
         }
         if lessonIDs.isEmpty { return inComplete }
 
-        // Step3: Get courses details
-        let detailURL = URL(
-            string: "https://jw.ustc.edu.cn/ws/schedule-table/datum"
-        )!
-        request = URLRequest(url: detailURL)
-        request.httpMethod = "POST"
-        let params = ["lessonIds": lessonIDs]
-        let paramsData = try JSONSerialization.data(
-            withJSONObject: params,
-            options: []
-        )
-        request.httpBody = paramsData
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let json = try JSON(data: data)
-
-        // Step4: Setup Lecutures:
-        var lectureList: [String: [Lecture]] = [:]
-        for (_, subJson) in json["result"]["scheduleList"] {
-            let baseDate = convertYYMMDD(subJson["date"].stringValue)
-            let startTime = subJson["startTime"].intValue
-            let endTime = subJson["endTime"].intValue
-            let startDate =
-                baseDate
-                + DateComponents(hour: startTime / 100, minute: startTime % 100)
-            let endDate =
-                baseDate
-                + DateComponents(hour: endTime / 100, minute: endTime % 100)
-
-            let location = subJson["room"]["code"].stringValue
-            let teacher = subJson["personName"].stringValue
-            let periods = subJson["periods"].doubleValue
-            let lecture = Lecture(
-                startDate: startDate,
-                endDate: endDate,
-                name: "",
-                location: location,
-                teacher: teacher,
-                periods: periods
+        var courseList: [Course] = []
+        for lessonID in lessonIDs {
+            let lessonURL = URL(
+                string: "https://static.xzkd.online/curriculum/\(inComplete.id)/\(lessonID).json"
             )
-
-            let courseID = subJson["lessonId"].stringValue
-            // adding to lectureList
-            if lectureList[courseID] == nil {
-                lectureList[courseID] = [lecture]
-            } else {
-                lectureList[courseID]?.append(lecture)
-            }
+            let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .secondsSince1970
+            let course = try decoder.decode(Course.self, from: courseJSONData)
+            courseList.append(course)
         }
 
-        // Step 4: Load Course
-        var courses: [Course] = []
-        for (_, subJson) in baseJSON["lessons"] {
-            let name = subJson["course"]["nameZh"].stringValue
-            let code = subJson["code"].stringValue
-            let courseCode = subJson["course"]["code"].stringValue
-            let teachers = subJson["teacherAssignmentList"].arrayValue
-                .map { $0["person"]["nameZh"].stringValue }
-            let teacherName = teachers.joined(separator: ",")
-            let description = subJson["scheduleGroupStr"].stringValue
-            let credit = subJson["credits"].doubleValue
-
-            let courseID = subJson["id"].stringValue
-            var lectures = lectureList[courseID] ?? []
-            lectures = lectures.map { lecture in var result = lecture
-                result.name = name
-                return result
-            }
-
-            let course = Course(
-                name: name,
-                courseCode: courseCode,
-                lessonCode: code,
-                teacherName: teacherName,
-                lectures: lectures,
-                description: description,
-                credit: credit
-            )
-            courses.append(course)
-        }
-
-        var result = inComplete
-        result.courses = courses
-        return result
+        var returnSemester = inComplete
+        returnSemester.courses = courseList
+        return returnSemester
     }
 }
 

@@ -10,12 +10,15 @@ import SwiftUI
 
 /// Represent one lecture
 struct Lecture: Codable, Identifiable, Equatable {
-    var id: UUID = .init()
+    var id: UUID {
+        UUID()
+    }
+
     var startDate: Date
     var endDate: Date
     var name: String
     var location: String = ""
-    var teacher: String = ""
+    var teacherName: String = ""
     var periods: Double = 0
     var additionalInfo: [String: String] = [:]
 
@@ -56,7 +59,7 @@ extension [Lecture] {
                     lecture.periods == lastLecture.periods,
                     lecture.additionalInfo == lastLecture.additionalInfo
                 {
-                    unionedLectures[unionedLectures.count - 1].teacher += ("、" + lecture.teacher)
+                    unionedLectures[unionedLectures.count - 1].teacherName += ("、" + lecture.teacherName)
                 } else {
                     unionedLectures.append(lecture)
                 }
