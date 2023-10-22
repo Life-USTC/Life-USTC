@@ -17,17 +17,26 @@ struct USTCAdditionalCourseView: View {
 
     var body: some View {
         List {
-            ForEach(semesters) { semester in
-                NavigationLink {
-                    USTCAdditionalCourseSemesterView(semester: semester)
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text(semester.name)
-                        Text(semester.startDate ... semester.endDate)
+            Section {
+                ForEach(semesters) { semester in
+                    NavigationLink {
+                        USTCAdditionalCourseSemesterView(semester: semester)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(semester.name)
+                            HStack {
+                                Text(DateFormatter.localizedString(from: semester.startDate, dateStyle: .short, timeStyle: .none))
+                                Text("-")
+                                Text(DateFormatter.localizedString(from: semester.endDate, dateStyle: .short, timeStyle: .none))
+                            }
                             .font(.system(.caption, design: .monospaced))
+                            .bold((semester.startDate ... semester.endDate).contains(Date()))
                             .foregroundStyle(.secondary)
+                        }
                     }
                 }
+            } header: {
+                Text("You can choose additional courses here, they would appear in your curriculum as if they are normal courses.")
             }
         }
         .task {
@@ -66,7 +75,12 @@ struct USTCAdditionalCourseSemesterView: View {
         if searchKeyword.isEmpty {
             return courses
         } else {
-            return courses.filter({ $0.name.contains(searchKeyword) })
+            return courses.filter({
+                $0.name.contains(searchKeyword) ||
+                $0.teacherName.contains(searchKeyword) ||
+                $0.courseCode.contains(searchKeyword) ||
+                $0.lessonCode.contains(searchKeyword)
+            })
         }
     }
 
@@ -89,7 +103,7 @@ struct USTCAdditionalCourseSemesterView: View {
                             }
                             .foregroundColor(.primary)
 
-                            Text(course.courseCode)
+                            Text(course.lessonCode)
                                 .font(.system(.caption, design: .monospaced))
                                 .foregroundColor(.secondary)
                         }
