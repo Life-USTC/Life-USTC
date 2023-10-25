@@ -99,16 +99,17 @@ class GeoLocationDelegate: ManagedRemoteUpdateProtocol<[GeoLocationData]> {
 
         let (data, _) = try await URLSession.shared.data(from: url)
         let json = try JSON(data: data)
-        return json["locations"].arrayValue.map {
-            let name = $0["name"].stringValue
-            let latitude = $0["latitude"].doubleValue
-            let longitude = $0["longitude"].doubleValue
-            return GeoLocationData(
-                name: name,
-                latitude: latitude,
-                longitude: longitude
-            )
-        }
+        return json["locations"].arrayValue
+            .map {
+                let name = $0["name"].stringValue
+                let latitude = $0["latitude"].doubleValue
+                let longitude = $0["longitude"].doubleValue
+                return GeoLocationData(
+                    name: name,
+                    latitude: latitude,
+                    longitude: longitude
+                )
+            }
     }
 }
 
@@ -160,7 +161,6 @@ struct LectureLocationFactory {
         return result
     }
 }
-
 
 extension Curriculum {
     func saveToCalendar() async throws {

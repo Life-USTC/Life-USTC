@@ -39,9 +39,11 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
                     }
             }
 
-            if let feeds = parseResult?.rssFeed?.items?.map({
-                Feed(item: $0, source: source)
-            }) {
+            if let feeds = parseResult?.rssFeed?.items?
+                .map({
+                    Feed(item: $0, source: source)
+                })
+            {
                 source.feed = feeds
                 result.removeAll(where: { $0.name == source.name })
                 result.append(source)

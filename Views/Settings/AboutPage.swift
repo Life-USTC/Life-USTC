@@ -38,7 +38,7 @@ struct AboutApp: View {
                 }
             }
     }
-    
+
     var oldIconView: some View {
         Image("OldIcon")
             .resizable()
@@ -68,7 +68,7 @@ struct AboutApp: View {
         VStack(alignment: .leading) {
             Text("Author:")
                 .font(.system(.title2, design: .monospaced, weight: .semibold))
-            
+
             ForEach(contributorList, id: \.name) { contributor in
                 HStack {
                     AsyncImage(url: contributor.avatar) { image in
@@ -119,7 +119,7 @@ struct AboutApp: View {
         .navigationTitle(life_ustc ? "About Life@USTC" : "About Study@USTC")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
     private func changeAppIcon(to iconName: String) {
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if let error = error {

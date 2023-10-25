@@ -39,7 +39,7 @@ class UstcCasClient: LoginClientProtocol {
         let (data, _) = try await session.data(for: request)
 
         guard let dataString = String(data: data, encoding: .utf8),
-              let match = dataString.firstMatch(of: findLtStringRegex)
+            let match = dataString.firstMatch(of: findLtStringRegex)
         else {
             throw BaseError.runtimeError("Failed to fetch raw LT-Token")
         }
@@ -52,7 +52,6 @@ class UstcCasClient: LoginClientProtocol {
             captchaCode
         )
     }
-
 
     func getCaptchaCodeFromCAS(session: URLSession) async throws -> String {
         let capatchaURL = URL(string: "https://passport.ustc.edu.cn/validatecode.jsp?type=login")!
@@ -70,9 +69,11 @@ class UstcCasClient: LoginClientProtocol {
                 guard let observations = request.results as? [VNRecognizedTextObservation] else {
                     return
                 }
-                let recognizedStrings = observations.compactMap { observation in
-                    return observation.topCandidates(1).first?.string
-                }.joined()
+                let recognizedStrings =
+                    observations.compactMap { observation in
+                        return observation.topCandidates(1).first?.string
+                    }
+                    .joined()
                 continuation.resume(returning: recognizedStrings)
             }
 
@@ -88,7 +89,7 @@ class UstcCasClient: LoginClientProtocol {
     }
 
     func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws
-    -> Bool
+        -> Bool
     {
         if precheckFails { throw BaseError.runtimeError("Precheck fails") }
         let (ltToken, cookies, captchaCode) = try await getLtTokenFromCAS(url: url)

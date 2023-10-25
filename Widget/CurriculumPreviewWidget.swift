@@ -101,7 +101,8 @@ struct CurriculumPreviewWidgetEntryView: View {
             CurriculumTodayView()
                 .makeWidget(
                     with: (entry.todayLectures.filter { $0.startDate > Date() }
-                           + entry.todayLectures.filter { $0.startDate <= Date()}).first
+                        + entry.todayLectures.filter { $0.startDate <= Date() })
+                        .first
                 )
         }
     }

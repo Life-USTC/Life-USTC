@@ -5,9 +5,8 @@
 //  Created by TiankaiMa on 2022/12/15.
 //
 
-import SwiftUI
 import NavigationBarLargeTitleItems
-
+import SwiftUI
 
 enum HomeViewCardType: String, CaseIterable, Codable {
     case curriculumToday
@@ -57,8 +56,8 @@ extension HomeViewCardType {
 }
 
 struct GearShapeIcon: View {
-    @Binding var navigationToSettingsView:Bool
-    var body: some View{
+    @Binding var navigationToSettingsView: Bool
+    var body: some View {
         Button {
             navigationToSettingsView = true
         } label: {
@@ -75,7 +74,6 @@ struct HomeView: View {
     @AppStorage("Life-USTC") var life_ustc: Bool = false
 
     @State var navigationToSettingsView = false
-    
 
     var body: some View {
         ScrollView(showsIndicators: false) {

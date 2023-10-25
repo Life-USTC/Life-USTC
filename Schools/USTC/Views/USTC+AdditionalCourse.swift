@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftyJSON
 
-fileprivate let curriculumDataURL = URL(
+private let curriculumDataURL = URL(
     string: "https://static.xzkd.online/curriculum/"
 )
 
@@ -25,9 +25,21 @@ struct USTCAdditionalCourseView: View {
                         VStack(alignment: .leading) {
                             Text(semester.name)
                             HStack {
-                                Text(DateFormatter.localizedString(from: semester.startDate, dateStyle: .short, timeStyle: .none))
+                                Text(
+                                    DateFormatter.localizedString(
+                                        from: semester.startDate,
+                                        dateStyle: .short,
+                                        timeStyle: .none
+                                    )
+                                )
                                 Text("-")
-                                Text(DateFormatter.localizedString(from: semester.endDate, dateStyle: .short, timeStyle: .none))
+                                Text(
+                                    DateFormatter.localizedString(
+                                        from: semester.endDate,
+                                        dateStyle: .short,
+                                        timeStyle: .none
+                                    )
+                                )
                             }
                             .font(.system(.caption, design: .monospaced))
                             .bold((semester.startDate ... semester.endDate).contains(Date()))
@@ -36,7 +48,9 @@ struct USTCAdditionalCourseView: View {
                     }
                 }
             } header: {
-                Text("You can choose additional courses here, they would appear in your curriculum as if they are normal courses.")
+                Text(
+                    "You can choose additional courses here, they would appear in your curriculum as if they are normal courses."
+                )
             }
         }
         .task {
@@ -59,7 +73,7 @@ struct USTCAdditionalCourseSemesterView: View {
 
     @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
 
-    var additionalCourseIDListForThisSemester: [Int]  {
+    var additionalCourseIDListForThisSemester: [Int] {
         get {
             additioanlCourseIDList[semester.id] ?? []
         }
@@ -72,16 +86,13 @@ struct USTCAdditionalCourseSemesterView: View {
     @State var searchKeyword: String = ""
 
     var coursesToShow: [Course] {
-        if searchKeyword.isEmpty {
-            return courses
-        } else {
+        guard searchKeyword.isEmpty else {
             return courses.filter({
-                $0.name.contains(searchKeyword) ||
-                $0.teacherName.contains(searchKeyword) ||
-                $0.courseCode.contains(searchKeyword) ||
-                $0.lessonCode.contains(searchKeyword)
+                $0.name.contains(searchKeyword) || $0.teacherName.contains(searchKeyword)
+                    || $0.courseCode.contains(searchKeyword) || $0.lessonCode.contains(searchKeyword)
             })
         }
+        return courses
     }
 
     var body: some View {
@@ -89,7 +100,9 @@ struct USTCAdditionalCourseSemesterView: View {
             ForEach(coursesToShow) { course in
                 Button {
                     if additionalCourseIDListForThisSemester.contains(course.id) {
-                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester.filter({ $0 != course.id })
+                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester.filter({
+                            $0 != course.id
+                        })
                     } else {
                         additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester + [course.id]
                     }

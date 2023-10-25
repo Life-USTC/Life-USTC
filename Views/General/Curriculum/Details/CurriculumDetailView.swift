@@ -23,7 +23,7 @@ struct CurriculumDetailView: View {
 
     var normalView: some View {
         GeometryReader { geo in
-            ScrollView  {
+            ScrollView {
                 VStack {
                     HStack(alignment: .bottom) {
                         AsyncStatusLight(status: _curriculum.status)
@@ -124,7 +124,8 @@ struct CurriculumDetailView: View {
                 Button {
                     showLandscape.toggle()
                     let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-                    windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
+                    windowScene?
+                        .requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
                 } label: {
                     Label("Flip", systemImage: showLandscape ? "rectangle.grid.2x2" : "rectangle.grid.1x2.fill")
                 }

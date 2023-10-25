@@ -136,60 +136,60 @@ struct USTC_SchoolBusView: View {
     var validBuses: [Bus] {
         return filteredBuses.filter { $0.startTime.HHMM >= Date().HHMM }
     }
-    
+
     var topBusList: [BusListItem] {
         let showBuses = showPassBus ? filteredBuses : validBuses
-        let GDBus = showBuses.filter() {
+        let GDBus = showBuses.filter {
             return $0.from == "高新" && $0.to == "东区"
         }
-        let DGBus = showBuses.filter() {
+        let DGBus = showBuses.filter {
             return $0.to == "高新" && $0.from == "东区"
         }
-        let DXBus = showBuses.filter() {
+        let DXBus = showBuses.filter {
             return $0.from == "东区" && $0.to == "西区"
         }
-        let XDBus = showBuses.filter() {
+        let XDBus = showBuses.filter {
             return $0.from == "西区" && $0.to == "东区"
         }
-        let DNBus = showBuses.filter() {
+        let DNBus = showBuses.filter {
             return $0.from == "东区" && $0.to == "南区"
         }
-        let NDBus = showBuses.filter() {
+        let NDBus = showBuses.filter {
             return $0.from == "南区" && $0.to == "东区"
         }
-        let XNBus = showBuses.filter() {
+        let XNBus = showBuses.filter {
             return $0.from == "西区" && $0.to == "南区"
         }
-        let NXBus = showBuses.filter() {
+        let NXBus = showBuses.filter {
             return $0.from == "南区" && $0.to == "西区"
         }
-        
-        let subBusList1 = GDBus.suffix(from: min(1, GDBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList2 = DGBus.suffix(from: min(1, DGBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList3 = DXBus.suffix(from: min(1, DXBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList4 = XDBus.suffix(from: min(1, XDBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList5 = DNBus.suffix(from: min(1, DNBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList6 = NDBus.suffix(from: min(1, NDBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList7 = XNBus.suffix(from: min(1, XNBus.count)).map() { bus in BusListItem(bus: bus) }
-        let subBusList8 = NXBus.suffix(from: min(1, NXBus.count)).map() { bus in BusListItem(bus: bus) }
+
+        let subBusList1 = GDBus.suffix(from: min(1, GDBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList2 = DGBus.suffix(from: min(1, DGBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList3 = DXBus.suffix(from: min(1, DXBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList4 = XDBus.suffix(from: min(1, XDBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList5 = DNBus.suffix(from: min(1, DNBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList6 = NDBus.suffix(from: min(1, NDBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList7 = XNBus.suffix(from: min(1, XNBus.count)).map { bus in BusListItem(bus: bus) }
+        let subBusList8 = NXBus.suffix(from: min(1, NXBus.count)).map { bus in BusListItem(bus: bus) }
         let topBusList = [
-            BusListItem ( bus: GDBus.first, subListItems: subBusList1),
-            BusListItem ( bus: DGBus.first, subListItems: subBusList2),
-            BusListItem ( bus: DXBus.first, subListItems: subBusList3),
-            BusListItem ( bus: XDBus.first, subListItems: subBusList4),
-            BusListItem ( bus: DNBus.first, subListItems: subBusList5),
-            BusListItem ( bus: NDBus.first, subListItems: subBusList6),
-            BusListItem ( bus: XNBus.first, subListItems: subBusList7),
-            BusListItem ( bus: NXBus.first, subListItems: subBusList8)
+            BusListItem(bus: GDBus.first, subListItems: subBusList1),
+            BusListItem(bus: DGBus.first, subListItems: subBusList2),
+            BusListItem(bus: DXBus.first, subListItems: subBusList3),
+            BusListItem(bus: XDBus.first, subListItems: subBusList4),
+            BusListItem(bus: DNBus.first, subListItems: subBusList5),
+            BusListItem(bus: NDBus.first, subListItems: subBusList6),
+            BusListItem(bus: XNBus.first, subListItems: subBusList7),
+            BusListItem(bus: NXBus.first, subListItems: subBusList8),
         ]
         return topBusList
     }
 
     var body: some View {
         @State var isExpanded = false
-        VStack() {
-            ZStack (alignment: .top){
-                List(topBusList, children: \.subListItems){ busList in
+        VStack {
+            ZStack(alignment: .top) {
+                List(topBusList, children: \.subListItems) { busList in
                     SingleBusView(bus: busList.bus)
                 }
                 .padding(.top, 10)
@@ -199,7 +199,7 @@ struct USTC_SchoolBusView: View {
                 }
                 .navigationTitle("Bus Timetable")
                 .navigationBarTitleDisplayMode(.inline)
-                
+
                 Picker(
                     "Time",
                     selection: $selection
@@ -208,15 +208,15 @@ struct USTC_SchoolBusView: View {
                         Text($0.rawValue.capitalized.localized)
                     }
                 }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 10)
-                    .background(
-                        Rectangle()
-                            .fill(Color(.systemGroupedBackground))
-                    )
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
+                .background(
+                    Rectangle()
+                        .fill(Color(.systemGroupedBackground))
+                )
             }
-            
+
             Button {
                 showPassBus = !showPassBus
             } label: {
@@ -224,10 +224,9 @@ struct USTC_SchoolBusView: View {
                     Text("Show departed buses")
                         .foregroundColor(.primary)
                     Spacer()
-                    showPassBus ?
-                        Image(systemName: "checkmark.circle.fill")
-                    :
-                        Image(systemName: "circle")
+                    showPassBus
+                        ? Image(systemName: "checkmark.circle.fill")
+                        : Image(systemName: "circle")
                 }
             }
             .padding()

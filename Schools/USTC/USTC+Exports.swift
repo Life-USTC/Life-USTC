@@ -35,7 +35,7 @@ class USTCExports: SchoolExport {
             .init(
                 name: "Additional Course",
                 destinationView: { USTCAdditionalCourseView() }
-            )
+            ),
         ]
     }
 

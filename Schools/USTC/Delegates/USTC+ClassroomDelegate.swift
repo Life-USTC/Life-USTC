@@ -88,7 +88,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
             if let json = cache[building] {
                 for (_, subJson) in json["timetable"]["lessons"] {
                     if let startDate = parseDate(subJson["start"].stringValue),
-                       let endDate = parseDate(subJson["end"].stringValue)
+                        let endDate = parseDate(subJson["end"].stringValue)
                     {
                         let tmp = Lecture(
                             startDate: startDate,
@@ -103,7 +103,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
 
                 for (_, subJson) in json["timetable"]["tmpLessons"] {
                     if let startDate = parseDate(subJson["start"].stringValue),
-                       let endDate = parseDate(subJson["end"].stringValue)
+                        let endDate = parseDate(subJson["end"].stringValue)
                     {
                         let tmp = Lecture(
                             startDate: startDate,
@@ -118,7 +118,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
 
                 for (_, subJson) in json["timetable"]["exams"] {
                     if let startDate = parseDate(subJson["start"].stringValue),
-                       let endDate = parseDate(subJson["end"].stringValue)
+                        let endDate = parseDate(subJson["end"].stringValue)
                     {
                         let tmp = Lecture(
                             startDate: startDate,
