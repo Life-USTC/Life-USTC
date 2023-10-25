@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import Vision
 
 private let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
 private let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
@@ -24,7 +26,8 @@ class UstcCasClient: LoginClientProtocol {
         url: URL = ustcLoginUrl
     ) async throws -> (
         ltToken: String,
-        cookie: [HTTPCookie]
+        cookie: [HTTPCookie],
+        captacha: String
     ) {
         let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
 
@@ -36,34 +39,70 @@ class UstcCasClient: LoginClientProtocol {
         let (data, _) = try await session.data(for: request)
 
         guard let dataString = String(data: data, encoding: .utf8),
-            let match = dataString.firstMatch(of: findLtStringRegex)
+              let match = dataString.firstMatch(of: findLtStringRegex)
         else {
             throw BaseError.runtimeError("Failed to fetch raw LT-Token")
         }
 
+        let captchaCode = try await getCaptchaCodeFromCAS(session: session)
+
         return (
             String(match.0),
-            session.configuration.httpCookieStorage?.cookies ?? []
+            session.configuration.httpCookieStorage?.cookies ?? [],
+            captchaCode
         )
     }
 
+
+    func getCaptchaCodeFromCAS(session: URLSession) async throws -> String {
+        let capatchaURL = URL(string: "https://passport.ustc.edu.cn/validatecode.jsp?type=login")!
+
+        var request = URLRequest(url: capatchaURL)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, _) = try await session.data(for: request)
+
+        guard let cgImage = UIImage(data: data)?.cgImage else {
+            throw BaseError.runtimeError("Failed to fetch captcha code")
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            func recognizeTextHandler(request: VNRequest, error: Error?) {
+                guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                    return
+                }
+                let recognizedStrings = observations.compactMap { observation in
+                    return observation.topCandidates(1).first?.string
+                }.joined()
+                continuation.resume(returning: recognizedStrings)
+            }
+
+            let vnrequestHandler = VNImageRequestHandler(cgImage: cgImage)
+            let vnRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+
+            do {
+                try vnrequestHandler.perform([vnRequest])
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
     func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws
-        -> Bool
+    -> Bool
     {
         if precheckFails { throw BaseError.runtimeError("Precheck fails") }
-
-        let (ltToken, cookies) = try await getLtTokenFromCAS(url: url)
+        let (ltToken, cookies, captchaCode) = try await getLtTokenFromCAS(url: url)
 
         let queries: [String: String] = [
             "model": "uplogin.jsp",
             "CAS_LT": ltToken,
             "service": service?.absoluteString ?? "",
             "warn": "",
-            "showCode": "",
+            "showCode": "1",
             "qrcode": "",
             "username": username,
             "password": password,
-            "LT": "",
+            "LT": captchaCode,
             "button": "",
         ]
 
