@@ -11,6 +11,9 @@ jobs:
         runs-on: macos-13
         steps:
           - uses: actions/checkout@v2
+            with:
+              submodules: true
+              token: ${{ secrets.PAT_TOKEN }}
           - name: Build
             run: fastlane ios build > build.log
             env:
