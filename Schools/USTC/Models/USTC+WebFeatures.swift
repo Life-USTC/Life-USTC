@@ -58,6 +58,13 @@ extension USTCExports {
                 markUp: true
             ),
             .init(
+                name: "Graduate AAS",
+                image: "person.2",
+                description: "研究生教务系统",
+                url: "http://yjs1.ustc.edu.cn/gsapp/sys/yjsemaphome/portal/index.do",
+                markUp: true
+            ),
+            .init(
                 name: "Library",
                 image: "book",
                 description: "图书馆",
@@ -130,6 +137,20 @@ extension USTCExports {
                 description: "预约中区研讨室/青年之家会议室",
                 url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
                 markUp: true
+            ),
+            .init(
+                name: "Art Education Center Appointment",
+                image: "music.note.list",
+                description: "艺术教学中心场馆预约",
+                url: "http://roombooking.cmet.ustc.edu.cn/booking/api/cas/index",
+                markUp: true
+            ),
+            .init(
+                name: "Mental Health Education and Counseling Center",
+                image: "heart.text.square",
+                description: "微笑在线",
+                url: "https://smile.ustc.edu.cn",
+                markUp: false
             ),
             .init(
                 name: "Public Query",
