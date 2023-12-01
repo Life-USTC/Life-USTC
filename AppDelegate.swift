@@ -45,59 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         return true
     }
 
-    /// What to execute after 1.0.3 update
-    func version1_0_3Update() {
-        if !shouldRunUpdate(on: "1.0.3") { return }
-
-        // Remove everything in UserDefaults
-        for key in UserDefaults.appGroup.dictionaryRepresentation().keys {
-            print(key)
-            UserDefaults.appGroup.removeObject(forKey: key)
-        }
-
-        for key in UserDefaults.standard.dictionaryRepresentation().keys {
-            print(key)
-            UserDefaults.standard.removeObject(forKey: key)
-        }
-
-        // set version to 1.0.2
-        UserDefaults.appGroup.set("1.0.3", forKey: "version")
-    }
-
-    /// What to execute after 1.0.2 update
-    func version1_0_2Update() {
-        if !shouldRunUpdate(on: "1.0.2") { return }
-
-        // if inside userDefaults, key feedSourceCache exists, then delete it
-        if UserDefaults.appGroup.object(forKey: "feedSourceCache") != nil {
-            UserDefaults.appGroup.removeObject(forKey: "feedSourceCache")
-        }
-
-        if UserDefaults.standard.object(forKey: "homeShowPostNumbers") != nil {
-            UserDefaults.standard.removeObject(forKey: "homeShowPostNumbers")
-        }
-
-        if UserDefaults.appGroup.object(forKey: "passportUsername") != nil {
-            UserDefaults.appGroup.removeObject(forKey: "passportUsername")
-        }
-
-        if UserDefaults.appGroup.object(forKey: "passportPassword") != nil {
-            UserDefaults.appGroup.removeObject(forKey: "passportPassword")
-        }
-
-        if UserDefaults.appGroup.object(forKey: "semesterID") != nil {
-            UserDefaults.appGroup.setValue(
-                Int(UserDefaults.appGroup.string(forKey: "semesterID") ?? "0")
-                    ?? 0,
-                forKey: "semesterIDInt"
-            )
-            UserDefaults.appGroup.removeObject(forKey: "semesterID")
-        }
-
-        // set version to 1.0.2
-        UserDefaults.appGroup.set("1.0.2", forKey: "version")
-    }
-
     #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator
     // as XCFramework lib isn't fully supported with Apple chips
@@ -106,8 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         startJSRuntime()
-        version1_0_2Update()
-        //        version1_0_3Update()
 
         preparePreviews()
         return true
@@ -124,8 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         startJSRuntime()
-        version1_0_2Update()
-        version1_0_3Update()
         if UserDefaults.appGroup.value(forKey: "useNotification") as? Bool ?? true {
             startTPNS()
         }

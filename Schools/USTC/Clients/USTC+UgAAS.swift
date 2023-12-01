@@ -40,4 +40,6 @@ class UstcUgAASClient: LoginClientProtocol {
     }
 }
 
-extension LoginClientProtocol { static var ustcUgAAS = UstcUgAASClient.shared }
+extension LoginClientProtocol {
+    static var ustcUgAAS = UstcUgAASClient.shared
+}

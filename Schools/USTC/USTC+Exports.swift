@@ -60,6 +60,10 @@ class USTCExports: SchoolExport {
     override var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
+    
+    override var homeworkDelegate: HomeworkDelegateProtocol {
+        USTCBBHomeworkDelegate.shared
+    }
 
     //    override var baseModifier: some ViewModifier {
     //        USTCBaseModifier()

@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		1E7A739C0C452BC861A44FFF /* libXG-SDK-Cloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB931C89AE5CEF78AFE42B1 /* libXG-SDK-Cloud.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		5601B9142B1A04B500C85F25 /* Homework.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9132B1A04B500C85F25 /* Homework.swift */; };
+		5601B9162B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9152B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift */; };
+		5601B9182B1A070600C85F25 /* USTC+Blackboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9172B1A070600C85F25 /* USTC+Blackboard.swift */; };
+		5601B9192B1A084900C85F25 /* Homework.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9132B1A04B500C85F25 /* Homework.swift */; };
+		5601B91A2B1A085100C85F25 /* USTC+BBHomeworkDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9152B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift */; };
+		5601B91B2B1A0AD100C85F25 /* USTC+Blackboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B9172B1A070600C85F25 /* USTC+Blackboard.swift */; };
 		5606AE5D2A3C5D6A00E1132B /* Strips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5606AE5C2A3C5D6A00E1132B /* Strips.swift */; };
 		56112707298126C100BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 56112706298126C100BB66EE /* Introspect */; };
 		5611272229813A1700BB66EE /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5611272129813A1700BB66EE /* Introspect */; };
@@ -223,6 +229,9 @@
 
 /* Begin PBXFileReference section */
 		2D47C4E31380E67CF9C62C01 /* Life@USTC-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Life@USTC-Bridging-Header.h"; sourceTree = "<group>"; };
+		5601B9132B1A04B500C85F25 /* Homework.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homework.swift; sourceTree = "<group>"; };
+		5601B9152B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BBHomeworkDelegate.swift"; sourceTree = "<group>"; };
+		5601B9172B1A070600C85F25 /* USTC+Blackboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Blackboard.swift"; sourceTree = "<group>"; };
 		5606AE5C2A3C5D6A00E1132B /* Strips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strips.swift; sourceTree = "<group>"; };
 		56143F6A295EDEA5008CE454 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5621691B2955BEC500DF46BE /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -419,6 +428,14 @@
 			path = TPNS;
 			sourceTree = "<group>";
 		};
+		5601B9122B1A04AB00C85F25 /* Homework */ = {
+			isa = PBXGroup;
+			children = (
+				5601B9132B1A04B500C85F25 /* Homework.swift */,
+			);
+			path = Homework;
+			sourceTree = "<group>";
+		};
 		5627D8D42A5EA88E00DEB653 /* InAppNotification */ = {
 			isa = PBXGroup;
 			children = (
@@ -464,6 +481,7 @@
 				E5162ECF2AB2F25F00C34CA3 /* Bus */,
 				56A0C1942A8E0CF500BFEAB9 /* Curriculum */,
 				56A8FC2C2A97AF4A009D94A3 /* Exam */,
+				5601B9122B1A04AB00C85F25 /* Homework */,
 				56A8FC2D2A97AF52009D94A3 /* Score */,
 			);
 			path = School;
@@ -757,6 +775,7 @@
 		56B86B882A8F49F4003440D2 /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
+				5601B9152B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift */,
 				E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */,
 				56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */,
 				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
@@ -850,6 +869,7 @@
 		56E25CC52A8F2E200027E72F /* Clients */ = {
 			isa = PBXGroup;
 			children = (
+				5601B9172B1A070600C85F25 /* USTC+Blackboard.swift */,
 				5655880A294DEA6B0010E060 /* USTC+CAS.swift */,
 				56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */,
 				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
@@ -1154,6 +1174,7 @@
 				5699672B2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
 				56E22BDE2A9F2A310078455B /* HomeSettingPage.swift in Sources */,
 				565587E7294B43BD0010E060 /* HomeView.swift in Sources */,
+				5601B9142B1A04B500C85F25 /* Homework.swift in Sources */,
 				5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */,
 				5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */,
 				5627958B2A08F382009D398E /* JSRuntime.swift in Sources */,
@@ -1183,6 +1204,8 @@
 				565587FE294D67D80010E060 /* SwiftUIExtension.swift in Sources */,
 				56C1425429F648A6007D9BD4 /* TPNSClient.swift in Sources */,
 				56E6E5972ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */,
+				5601B9162B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift in Sources */,
+				5601B9182B1A070600C85F25 /* USTC+Blackboard.swift in Sources */,
 				E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
 				E5162ECA2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */,
@@ -1229,6 +1252,7 @@
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionExtension.swift in Sources */,
 				5699672C2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
+				5601B9192B1A084900C85F25 /* Homework.swift in Sources */,
 				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
 				56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */,
 				56D8A49E2A6D21F10027224C /* Keychain.swift in Sources */,
@@ -1246,6 +1270,8 @@
 				56734CEB297D871500DBB45F /* StringExtension.swift in Sources */,
 				5677E1352A5AF13D00EDCB53 /* SwiftUIExtension.swift in Sources */,
 				56E6E5982ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */,
+				5601B91A2B1A085100C85F25 /* USTC+BBHomeworkDelegate.swift in Sources */,
+				5601B91B2B1A0AD100C85F25 /* USTC+Blackboard.swift in Sources */,
 				E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */,
 				E5162ECB2AB2E97300C34CA3 /* USTC+BusView.swift in Sources */,
 				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,
@@ -1464,7 +1490,7 @@
 					"$(PROJECT_DIR)/Baidu",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				"OTHER_SWIFT_FLAGS[sdk=iphonesimulator*]" = "-D IOS_SIMULATOR";
@@ -1525,7 +1551,7 @@
 					"$(PROJECT_DIR)/Baidu",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS;
@@ -1567,7 +1593,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.4;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1606,7 +1632,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.4;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
