@@ -10,7 +10,8 @@ import SwiftyJSON
 
 private func decodeDate(from raw: String) -> Date? {
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd"
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
     return dateFormatter.date(from: raw)
 }
 
@@ -28,13 +29,6 @@ class USTCBBHomeworkDelegate: ManagedRemoteUpdateProtocol<[Homework]> {
         if try await !_blackboardClient.requireLogin() {
             throw BaseError.runtimeError("UstcBlackboard Not logined")
         }
-        
-        let queries = [
-            "start": "",
-            "end": "",
-            "course_id": "",
-            "mode": "personal"
-        ]
         
         var request = URLRequest(url: homeworkURL)
         request.httpMethod = "GET"

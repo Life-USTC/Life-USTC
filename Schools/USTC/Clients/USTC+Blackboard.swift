@@ -42,6 +42,8 @@ class UstcBlackboardClient: LoginClientProtocol {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await session.data(for: request)
         
+        debugPrint(response.url)
+        
         return (response.url == urlC)
     }
 }
