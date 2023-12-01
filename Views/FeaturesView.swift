@@ -107,6 +107,12 @@ extension FeaturesView {
                 subTitle: "",
                 destinationView: { ScoreView() }
             ),
+            .init(
+                image: "rectangle.stack",
+                title: "Homework (Blackboard)",
+                subTitle: "",
+                destinationView: { HomeworkDetailView() }
+            )
         ]
 
         for (key, features) in SchoolExport.shared.features {

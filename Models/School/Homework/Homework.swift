@@ -22,6 +22,16 @@ struct Homework: Codable, Identifiable, Equatable, ExampleDataProtocol {
     )
 }
 
+extension Homework {
+    var isFinished: Bool {
+        Date() > dueDate
+    }
+    
+    var daysLeft: Int {
+        Calendar.current.dateComponents([.day], from: Date(), to: dueDate).day!
+    }
+}
+
 typealias HomeworkDelegateProtocol = ManagedRemoteUpdateProtocol<[Homework]>
 
 extension ManagedDataSource<[Homework]> {
