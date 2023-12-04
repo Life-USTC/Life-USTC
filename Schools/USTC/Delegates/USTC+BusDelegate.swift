@@ -24,7 +24,6 @@ class USTCBusDelegate: ManagedRemoteUpdateProtocol<[Bus]> {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path))
                 let jsonData = try JSON(data: data)
                 for (id, subJson): (String, JSON) in jsonData["buses"] {
-                    print(id)
                     from = subJson["from"].stringValue
                     to = subJson["to"].stringValue
                     startTime = calendar.date(
