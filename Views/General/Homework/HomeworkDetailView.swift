@@ -65,12 +65,22 @@ struct HomeworkDetailView: View {
     var body: some View {
         List {
             Section {
-                ForEach(newHomework) { homework in
-                    SingleHomeWorkView(homework: homework)
-                }
-                
-                ForEach(archivedHomework) { homework in
-                    SingleHomeWorkView(homework: homework)
+                if homeworks.isEmpty {
+                    SingleHomeWorkView(homework: .example)
+                        .redacted(reason: .placeholder)
+                        .overlay(
+                            Text("No More Homework!")
+                                .font(.system(.body, design: .monospaced))
+                                .padding(.vertical, 10)
+                        )
+                } else {
+                    ForEach(newHomework) { homework in
+                        SingleHomeWorkView(homework: homework)
+                    }
+                    
+                    ForEach(archivedHomework) { homework in
+                        SingleHomeWorkView(homework: homework)
+                    }
                 }
             }  header: {
                 AsyncStatusLight(status: _homeworks.status)
@@ -80,6 +90,7 @@ struct HomeworkDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .asyncStatusOverlay(_homeworks.status, showLight: false)
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .padding(.horizontal)

@@ -48,6 +48,7 @@ struct ExamDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .asyncStatusOverlay(_exams.status, showLight: false)
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .padding(.horizontal)
