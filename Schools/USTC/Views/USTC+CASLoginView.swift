@@ -27,6 +27,7 @@ struct USTCCASLoginView: View {
     @StateObject var ustcCASViewModel = UstcCasViewModel.shared
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
+    @State var failedMessage = ""
     @FocusState var foucusField: Field?
 
     var title: LocalizedStringKey = "CAS Settings"
@@ -108,7 +109,9 @@ struct USTCCASLoginView: View {
         Button {
             checkAndLogin()
         } label: {
-            Text("Check & Login").foregroundColor(.white).padding()
+            Text("Check & Login")
+                .foregroundColor(.white)
+                .padding()
                 .frame(maxWidth: .infinity)
                 .background {
                     RoundedRectangle(cornerRadius: 25)
@@ -144,16 +147,19 @@ struct USTCCASLoginView: View {
                 isPresented: $showFailedAlert,
                 actions: {},
                 message: {
-                    Text("Double check your username and password".localized)
+                    Text(failedMessage.localized)
                 }
             )
             .alert(
                 "Login Success".localized,
                 isPresented: $showSuccessAlert,
                 actions: {},
-                message: { Text("You're good to go".localized) }
+                message: {
+                    Text("You're good to go")
+                }
             )
-            .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
@@ -177,8 +183,12 @@ struct USTCCASLoginView: View {
                     return
                 }
 
+                failedMessage = "Double check your username and password".localized
                 showFailedAlert = true
-            } catch { showFailedAlert = true }
+            } catch {
+                failedMessage = error.localizedDescription
+                showFailedAlert = true
+            }
         }
     }
 }
