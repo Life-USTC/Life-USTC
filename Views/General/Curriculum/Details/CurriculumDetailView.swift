@@ -109,6 +109,10 @@ struct CurriculumDetailView: View {
                 showLandscape = false
             }
         }
+        .onDisappear {
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+        }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
