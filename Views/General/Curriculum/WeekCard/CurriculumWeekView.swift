@@ -78,7 +78,7 @@ struct CurriculumWeekView: View {
                     ),
                     y: .value("Date", lecture.startDate.stripTime(), unit: .day)
                 )
-                .foregroundStyle(by: .value("Course Name", lecture.name))
+                .foregroundStyle(by: .value("Course Name", lecture.name.truncated(length: 6)))
                 .annotation(position: .overlay) {
                     Text(lecture.name)
                         .font(.system(size: fontSize))
@@ -216,7 +216,7 @@ struct CurriculumWeekViewVertical: View {
                         -behavior.convertTo(lecture.endDate.HHMM)
                     )
                 )
-                .foregroundStyle(by: .value("Course Name", lecture.name))
+                .foregroundStyle(by: .value("Course Name", lecture.name.truncated(length: 6)))
                 .annotation(position: .overlay) {
                     VStack {
                         Text(lecture.name)
