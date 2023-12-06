@@ -89,16 +89,56 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
 }
 
 extension USTCExports {
+    var curriculumChartShouldHideEvening: Bool {
+        UserDefaults.appGroup.bool(forKey: "curriculumChartShouldHideEvening")
+    }
+    
     var ustcCurriculumBehavior: CurriculumBehavior {
-        CurriculumBehavior(
-            shownTimes: [470, 585, 680, 735, 850, 945, 1000, 1095],
-            highLightTimes: [730, 995, 1145],
-            convertTo: { value in
-                value <= 730 ? value : value <= 1100 ? value - 105 : value - 170
-            },
-            convertFrom: { value in
-                value <= 730 ? value : value <= 995 ? value + 105 : value + 170
-            }
-        )
+        if curriculumChartShouldHideEvening {
+            CurriculumBehavior(
+                shownTimes: [
+                    7 * 60 + 50,
+                    9 * 60 + 45,
+                    11 * 60 + 20,
+                    14 * 60 + 0 - 105,
+                    15 * 60 + 55 - 105,
+                    17 * 60 + 30 - 105,
+                ],
+                highLightTimes: [
+                    12 * 60 + 10,
+                    18 * 60 + 20 - 105,
+                ],
+                convertTo: { value in
+                    value <= 730 ? value : value - 105
+                },
+                convertFrom: { value in
+                    value <= 730 ? value : value + 105
+                }
+            )
+        } else {
+            CurriculumBehavior(
+                shownTimes: [
+                    7 * 60 + 50,
+                    9 * 60 + 45,
+                    11 * 60 + 20,
+                    14 * 60 + 0 - 105,
+                    15 * 60 + 55 - 105,
+                    17 * 60 + 30 - 105,
+                    19 * 60 + 30 - 105 - 65,
+                    21 * 60 + 5 - 105 - 65
+                ],
+                highLightTimes: [
+                    12 * 60 + 10,
+                    18 * 60 + 20 - 105,
+                    21 * 60 + 55 - 105 - 65
+                ],
+                convertTo: { value in
+                    value <= 730 ? value : value <= 1100 ? value - 105 : value - 170
+                },
+                convertFrom: { value in
+                    value <= 730 ? value : value <= 995 ? value + 105 : value + 170
+                }
+            )
+        }
     }
 }

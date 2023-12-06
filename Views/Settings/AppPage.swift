@@ -13,6 +13,10 @@ struct AppSettingPage: View {
         "appShouldNOTUpdateAnything",
         store: .appGroup
     ) var appShouldNOTUpdateAnything: Bool = false
+    @AppStorage(
+        "curriculumChartShouldHideEvening",
+        store: .appGroup
+    ) var curriculumChartShouldHideEvening: Bool = false
     @AppStorage("useBaiduStatistics") var useBaiduStatistics: Bool = true
 
     var body: some View {
@@ -21,6 +25,10 @@ struct AppSettingPage: View {
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
+                )
+                Toggle(
+                    "Hide evening in Curriculum",
+                    isOn: $curriculumChartShouldHideEvening
                 )
                 Toggle(
                     "Use Baidu Statistics",
@@ -43,5 +51,7 @@ struct AppSettingPage: View {
 }
 
 struct AppSettingPage_Previews: PreviewProvider {
-    static var previews: some View { AppSettingPage() }
+    static var previews: some View {
+        AppSettingPage()
+    }
 }
