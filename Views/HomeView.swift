@@ -5,7 +5,6 @@
 //  Created by TiankaiMa on 2022/12/15.
 //
 
-import NavigationBarLargeTitleItems
 import SwiftUI
 
 enum HomeViewCardType: String, CaseIterable, Codable {
@@ -55,25 +54,9 @@ extension HomeViewCardType {
     }
 }
 
-struct GearShapeIcon: View {
-    @Binding var navigationToSettingsView: Bool
-    var body: some View {
-        Button {
-            navigationToSettingsView = true
-        } label: {
-            Image(systemName: "gearshape")
-                .font(.title2)
-        }
-        .padding([.trailing], 20)
-        .padding([.top], 5)
-    }
-}
-
 struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
     @AppStorage("Life-USTC") var life_ustc: Bool = false
-
-    @State var navigationToSettingsView = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -95,13 +78,6 @@ struct HomeView: View {
             .padding(.horizontal, 20)
         }
         .navigationTitle(life_ustc ? "Life@USTC" : "Study@USTC")
-        .navigationBarLargeTitleItems(trailing: GearShapeIcon(navigationToSettingsView: $navigationToSettingsView))
-        .padding(.top, 0.1)
-        .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack {
-                SettingsView()
-            }
-        }
         .background(Color(.systemGroupedBackground))
     }
 }

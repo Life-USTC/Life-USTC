@@ -10,6 +10,8 @@ import SwiftUI
 
 struct FeaturesView: View {
     @ManagedData(.feedSource) var feedSourceList: [FeedSource]
+    
+    @State var navigationToSettingsView = false
 
     @State var searchText = ""
 
@@ -66,9 +68,23 @@ struct FeaturesView: View {
         .searchable(text: $searchText, placement: .automatic)
         .navigationTitle("Features")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            Button {
+                navigationToSettingsView = true
+            } label: {
+                Image(systemName: "gearshape")
+            }
+        }
+        .sheet(isPresented: $navigationToSettingsView) {
+            NavigationStack {
+                SettingsView()
+            }
+        }
     }
 
-    init() { features = collectFeatures() }
+    init() {
+        features = collectFeatures()
+    }
 }
 
 extension FeaturesView {

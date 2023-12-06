@@ -37,15 +37,6 @@
       }
     },
     {
-      "identity" : "navigationbarlargetitleitems",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/markvanwijnen/NavigationBarLargeTitleItems",
-      "state" : {
-        "branch" : "master",
-        "revision" : "fcc30c002db356825e5be0c09cca852b4bc51998"
-      }
-    },
-    {
       "identity" : "reeeed",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tiankaima/reeeed",
