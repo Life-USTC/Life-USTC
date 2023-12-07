@@ -89,7 +89,7 @@ struct ContentView: View {
         .navigationSplitViewStyle(.balanced)
     }
 
-    @AppStorage("firstLogin") var firstLogin: Bool = true
+    @AppStorage("firstLogin_2") var firstLogin: Bool = true
 
     var body: some View {
         // When user first login, present the view here,
