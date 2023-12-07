@@ -1,38 +1,33 @@
-# Life@USTC
-| <img src="./Docs/Assets/AppIcon.png" width="200" height="200"> | [![Build To TestFlight](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml/badge.svg)](https://github.com/Life-USTC/Life-USTC/actions/workflows/fastlane.yaml)<br/> ![GitHub Repo stars](https://img.shields.io/github/stars/Life-USTC/Life-USTC)<br/> ![Code Size](https://img.shields.io/github/languages/code-size/Life-USTC/Life-USTC) |
-| :--- | :--- |
+# 学在科大 iOS版
 
-## Introduction
+## 简介
 
-Life@USTC is an iOS app that helps students at USTC to get information about their daily life.
+学在科大是一个非官方的应用，旨在帮助科大学生获取日常学业相关信息。
 
-Users can see their curriculum, grades, exams, and more, all without leaving the app.
+用户可在应用内方便查看课表、成绩、考试安排、作业安排等。
 
-You can get the app from the [App Store](https://apps.apple.com/cn/app/life-ustc/id1660437438).
+iOS 版本可在[App Store](https://apps.apple.com/cn/app/%E5%AD%A6%E5%9C%A8%E7%A7%91%E5%A4%A7/id1643944931) 下载。
 
-## Screenshots
+## 截图
 
-| `HomeView` | `AllSourceView` | `FeaturesView` | `ScoreView` |
---- | --- | --- | ---
 | <img src="./Docs/Assets/Screenshot-01.png" /> | <img src="./Docs/Assets/Screenshot-02.png" /> | <img src="./Docs/Assets/Screenshot-03.png" /> | <img src="./Docs/Assets/Screenshot-04.png" /> |
+--- | --- | --- | ---
 
-## Features
+## 功能
 
-- [x] Login to USTC's CAS system, keep the background state refreshed
-- [x] RSS Feed
-- [x] Undergraduate curriculum
-- [x] Undergraduate grades
-- [x] Undergraduate exam arrangement
-- [x] APN push notifications
-- [ ] Information refresh notifications
-- [ ] Push notifications for student union and clubs
+- [x] 登录到 USTC 的统一身份认证系统
+- [x] RSS 消息源
+- [x] 本科生课表
+- [x] 本科生成绩
+- [x] 本科生考试安排
+- [x] 本科生作业安排
+- [x] APN Push消息推送
+- [x] 研究生课表
+- [x] 学校教室使用情况查询
+- [x] 校车查询
 
-> You could also implement this for your own school, say THU for example. All logic that are bounded with USTC are now stored in `School/USTC/` folder, you could easily add your own school by following the same structure.
->
-> We hope you could contribute your own school's logic to this project, so that more students could benefit from it.
+## 编译环境
 
-## Requirements
-
-- Xcode 14.0+
+- Xcode 15.0+
 - Swift 5.7+
 - iOS 16.0+
