@@ -11,13 +11,13 @@ import SwiftSoup
 class USTCExamDelegate: ManagedRemoteUpdateProtocol<[Exam]> {
     static let shared = USTCExamDelegate()
 
-    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     override func refresh() async throws -> [Exam] {
         let examURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/exam-arrange"
         )!
-        if try await !_ugAASClient.requireLogin() {
+        if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 

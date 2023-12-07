@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+enum USTCStudentType: String {
+    case undergraduate = "Undergraduate"
+    case graduate = "Graduate"
+}
+
 let ustcFeedListURL = URL(
     string: "https://static.xzkd.online/feed_source.json"
 )!
@@ -16,6 +21,8 @@ let ustcGeoLocationDataURL = URL(
 )!
 
 class USTCExports: SchoolExport {
+    @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
+    
     override var abbrName: String { "USTC" }
 
     override var fullName: String {
@@ -46,7 +53,11 @@ class USTCExports: SchoolExport {
     }
 
     override var curriculumDelegate: CurriculumProtocol {
-        USTCCurriculumDelegate.shared
+        if ustcStudentType == .graduate {
+            USTCGraduateCurriculumDelegate.shared
+        } else {
+            USTCUndergraduateCurriculumDelegate.shared
+        }
     }
 
     override var curriculumBehavior: CurriculumBehavior {

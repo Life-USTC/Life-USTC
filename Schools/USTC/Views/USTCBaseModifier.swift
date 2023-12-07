@@ -9,7 +9,7 @@ import SwiftUI
 
 struct USTCBaseModifier: ViewModifier {
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
-    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     @State var casLoginSheet: Bool = false
 
@@ -27,7 +27,7 @@ struct USTCBaseModifier: ViewModifier {
             }
 
             _casClient.clearLoginStatus()
-            _ugAASClient.clearLoginStatus()
+            _ustcAASClient.clearLoginStatus()
 
             if casClient.precheckFails {
                 casLoginSheet = true

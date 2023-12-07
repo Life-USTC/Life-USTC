@@ -19,14 +19,18 @@ struct CurriculumBehavior {
 }
 
 /// Usage: `class exampleDelegaet: CurriculumProtocolA & CurriculumProtocol`
-protocol CurriculumProtocolA {
-    func refreshSemesterList() async throws -> [String]
-    func refreshSemester(id: String) async throws -> Semester
-}
-
-extension CurriculumProtocolA {
+class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
+    func refreshSemesterList() async throws -> [T] {
+        assert(true)
+        return []
+    }
+    func refreshSemester(id: T) async throws -> Semester {
+        assert(true)
+        return .example
+    }
+    
     /// Parrallel refresh the whole curriculum
-    func refresh() async throws -> Curriculum {
+    override func refresh() async throws -> Curriculum {
         var result = Curriculum(semesters: [])
         let semesterList = try await refreshSemesterList()
         await withTaskGroup(of: Semester?.self) { group in

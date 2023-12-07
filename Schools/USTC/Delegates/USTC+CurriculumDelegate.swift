@@ -16,12 +16,11 @@ private func convertYYMMDD(_ date: String) -> Date {
     return dateFormatter.date(from: date)!
 }
 
-class USTCCurriculumDelegate: CurriculumProtocolB {
+class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
     @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
-    static let shared = USTCCurriculumDelegate()
+    static let shared = USTCUndergraduateCurriculumDelegate()
 
-    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
-    @LoginClient(.ustcCatalog) var catalogClient: UstcCatalogClient
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     override func refreshSemesterBase() async throws -> [Semester] {
         let request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
@@ -33,15 +32,11 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
     }
 
     override func refreshSemester(inComplete: Semester) async throws -> Semester {
-        return try await refreshUnderGraduateSemester(inComplete: inComplete)
-    }
-
-    func refreshUnderGraduateSemester(inComplete: Semester) async throws -> Semester {
         let queryURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/course-table"
         )!
         // Step 0: Check login
-        if try await !_ugAASClient.requireLogin() {
+        if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
@@ -82,6 +77,82 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
             courseList.append(course)
         }
 
+        var returnSemester = inComplete
+        returnSemester.courses = courseList
+        return returnSemester
+    }
+}
+
+class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, studentId: String, semester: Semester)> {
+    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
+    
+    static let shared = USTCGraduateCurriculumDelegate()
+    
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+    
+    override func refreshSemesterList() async throws -> [(semesterId: String, studentId: String, semester: Semester)] {
+        var request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
+        var (data, _) = try await URLSession.shared.data(for: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        let result = try decoder.decode([Semester].self, from: data)
+        
+        if try await !_ustcAASClient.requireLogin() {
+            throw BaseError.runtimeError("UstcUgAAS Not logined")
+        }
+        
+        request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-select/")!)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        var (_, response) = try await URLSession.shared.data(for: request)
+        let studentId = String(response.url?.absoluteString
+            .matches(of: try! Regex(#"\d+"#))
+            .first?.0 ?? "0")
+        
+        request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns?bizTypeId=3&studentId=\(studentId)")!)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.httpMethod = "POST"
+        (data, response) = try await URLSession.shared.data(for: request)
+        let json = try JSON(data: data)
+        
+        // if empty json, raise error
+        if json.arrayValue.isEmpty {
+            throw BaseError.runtimeError("No semester data")
+        }
+        
+        let semesterId = json[0]["id"].stringValue
+        let semesterName = json[0]["semesterName"].stringValue
+        let semester = result.first { $0.name == semesterName }
+        if semester == nil {
+            throw BaseError.runtimeError("No semester data")
+        }
+        
+        return [(semesterId, studentId, semester!)]
+    }
+    
+    override func refreshSemester(id: (semesterId: String, studentId: String, semester: Semester)) async throws -> Semester {
+        let url = URL(string: "https://jw.ustc.edu.cn/ws/for-std/course-select/selected-lessons?studentId=\(id.studentId)&turnId=\(id.semesterId)")!
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.httpMethod = "POST"
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let json = try JSON(data: data)
+        
+        let lessonIDs = json.arrayValue.map{$0["id"].stringValue}
+        
+        let inComplete = id.semester
+        
+        var courseList: [Course] = []
+        for lessonID in lessonIDs {
+            let lessonURL = URL(
+                string: "https://static.xzkd.online/curriculum/\(inComplete.id)/\(lessonID).json"
+            )
+            let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .secondsSince1970
+            let course = try decoder.decode(Course.self, from: courseJSONData)
+            courseList.append(course)
+        }
+        
         var returnSemester = inComplete
         returnSemester.courses = courseList
         return returnSemester

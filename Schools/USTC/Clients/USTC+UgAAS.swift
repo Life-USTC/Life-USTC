@@ -18,8 +18,8 @@ private let urlB = URL(
 private let urlC = URL(string: "https://jw.ustc.edu.cn/home")!
 
 /// USTC Undergraduate Academic Affairs System
-class UstcUgAASClient: LoginClientProtocol {
-    static let shared = UstcUgAASClient()
+class UstcAASClient: LoginClientProtocol {
+    static let shared = UstcAASClient()
 
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
     var session: URLSession = .shared
@@ -41,5 +41,5 @@ class UstcUgAASClient: LoginClientProtocol {
 }
 
 extension LoginClientProtocol {
-    static var ustcUgAAS = UstcUgAASClient.shared
+    static var ustcAAS = UstcAASClient.shared
 }

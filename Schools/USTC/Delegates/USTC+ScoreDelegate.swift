@@ -11,14 +11,14 @@ import SwiftyJSON
 class USTCScoreDelegate: ManagedRemoteUpdateProtocol<Score> {
     static let shared = USTCScoreDelegate()
 
-    @LoginClient(.ustcUgAAS) var ugAASClient: UstcUgAASClient
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     override func refresh() async throws -> Score {
         let scoreURL = URL(
             string:
                 "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds"
         )!
-        if try await !_ugAASClient.requireLogin() {
+        if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 

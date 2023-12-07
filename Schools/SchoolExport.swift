@@ -27,7 +27,7 @@ class SchoolExport {
     }
 
     var curriculumDelegate: CurriculumProtocol {
-        USTCCurriculumDelegate.shared
+        USTCExports.shared.curriculumDelegate
     }
 
     var curriculumBehavior: CurriculumBehavior { CurriculumBehavior() }

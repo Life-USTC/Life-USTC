@@ -104,7 +104,7 @@ extension FeaturesView {
                 )
             ] + feedSourceList.map { FeatureWithView($0) }
 
-        results["UG AAS"] = [
+        results["AAS"] = [
             .init(
                 image: "book",
                 title: "Curriculum",
