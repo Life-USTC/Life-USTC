@@ -90,7 +90,7 @@ class USTCCurriculumDelegate: CurriculumProtocolB {
 
 extension USTCExports {
     var curriculumChartShouldHideEvening: Bool {
-        UserDefaults.appGroup.bool(forKey: "curriculumChartShouldHideEvening")
+        UserDefaults.appGroup.value(forKey: "curriculumChartShouldHideEvening") as? Bool ?? false
     }
     
     var ustcCurriculumBehavior: CurriculumBehavior {
