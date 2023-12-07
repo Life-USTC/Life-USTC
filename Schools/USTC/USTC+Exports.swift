@@ -104,6 +104,14 @@ class USTCExports: SchoolExport {
                     destinationView: { USTC_SchoolBusView() }
                 ),
             ],
+            "AAS": [
+                .init(
+                    image: "rectangle.stack",
+                    title: "Homework (Blackboard)",
+                    subTitle: "",
+                    destinationView: { HomeworkDetailView() }
+                )
+            ]
         ]
     }
 }

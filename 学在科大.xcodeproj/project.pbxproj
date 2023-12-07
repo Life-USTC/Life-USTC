@@ -189,6 +189,7 @@
 		56F3EAD6296EB3B70095AEF4 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD9296EB7FD0095AEF4 /* ExamPreview.swift */; };
 		56F3EADC296EB9EA0095AEF4 /* ExamDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EADB296EB9EA0095AEF4 /* ExamDetailView.swift */; };
+		56F508362B219CC900C2B914 /* HomeworkDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5601B91D2B1A129700C85F25 /* HomeworkDetailView.swift */; };
 		56FA8E7C297D7263000AC3A9 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7B297D7263000AC3A9 /* WidgetBundle.swift */; };
 		56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FA8E7F297D7263000AC3A9 /* ExamWidget.swift */; };
 		56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FA8E82297D7264000AC3A9 /* Assets.xcassets */; };
@@ -1261,6 +1262,7 @@
 				56734CEE297D871500DBB45F /* ExceptionExtension.swift in Sources */,
 				5699672C2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
 				5601B9192B1A084900C85F25 /* Homework.swift in Sources */,
+				56F508362B219CC900C2B914 /* HomeworkDetailView.swift in Sources */,
 				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
 				56CAA6322A6D66E9003AFA1B /* JSRuntime.swift in Sources */,
 				56D8A49E2A6D21F10027224C /* Keychain.swift in Sources */,

@@ -122,12 +122,6 @@ extension FeaturesView {
                 title: "Score",
                 subTitle: "",
                 destinationView: { ScoreView() }
-            ),
-            .init(
-                image: "rectangle.stack",
-                title: "Homework (Blackboard)",
-                subTitle: "",
-                destinationView: { HomeworkDetailView() }
             )
         ]
 
