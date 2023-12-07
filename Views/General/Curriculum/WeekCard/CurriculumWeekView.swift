@@ -100,12 +100,18 @@ struct CurriculumWeekView: View {
                 }
             }
 
-            AxisMarks(
-                position: .bottom,
-                values: [behavior.convertTo(Date().stripDate().HHMM)]
-            ) { _ in
-                AxisGridLine(stroke: .init(dash: []))
-                    .foregroundStyle(.red)
+            
+            if (
+                (mergedTimes.first! ... mergedTimes.last!)
+                    .contains(behavior.convertTo(Date().stripDate().HHMM))
+            ) {
+                AxisMarks(
+                    position: .bottom,
+                    values: [behavior.convertTo(Date().stripDate().HHMM)]
+                ) { _ in
+                    AxisGridLine(stroke: .init(dash: []))
+                        .foregroundStyle(.red)
+                }
             }
 
             AxisMarks(position: .bottom, values: behavior.highLightTimes) {
