@@ -3,8 +3,8 @@ platform :ios do
   lane :build do
     setup_ci if is_ci
     xcode_select("/Applications/Xcode_15.0.app") if is_ci
-    match(type: "development", readonly: is_ci)
-    match(type: "appstore", readonly: is_ci)
+    match(type: "development", readonly: true)
+    match(type: "appstore", readonly: true)
     gym(
       scheme: "学在科大",
       export_method: "app-store",
@@ -21,8 +21,8 @@ platform :ios do
   lane :beta do
     setup_ci if is_ci
     xcode_select("/Applications/Xcode_15.0.app") if is_ci
-    match(type: "development", readonly: is_ci)
-    match(type: "appstore", readonly: is_ci)
+    match(type: "development", readonly: true)
+    match(type: "appstore", readonly: true)
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
