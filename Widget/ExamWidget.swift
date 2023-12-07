@@ -18,7 +18,7 @@ struct ExamProvider: TimelineProvider {
 
     func getSnapshot(in _: Context, completion: @escaping (ExamEntry) -> Void) {
         Task {
-            guard let exams = try await _exams.retrive()?.sort() else {
+            guard let exams = try await _exams.retrive() else {
                 throw BaseError.runtimeError("Failed to retrive exams")
             }
 
@@ -32,7 +32,7 @@ struct ExamProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            guard let exams = try await _exams.retrive()?.sort() else {
+            guard let exams = try await _exams.retrive() else {
                 throw BaseError.runtimeError("Failed to retrive exams")
             }
 

@@ -60,8 +60,12 @@ extension [Exam] {
 
     /// Sort given exams by time(ascending), and put the ones that are already over to the end of the array
     func sort() -> [Exam] {
-        self.filter { !$0.isFinished }.sorted { $0.startDate < $1.endDate }
-            + self.filter(\.isFinished).sorted { $0.startDate > $1.endDate }
+        self
+            .filter { !$0.isFinished }
+            .sorted { $0.startDate < $1.endDate }
+        + self
+            .filter(\.isFinished)
+            .sorted { $0.startDate > $1.endDate }
     }
 
     /// Merge two list of exam (addition only)

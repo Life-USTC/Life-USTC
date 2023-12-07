@@ -176,7 +176,7 @@ struct ExamPreview: View {
                 }
                 .padding(.bottom, 10)
                 if !exams.isEmpty {
-                    ForEach(Array(exams.prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
+                    ForEach(Array(exams.clean().prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
                         ExamWidgetView(exam: exam)
 
                         if index < exams.count - 1 {
@@ -197,7 +197,7 @@ struct ExamPreview: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            ForEach(exams) { exam in
+            ForEach(exams.clean()) { exam in
                 ExamView(exam: exam)
             }
             if exams.isEmpty {

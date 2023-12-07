@@ -9,14 +9,6 @@ import SwiftUI
 
 struct ExamDetailView: View {
     @ManagedData(.exam) var exams: [Exam]
-    
-    var finishedExams: [Exam] {
-        exams.filter { $0.isFinished }.sorted { $0.endDate > $1.endDate }
-    }
-    
-    var unfinishedExams: [Exam] {
-        exams.filter { !$0.isFinished }.sorted { $0.startDate < $1.startDate }
-    }
 
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
@@ -32,11 +24,7 @@ struct ExamDetailView: View {
                                 .padding(.vertical, 10)
                         }
                 } else {
-                    ForEach(unfinishedExams) { exam in
-                        SingleExamView(exam: exam)
-                    }
-                    
-                    ForEach(finishedExams) { exam in
+                    ForEach(exams.clean()) { exam in
                         SingleExamView(exam: exam)
                     }
                 }
