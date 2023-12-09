@@ -36,30 +36,25 @@ extension EKEvent {
 
 extension [Exam] {
     func clean() -> [Exam] {
-        let hiddenExamName =
-            ([String]
-            .init(
-                rawValue: UserDefaults.appGroup.string(forKey: "hiddenExamName")
-                    ?? ""
-            ) ?? [])
-            .filter { !$0.isEmpty }
-        let result = self.filter { exam in
-            for name in hiddenExamName {
-                if exam.courseName.contains(name) { return false }
+        @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
+        hiddenExamName = hiddenExamName.filter { !$0.isEmpty }
+        var result = self.sorted()
+        var hiddenResult = [Exam]()
+        for name in hiddenExamName {
+            hiddenResult += result.filter { exam in
+                exam.courseName.contains(name)
             }
-            return true
-        }
-        let hiddenResult = self.filter { exam in
-            for name in hiddenExamName {
-                if exam.courseName.contains(name) { return true }
+            
+            result.removeAll { exam in
+                exam.courseName.contains(name)
             }
-            return false
         }
-        return result.sort() + hiddenResult.sort()
+        
+        return result + hiddenResult
     }
 
     /// Sort given exams by time(ascending), and put the ones that are already over to the end of the array
-    func sort() -> [Exam] {
+    func sorted() -> [Exam] {
         self
             .filter { !$0.isFinished }
             .sorted { $0.startDate < $1.endDate }
