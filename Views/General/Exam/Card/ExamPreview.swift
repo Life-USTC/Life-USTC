@@ -13,7 +13,7 @@ struct ExamView: View {
     var body: some View {
         HStack {
             RoundedRectangle(cornerRadius: 2)
-                .fill(exam.isFinished ? .gray : .red)
+                .fill(exam.isFinished ? .gray : .cyan)
                 .frame(width: 5)
                 .frame(maxHeight: 50)
             VStack(alignment: .leading) {
@@ -83,7 +83,7 @@ struct ExamPreview: View {
     @ViewBuilder
     func makeWidget(
         with exam: Exam?,
-        color: Color = .blue.opacity(0.8)
+        color: Color = .cyan
     )
         -> some View
     {
@@ -99,13 +99,13 @@ struct ExamPreview: View {
                             .foregroundColor(.white)
                             .background(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(.mint.opacity(0.8))
+                                    .fill(color.opacity(0.8))
                             )
                         Text(exam.startDate, format: .dateTime.day().month())
                             .font(.callout)
                             .fontWeight(.semibold)
                             .lineLimit(1)
-                            .foregroundColor(.mint)
+                            .foregroundColor(color)
                     }
                     Text(exam.courseName)
                         .lineLimit(2)
@@ -119,7 +119,7 @@ struct ExamPreview: View {
                                 ? "1 day left".localized
                                 : String(format: "%@ days left".localized, String(exam.daysLeft))
                         )
-                        .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                        .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : color.opacity(0.8))
                         .font(.title3)
                         .fontWeight(.semibold)
                     }
@@ -154,38 +154,35 @@ struct ExamPreview: View {
     @ViewBuilder
     func makeListWidget(
         with exams: [Exam],
-        color: Color = .blue.opacity(0.8),
+        color: Color = .cyan,
         numberToShow: Int = 2
     )
         -> some View
     {
-        ZStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text("Exam")
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 3)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(color)
-                        )
-                    Spacer()
-                }
-                .padding(.bottom, 10)
-                if !exams.isEmpty {
-                    ForEach(Array(exams.clean().prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
-                        ExamWidgetView(exam: exam)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Exam")
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 3)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(color)
+                    )
+                Spacer()
+            }
+            .padding(.bottom, 10)
+            if !exams.isEmpty {
+                ForEach(Array(exams.clean().prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
+                    ExamWidgetView(exam: exam)
 
-                        if index < exams.count - 1 {
-                            Divider()
-                                .padding(.vertical, 7)
-                        }
+                    if index < exams.count - 1 && index < numberToShow - 1 {
+                        Divider()
+                            .padding(.vertical, 7)
                     }
                 }
-                Spacer()
             }
             if exams.isEmpty {
                 Text("No More Exam!")

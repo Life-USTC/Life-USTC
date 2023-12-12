@@ -88,20 +88,20 @@ struct CurriculumPreviewWidgetEntryView: View {
         if widgetFamily == .systemLarge {
             CurriculumTodayView()
                 .makeListWidget(
-                    with: entry.todayLectures,
+                    with: entry.todayLectures.union(),
                     numberToShow: 4
                 )
         } else if widgetFamily == .systemMedium {
             CurriculumTodayView()
                 .makeListWidget(
-                    with: entry.todayLectures,
+                    with: entry.todayLectures.union(),
                     numberToShow: 2
                 )
         } else if widgetFamily == .systemSmall {
             CurriculumTodayView()
                 .makeWidget(
-                    with: (entry.todayLectures.filter { $0.startDate > Date() }
-                        + entry.todayLectures.filter { $0.startDate <= Date() })
+                    with: (entry.todayLectures.union().filter { $0.startDate > Date() }
+                        + entry.todayLectures.union().filter { $0.startDate <= Date() })
                         .first
                 )
         }

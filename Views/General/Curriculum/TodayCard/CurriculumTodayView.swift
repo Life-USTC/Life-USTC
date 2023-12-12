@@ -243,13 +243,13 @@ struct CurriculumTodayView: View {
             makeView(
                 with: lectureListA,
                 text: listAText,
-                color: .red
+                color: .mint
             )
             Divider()
             makeView(
                 with: lectureListB,
                 text: listBText,
-                color: .blue
+                color: .orange
             )
         }
     }
