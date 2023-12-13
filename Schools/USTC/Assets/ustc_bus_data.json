@@ -1,5 +1,5 @@
 {
-    "update_time": "20230920",
+    "update_time": "20231120",
     "buses": [
         {
             "id": "1",
@@ -10,7 +10,7 @@
             "timeTable": [
                 10,
                 0,
-                45
+                40
             ],
             "type": "weekday",
             "stationNum": 4
@@ -24,7 +24,7 @@
             "timeTable": [
                 10,
                 0,
-                45
+                50
             ],
             "type": "weekday",
             "stationNum": 4
@@ -34,11 +34,11 @@
             "from": "\u4e1c\u533a",
             "to": "\u9ad8\u65b0",
             "startHour": 12,
-            "startMin": 40,
+            "startMin": 50,
             "timeTable": [
                 10,
                 0,
-                45
+                40
             ],
             "type": "weekday",
             "stationNum": 4
@@ -62,11 +62,11 @@
             "from": "\u4e1c\u533a",
             "to": "\u9ad8\u65b0",
             "startHour": 18,
-            "startMin": 25,
+            "startMin": 30,
             "timeTable": [
                 10,
                 0,
-                45
+                50
             ],
             "type": "weekday",
             "stationNum": 4
@@ -80,7 +80,7 @@
             "timeTable": [
                 10,
                 0,
-                45
+                30
             ],
             "type": "weekday",
             "stationNum": 4
@@ -122,7 +122,7 @@
             "timeTable": [
                 5,
                 0,
-                40
+                45
             ],
             "type": "weekday",
             "stationNum": 4
@@ -146,7 +146,7 @@
             "from": "\u9ad8\u65b0",
             "to": "\u4e1c\u533a",
             "startHour": 12,
-            "startMin": 40,
+            "startMin": 50,
             "timeTable": [
                 5,
                 0,
@@ -160,11 +160,11 @@
             "from": "\u9ad8\u65b0",
             "to": "\u4e1c\u533a",
             "startHour": 14,
-            "startMin": 10,
+            "startMin": 30,
             "timeTable": [
                 5,
                 0,
-                40
+                50
             ],
             "type": "weekday",
             "stationNum": 4
@@ -174,11 +174,11 @@
             "from": "\u9ad8\u65b0",
             "to": "\u4e1c\u533a",
             "startHour": 18,
-            "startMin": 5,
+            "startMin": 30,
             "timeTable": [
                 5,
                 0,
-                40
+                50
             ],
             "type": "weekday",
             "stationNum": 4
@@ -187,8 +187,8 @@
             "id": "14",
             "from": "\u9ad8\u65b0",
             "to": "\u4e1c\u533a",
-            "startHour": 21,
-            "startMin": 45,
+            "startHour": 22,
+            "startMin": 15,
             "timeTable": [
                 5,
                 0,
@@ -206,7 +206,7 @@
             "timeTable": [
                 10,
                 0,
-                50
+                40
             ],
             "type": "weekend",
             "stationNum": 4
@@ -216,11 +216,11 @@
             "from": "\u4e1c\u533a",
             "to": "\u9ad8\u65b0",
             "startHour": 12,
-            "startMin": 40,
+            "startMin": 50,
             "timeTable": [
                 10,
                 0,
-                50
+                40
             ],
             "type": "weekend",
             "stationNum": 4
@@ -234,7 +234,7 @@
             "timeTable": [
                 10,
                 0,
-                50
+                40
             ],
             "type": "weekend",
             "stationNum": 4

@@ -138,7 +138,8 @@ struct USTC_SchoolBusView: View {
     }
 
     var topBusList: [BusListItem] {
-        let showBuses = showPassBus ? filteredBuses : validBuses
+        var showBuses = showPassBus ? filteredBuses : validBuses
+        showBuses = showBuses.sorted(by: {$0.startTime < $1.startTime})
         let GDBus = showBuses.filter {
             return $0.from == "高新" && $0.to == "东区"
         }
