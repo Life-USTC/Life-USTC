@@ -30,9 +30,8 @@ struct USTCClassroomView: View {
     }
 
     @ManagedData(.classroom) var classroom: [String: [Lecture]]
-    @AppStorage("ustcClassroomSelectedDate") var _date: Date = .now
-    @AppStorage("ustcClassroomSelectedBuilding") var selectedBuilding: String =
-        "5"
+    @AppStorage("ustcClassroomSelectedBuilding") var selectedBuilding: String = "5"
+    @State var _date: Date = .now
     @State var selection: Selection = .morning
 
     var date: Date {
@@ -54,7 +53,7 @@ struct USTCClassroomView: View {
     }
 
     var buildingName: String {
-        ustcBuildingNames[selectedBuilding] ?? "Unknown"
+        ustcBuildingNames.first {$0.0 == selectedBuilding}?.1 ?? "Unknown"
     }
 
     var buildingRooms: [String] {
@@ -77,12 +76,11 @@ struct USTCClassroomView: View {
                     Text("Building")
                     Spacer()
                     Menu {
-                        ForEach(Array(ustcBuildingNames.keys), id: \.self) {
-                            building in
+                        ForEach(Array(ustcBuildingNames), id: \.0.self) { building in
                             Button {
-                                selectedBuilding = building
+                                selectedBuilding = building.0
                             } label: {
-                                Text(ustcBuildingNames[building] ?? "Unknown")
+                                Text(building.1)
                             }
                         }
                     } label: {
@@ -146,22 +144,7 @@ struct USTCClassroomView: View {
                     AxisMarks(values: buildingRooms)
                 }
                 .chartLegend(.hidden)
-                .if(true) { content -> AnyView in
-                    //                    guard #available(iOS 17, *) else {
-                    return AnyView(
-                        content
-                            .frame(
-                                height: Double(buildingRooms.count) * 50.0
-                                    + 10.0
-                            )
-                    )
-                    //                    }
-                    //                    return AnyView(
-                    //                        content
-                    //                            .chartScrollableAxes(.vertical)
-                    //                            .frame(height: 500)
-                    //                    )
-                }
+                .frame(height: Double(buildingRooms.count) * 50.0 + 10.0)
             } header: {
                 AsyncStatusLight(status: _classroom.status)
             }
@@ -173,9 +156,6 @@ struct USTCClassroomView: View {
         }
         .navigationTitle("Classroom Status")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            _date = .now.add(day: 21)
-        }
         .onChange(of: _date) { _ in
             _classroom.triggerRefresh()
         }

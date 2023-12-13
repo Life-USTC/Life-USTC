@@ -32,17 +32,17 @@ func loadBuildingInfo() -> [String: [String]] {
 }
 
 let ustcBuildingRooms: [String: [String]] = loadBuildingInfo()
-let ustcBuildingNames: [String: String] = [
-    "1": "第一教学楼",
-    "2": "第二教学楼",
-    "3": "第三教学楼",
-    "5": "第五教学楼",
-    "17": "先研院未来中心",
-    "11": "高新校区图书教育中心A楼",
-    "12": "高新校区图书教育中心B楼",
-    "13": "高新校区图书教育中心C楼",
-    "14": "高新校区师生活动中心",
-    "22": "高新校区信智楼",
+let ustcBuildingNames: [(String, String)] = [
+    ("1", "第一教学楼"),
+    ("2", "第二教学楼"),
+    ("3", "第三教学楼"),
+    ("5", "第五教学楼"),
+    ("17", "先研院未来中心"),
+    ("11", "高新校区图书教育中心A楼"),
+    ("12", "高新校区图书教育中心B楼"),
+    ("13", "高新校区图书教育中心C楼"),
+    ("14", "高新校区师生活动中心"),
+    ("22", "高新校区信智楼"),
 ]
 
 class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
@@ -71,21 +71,21 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
         let validToken = catalogClient.token
 
         var cache: [String: JSON] = [:]
-        for building in ustcBuildingNames.keys {
+        for building in ustcBuildingNames {
             let url = URL(
                 string:
-                    "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building)/\(dateString)?access_token=\(validToken)"
+                    "https://catalog.ustc.edu.cn/api/teach/timetable-public/\(building.0)/\(dateString)?access_token=\(validToken)"
             )!
             var request = URLRequest(url: url)
             request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
             let (data, _) = try await URLSession.shared.data(for: request)
-            cache[building] = try JSON(data: data)
+            cache[building.0] = try JSON(data: data)
         }
 
         var result: [String: [Lecture]] = [:]
-        for building in ustcBuildingNames.keys {
-            result[building] = []
-            if let json = cache[building] {
+        for building in ustcBuildingNames {
+            result[building.0] = []
+            if let json = cache[building.0] {
                 for (_, subJson) in json["timetable"]["lessons"] {
                     if let startDate = parseDate(subJson["start"].stringValue),
                         let endDate = parseDate(subJson["end"].stringValue)
@@ -97,7 +97,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
                             location: subJson["classroomName"].stringValue,
                             additionalInfo: ["Color": "blue"]
                         )
-                        result[building]?.append(tmp)
+                        result[building.0]?.append(tmp)
                     }
                 }
 
@@ -112,7 +112,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
                             location: subJson["classroomName"].stringValue,
                             additionalInfo: ["Color": "red"]
                         )
-                        result[building]?.append(tmp)
+                        result[building.0]?.append(tmp)
                     }
                 }
 
@@ -127,7 +127,7 @@ class USTCClassroomDelegate: ManagedRemoteUpdateProtocol<[String: [Lecture]]> {
                             location: subJson["classroomName"].stringValue,
                             additionalInfo: ["Color": "yellow"]
                         )
-                        result[building]?.append(tmp)
+                        result[building.0]?.append(tmp)
                     }
                 }
             }
