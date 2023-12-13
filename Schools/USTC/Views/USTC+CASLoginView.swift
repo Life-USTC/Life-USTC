@@ -113,11 +113,13 @@ struct USTCCASLoginView: View {
                 .frame(width: 200)
             }
             
-            HStack {
-                Text("Close and reopen the app to take effect.")
-                    .font(.system(.caption, design: .rounded, weight: .bold))
-                    .foregroundColor(.gray)
-                Spacer()
+            if !isInSheet {
+                HStack {
+                    Text("Close and reopen the app to take effect.")
+                        .font(.system(.caption, design: .rounded, weight: .bold))
+                        .foregroundColor(.gray)
+                    Spacer()
+                }
             }
         }
         .padding(.horizontal, 30)
