@@ -72,7 +72,7 @@ struct ExamWidgetEntryView: View {
             } else if widgetFamily == .systemSmall {
                 ExamPreview()
                     .makeWidget(
-                        with: entry.exams.first
+                        with: entry.exams.filter { !$0.isFinished }.first
                     )
             }
         }
