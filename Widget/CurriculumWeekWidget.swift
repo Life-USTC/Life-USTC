@@ -107,6 +107,7 @@ struct CurriculumWeekWidgetEntryView: View {
             weekNumber: entry.weekNumber,
             fontSize: widgetFamily == .systemExtraLarge ? 15 : 10
         )
+        .padding(3)
         .widgetBackground(
             Color.clear
         )

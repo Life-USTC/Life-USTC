@@ -176,11 +176,7 @@ struct ExamPreview: View {
             }
             .padding(.bottom, 10)
 
-            if exams.isEmpty {
-                Text("No More Exam!")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.secondary)
-            } else {
+            if !exams.isEmpty {
                 ForEach(Array(exams.clean().prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
                     ExamWidgetView(exam: exam)
                     
@@ -189,8 +185,12 @@ struct ExamPreview: View {
                             .padding(.vertical, 7)
                     }
                 }
-                Spacer()
+            } else {
+                Text("No More Exam!")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.secondary)
             }
+            Spacer()
         }
     }
 

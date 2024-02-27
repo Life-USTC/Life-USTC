@@ -202,39 +202,36 @@ struct CurriculumTodayView: View {
     )
         -> some View
     {
-        ZStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text("Class")
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 3)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(.mint)
-                        )
-                    Spacer()
-                }
-                .padding(.bottom, 10)
-                if !lectures.isEmpty {
-                    ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
-                        LectureWidgetView(lecture: lecture, color: color)
-
-                        if index < lectures.count - 1 {
-                            Divider()
-                                .padding(.vertical, 7)
-                        }
-                    }
-                }
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Class")
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 3)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.mint)
+                    )
                 Spacer()
             }
-            if lectures.isEmpty {
+            .padding(.bottom, 10)
+            if !lectures.isEmpty {
+                ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
+                    LectureWidgetView(lecture: lecture, color: color)
+                    
+                    if index < lectures.count - 1 {
+                        Divider()
+                            .padding(.vertical, 7)
+                    }
+                }
+            } else {
                 Text("No courses today!")
                     .font(.system(.body, design: .monospaced))
                     .foregroundColor(.secondary)
             }
+            Spacer()
         }
     }
 

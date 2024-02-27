@@ -85,26 +85,32 @@ struct CurriculumPreviewWidgetEntryView: View {
     var entry: CurriculumPreviewProvider.Entry
 
     var body: some View {
-        if widgetFamily == .systemLarge {
-            CurriculumTodayView()
-                .makeListWidget(
-                    with: entry.todayLectures.union(),
-                    numberToShow: 4
-                )
-        } else if widgetFamily == .systemMedium {
-            CurriculumTodayView()
-                .makeListWidget(
-                    with: entry.todayLectures.union(),
-                    numberToShow: 2
-                )
-        } else if widgetFamily == .systemSmall {
-            CurriculumTodayView()
-                .makeWidget(
-                    with: (entry.todayLectures.union().filter { $0.startDate > Date() }
-                        + entry.todayLectures.union().filter { $0.startDate <= Date() })
-                        .first
-                )
+        VStack {
+            if widgetFamily == .systemLarge {
+                CurriculumTodayView()
+                    .makeListWidget(
+                        with: entry.todayLectures.union(),
+                        numberToShow: 4
+                    )
+            } else if widgetFamily == .systemMedium {
+                CurriculumTodayView()
+                    .makeListWidget(
+                        with: entry.todayLectures.union(),
+                        numberToShow: 2
+                    )
+            } else if widgetFamily == .systemSmall {
+                CurriculumTodayView()
+                    .makeWidget(
+                        with: (entry.todayLectures.union().filter { $0.startDate > Date() }
+                            + entry.todayLectures.union().filter { $0.startDate <= Date() })
+                            .first
+                    )
+            }
         }
+        .padding(3)
+        .widgetBackground(
+            Color.clear
+        )
     }
 }
 

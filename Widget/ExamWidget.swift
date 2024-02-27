@@ -76,6 +76,7 @@ struct ExamWidgetEntryView: View {
                     )
             }
         }
+        .padding(3)
         .widgetBackground(
             Color.clear
         )

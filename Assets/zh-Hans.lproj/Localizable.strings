@@ -65,21 +65,22 @@
 "Weekend" = "周末";
 "Show departed buses" = "显示已出发校车";
 "No data" = "数据丢失";
+
 "Email" = "邮箱";
 "Course Rating" = "评课社区";
 "UG AAS" = "本科生教务";
 "AAS" = "教务系统";
 "Public Query" = "公共查询";
 "Web Service" = "网络通服务";
-"Physics Experiment" = "大物预约选课平台";
+"Physics Experiment" = "大物预约";
 "E-Card" = "一卡通";
 "Work-integrated Learning" = "学工一体化";
 "Hanhai Platform" = "瀚海教学网";
-"Meeting Room Appointment" = "中区研讨室预约";
+"Meeting Room Appointment" = "中区研讨室";
 "Library" = "图书馆";
 "Calendar" = "教学日历";
 "TA" = "助教管理系统";
-"Library Appointment" = "图书馆讨论室预约";
+"Library Appointment" = "图书馆讨论室";
 "Teacher Homepage" = "教师主页";
 "Vista" = "国际交流";
 "Teaching Secretary" = "教秘联系方式";
@@ -225,10 +226,10 @@
 
 "Additional Course" = "更多课程";
 "You can choose additional courses here, they would appear in your curriculum as if they are normal courses." = "您可以在这里选择更多课程，它们会以正常课程的形式出现在您的课表中。";
-"Graduate AAS" = "研究生教务系统";
-"Art Education Center Appointment" = "艺术教学中心场馆预约";
+"Graduate AAS" = "教务系统（研）";
+"Art Education Center Appointment" = "艺教中心预约";
 "Mental Health Education and Counseling Center" = "微笑在线";
-"Homework (Blackboard)" = "作业 (Blackboard)";
+"Homework (BB)" = "作业 (BB)";
 "No More Homework!" = "无更多作业";
 "Login Failed" = "登录失败";
 "Double check your username and password" = "检查用户名和密码";
