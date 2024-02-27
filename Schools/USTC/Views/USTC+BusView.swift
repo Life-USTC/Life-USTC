@@ -62,7 +62,7 @@ struct USTC_SchoolBusView: View {
 //            return _scheduleList
 //        } else {
 //            return _scheduleList.map { schedule in
-//                let time = schedule.time.filterBefore(Date().addingTimeInterval(-60 * 60 * 5)) // TODO: REMOVE THIS F*CK
+//                let time = schedule.time.filterBefore(Date()) // TODO: REMOVE THIS F*CK
 //                return USTCRouteSchedule(route: schedule.route, time: time)
 //            }
 //        }
@@ -82,7 +82,7 @@ struct USTC_SchoolBusView: View {
                     }
                 }
                 
-                if let nextTimes = schedule.time.nextTimes(after: Date().addingTimeInterval(-60 * 60 * 5)) {
+                if let nextTimes = schedule.time.nextTimes(after: Date()) {
                     HStack {
                         ForEach(nextTimes.indices, id: \.self) { index in
                             Text(nextTimes[index] ?? "--:--")
@@ -111,7 +111,7 @@ struct USTC_SchoolBusView: View {
     }
     
     @ViewBuilder func makeExpanedView(_ schedule: USTCRouteSchedule) -> some View {
-        let time = showPassBus ? schedule.time : schedule.time.filterBefore(Date().addingTimeInterval(-60 * 60 * 5))
+        let time = showPassBus ? schedule.time : schedule.time.filterBefore(Date())
         VStack {
             ForEach(time.indices, id: \.self) { indice_i in
                 HStack {
@@ -130,7 +130,7 @@ struct USTC_SchoolBusView: View {
                 }
                 .background(
                     Group {
-                        if time[indice_i][0] == schedule.time.nextTime(after: Date().addingTimeInterval(-60 * 60 * 5)) {
+                        if time[indice_i][0] == schedule.time.nextTime(after: Date()) {
                             RoundedRectangle(cornerRadius: 5)
                                 .fill(Color.blue.opacity(0.1))
                         }
