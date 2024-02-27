@@ -776,8 +776,8 @@
 		56AC7301294A012F00A60F47 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56AC7300294A012F00A60F47 /* 学在科大.app */,
 				56FA8E75297D7263000AC3A9 /* Widget iOS.appex */,
+				56AC7300294A012F00A60F47 /* 学在科大.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1603,7 +1603,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1642,7 +1642,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";

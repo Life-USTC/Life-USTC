@@ -1,30 +1,34 @@
 #!/usr/bin/env perl
-
-# Copyright (C) 2007-2021 Apple Inc.  All rights reserved.
-#
+# BSD 3-Clause License
+# 
+# Copyright (C) 2007, 2008, 2009, 2010 Apple Inc.  All rights reserved.
+# Copyright (c) 2020, Ryan Stortz (@withzombies)
+# All rights reserved.
+# 
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-# 1.  Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer. 
-# 2.  Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution. 
-# 3.  Neither the name of Apple Inc. ("Apple") nor the names of
-#     its contributors may be used to endorse or promote products derived
-#     from this software without specific prior written permission. 
-#
-# THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL APPLE OR ITS CONTRIBUTORS BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# modification, are permitted provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Script to sort "children" and "files" sections in Xcode project.pbxproj files
 
@@ -39,18 +43,14 @@ use Getopt::Long;
 sub sortChildrenByFileName($$);
 sub sortFilesByFileName($$);
 
-# Some files without extensions, so they can sort with the other files.
-# Otherwise, names without extensions are assumed to be groups or directories and sorted last.
-my %isFile = map { $_ => 1 } qw(
-    create_hash_table
-);
-
 my $printWarnings = 1;
 my $showHelp;
+my $checkOnly = 0;
 
 my $getOptionsResult = GetOptions(
     'h|help'         => \$showHelp,
     'w|warnings!'    => \$printWarnings,
+    'c|check'        => \$checkOnly,
 );
 
 if (scalar(@ARGV) == 0 && !$showHelp) {
@@ -62,6 +62,7 @@ if (!$getOptionsResult || $showHelp) {
     print STDERR <<__END__;
 Usage: @{[ basename($0) ]} [options] path/to/project.pbxproj [path/to/project.pbxproj ...]
   -h|--help           show this help message
+  -c|--check          check if projects are sorted
   -w|--[no-]warnings  show or suppress warnings (default: show warnings)
 __END__
     exit 1;
@@ -84,11 +85,6 @@ for my $projectFile (@ARGV) {
         $mainGroup = $2 if $line =~ m#^(\s*)mainGroup = ([0-9A-F]{24}( /\* .+ \*/)?);$#;
     }
     close(IN);
-
-    # Guess the basename of any umbrella header, based on the project name.
-    # Umbrella headers are sorted to the top of their Headers phase to work
-    # around rdar://104432605.
-    (my $umbrellaHeaderBasename = $projectFile) =~ s/.*\/(\w+?)(Legacy)?\.xcodeproj\/project\.pbxproj$/$1/;
 
     my ($OUT, $tempFileName) = tempfile(
         basename($projectFile) . "-XXXXXXXX",
@@ -115,15 +111,14 @@ for my $projectFile (@ARGV) {
                     $endMarker = $fileLine;
                     last;
                 }
-                if ($fileLine =~ /$umbrellaHeaderBasename(Private)?\.h/) {
-                    # Sort umbrella headers to the top. Needed until
-                    # rdar://104432605 is fixed in all shipping Xcodes.
-                    print $OUT $fileLine;
-                } else {
-                    push @files, $fileLine;
-                }
+                push @files, $fileLine;
             }
-            print $OUT sort sortFilesByFileName @files;
+            my @sortedFiles = sort sortFilesByFileName @files;
+            if ("@files" ne "@sortedFiles" and $checkOnly) {
+                die "Projects must be sorted in --check mode";
+            }
+
+            print $OUT @sortedFiles;
             print $OUT $endMarker;
         } elsif ($line =~ /^(\s*)children = \(\s*$/) {
             print $OUT $line;
@@ -139,11 +134,12 @@ for my $projectFile (@ARGV) {
             if ($lastTwo[0] =~ m#^\s+\Q$mainGroup\E = \{$#) {
                 # Don't sort mainGroup
                 print $OUT @children;
-            } elsif ($lastTwo[0] =~ m#\Q/* Products */\E = \{$#) {
-                # Don't sort Products
-                print $OUT @children;
             } else {
-                print $OUT sort sortChildrenByFileName @children;
+                my @sortedChildren = sort sortChildrenByFileName @children;
+                if ("@children" ne "@sortedChildren" and $checkOnly) {
+                    die "Projects must be sorted in --check mode";
+                }
+                print $OUT @sortedChildren;
             }
             print $OUT $endMarker;
         } else {
@@ -156,8 +152,12 @@ for my $projectFile (@ARGV) {
     close(IN);
     close($OUT);
 
-    unlink($projectFile) || die "Could not delete $projectFile: $!";
-    rename($tempFileName, $projectFile) || die "Could not rename $tempFileName to $projectFile: $!";
+    if (!$checkOnly) {
+        unlink($projectFile) || die "Could not delete $projectFile: $!";
+        rename($tempFileName, $projectFile) || die "Could not rename $tempFileName to $projectFile: $!";
+    } else {
+        unlink($tempFileName);
+    }
 }
 
 exit 0;
@@ -169,16 +169,15 @@ sub sortChildrenByFileName($$)
     my $bFileName = $1 if $b =~ /^\s*[A-Z0-9]{24} \/\* (.+) \*\/,$/;
     my $aSuffix = $1 if $aFileName =~ m/\.([^.]+)$/;
     my $bSuffix = $1 if $bFileName =~ m/\.([^.]+)$/;
-    my $aIsDirectory = !$aSuffix && !$isFile{$aFileName};
-    my $bIsDirectory = !$bSuffix && !$isFile{$bFileName};
-    return $bIsDirectory <=> $aIsDirectory if $aIsDirectory != $bIsDirectory;
+    if ((!$aSuffix && $bSuffix) || ($aSuffix && !$bSuffix)) {
+        return !$aSuffix ? -1 : 1;
+    }
     if ($aFileName =~ /^UnifiedSource\d+/ && $bFileName =~ /^UnifiedSource\d+/) {
         my $aNumber = $1 if $aFileName =~ /^UnifiedSource(\d+)/;
         my $bNumber = $1 if $bFileName =~ /^UnifiedSource(\d+)/;
-        return $aNumber <=> $bNumber if $aNumber != $bNumber;
+        return $aNumber <=> $bNumber;
     }
-    return lc($aFileName) cmp lc($bFileName) if lc($aFileName) ne lc($bFileName);
-    return $aFileName cmp $bFileName;
+    return lc($aFileName) cmp lc($bFileName);
 }
 
 sub sortFilesByFileName($$)
@@ -189,8 +188,7 @@ sub sortFilesByFileName($$)
     if ($aFileName =~ /^UnifiedSource\d+/ && $bFileName =~ /^UnifiedSource\d+/) {
         my $aNumber = $1 if $aFileName =~ /^UnifiedSource(\d+)/;
         my $bNumber = $1 if $bFileName =~ /^UnifiedSource(\d+)/;
-        return $aNumber <=> $bNumber if $aNumber != $bNumber;
+        return $aNumber <=> $bNumber;
     }
-    return lc($aFileName) cmp lc($bFileName) if lc($aFileName) ne lc($bFileName);
-    return $aFileName cmp $bFileName;
+    return lc($aFileName) cmp lc($bFileName);
 }
