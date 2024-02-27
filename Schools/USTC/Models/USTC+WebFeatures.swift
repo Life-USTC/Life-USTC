@@ -107,7 +107,7 @@ extension USTCExports {
                 name: "Calendar",
                 image: "calendar",
                 description: "教学日历",
-                url: "https://lib.ustc.edu.cn",
+                url: "https://www.teach.ustc.edu.cn/calendar/",
                 markUp: false
             ),
             .init(

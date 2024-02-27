@@ -107,7 +107,7 @@ class USTCExports: SchoolExport {
             "AAS": [
                 .init(
                     image: "rectangle.stack",
-                    title: "Homework (Blackboard)",
+                    title: "Homework (BB)",
                     subTitle: "",
                     destinationView: { HomeworkDetailView() }
                 )
