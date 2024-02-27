@@ -45,6 +45,6 @@ struct HomeSettingPage: View {
     }
 }
 
-#Preview{
+#Preview {
     HomeSettingPage()
 }

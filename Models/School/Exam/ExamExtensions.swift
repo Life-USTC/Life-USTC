@@ -44,12 +44,12 @@ extension [Exam] {
             hiddenResult += result.filter { exam in
                 exam.courseName.contains(name)
             }
-            
+
             result.removeAll { exam in
                 exam.courseName.contains(name)
             }
         }
-        
+
         return result + hiddenResult
     }
 
@@ -58,7 +58,7 @@ extension [Exam] {
         self
             .filter { !$0.isFinished }
             .sorted { $0.startDate < $1.endDate }
-        + self
+            + self
             .filter(\.isFinished)
             .sorted { $0.startDate > $1.endDate }
     }

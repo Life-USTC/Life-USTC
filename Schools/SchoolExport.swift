@@ -37,7 +37,7 @@ class SchoolExport {
     var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
-    
+
     var homeworkDelegate: HomeworkDelegateProtocol {
         USTCBBHomeworkDelegate.shared
     }

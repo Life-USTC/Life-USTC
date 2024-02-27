@@ -179,7 +179,7 @@ struct ExamPreview: View {
             if !exams.isEmpty {
                 ForEach(Array(exams.clean().prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
                     ExamWidgetView(exam: exam)
-                    
+
                     if index < exams.count - 1 && index < numberToShow - 1 {
                         Divider()
                             .padding(.vertical, 7)

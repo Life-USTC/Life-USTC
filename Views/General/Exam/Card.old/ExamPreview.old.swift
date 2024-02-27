@@ -103,6 +103,6 @@ struct ExamPreview_old: View {
     }
 }
 
-#Preview{
+#Preview {
     ExamPreview_old(exams: [.example])
 }

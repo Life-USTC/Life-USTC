@@ -35,6 +35,6 @@ struct CurriculumTodayCard_old: View {
     }
 }
 
-#Preview{
+#Preview {
     CurriculumTodayCard_old()
 }

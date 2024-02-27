@@ -40,19 +40,21 @@ struct FeaturesView: View {
             }
         }
     }
-    
+
     @ManagedData(.feedSource) var feedSourceList: [FeedSource]
-    
+
     @State var navigationToSettingsView = false
 
     @State var searchText = ""
-    
+
     @AppStorage("featureViewStyle") private var style: Style = .grid
-    
-    let gridItemLayout = [GridItem(.adaptive(minimum: 125)),
-                              GridItem(.adaptive(minimum: 125)),
-                              GridItem(.adaptive(minimum: 125)),
-                                GridItem(.adaptive(minimum: 125))]
+
+    let gridItemLayout = [
+        GridItem(.adaptive(minimum: 125)),
+        GridItem(.adaptive(minimum: 125)),
+        GridItem(.adaptive(minimum: 125)),
+        GridItem(.adaptive(minimum: 125)),
+    ]
 
     var features: [String: [FeatureWithView]] = [:]
     var featureSearched: [String: [FeatureWithView]] {
@@ -72,7 +74,7 @@ struct FeaturesView: View {
         }
         return features
     }
-    
+
     //TODO: should be change to enum in FeatureWithView
     var sectionPriority: [String: Int] = [
         "AAS": 2,
@@ -80,45 +82,45 @@ struct FeaturesView: View {
         "Public": 1,
         "Web": 3,
     ]
-    
+
     var gridView: some View {
-            ScrollView(showsIndicators: false){
-                Spacer()
-                    .frame(height: 10)
-                ForEach(
-                    featureSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
-                    id: \.key
-                ) { key, features in
-                    VStack(alignment: .leading) {
-                        Text(key.localized)
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .padding(.top, 20)
-                            .padding(.leading, 20)
-                        LazyVGrid (columns: gridItemLayout){
-                            ForEach(features, id: \.self) { feature in
-                                NavigationLink {
-                                    AnyView(feature.destinationView())
-                                } label: {
-                                    Label(feature.title.localized, systemImage: feature.image)
-                                        .labelStyle(FeatureLabelStyle())
-                                }
+        ScrollView(showsIndicators: false) {
+            Spacer()
+                .frame(height: 10)
+            ForEach(
+                featureSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
+                id: \.key
+            ) { key, features in
+                VStack(alignment: .leading) {
+                    Text(key.localized)
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .padding(.top, 20)
+                        .padding(.leading, 20)
+                    LazyVGrid(columns: gridItemLayout) {
+                        ForEach(features, id: \.self) { feature in
+                            NavigationLink {
+                                AnyView(feature.destinationView())
+                            } label: {
+                                Label(feature.title.localized, systemImage: feature.image)
+                                    .labelStyle(FeatureLabelStyle())
                             }
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.bottom, 20)
                     }
-                    .background {
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color("BackgroundWhite"))
-                    }
-                    .padding(.bottom, 30)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 20)
                 }
+                .background {
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color("BackgroundWhite"))
+                }
+                .padding(.bottom, 30)
             }
-            .padding(.horizontal, 15)
-            .padding(.bottom, 70)
-            .background(Color(.systemGroupedBackground))
         }
+        .padding(.horizontal, 15)
+        .padding(.bottom, 70)
+        .background(Color(.systemGroupedBackground))
+    }
 
     var listView: some View {
         List {
@@ -155,7 +157,7 @@ struct FeaturesView: View {
         .navigationTitle("Features")
         .navigationBarTitleDisplayMode(.large)
     }
-    
+
     var body: some View {
         Group {
             switch style {
@@ -196,7 +198,7 @@ struct FeaturesView: View {
 extension FeaturesView {
     func collectFeatures() -> [String: [FeatureWithView]] {
         var results: [String: [FeatureWithView]] = [:]
-        
+
         results["AAS"] = [
             .init(
                 image: "book",
@@ -215,7 +217,7 @@ extension FeaturesView {
                 title: "Score",
                 subTitle: "",
                 destinationView: { ScoreView() }
-            )
+            ),
         ]
 
         results["Feed"] =

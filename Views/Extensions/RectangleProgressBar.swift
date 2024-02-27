@@ -57,7 +57,8 @@ struct RectangleProgressBar: View {
     }
 
     func drawPath(in rect: CGSize, time: Double, progress: Double) -> Path {
-        let path = Path { path in path.move(to: .zero)
+        let path = Path { path in
+            path.move(to: .zero)
             let total = 20
             for x in 0 ... total {
                 let y = rect.height * Double(x) / Double(total)

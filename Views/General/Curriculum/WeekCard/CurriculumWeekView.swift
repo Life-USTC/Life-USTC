@@ -100,11 +100,9 @@ struct CurriculumWeekView: View {
                 }
             }
 
-            
-            if (
-                (mergedTimes.first! ... mergedTimes.last!)
-                    .contains(behavior.convertTo(Date().stripDate().HHMM))
-            ) {
+            if (mergedTimes.first! ... mergedTimes.last!)
+                .contains(behavior.convertTo(Date().stripDate().HHMM))
+            {
                 AxisMarks(
                     position: .bottom,
                     values: [behavior.convertTo(Date().stripDate().HHMM)]

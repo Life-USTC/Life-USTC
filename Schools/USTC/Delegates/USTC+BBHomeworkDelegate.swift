@@ -17,10 +17,10 @@ private func decodeDate(from raw: String) -> Date? {
 
 class USTCBBHomeworkDelegate: ManagedRemoteUpdateProtocol<[Homework]> {
     static let shared = USTCBBHomeworkDelegate()
-    
+
     @LoginClient(.ustcBlackboard) var blackboardClient
     var session: URLSession = .shared
-    
+
     override func refresh() async throws -> [Homework] {
         let homeworkURL = URL(
             string:
@@ -29,22 +29,24 @@ class USTCBBHomeworkDelegate: ManagedRemoteUpdateProtocol<[Homework]> {
         if try await !_blackboardClient.requireLogin() {
             throw BaseError.runtimeError("UstcBlackboard Not logined")
         }
-        
+
         var request = URLRequest(url: homeworkURL)
         request.httpMethod = "GET"
-        
+
         let (data, _) = try await session.data(for: request)
         let cache = try JSON(data: data)
-        
-        return cache.map { _, homeworkJSON in
-            if let dueDate = decodeDate(from: homeworkJSON["endDate"].stringValue) {
-                return Homework(
-                    title: homeworkJSON["title"].stringValue,
-                    courseName: homeworkJSON["calendarNameLocalizable"]["rawValue"].stringValue,
-                    dueDate: dueDate
-                )
+
+        return
+            cache.map { _, homeworkJSON in
+                if let dueDate = decodeDate(from: homeworkJSON["endDate"].stringValue) {
+                    return Homework(
+                        title: homeworkJSON["title"].stringValue,
+                        courseName: homeworkJSON["calendarNameLocalizable"]["rawValue"].stringValue,
+                        dueDate: dueDate
+                    )
+                }
+                return nil
             }
-            return nil
-        }.compactMap { $0 }
+            .compactMap { $0 }
     }
 }

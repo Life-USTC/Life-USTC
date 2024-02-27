@@ -101,6 +101,6 @@ struct FeaturePreview: View {
     }
 }
 
-#Preview{
+#Preview {
     FeaturePreview()
 }

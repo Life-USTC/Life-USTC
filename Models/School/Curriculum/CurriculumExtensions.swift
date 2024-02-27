@@ -28,7 +28,7 @@ class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
         assert(true)
         return .example
     }
-    
+
     /// Parrallel refresh the whole curriculum
     override func refresh() async throws -> Curriculum {
         var result = Curriculum(semesters: [])

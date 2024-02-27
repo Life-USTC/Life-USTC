@@ -18,22 +18,22 @@ extension View {
 struct USTCCASLoginView: View {
     @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-    
+
     enum Field: Int, Hashable {
         case username
         case password
     }
-    
+
     @Binding var casLoginSheet: Bool  // used to signal the sheet to close
     @StateObject var ustcCASViewModel = UstcCasViewModel.shared
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
     @State var failedMessage = ""
     @FocusState var foucusField: Field?
-    
+
     var title: LocalizedStringKey = "CAS Settings"
     var isInSheet = false
-    
+
     var iconView: some View {
         HStack(spacing: 50) {
             Image("Icon")
@@ -52,7 +52,7 @@ struct USTCCASLoginView: View {
                 }
         }
     }
-    
+
     var formView: some View {
         VStack(spacing: 20) {
             HStack(alignment: .center) {
@@ -98,7 +98,7 @@ struct USTCCASLoginView: View {
                 }
                 .frame(width: 200)
             }
-            
+
             HStack(alignment: .center) {
                 Text("Type:")
                     .font(.system(.body, design: .monospaced, weight: .bold))
@@ -112,7 +112,7 @@ struct USTCCASLoginView: View {
                 .pickerStyle(.segmented)
                 .frame(width: 200)
             }
-            
+
             if !isInSheet {
                 HStack {
                     Text("Close and reopen the app to take effect.")
@@ -124,7 +124,7 @@ struct USTCCASLoginView: View {
         }
         .padding(.horizontal, 30)
     }
-    
+
     var loginButton: some View {
         Button {
             checkAndLogin()
@@ -141,24 +141,24 @@ struct USTCCASLoginView: View {
         }
         .keyboardShortcut(.defaultAction)
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack {
                 iconView
                     .padding(.vertical, 30)
-                
+
                 Text("casHint")
                     .font(.system(.caption, design: .rounded, weight: .bold))
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 10)
                     .padding(.bottom, 30)
-                
+
                 formView
-                
+
                 Spacer()
-                
+
                 loginButton
             }
             .padding([.top, .horizontal])
@@ -182,14 +182,14 @@ struct USTCCASLoginView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-    
+
     func checkAndLogin() {
         Task {
             do {
                 let result = try await ustcCASViewModel.checkAndLogin()
                 if result, isInSheet {
                     showSuccessAlert = true
-                    
+
                     // close after 1 second
                     DispatchQueue.main.asyncAfter(
                         deadline: .now() + .seconds(1)
@@ -202,7 +202,7 @@ struct USTCCASLoginView: View {
                     showSuccessAlert = true
                     return
                 }
-                
+
                 failedMessage = "Double check your username and password".localized
                 showFailedAlert = true
             } catch {
@@ -221,7 +221,7 @@ extension USTCCASLoginView {
             isInSheet: true
         )
     }
-    
+
     static var newPage = USTCCASLoginView(casLoginSheet: .constant(false))
 }
 

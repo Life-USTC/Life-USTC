@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SingleHomeWorkView: View {
     let homework: Homework
-    
+
     var body: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading) {
@@ -17,23 +17,23 @@ struct SingleHomeWorkView: View {
                     .font(.system(.title2, weight: .bold))
                     .strikethrough(homework.isFinished)
                     .foregroundColor(homework.isFinished ? .gray : .primary)
-                
+
                 Text(homework.courseName)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
+
                 Spacer(minLength: 25)
-                
+
                 HStack {
                     Image(systemName: "calendar.badge.clock")
-                    Text(homework.dueDate, style:  .date)
-                    Text(homework.dueDate, style:  .time)
+                    Text(homework.dueDate, style: .date)
+                    Text(homework.dueDate, style: .time)
                 }
                 .font(.callout)
             }
-            
+
             Spacer()
-            
+
             if homework.isFinished {
                 Text("Finished".localized)
                     .fontWeight(.bold)
@@ -53,15 +53,15 @@ struct SingleHomeWorkView: View {
 
 struct HomeworkDetailView: View {
     @ManagedData(.homework) var homeworks: [Homework]
-    
+
     var archivedHomework: [Homework] {
         homeworks.filter { $0.dueDate < Date() }.sorted { $0.dueDate > $1.dueDate }
     }
-    
+
     var newHomework: [Homework] {
         homeworks.filter { $0.dueDate > Date() }.sorted { $0.dueDate < $1.dueDate }
     }
-    
+
     var body: some View {
         List {
             Section {
@@ -77,12 +77,12 @@ struct HomeworkDetailView: View {
                     ForEach(newHomework) { homework in
                         SingleHomeWorkView(homework: homework)
                     }
-                    
+
                     ForEach(archivedHomework) { homework in
                         SingleHomeWorkView(homework: homework)
                     }
                 }
-            }  header: {
+            } header: {
                 AsyncStatusLight(status: _homeworks.status)
             } footer: {
                 Text("disclaimer")
@@ -100,5 +100,5 @@ struct HomeworkDetailView: View {
         .navigationTitle("Homework (Blackboard)")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
 }

@@ -22,6 +22,8 @@ struct USTCBaseModifier: ViewModifier {
 
     func onLoadFunction() {
         Task {
+            //            let k = try await USTCBusDataDelegate.shared.refresh()
+            //            debugPrint(k)
             if appShouldPresentDemo {
                 return
             }

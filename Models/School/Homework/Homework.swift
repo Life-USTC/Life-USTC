@@ -9,12 +9,12 @@ import Foundation
 
 struct Homework: Codable, Identifiable, Equatable, ExampleDataProtocol {
     var id = UUID()
-    
+
     var title: String
     var courseName: String
-    
+
     var dueDate: Date
-    
+
     static let example: Homework = .init(
         title: "第一次作业",
         courseName: "数学分析B1",
@@ -26,7 +26,7 @@ extension Homework {
     var isFinished: Bool {
         Date() > dueDate
     }
-    
+
     var daysLeft: Int {
         Calendar.current.dateComponents([.day], from: Date(), to: dueDate).day!
     }

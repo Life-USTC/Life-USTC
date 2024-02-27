@@ -17,6 +17,6 @@ struct ExamPreviewCard_old: View {
     }
 }
 
-#Preview{
+#Preview {
     ExamPreviewCard_old()
 }

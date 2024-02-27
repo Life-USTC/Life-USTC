@@ -19,29 +19,29 @@ private let urlB = URL(
         "https://passport.ustc.edu.cn/login?service=https%3a%2f%2fwww.bb.ustc.edu.cn%2fwebapps%2fbb-SSOIntegrationDemo-BBLEARN%2fexecute%2fauthValidate%2fcustomLogin%3freturnUrl%3dhttp%3a%2f%2fwww.bb.ustc.edu.cn%2fwebapps%2fportal%2fframeset.jsp%26authProviderId%3d_103_1"
 )!
 private let urlC = URL(
-    string: 
+    string:
         "https://www.bb.ustc.edu.cn/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_1_1"
 )!
 
 /// USTC Undergraduate Academic Affairs System
 class UstcBlackboardClient: LoginClientProtocol {
     static let shared = UstcBlackboardClient()
-    
+
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
     var session: URLSession = .shared
-    
+
     override func login() async throws -> Bool {
-        
+
         // jw.ustc.edu.cn login.
         _ = try await session.data(from: urlA)
         _ = try await casClient.loginToCAS(url: urlB, service: urlA)
-        
+
         // now try login url, see if that directs to home page
         var request = URLRequest(url: urlB)
         request.httpMethod = "GET"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await session.data(for: request)
-        
+
         return (response.url == urlC)
     }
 }

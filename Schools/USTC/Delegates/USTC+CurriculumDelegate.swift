@@ -85,62 +85,74 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
 
 class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, studentId: String, semester: Semester)> {
     @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
-    
+
     static let shared = USTCGraduateCurriculumDelegate()
-    
+
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
-    
+
     override func refreshSemesterList() async throws -> [(semesterId: String, studentId: String, semester: Semester)] {
         var request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
         var (data, _) = try await URLSession.shared.data(for: request)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         let result = try decoder.decode([Semester].self, from: data)
-        
+
         if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
-        
+
         request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-select/")!)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         var (_, response) = try await URLSession.shared.data(for: request)
-        let studentId = String(response.url?.absoluteString
-            .matches(of: try! Regex(#"\d+"#))
-            .first?.0 ?? "0")
-        
-        request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns?bizTypeId=3&studentId=\(studentId)")!)
+        let studentId = String(
+            response.url?.absoluteString
+                .matches(of: try! Regex(#"\d+"#))
+                .first?
+                .0 ?? "0"
+        )
+
+        request = URLRequest(
+            url: URL(
+                string: "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns?bizTypeId=3&studentId=\(studentId)"
+            )!
+        )
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.httpMethod = "POST"
         (data, response) = try await URLSession.shared.data(for: request)
         let json = try JSON(data: data)
-        
+
         // if empty json, raise error
         if json.arrayValue.isEmpty {
             throw BaseError.runtimeError("No semester data")
         }
-        
+
         let semesterId = json[0]["id"].stringValue
         let semesterName = json[0]["semesterName"].stringValue
         let semester = result.first { $0.name == semesterName }
         if semester == nil {
             throw BaseError.runtimeError("No semester data")
         }
-        
+
         return [(semesterId, studentId, semester!)]
     }
-    
-    override func refreshSemester(id: (semesterId: String, studentId: String, semester: Semester)) async throws -> Semester {
-        let url = URL(string: "https://jw.ustc.edu.cn/ws/for-std/course-select/selected-lessons?studentId=\(id.studentId)&turnId=\(id.semesterId)")!
+
+    override func refreshSemester(id: (semesterId: String, studentId: String, semester: Semester)) async throws
+        -> Semester
+    {
+        let url = URL(
+            string:
+                "https://jw.ustc.edu.cn/ws/for-std/course-select/selected-lessons?studentId=\(id.studentId)&turnId=\(id.semesterId)"
+        )!
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.httpMethod = "POST"
         let (data, _) = try await URLSession.shared.data(for: request)
         let json = try JSON(data: data)
-        
-        let lessonIDs = json.arrayValue.map{$0["id"].stringValue}
-        
+
+        let lessonIDs = json.arrayValue.map { $0["id"].stringValue }
+
         let inComplete = id.semester
-        
+
         var courseList: [Course] = []
         for lessonID in lessonIDs {
             let lessonURL = URL(
@@ -152,7 +164,7 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, s
             let course = try decoder.decode(Course.self, from: courseJSONData)
             courseList.append(course)
         }
-        
+
         var returnSemester = inComplete
         returnSemester.courses = courseList
         return returnSemester
@@ -163,7 +175,7 @@ extension USTCExports {
     var curriculumChartShouldHideEvening: Bool {
         UserDefaults.appGroup.value(forKey: "curriculumChartShouldHideEvening") as? Bool ?? false
     }
-    
+
     var ustcCurriculumBehavior: CurriculumBehavior {
         if curriculumChartShouldHideEvening {
             CurriculumBehavior(
@@ -196,12 +208,12 @@ extension USTCExports {
                     15 * 60 + 55 - 105,
                     17 * 60 + 30 - 105,
                     19 * 60 + 30 - 105 - 65,
-                    21 * 60 + 5 - 105 - 65
+                    21 * 60 + 5 - 105 - 65,
                 ],
                 highLightTimes: [
                     12 * 60 + 10,
                     18 * 60 + 20 - 105,
-                    21 * 60 + 55 - 105 - 65
+                    21 * 60 + 55 - 105 - 65,
                 ],
                 convertTo: { value in
                     value <= 730 ? value : value <= 1100 ? value - 105 : value - 170

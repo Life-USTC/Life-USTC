@@ -11,13 +11,13 @@ struct FeatureWithView: Identifiable, Hashable {
     static func == (lhs: FeatureWithView, rhs: FeatureWithView) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     var id = UUID()
     var image: String
     var title: String
     var subTitle: String
     var destinationView: () -> any View
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

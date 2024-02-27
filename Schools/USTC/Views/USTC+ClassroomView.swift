@@ -53,7 +53,7 @@ struct USTCClassroomView: View {
     }
 
     var buildingName: String {
-        ustcBuildingNames.first {$0.0 == selectedBuilding}?.1 ?? "Unknown"
+        ustcBuildingNames.first { $0.0 == selectedBuilding }?.1 ?? "Unknown"
     }
 
     var buildingRooms: [String] {

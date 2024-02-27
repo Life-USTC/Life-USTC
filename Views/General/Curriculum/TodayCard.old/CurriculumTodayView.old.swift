@@ -82,6 +82,6 @@ struct CurriculumTodayView_old: View {
     }
 }
 
-#Preview{
+#Preview {
     CurriculumTodayView_old(lectures: [.example])
 }

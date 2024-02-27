@@ -9,55 +9,65 @@ import Foundation
 import SwiftUI
 import SwiftyJSON
 
-class USTCBusDelegate: ManagedRemoteUpdateProtocol<[Bus]> {
-    static let shared = USTCBusDelegate()
-    @AppStorage("ustcBusSelectedDate") var date: Date = .now
+struct USTCCampus: Identifiable, Codable, Hashable {
+    var id: Int
+    var name: String
 
-    override func refresh() async throws -> [Bus] {
-        var result: [Bus] = []
-        let calendar = Calendar(identifier: .gregorian)
-        var from: String
-        var to: String
-        var startTime: Date
-        if let path = Bundle.main.path(forResource: "ustc_bus_data", ofType: "json") {
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: path))
-                let jsonData = try JSON(data: data)
-                for (id, subJson): (String, JSON) in jsonData["buses"] {
-                    from = subJson["from"].stringValue
-                    to = subJson["to"].stringValue
-                    startTime = calendar.date(
-                        from: DateComponents(
-                            calendar: calendar,
-                            timeZone: TimeZone(identifier: "Asia/Shanghai"),
-                            hour: Int(subJson["startHour"].stringValue),
-                            minute: Int(subJson["startMin"].stringValue)
-                        )
-                    )!
+    var latitude: Double
+    var longitude: Double
 
-                    result.append(
-                        Bus(
-                            id: Int(id)!,
-                            from: from,
-                            to: to,
-                            startTime: startTime,
-                            timeTable: subJson["timeTable"].arrayValue.map { Int($0.stringValue)! },
-                            type: subJson["type"].stringValue,
-                            stationNum: Int(subJson["stationNum"].stringValue)!
-                        )
-                    )
-                }
-            } catch {
-                print("Error reading JSON file: \(error)")
-            }
-        }
-        return result
+    static let example = USTCCampus(
+        id: 1,
+        name: "东区",
+        latitude: 100,
+        longitude: 30
+    )
+}
+
+typealias USTCRoute = [USTCCampus]
+
+struct USTCRouteSchedule: Identifiable, Codable {
+    var id: Int { route.hashValue }
+    var route: USTCRoute
+    var time: [[String?]]
+
+    static let example = USTCRouteSchedule(
+        route: [.example, .example],
+        time: [
+            ["07:50", "08:10"]
+        ]
+    )
+}
+
+struct USTCBusData: ExampleDataProtocol, Codable {
+    var campuses: [USTCCampus]
+
+    var routes: [USTCRoute]
+
+    var weekday_routes: [USTCRouteSchedule]
+    var weekend_routes: [USTCRouteSchedule]
+
+    static let example = USTCBusData(
+        campuses: [.example],
+        routes: [[.example]],
+        weekday_routes: [.example],
+        weekend_routes: [.example]
+    )
+}
+
+class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
+    static let shared = USTCBusDataDelegate()
+
+    override func refresh() async throws -> USTCBusData {
+        let url = URL(string: "https://static.xzkd.online/bus_data_v2.json")
+        let (data, _) = try await URLSession.shared.data(from: url!)
+        return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 }
 
-extension ManagedDataSource<[Bus]> {
-    static let bus = ManagedDataSource(
+extension ManagedDataSource<USTCBusData> {
+    static let ustcBus = ManagedDataSource(
         local: ManagedLocalStorage("ustc_bus"),
-        remote: USTCBusDelegate.shared
+        remote: USTCBusDataDelegate.shared
     )
 }

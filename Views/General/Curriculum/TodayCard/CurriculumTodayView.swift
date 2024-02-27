@@ -220,7 +220,7 @@ struct CurriculumTodayView: View {
             if !lectures.isEmpty {
                 ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
                     LectureWidgetView(lecture: lecture, color: color)
-                    
+
                     if index < lectures.count - 1 {
                         Divider()
                             .padding(.vertical, 7)

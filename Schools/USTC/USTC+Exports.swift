@@ -22,7 +22,7 @@ let ustcGeoLocationDataURL = URL(
 
 class USTCExports: SchoolExport {
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-    
+
     override var abbrName: String { "USTC" }
 
     override var fullName: String {
@@ -71,7 +71,7 @@ class USTCExports: SchoolExport {
     override var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
-    
+
     override var homeworkDelegate: HomeworkDelegateProtocol {
         USTCBBHomeworkDelegate.shared
     }
@@ -111,7 +111,7 @@ class USTCExports: SchoolExport {
                     subTitle: "",
                     destinationView: { HomeworkDetailView() }
                 )
-            ]
+            ],
         ]
     }
 }
