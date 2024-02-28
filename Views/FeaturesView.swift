@@ -10,7 +10,7 @@ import SwiftUI
 
 struct FeatureLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .center, spacing: 3) {
+        VStack(alignment: .center, spacing: 0) {
             configuration.icon
                 .foregroundColor(Color("AccentColor"))
                 .font(.title)
@@ -19,10 +19,9 @@ struct FeatureLabelStyle: LabelStyle {
                 .padding(.horizontal, 10)
             configuration.title
                 .foregroundColor(.black)
-                .lineLimit(1)
+                .lineLimit(2, reservesSpace: true)
                 .font(.caption)
         }
-        .padding(.vertical, 5)
     }
 }
 
@@ -108,7 +107,7 @@ struct FeaturesView: View {
                         }
                     }
                     .padding(.horizontal, 10)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 10)
                 }
                 .background {
                     RoundedRectangle(cornerRadius: 15)

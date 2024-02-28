@@ -12,12 +12,13 @@ enum ContentViewTab: Int, CaseIterable {
     case position_2 = 2
     case position_3 = 3
 
+    @ViewBuilder
     var view: some View {
         Group {
             switch self {
             case .position_1: HomeView()
-            case .position_2: AllSourceView()
-            case .position_3: FeaturesView()
+            case .position_2: FeaturesView()
+            case .position_3: AllSourceView()
             }
         }
     }

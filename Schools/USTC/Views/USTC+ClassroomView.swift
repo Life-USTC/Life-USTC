@@ -32,7 +32,16 @@ struct USTCClassroomView: View {
     @ManagedData(.classroom) var classroom: [String: [Lecture]]
     @AppStorage("ustcClassroomSelectedBuilding") var selectedBuilding: String = "5"
     @State var _date: Date = .now
-    @State var selection: Selection = .morning
+    @State var selection: Selection = {
+        let hour = Calendar.current.component(.hour, from: .now)
+        switch hour {
+        case 7 ..< 12: return .morning
+        case 14 ..< 19: return .afternoon
+        default: return .night
+        }
+    }()
+    
+    @AppStorage("ustcClassroomUseBrowser") var useBrowser: Bool = true
 
     var date: Date {
         _date.stripTime()
@@ -64,7 +73,7 @@ struct USTCClassroomView: View {
         classroom[selectedBuilding] ?? []
     }
 
-    var body: some View {
+    var customView: some View {
         List {
             Section {
                 DatePicker(
@@ -154,10 +163,29 @@ struct USTCClassroomView: View {
         .refreshable {
             _classroom.triggerRefresh()
         }
-        .navigationTitle("Classroom Status")
-        .navigationBarTitleDisplayMode(.inline)
         .onChange(of: _date) { _ in
             _classroom.triggerRefresh()
+        }
+    }
+
+    var body: some View {
+        Group {
+            if useBrowser {
+                SwiftUIWebView(url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!)
+            } else {
+                customView
+            }
+        }
+        .navigationTitle("Classroom Status")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    useBrowser.toggle()
+                } label: {
+                    Image(systemName: useBrowser ? "doc.append": "safari")
+                }
+            }
         }
     }
 }

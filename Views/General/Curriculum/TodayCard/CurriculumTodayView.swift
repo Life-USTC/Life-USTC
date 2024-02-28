@@ -85,14 +85,12 @@ struct CurriculumTodayView: View {
         with lectures: [Lecture],
         text: String? = nil,
         color: Color = Color("AccentColor")
-    )
-        -> some View
-    {
+    ) -> some View {
         VStack(alignment: .leading) {
             if let text {
                 Text(text.localized)
                     .foregroundColor(.gray)
-                    .font(.system(.title3, design: .monospaced, weight: .bold))
+                    .font(.system(.subheadline, design: .monospaced, weight: .bold))
             }
 
             ForEach(lectures) { lecture in
@@ -134,9 +132,7 @@ struct CurriculumTodayView: View {
     func makeWidget(
         with lecture: Lecture?,
         color: Color = Color("AccentColor")
-    )
-        -> some View
-    {
+    ) -> some View {
         if let lecture {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
@@ -199,9 +195,7 @@ struct CurriculumTodayView: View {
         with lectures: [Lecture],
         color: Color = Color("AccentColor"),
         numberToShow: Int = 2
-    )
-        -> some View
-    {
+    ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("Class")
@@ -242,7 +236,7 @@ struct CurriculumTodayView: View {
                 text: listAText,
                 color: .mint
             )
-            Divider()
+//            Divider()
             makeView(
                 with: lectureListB,
                 text: listBText,

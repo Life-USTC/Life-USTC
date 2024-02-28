@@ -24,6 +24,9 @@ struct USTCAdditionalCourseView: View {
                     } label: {
                         VStack(alignment: .leading) {
                             Text(semester.name)
+                                .if((semester.startDate ... semester.endDate).contains(Date())) {
+                                    $0.foregroundColor(.accentColor)
+                                }
                             HStack {
                                 Text(
                                     DateFormatter.localizedString(
@@ -49,7 +52,7 @@ struct USTCAdditionalCourseView: View {
                 }
             } header: {
                 Text(
-                    "You can choose additional courses here, they would appear in your curriculum as if they are normal courses."
+                    "You can choose additional courses here, they would appear in your curriculum alongside other alongside other courses. This is useful for sit-in or TA courses"
                 )
             }
         }
@@ -63,7 +66,7 @@ struct USTCAdditionalCourseView: View {
                 semesters = try decoder.decode([Semester].self, from: data).sorted(by: { $0.startDate > $1.startDate })
             }
         }
-        .navigationTitle("Additional Course")
+        .navigationTitle("Select Additional Course")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

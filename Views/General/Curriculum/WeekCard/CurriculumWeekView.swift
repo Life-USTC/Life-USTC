@@ -172,11 +172,19 @@ struct CurriculumWeekViewVertical: View {
         VStack(alignment: .center) {
             HStack {
                 Text(date ... date.add(day: 6))
-
+                
                 if let weekNumber {
                     Spacer()
+                    
+                    if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                        Text(String(format: "Week %@".localized, String(weekNumber)))
+                    } else {
+                        Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
+                    }
+                } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
+                    Spacer()
 
-                    Text("Week \(weekNumber)")
+                    Text("[NOT CURRENT]")
                 }
 
                 Spacer()

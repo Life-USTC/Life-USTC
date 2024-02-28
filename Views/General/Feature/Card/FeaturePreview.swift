@@ -13,16 +13,8 @@ struct SingleFeaturePreview: View {
         NavigationLink {
             AnyView(feature.destinationView())
         } label: {
-            VStack(spacing: 5) {
-                Image(systemName: feature.image)
-                    .font(.title)
-                    .foregroundColor(Color("AccentColor"))
-                    .frame(height: 34)
-                Text(feature.title.localized)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-            }
+            Label(feature.title.localized, systemImage: feature.image)
+                .labelStyle(FeatureLabelStyle())
         }
     }
 }
@@ -91,8 +83,8 @@ struct FeaturePreview: View {
     ]
     var body: some View {
         LazyVGrid(
-            columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
-            spacing: 10
+            columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+//            spacing: 10
         ) {
             ForEach(features) { feature in
                 SingleFeaturePreview(feature: feature)

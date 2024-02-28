@@ -18,7 +18,7 @@
 "Feed Source Settings" = "通知设置";
 "CAS Settings" = "统一身份认证设置";
 "Change User Type" = "更改用户类型";
-"Notification Settings" = "消息设置";
+"Notification Settings" = "应用消息设置";
 "About Study@USTC" = "关于「学在科大」";
 "Legal Info" = "法律信息";
 
@@ -131,7 +131,7 @@
 "Ranking:" = "排名:";
 
 "Public" = "公开";
-"Classroom Status" = "教室状态";
+"Classroom Status" = "教室情况";
 "Classroom List" = "全部教室";
 "General" = "概览";
 "Pick a date" = "选择日期";
@@ -159,7 +159,7 @@
 "Exam name to hide" = "隐藏显示的考试名";
 "Name" = "名称";
 "Save exams to calendar" = "保存考试日程到日历";
-"When exam contains these words, they will be shown at the bottom even they comes first in time" = "当考试名中含有这些词时, (虽然他们可能早于其他考试) 这个考试会在显示在底部";
+"When exam contains these words, they will be shown at the bottom even they comes first in time" = "如果考试名称中包含这些词, 它们将会被显示在最下方, 即使它们的时间比其他考试早";
 "Add new" = "新增";
 "Health Check" = "健康打卡";
 
@@ -171,7 +171,7 @@
 "Something went wrong" = "出现了故障";
 "UI Preference" = "UI 设置";
 "Use new UI layout" = "使用新版UI布局";
-"Prevent screenshot when showing score" = "在展示成绩页面时禁用截图";
+"Prevent screenshot when showing score" = "在「成绩」阻止截图";
 
 "Lesson" = "上课";
 "Temp" = "临时";
@@ -224,8 +224,8 @@
 "Choose Semester" = "选择学期";
 "Use Baidu Statistics" = "使用百度统计";
 
-"Additional Course" = "更多课程";
-"You can choose additional courses here, they would appear in your curriculum as if they are normal courses." = "您可以在这里选择更多课程，它们会以正常课程的形式出现在您的课表中。";
+"Select Additional Course" = "添加额外课程";
+"You can choose additional courses here, they would appear in your curriculum alongside other alongside other courses. This is useful for sit-in or TA courses" = "您可以在这里选择更多课程，会在课程表中一并展示出来，可用于旁听或助教课程";
 "Graduate AAS" = "教务系统（研）";
 "Art Education Center Appointment" = "艺教中心预约";
 "Mental Health Education and Counseling Center" = "微笑在线";
@@ -233,9 +233,14 @@
 "No More Homework!" = "无更多作业";
 "Login Failed" = "登录失败";
 "Double check your username and password" = "检查用户名和密码";
-"Hide evening in Curriculum" = "在课表中隐藏晚上";
+"Hide evening in Curriculum" = "在「课表」中隐藏晚上的课程";
 "Close and reopen the app to take effect." = "关闭并重新打开应用来生效。";
 "Type:" = "类型:";
 "AAS" = "教务系统";
 
 "Tap on a route to expand" = "点击路线来展开";
+"Open source code usage:" = "开源代码使用情况:";
+"Disable update for everything" = "禁用所有内容更新";
+"Week %@" = "第 %@ 周";
+"Week %@ [NOT CURRENT]" = "第 %@ 周 [非本周]";
+"[NOT CURRENT]" = "[非本周]";

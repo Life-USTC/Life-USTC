@@ -15,8 +15,11 @@ struct LegalInfoView: View {
         VStack {
             List {
                 VStack(alignment: .leading) {
-                    Text("Open source code usage:").padding(.bottom, 2)
-                    Text(credit).font(.caption).bold()
+                    Text("Open source code usage:")
+                        .padding(.bottom, 2)
+                    Text(credit)
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                 }
             }
