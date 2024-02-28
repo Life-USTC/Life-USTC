@@ -119,10 +119,7 @@ class GeoLocationDelegate: ManagedRemoteUpdateProtocol<[GeoLocationData]> {
 
 extension ManagedDataSource<[GeoLocationData]> {
     static let geoLocation = ManagedDataSource(
-        local: ManagedLocalStorage(
-            "geoLocation",
-            validDuration: 60 * 60 * 24 * 30 * 3
-        ),
+        local: ManagedLocalStorage("geoLocation"),
         remote: GeoLocationDelegate.shared
     )
 }
