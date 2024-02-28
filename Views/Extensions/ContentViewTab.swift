@@ -17,8 +17,8 @@ enum ContentViewTab: Int, CaseIterable {
         Group {
             switch self {
             case .position_1: HomeView()
-            case .position_2: FeaturesView()
-            case .position_3: AllSourceView()
+            case .position_2: AllSourceView()
+            case .position_3: FeaturesView()
             }
         }
     }
