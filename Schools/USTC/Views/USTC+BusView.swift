@@ -14,23 +14,15 @@ extension String {
     }
 }
 
+extension [String?] {
+    fileprivate func passed(_ date: Date = Date()) -> Bool {
+        return self[0] == nil ? false :self[0]!.hhmm_value < date.HHMM
+    }
+}
+
 extension [[String?]] {
-    fileprivate func filterBefore(_ date: Date) -> [[String]] {
-        let hhmm = date.HHMM
-        return self.filter { $0[0] != nil }.filter {
-            let time = $0[0]!.hhmm_value
-            return time >= hhmm
-        }.map { $0.compactMap { $0 } }
-    }
-    
-    fileprivate func nextTime(after date: Date) -> String? {
-        let hhmm = date.HHMM
-        return self.filter { $0[0] != nil }.map { $0[0]! }.filter { $0.hhmm_value >= hhmm }.first
-    }
-    
-    fileprivate func nextTimes(after date: Date) -> [String?]? {
-        let hhmm = date.HHMM
-        return self.filter { $0[0] != nil }.filter { $0[0]!.hhmm_value >= hhmm }.first
+    fileprivate func filterAfter(_ date: Date = Date()) -> [[String?]] {
+        return self.filter { !$0.passed(date) }
     }
 }
 
@@ -57,87 +49,91 @@ struct USTC_SchoolBusView: View {
         }
     }
     
-//    var scheduleList: [USTCRouteSchedule] {
-//        if showPassBus {
-//            return _scheduleList
-//        } else {
-//            return _scheduleList.map { schedule in
-//                let time = schedule.time.filterBefore(Date()) // TODO: REMOVE THIS F*CK
-//                return USTCRouteSchedule(route: schedule.route, time: time)
-//            }
-//        }
-//    }
-    
     @ViewBuilder func makeTopView(_ schedule: USTCRouteSchedule) -> some View {
-        HStack {
-            VStack {
+        HStack(spacing: 0) {
+            if let nextTimes = schedule.time.filter({ !$0.passed() }).first {
                 HStack {
-                    // bold first and last, spacer in between
                     ForEach(schedule.route.indices, id: \.self) { index in
-                        Text(schedule.route[index].name)
-                            .fontWeight((index == 0 || index == schedule.route.count - 1) ? .bold : .light)
-                        if index != schedule.route.count - 1 {
-                            Spacer()
-                        }
-                    }
-                }
-                
-                if let nextTimes = schedule.time.nextTimes(after: Date()) {
-                    HStack {
-                        ForEach(nextTimes.indices, id: \.self) { index in
+                        VStack(alignment: {
+                           if index == 0 {
+                               return .leading
+                           } else if index == schedule.route.count - 1 {
+                               return .trailing
+                           } else {
+                               return .center
+                           }
+                        }()) {
+                            Text(schedule.route[index].name)
+                                .fontWeight((index == 0 || index == schedule.route.count - 1) ? .bold : .light)
+                                .foregroundColor(.primary)
                             Text(nextTimes[index] ?? "--:--")
                                 .font(.system(.caption, design: .monospaced))
                                 .foregroundStyle(
                                     (index == 0 || index == nextTimes.count - 1)
                                     ? Color.accentColor : Color.secondary
                                 )
-                            if index != nextTimes.count - 1 {
+                        }
+                        if index != nextTimes.count - 1 {
+                            Spacer()
+                        }
+                    }
+                }
+            } else {
+                VStack {
+                    HStack {
+                        // bold first and last, spacer in between
+                        ForEach(schedule.route.indices, id: \.self) { index in
+                            Text(schedule.route[index].name)
+                                .fontWeight((index == 0 || index == schedule.route.count - 1) ? .bold : .light)
+                            if index != schedule.route.count - 1 {
                                 Spacer()
                             }
                         }
                     }
-                } else {
+                    
                     Text("No more bus today")
                         .foregroundStyle(.secondary)
                         .font(.system(.caption, design: .monospaced))
                 }
             }
-            
-            Label("Expand", systemImage: "chevron.compact.right")
-                .labelStyle(.iconOnly)
-                .rotationEffect(.degrees(expandList.contains(schedule.route) ? 90.0 : 0.0))
-                .foregroundColor(.accentColor)
         }
     }
     
     @ViewBuilder func makeExpanedView(_ schedule: USTCRouteSchedule) -> some View {
-        let time = showPassBus ? schedule.time : schedule.time.filterBefore(Date())
+        let time = showPassBus ? schedule.time : schedule.time.filterAfter(Date())
         VStack {
             ForEach(time.indices, id: \.self) { indice_i in
                 HStack {
-                    ForEach(time[indice_i].indices, id: \.self) { index in
-                        Text(time[indice_i][index] ?? "--:--")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(
-                                (index == 0 || index == time[indice_i].count - 1)
-                                ? .primary : .secondary
-                            )
-                        
-                        if index != time[indice_i].count - 1 {
-                            Spacer()
+                    HStack {
+                        ForEach(time[indice_i].indices, id: \.self) { index in
+                            Text(time[indice_i][index] ?? "--:--")
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(
+                                    (index == 0 || index == time[indice_i].count - 1)
+                                    ? .primary : .secondary
+                                )
+                            
+                            if index != time[indice_i].count - 1 {
+                                Spacer()
+                            }
                         }
                     }
+                    .strikethrough(time[indice_i].passed()) // MARK: @Odeinjul
+                    .background(
+                        Group {
+                            if time[indice_i] == schedule.time.filter({ !$0.passed() }).first {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(Color.blue.opacity(0.1))
+                            }
+                        }
+                    )
                 }
-                .background(
-                    Group {
-                        if time[indice_i][0] == schedule.time.nextTime(after: Date()) {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color.blue.opacity(0.1))
-                        }
-                    }
-                )
             }
         }
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.blue.opacity(0.06))
+        )
     }
 
     var body: some View {
@@ -145,21 +141,34 @@ struct USTC_SchoolBusView: View {
         VStack {
             ZStack(alignment: .top) {
                 List {
-                    ForEach(scheduleList) { schedule in
-                        makeTopView(schedule)
-                            .onTapGesture {
-                                withAnimation {
-                                    if expandList.contains(schedule.route) {
-                                        expandList.removeAll { $0 == schedule.route }
-                                    } else {
-                                        expandList.append(schedule.route)
-                                    }
+                    Section {
+                        ForEach(scheduleList) { schedule in
+                            Button {
+                                if expandList.contains(schedule.route) {
+                                    expandList.removeAll { $0 == schedule.route }
+                                } else {
+                                    expandList.append(schedule.route)
                                 }
+                            } label: {
+                                makeTopView(schedule)
+//                                    .if(expandList.contains(schedule.route)) {
+//                                        $0
+//                                            .padding(10)
+//                                            .background(
+//                                                RoundedRectangle(cornerRadius: 6)
+//                                                    .fill(Color.blue.opacity(0.06))
+//                                            )
+//                                    }
                             }
-
-                        if expandList.contains(schedule.route) {
-                            makeExpanedView(schedule)
+                            
+                            if expandList.contains(schedule.route) {
+                                makeExpanedView(schedule)
+                            }
                         }
+                    } header: {
+                        AsyncStatusLight(status: _data.status)
+                    } footer: {
+                        Text("Tap on a route to expand")
                     }
                 }
                 .padding(.top, 10)
