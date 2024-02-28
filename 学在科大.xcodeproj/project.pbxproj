@@ -199,9 +199,9 @@
 		E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
 		E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
+		E51F2F8C2B8F3537007844C7 /* ustc_bus_data_v2.json in Resources */ = {isa = PBXBuildFile; fileRef = E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */; };
 		E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA042AB7498C00DA0368 /* FeaturePreview.swift */; };
 		E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */; };
-		E59A26602ABAF5DB00163B9C /* ustc_bus_data.json in Resources */ = {isa = PBXBuildFile; fileRef = E59A265F2ABAF5DB00163B9C /* ustc_bus_data.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -369,9 +369,9 @@
 		E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusView.swift"; sourceTree = "<group>"; };
 		E5162ED02AB2F26C00C34CA3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusDelegate.swift"; sourceTree = "<group>"; };
+		E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ustc_bus_data_v2.json; sourceTree = "<group>"; };
 		E534DA042AB7498C00DA0368 /* FeaturePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreview.swift; sourceTree = "<group>"; };
 		E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreviewCard.swift; sourceTree = "<group>"; };
-		E59A265F2ABAF5DB00163B9C /* ustc_bus_data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ustc_bus_data.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -612,9 +612,9 @@
 		5677E13C2A5AF6BD00EDCB53 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				E59A265F2ABAF5DB00163B9C /* ustc_bus_data.json */,
 				56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */,
 				56E8AD712973EC0F009006D0 /* ustc_rooms.json */,
+				E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -1106,12 +1106,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E51F2F8C2B8F3537007844C7 /* ustc_bus_data_v2.json in Resources */,
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
 				567E6FA82A121CB50056BE5F /* console.js in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
 				56311A6F2A16394A009D7A34 /* Runtime.html in Resources */,
-				E59A26602ABAF5DB00163B9C /* ustc_bus_data.json in Resources */,
 				56B9F3152A2E028A00DE8838 /* ustc_feed_source.json in Resources */,
 				56E8AD722973EC0F009006D0 /* ustc_rooms.json in Resources */,
 			);

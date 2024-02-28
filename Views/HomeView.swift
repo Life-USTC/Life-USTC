@@ -59,8 +59,8 @@ struct HomeView: View {
     @AppStorage("Life-USTC") var life_ustc: Bool = false
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack {
+        VStack {
+            ScrollView(showsIndicators: false)  {
                 Spacer()
                     .frame(height: 10)
 

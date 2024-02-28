@@ -32,16 +32,18 @@ struct SingleExamView: View {
     }
 
     var timeInfoView: some View {
-        if exam.isFinished {
-            Text("Finished".localized)
-                .fontWeight(.bold)
-                .foregroundColor(.gray)
-        } else {
-            Text(exam.startDate, style: .relative)
-                .fontWeight(.bold)
-                .foregroundColor(
-                    exam.daysLeft <= 7 ? .red : .accentColor
-                )
+        Group {
+            if exam.isFinished {
+                Text("Finished".localized)
+                    .fontWeight(.bold)
+                    .foregroundColor(.gray)
+            } else {
+                Text(exam.startDate, style: .relative)
+                    .fontWeight(.bold)
+                    .foregroundColor(
+                        exam.daysLeft <= 7 ? .red : .accentColor
+                    )
+            }
         }
     }
 

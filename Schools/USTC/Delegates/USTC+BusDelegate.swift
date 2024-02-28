@@ -59,8 +59,11 @@ class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
     static let shared = USTCBusDataDelegate()
 
     override func refresh() async throws -> USTCBusData {
-        let url = URL(string: "https://static.xzkd.online/bus_data_v2.json")
-        let (data, _) = try await URLSession.shared.data(from: url!)
+        //let url = URL(string: "https://static.xzkd.online/bus_data_v2.json")
+        //let (data, _) = try await URLSession.shared.data(from: url!)
+        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
+        let url = URL(fileURLWithPath: path!)
+        let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 }

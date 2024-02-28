@@ -84,7 +84,7 @@ struct FeaturesView: View {
     ]
 
     var gridView: some View {
-        ScrollView(showsIndicators: false) {
+        VStack{
             Spacer()
                 .frame(height: 10)
             ForEach(
@@ -117,9 +117,6 @@ struct FeaturesView: View {
                 .padding(.bottom, 30)
             }
         }
-        .padding(.horizontal, 15)
-        .padding(.bottom, 70)
-        .background(Color(.systemGroupedBackground))
     }
 
     var listView: some View {
@@ -153,41 +150,48 @@ struct FeaturesView: View {
             }
         }
         .listStyle(.sidebar)
-        .searchable(text: $searchText, placement: .automatic)
-        .navigationTitle("Features")
-        .navigationBarTitleDisplayMode(.large)
     }
 
     var body: some View {
-        Group {
-            switch style {
-            case .grid:
-                gridView
-            case .list:
-                listView
-            }
-        }
-        .navigationTitle("Features")
-        .toolbar {
-            Button {
-                withAnimation {
-                    style = style.next()
+        VStack (alignment: .leading){
+            Group {
+                switch style {
+                case .grid:
+                    ScrollView (showsIndicators: false) {
+                        VStack {
+                            gridView
+                                .padding(.horizontal, 18)
+                            Spacer()
+                                .frame(height: 70)
+                        }
+                    }
+                case .list:
+                    listView
                 }
-            } label: {
-                Label("Switch", systemImage: style.next().imageName)
             }
-            Button {
-                navigationToSettingsView = true
-            } label: {
-                Image(systemName: "gearshape")
+            .navigationTitle("Features")
+            .toolbar {
+                Button {
+                    withAnimation {
+                        style = style.next()
+                    }
+                } label: {
+                    Label("Switch", systemImage: style.next().imageName)
+                }
+                Button {
+                    navigationToSettingsView = true
+                } label: {
+                    Image(systemName: "gearshape")
+                }
             }
+            .sheet(isPresented: $navigationToSettingsView) {
+                NavigationStack {
+                    SettingsView()
+                }
+            }
+            .searchable(text: $searchText, placement: .automatic)
         }
-        .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack {
-                SettingsView()
-            }
-        }
-        .searchable(text: $searchText, placement: .automatic)
+        .background(Color(.systemGroupedBackground))
     }
 
     init() {

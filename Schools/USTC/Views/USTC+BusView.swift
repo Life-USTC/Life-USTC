@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftyJSON
 
 extension String {
     fileprivate var hhmm_value: Int {
@@ -54,20 +55,13 @@ struct USTC_SchoolBusView: View {
             if let nextTimes = schedule.time.filter({ !$0.passed() }).first {
                 HStack {
                     ForEach(schedule.route.indices, id: \.self) { index in
-                        VStack(alignment: {
-                           if index == 0 {
-                               return .leading
-                           } else if index == schedule.route.count - 1 {
-                               return .trailing
-                           } else {
-                               return .center
-                           }
-                        }()) {
+                        VStack(alignment: .center) {
                             Text(schedule.route[index].name)
-                                .fontWeight((index == 0 || index == schedule.route.count - 1) ? .bold : .light)
-                                .foregroundColor(.primary)
-                            Text(nextTimes[index] ?? "--:--")
+                                .foregroundColor((index == 0 || index == schedule.route.count - 1) ? .primary : .secondary)
+                                .frame(width: 60)
+                            Text(nextTimes[index] ?? "即停")
                                 .font(.system(.caption, design: .monospaced))
+                                .fontWeight(.semibold)
                                 .foregroundStyle(
                                     (index == 0 || index == nextTimes.count - 1)
                                     ? Color.accentColor : Color.secondary
@@ -84,7 +78,9 @@ struct USTC_SchoolBusView: View {
                         // bold first and last, spacer in between
                         ForEach(schedule.route.indices, id: \.self) { index in
                             Text(schedule.route[index].name)
-                                .fontWeight((index == 0 || index == schedule.route.count - 1) ? .bold : .light)
+                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 60)
                             if index != schedule.route.count - 1 {
                                 Spacer()
                             }
@@ -92,6 +88,7 @@ struct USTC_SchoolBusView: View {
                     }
                     
                     Text("No more bus today")
+                        .foregroundColor(.secondary)
                         .foregroundStyle(.secondary)
                         .font(.system(.caption, design: .monospaced))
                 }
@@ -106,11 +103,18 @@ struct USTC_SchoolBusView: View {
                 HStack {
                     HStack {
                         ForEach(time[indice_i].indices, id: \.self) { index in
-                            Text(time[indice_i][index] ?? "--:--")
+                            Text(time[indice_i][index] ?? "即停")
                                 .font(.system(.caption, design: .monospaced))
                                 .foregroundStyle(
-                                    (index == 0 || index == time[indice_i].count - 1)
+                                    ((index == 0 || index == time[indice_i].count - 1) && !time[indice_i].passed())
                                     ? .primary : .secondary
+                                )
+                                .foregroundColor(
+                                    time[indice_i].passed()
+                                    ? .secondary : (time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? Color.accentColor : .primary)
+                                )
+                                .fontWeight(
+                                    time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? .heavy : .regular
                                 )
                             
                             if index != time[indice_i].count - 1 {
@@ -118,7 +122,8 @@ struct USTC_SchoolBusView: View {
                             }
                         }
                     }
-                    .strikethrough(time[indice_i].passed()) // MARK: @Odeinjul
+                    .foregroundStyle(.secondary)
+                    /*
                     .background(
                         Group {
                             if time[indice_i] == schedule.time.filter({ !$0.passed() }).first {
@@ -127,18 +132,16 @@ struct USTC_SchoolBusView: View {
                             }
                         }
                     )
+                    */
                 }
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.blue.opacity(0.06))
-        )
+        .padding(.horizontal, 12)
     }
 
     var body: some View {
         @State var isExpanded = false
-        VStack {
+        ZStack (alignment: .bottom) {
             ZStack(alignment: .top) {
                 List {
                     Section {
@@ -196,6 +199,7 @@ struct USTC_SchoolBusView: View {
                         .fill(Color(.systemGroupedBackground))
                 )
             }
+            .padding(.bottom, 50)
 
             Button {
                 showPassBus.toggle()
@@ -211,11 +215,12 @@ struct USTC_SchoolBusView: View {
             }
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(
-                        Color.blue
-                            .opacity(0.1)
-                    )
+                ZStack {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color("BackgroundWhite"))
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.blue.opacity(0.2))
+                }
             }
             .padding(.horizontal, 20)
         }
