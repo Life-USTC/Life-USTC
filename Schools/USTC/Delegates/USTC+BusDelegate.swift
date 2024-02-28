@@ -67,7 +67,7 @@ class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
 
 extension ManagedDataSource<USTCBusData> {
     static let ustcBus = ManagedDataSource(
-        local: ManagedLocalStorage("ustc_bus"),
+        local: ManagedLocalStorage("ustc_bus_v2"),
         remote: USTCBusDataDelegate.shared
     )
 }
