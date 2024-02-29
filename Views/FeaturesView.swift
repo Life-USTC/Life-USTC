@@ -18,7 +18,7 @@ struct FeatureLabelStyle: LabelStyle {
                 .frame(width: 50, height: 50)
                 .padding(.horizontal, 10)
             configuration.title
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .lineLimit(2, reservesSpace: true)
                 .font(.caption)
         }
