@@ -35,7 +35,7 @@ struct USTCClassroomView: View {
     @State var selection: Selection = {
         let hour = Calendar.current.component(.hour, from: .now)
         switch hour {
-        case 7 ..< 12: return .morning
+        case 0 ..< 12: return .morning
         case 14 ..< 19: return .afternoon
         default: return .night
         }
