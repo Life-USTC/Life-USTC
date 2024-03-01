@@ -151,6 +151,170 @@ struct CurriculumWeekView: View {
     }
 }
 
+fileprivate let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+fileprivate let heightPerClass = 60.0
+
+struct LectureCardView: View {
+    var lecture: Lecture
+    @State var showPopUp = false
+    
+    var length: Int {
+        (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
+    }
+
+    var body: some View {
+        VStack(spacing: 3) {
+            Text(lecture.startDate.clockTime)
+                .font(.system(size: 9))
+                .fontWeight(.bold)
+                .hStackLeading()
+            VStack(alignment: .center) {
+                Text(lecture.name)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(nil)
+                    .font(.system(size: 12))
+                Text(lecture.location)
+                    .font(.system(size: 12))
+                    .fontWeight(.bold)
+            }
+            if length != 1 {
+                Divider()
+                Spacer()
+//                Text(course.lessonCode)
+//                    .font(.system(size: 9))
+                Text(lecture.teacherName)
+                    .font(.system(size: 9))
+                Text(lecture.endDate.clockTime)
+                    .font(.system(size: 9))
+                    .hStackTrailing()
+            }
+        }
+        .lineLimit(1)
+        .padding(2)
+        .frame(height: heightPerClass * Double(length) - 4)
+        .background {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.accentColor.opacity(0.1))
+        }
+        .onAppear {
+            debugPrint(lecture)
+            debugPrint(length)
+        }
+        .onTapGesture {}
+        .onLongPressGesture(minimumDuration: 0.6) {
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+            showPopUp = true
+        }
+        .sheet(isPresented: $showPopUp) {
+            NavigationStack {
+                VStack(alignment: .leading) {
+                    Text(lecture.name)
+                        .foregroundColor(Color.accentColor)
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Text(lecture.startDate.clockTime + " - " + lecture.endDate.clockTime)
+                        .bold()
+
+                    List {
+                        HStack {
+                            Text("Classroom: ".localized)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text(lecture.location)
+                        }
+                        HStack {
+                            Text("Teacher: ".localized)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text(lecture.teacherName)
+                        }
+//                        HStack {
+//                            Text("ID: ".localized)
+//                                .fontWeight(.semibold)
+//                            Spacer()
+//                            Text(lecture.lessonCode)
+//                        }
+//                        HStack {
+//                            Text("Week: ".localized)
+//                                .fontWeight(.semibold)
+//                            Spacer()
+//                            Text(lecture.weekString)
+//                        }
+//                        HStack {
+//                            Text("Time: ".localized)
+//                                .fontWeight(.semibold)
+//                            Spacer()
+//                            Text(course.timeDescription)
+//                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollDisabled(true)
+                }
+                .hStackLeading()
+                .padding()
+            }
+            .presentationDetents([.fraction(0.5)])
+        }
+    }
+}
+
+struct CurriculumWeekViewVerticalNew: View {
+    var lectures: [Lecture]
+    var _date: Date
+    var currentSemesterName: String
+    var weekNumber: Int?
+    
+    var date: Date {
+        _date.startOfWeek()
+    }
+    
+    @ViewBuilder
+    func makeVStack(index: Int) -> some View {
+        VStack {
+            Text(daysOfWeek[index])
+                .font(.system(.caption2, design: .monospaced, weight: .light))
+//                .border(.red)
+            
+            ZStack(alignment: .top) {
+                Color.clear
+                
+                ForEach(lectures.filter {(date.add(day: index) ... date.add(day: index + 1)).contains($0.startDate)}) { lecture in
+                    LectureCardView(lecture: lecture)
+                        .offset(y: Double((lecture.startIndex ?? 1) - 1) * heightPerClass + 2)
+                        .padding(2)
+                }
+                
+                Rectangle()
+                    .fill(Color.accentColor)
+                    .frame(height: 1)
+                    .offset(y: 5 * heightPerClass + 1.5)
+                    .opacity(0.5)
+                
+                Rectangle()
+                    .fill(Color.accentColor)
+                    .frame(height: 1)
+                    .offset(y: 10 * heightPerClass + 1.5)
+                    .opacity(0.5)
+            }
+//            .border(.blue)
+        }
+    }
+    
+    var body: some View {
+        GeometryReader { geo in
+            ScrollView(.vertical, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 0) {
+                    ForEach(0..<7) { index in
+                        makeVStack(index: index)
+                            .frame(width: geo.size.width / 7, height: heightPerClass * 13)
+//                            .border(.black)
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct CurriculumWeekViewVertical: View {
     var lectures: [Lecture]
     var _date: Date
@@ -169,34 +333,6 @@ struct CurriculumWeekViewVertical: View {
     }
 
     var body: some View {
-        VStack(alignment: .center) {
-            HStack {
-                Text(date ... date.add(day: 6))
-                
-                if let weekNumber {
-                    Spacer()
-                    
-                    if (date ... date.add(day: 7)).contains(Date().stripTime()) {
-                        Text(String(format: "Week %@".localized, String(weekNumber)))
-                    } else {
-                        Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
-                    }
-                } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
-                    Spacer()
-
-                    Text("[NOT CURRENT]")
-                }
-
-                Spacer()
-
-                Text(currentSemesterName)
-            }
-            .font(.system(.caption2, design: .monospaced, weight: .light))
-
-            mainView
-        }
-    }
-    var mainView: some View {
         Chart {
             if (date ... date.add(day: 7)).contains(Date().stripTime()) {
                 // See GH#2

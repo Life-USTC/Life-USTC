@@ -91,4 +91,11 @@ extension Date: RawRepresentable {
     public init?(rawValue: String) {
         self = Date(timeIntervalSinceReferenceDate: Double(rawValue) ?? 0.0)
     }
+    
+    var clockTime: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .none
+        return dateFormatter.string(from: self)
+    }
 }

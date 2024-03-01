@@ -9,6 +9,7 @@ import Charts
 import SwiftUI
 
 struct CurriculumDetailView: View {
+    @AppStorage("CurriculumDetailViewUseUI_v2") var useNewUI = true
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
@@ -30,13 +31,48 @@ struct CurriculumDetailView: View {
                         Spacer()
                         DatePicker(selection: $_date, displayedComponents: .date) {}
                     }
+                    .padding(.horizontal, 20)
+                    
+                    HStack {
+                        Text(date ... date.add(day: 6))
+                        
+                        if let weekNumber {
+                            Spacer()
+                            
+                            if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                                Text(String(format: "Week %@".localized, String(weekNumber)))
+                            } else {
+                                Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
+                            }
+                        } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
+                            Spacer()
 
-                    CurriculumWeekViewVertical(
-                        lectures: lectures,
-                        _date: _date,
-                        currentSemesterName: currentSemester?.name ?? "All".localized,
-                        weekNumber: weekNumber
-                    )
+                            Text("[NOT CURRENT]")
+                        }
+
+                        Spacer()
+
+                        Text(currentSemester?.name ?? "All".localized)
+                    }
+                    .font(.system(.caption2, design: .monospaced, weight: .light))
+                    .padding(.horizontal, 20)
+
+                    if useNewUI {
+                        CurriculumWeekViewVerticalNew(
+                            lectures: lectures,
+                            _date: _date,
+                            currentSemesterName: currentSemester?.name ?? "All".localized,
+                            weekNumber: weekNumber
+                        )
+                    } else {
+                        CurriculumWeekViewVertical(
+                            lectures: lectures,
+                            _date: _date,
+                            currentSemesterName: currentSemester?.name ?? "All".localized,
+                            weekNumber: weekNumber
+                        )
+                        .padding(.horizontal, 20)
+                    }
                 }
                 .frame(
                     minWidth: geo.size.width,
@@ -137,7 +173,6 @@ struct CurriculumDetailView: View {
         }
         .navigationTitle("Curriculum")
         .navigationBarTitleDisplayMode(.inline)
-        .padding(.horizontal, 20)
     }
 
     func updateLecturesAndWeekNumber() {

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AppSettingPage: View {
+    @AppStorage("CurriculumDetailViewUseUI_v2") var useNewUI = true
     @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
     @AppStorage(
         "appShouldNOTUpdateAnything",
@@ -25,6 +26,10 @@ struct AppSettingPage: View {
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
+                )
+                Toggle(
+                    "Use new UI for Curriculum",
+                    isOn: $useNewUI
                 )
                 Toggle(
                     "Hide evening in Curriculum",
