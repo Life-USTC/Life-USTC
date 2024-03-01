@@ -21,12 +21,16 @@ struct Lecture: Codable, Identifiable, Equatable {
     var teacherName: String = ""
     var periods: Double = 0
     var additionalInfo: [String: String] = [:]
+    var startIndex: Int?
+    var endIndex: Int?
 
     static let example = Lecture(
         startDate: Date().stripTime() + DateComponents(hour: 7, minute: 50),
         endDate: Date().stripTime() + DateComponents(hour: 12, minute: 10),
         name: "数学分析B1",
-        location: "5104"
+        location: "5104",
+        startIndex: 1,
+        endIndex: 5
     )
 }
 

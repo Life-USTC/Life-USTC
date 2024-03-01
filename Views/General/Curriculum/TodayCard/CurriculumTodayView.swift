@@ -32,11 +32,18 @@ struct LectureView: View {
                 .foregroundColor(.secondary)
                 .bold()
 
-                Text(lecture.startDate ... lecture.endDate)
-                    .lineLimit(1)
-                    .font(
-                        .system(.caption, design: .monospaced, weight: .medium)
-                    )
+                HStack {
+                    Text(lecture.startDate ... lecture.endDate)
+                        .lineLimit(1)
+                        
+                    if let startIndex = lecture.startIndex, let endIndex = lecture.endIndex {
+                        Text("\(startIndex) - \(endIndex)")
+                            .foregroundColor(.gray.opacity(0.8))
+                    }
+                }
+                .font(
+                    .system(.caption, design: .monospaced, weight: .medium)
+                )
             }
 
             Spacer()
