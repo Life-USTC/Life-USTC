@@ -37,7 +37,7 @@ struct LectureView: View {
                         .lineLimit(1)
                         
                     if let startIndex = lecture.startIndex, let endIndex = lecture.endIndex {
-                        Text("\(startIndex) - \(endIndex)")
+                        Text("(\(startIndex)-\(endIndex))")
                             .foregroundColor(.gray.opacity(0.8))
                     }
                 }
