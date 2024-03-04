@@ -24,7 +24,16 @@ struct USTCCampus: Identifiable, Codable, Hashable {
     )
 }
 
-typealias USTCRoute = [USTCCampus]
+//typealias USTCRoute = [USTCCampus]
+struct USTCRoute: Identifiable, Codable, Hashable {
+    var id: Int
+    var campuses: [USTCCampus]
+    
+    static let example = USTCRoute(
+        id: 1,
+        campuses: [.example, .example]
+    )
+}
 
 struct USTCRouteSchedule: Identifiable, Codable {
     var id: Int { route.hashValue }
@@ -32,11 +41,16 @@ struct USTCRouteSchedule: Identifiable, Codable {
     var time: [[String?]]
 
     static let example = USTCRouteSchedule(
-        route: [.example, .example],
+        route: .example,
         time: [
             ["07:50", "08:10"]
         ]
     )
+}
+
+struct Message: Codable {
+    var message: String
+    var url: String
 }
 
 struct USTCBusData: ExampleDataProtocol, Codable {
@@ -46,10 +60,12 @@ struct USTCBusData: ExampleDataProtocol, Codable {
 
     var weekday_routes: [USTCRouteSchedule]
     var weekend_routes: [USTCRouteSchedule]
+    
+    var message: Message?
 
     static let example = USTCBusData(
         campuses: [.example],
-        routes: [[.example]],
+        routes: [.example],
         weekday_routes: [.example],
         weekend_routes: [.example]
     )
@@ -59,11 +75,11 @@ class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
     static let shared = USTCBusDataDelegate()
 
     override func refresh() async throws -> USTCBusData {
-        //let url = URL(string: "https://static.xzkd.online/bus_data_v2.json")
-        //let (data, _) = try await URLSession.shared.data(from: url!)
-        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
-        let url = URL(fileURLWithPath: path!)
-        let data = try Data(contentsOf: url)
+        let url = URL(string: "https://static.xzkd.online/bus_data_v3.json")
+        let (data, _) = try await URLSession.shared.data(from: url!)
+//        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
+//        let url = URL(fileURLWithPath: path!)
+//        let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 }

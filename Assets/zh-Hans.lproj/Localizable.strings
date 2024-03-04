@@ -244,3 +244,5 @@
 "Week %@" = "第 %@ 周";
 "Week %@ [NOT CURRENT]" = "第 %@ 周 [非本周]";
 "[NOT CURRENT]" = "[非本周]";
+"Tap on a route to expand, Long press to pin/unpin" = "点击路线来展开, 长按来固定/取消固定";
+"No more bus today" = "今日无更多校车";

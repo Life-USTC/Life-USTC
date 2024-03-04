@@ -36,12 +36,13 @@ struct USTC_SchoolBusView: View {
     @ManagedData(.ustcBus) var data: USTCBusData
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
     @AppStorage("ustcbusview_schdule_expand_list") var expandList: [USTCRoute] = []
+    @AppStorage("ustcbusview_pineed_routes_id_list") var pinnedRoutes: [Int] = []
     @State var selection: Selection = {
         let dayOfWeek = Calendar.current.component(.weekday, from: Date())
         return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
     }()
 
-    var scheduleList: [USTCRouteSchedule] {
+    var _scheduleList: [USTCRouteSchedule] {
         switch selection {
         case .weekday:
             return data.weekday_routes
@@ -49,15 +50,35 @@ struct USTC_SchoolBusView: View {
             return data.weekend_routes
         }
     }
-    
+
+    var scheduleList: [USTCRouteSchedule] {
+        _scheduleList.filter { pinnedRoutes.contains($0.id) } + _scheduleList.filter { !pinnedRoutes.contains($0.id) }
+    }
+
     @ViewBuilder func makeTopView(_ schedule: USTCRouteSchedule) -> some View {
         HStack(spacing: 0) {
+            Group {
+                if pinnedRoutes.contains(schedule.id) {
+                    Image(systemName: "pin.fill")
+                        .rotationEffect(.degrees(-45))
+                        .foregroundColor(.accentColor)
+                        .font(.caption)
+                } else {
+                    Spacer()
+                }
+            }
+            .frame(width: 2)
+
             if let nextTimes = schedule.time.filter({ !$0.passed() }).first {
                 HStack {
-                    ForEach(schedule.route.indices, id: \.self) { index in
+                    ForEach(schedule.route.campuses.indices, id: \.self) { index in
                         VStack(alignment: .center) {
-                            Text(schedule.route[index].name)
-                                .foregroundColor((index == 0 || index == schedule.route.count - 1) ? .primary : .secondary)
+                            Text(schedule.route.campuses[index].name)
+                                .foregroundColor(
+                                    (index == 0 || index == schedule.route.campuses.count - 1) ?
+                                        .primary :
+                                        .secondary
+                                )
                                 .frame(width: 60)
                             Text(nextTimes[index] ?? "即停")
                                 .font(.system(.caption, design: .monospaced))
@@ -76,19 +97,22 @@ struct USTC_SchoolBusView: View {
                 VStack {
                     HStack {
                         // bold first and last, spacer in between
-                        ForEach(schedule.route.indices, id: \.self) { index in
-                            Text(schedule.route[index].name)
-                                .foregroundColor(.secondary)
-                                .foregroundStyle(.secondary)
+                        ForEach(schedule.route.campuses.indices, id: \.self) { index in
+                            Text(schedule.route.campuses[index].name)
+                                .foregroundColor(
+                                    (index == 0 || index == schedule.route.campuses.count - 1) && showPassBus ?
+                                        .primary :
+                                        .secondary
+                                )
                                 .frame(width: 60)
-                            if index != schedule.route.count - 1 {
+                            if index != schedule.route.campuses.count - 1 {
                                 Spacer()
                             }
                         }
                     }
-                    
+
                     Text("No more bus today")
-                        .foregroundColor(.secondary)
+                        .padding(.top, 2)
                         .foregroundStyle(.secondary)
                         .font(.system(.caption, design: .monospaced))
                 }
@@ -101,44 +125,32 @@ struct USTC_SchoolBusView: View {
         VStack {
             ForEach(time.indices, id: \.self) { indice_i in
                 HStack {
-                    HStack {
-                        ForEach(time[indice_i].indices, id: \.self) { index in
-                            Text(time[indice_i][index] ?? "即停")
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundStyle(
-                                    ((index == 0 || index == time[indice_i].count - 1) && !time[indice_i].passed())
-                                    ? .primary : .secondary
-                                )
-                                .foregroundColor(
-                                    time[indice_i].passed()
-                                    ? .secondary : (time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? Color.accentColor : .primary)
-                                )
-                                .fontWeight(
-                                    time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? .heavy : .regular
-                                )
-                            
-                            if index != time[indice_i].count - 1 {
-                                Spacer()
-                            }
+                    ForEach(time[indice_i].indices, id: \.self) { index in
+                        Text(time[indice_i][index] ?? "即停")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(
+                                (time[indice_i] == schedule.time.filter({ !$0.passed() }).first) ?
+                                    Color.accentColor :
+                                    ((index == 0 || index == time[indice_i].count - 1) && !time[indice_i].passed() ?
+                                        Color.primary :
+                                        Color.secondary
+                                    )
+                            )
+                            .fontWeight(
+                                time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? .heavy : .regular
+                            )
+                        
+                        if index != time[indice_i].count - 1 {
+                            Spacer()
                         }
                     }
                     .foregroundStyle(.secondary)
-                    /*
-                    .background(
-                        Group {
-                            if time[indice_i] == schedule.time.filter({ !$0.passed() }).first {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(Color.blue.opacity(0.1))
-                            }
-                        }
-                    )
-                    */
                 }
             }
         }
         .padding(.horizontal, 12)
     }
-
+    
     var body: some View {
         @State var isExpanded = false
         ZStack (alignment: .bottom) {
@@ -146,22 +158,23 @@ struct USTC_SchoolBusView: View {
                 List {
                     Section {
                         ForEach(scheduleList) { schedule in
-                            Button {
+                            ZStack {
+                                Color.white.opacity(1e-10)
+                                makeTopView(schedule)
+                            }
+                            .onTapGesture {
                                 if expandList.contains(schedule.route) {
                                     expandList.removeAll { $0 == schedule.route }
                                 } else {
                                     expandList.append(schedule.route)
                                 }
-                            } label: {
-                                makeTopView(schedule)
-//                                    .if(expandList.contains(schedule.route)) {
-//                                        $0
-//                                            .padding(10)
-//                                            .background(
-//                                                RoundedRectangle(cornerRadius: 6)
-//                                                    .fill(Color.blue.opacity(0.06))
-//                                            )
-//                                    }
+                            }
+                            .onLongPressGesture(minimumDuration: 0.2) {
+                                if pinnedRoutes.contains(schedule.id) {
+                                    pinnedRoutes.removeAll { $0 == schedule.id }
+                                } else {
+                                    pinnedRoutes.append(schedule.id)
+                                }
                             }
                             
                             if expandList.contains(schedule.route) {
@@ -171,7 +184,10 @@ struct USTC_SchoolBusView: View {
                     } header: {
                         AsyncStatusLight(status: _data.status)
                     } footer: {
-                        Text("Tap on a route to expand")
+                        VStack {
+                            Text("Tap on a route to expand, Long press to pin/unpin")
+                            Spacer(minLength: 80)
+                        }
                     }
                 }
                 .padding(.top, 10)
@@ -179,7 +195,6 @@ struct USTC_SchoolBusView: View {
                 .refreshable {
                     _data.triggerRefresh()
                 }
-                .asyncStatusOverlay(_data.status)
                 .navigationTitle("Bus Timetable")
                 .navigationBarTitleDisplayMode(.inline)
 
@@ -199,27 +214,34 @@ struct USTC_SchoolBusView: View {
                         .fill(Color(.systemGroupedBackground))
                 )
             }
-            .padding(.bottom, 50)
 
-            Button {
-                showPassBus.toggle()
-            } label: {
-                HStack {
-                    Text("Show departed buses")
-                        .foregroundColor(.primary)
-                    Spacer()
-                    showPassBus
-                        ? Image(systemName: "checkmark.circle.fill")
-                        : Image(systemName: "circle")
+            VStack {
+                Button {
+                    showPassBus.toggle()
+                } label: {
+                    HStack {
+                        Text("Show departed buses")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        
+                        Image(systemName: showPassBus ? "checkmark.circle.fill" : "circle")
+                    }
+                }
+                .padding([.top, .horizontal])
+                
+                
+                if let message = data.message?.message, let _url = data.message?.url, let url = URL(string: _url) {
+                    Link(message, destination: url)
+                        .font(.caption2)
+                        .padding(.vertical, 4)
                 }
             }
-            .padding()
             .background {
                 ZStack {
                     RoundedRectangle(cornerRadius: 5)
                         .fill(Color("BackgroundWhite"))
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.blue.opacity(0.2))
+                        .fill(Color.blue.opacity(0.1))
                 }
             }
             .padding(.horizontal, 20)
