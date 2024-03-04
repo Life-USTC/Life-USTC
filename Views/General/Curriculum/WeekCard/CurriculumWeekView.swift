@@ -152,7 +152,7 @@ struct CurriculumWeekView: View {
 }
 
 fileprivate let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-fileprivate let heightPerClass = 60.0
+//fileprivate let heightPerClass = 60.0
 
 struct LectureCardView: View {
     var lecture: Lecture
@@ -171,37 +171,30 @@ struct LectureCardView: View {
             VStack(alignment: .center) {
                 Text(lecture.name)
                     .multilineTextAlignment(.center)
-                    .lineLimit(nil)
+                    .lineLimit(2, reservesSpace: true)
                     .font(.system(size: 12))
                 Text(lecture.location)
-                    .font(.system(size: 12))
+                    .lineLimit(1)
+                    .font(.system(size: 10))
                     .fontWeight(.bold)
             }
-            if length != 1 {
-                Divider()
-                Spacer()
-//                Text(course.lessonCode)
-//                    .font(.system(size: 9))
+            if length > 1 {
                 Text(lecture.teacherName)
                     .font(.system(size: 9))
-                Text(lecture.endDate.clockTime)
-                    .font(.system(size: 9))
-                    .hStackTrailing()
             }
+            Spacer()
+            
+            Text(lecture.endDate.clockTime)
+                .font(.system(size: 9))
+                .hStackTrailing()
         }
         .lineLimit(1)
         .padding(2)
-        .frame(height: heightPerClass * Double(length) - 4)
         .background {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.accentColor.opacity(0.1))
         }
-        .onAppear {
-            debugPrint(lecture)
-            debugPrint(length)
-        }
-        .onTapGesture {}
-        .onLongPressGesture(minimumDuration: 0.6) {
+        .onTapGesture {
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
             showPopUp = true
         }
@@ -269,17 +262,17 @@ struct CurriculumWeekViewVerticalNew: View {
     }
     
     @ViewBuilder
-    func makeVStack(index: Int) -> some View {
+    func makeVStack(index: Int, heightPerClass: Double) -> some View {
         VStack {
             Text(daysOfWeek[index])
                 .font(.system(.caption2, design: .monospaced, weight: .light))
-//                .border(.red)
             
             ZStack(alignment: .top) {
                 Color.clear
                 
                 ForEach(lectures.filter {(date.add(day: index) ... date.add(day: index + 1)).contains($0.startDate)}) { lecture in
                     LectureCardView(lecture: lecture)
+                        .frame(height: heightPerClass * Double((lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1) - 4)
                         .offset(y: Double((lecture.startIndex ?? 1) - 1) * heightPerClass + 2)
                         .padding(2)
                 }
@@ -296,19 +289,15 @@ struct CurriculumWeekViewVerticalNew: View {
                     .offset(y: 10 * heightPerClass + 1.5)
                     .opacity(0.5)
             }
-//            .border(.blue)
         }
     }
     
     var body: some View {
         GeometryReader { geo in
-            ScrollView(.vertical, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 0) {
-                    ForEach(0..<7) { index in
-                        makeVStack(index: index)
-                            .frame(width: geo.size.width / 7, height: heightPerClass * 13)
-//                            .border(.black)
-                    }
+            HStack(alignment: .top, spacing: 0) {
+                ForEach(0..<7) { index in
+                    makeVStack(index: index, heightPerClass: geo.size.height / 13)
+                        .frame(width: geo.size.width / 7, height: geo.size.height)
                 }
             }
         }
