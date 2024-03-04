@@ -108,20 +108,25 @@ struct USTC_SchoolBusView: View {
                             if index != schedule.route.campuses.count - 1 {
                                 Spacer()
                             }
+                            if index == 0 && schedule.route.campuses.count == 2 {
+                                Rectangle()
+                                    .frame(width: 40, height: 1)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
                         }
                     }
 
                     Text("No more bus today")
-                        .padding(.top, 2)
+//                        .padding(.top, schedule.route.campuses.count == 2 ? 0 : 2)
                         .foregroundStyle(.secondary)
-                        .font(.system(.caption, design: .monospaced))
+                        .font(.system(.caption2, design: .monospaced))
                 }
             }
         }
     }
     
-    @ViewBuilder func makeExpanedView(_ schedule: USTCRouteSchedule) -> some View {
-        let time = showPassBus ? schedule.time : schedule.time.filterAfter(Date())
+    @ViewBuilder func makeExpanedView(_ time: [[String?]]) -> some View {
         VStack {
             ForEach(time.indices, id: \.self) { indice_i in
                 HStack {
@@ -129,7 +134,7 @@ struct USTC_SchoolBusView: View {
                         Text(time[indice_i][index] ?? "即停")
                             .font(.system(.caption, design: .monospaced))
                             .foregroundColor(
-                                (time[indice_i] == schedule.time.filter({ !$0.passed() }).first) ?
+                                (time[indice_i] == time.filter({ !$0.passed() }).first) ?
                                     Color.accentColor :
                                     ((index == 0 || index == time[indice_i].count - 1) && !time[indice_i].passed() ?
                                         Color.primary :
@@ -137,7 +142,7 @@ struct USTC_SchoolBusView: View {
                                     )
                             )
                             .fontWeight(
-                                time[indice_i] == schedule.time.filter({ !$0.passed() }).first ? .heavy : .regular
+                                time[indice_i] == time.filter({ !$0.passed() }).first ? .heavy : .regular
                             )
                         
                         if index != time[indice_i].count - 1 {
@@ -177,8 +182,9 @@ struct USTC_SchoolBusView: View {
                                 }
                             }
                             
-                            if expandList.contains(schedule.route) {
-                                makeExpanedView(schedule)
+                            let time = (showPassBus ? schedule.time : schedule.time.filterAfter())
+                            if expandList.contains(schedule.route) && !time.isEmpty {
+                                makeExpanedView(time)
                             }
                         }
                     } header: {
