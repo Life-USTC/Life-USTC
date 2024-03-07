@@ -99,8 +99,6 @@ struct ContentView: View {
             )
         } else {
             ZStack {
-                // Keep LUJSRuntime in backend and keep alive
-                WebView(wkWebView: LUJSRuntime.shared.wkWebView)
                 if UIDevice.current.userInterfaceIdiom == .pad,
                     horizontalSizeClass == .regular
                 {

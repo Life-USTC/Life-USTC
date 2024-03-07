@@ -29,10 +29,6 @@ struct SettingsView: View {
                     "Exam Settings",
                     destination: ExamSettingView()
                 )
-                NavigationLink(
-                    "Notification Settings",
-                    destination: NotificationSettingView()
-                )
             } header: {
                 Text("General")
                     .textCase(.none)
