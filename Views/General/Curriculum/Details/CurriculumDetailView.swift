@@ -12,7 +12,7 @@ struct CurriculumDetailView: View {
     @AppStorage("CurriculumDetailViewUseUI_v2") var useNewUI = true
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
-    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
     @State var showLandscape: Bool = false
     @State var _date: Date = .now
     @State var lectures: [Lecture] = []
@@ -137,6 +137,9 @@ struct CurriculumDetailView: View {
             semester = curriculum.semesters.first
             updateLecturesAndWeekNumber()
             updateSemester()
+            saveToCalendar.action = {
+                try await self.curriculum.saveToCalendar()
+            }
         }
         .onRotate { newOrientation in
             if newOrientation.isLandscape {
@@ -153,12 +156,20 @@ struct CurriculumDetailView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        try await $saveToCalendarStatus.exec {
-                            try await curriculum.saveToCalendar()
-                        }
+                        await self.saveToCalendar.exec()
                     }
                 } label: {
-                    Label("Save", systemImage: "square.and.arrow.down")
+                    Label(
+                        "Save to calendar",
+                        systemImage: {
+                            switch(saveToCalendar.status) {
+                            case .none: return "square.and.arrow.down"
+                            case .waiting: return "arrow.clockwise"
+                            case .success: return "checkmark"
+                            case .error: return "exclamationmark.triangle"
+                            }
+                        }()                    
+                    )
                 }
 
                 Button {

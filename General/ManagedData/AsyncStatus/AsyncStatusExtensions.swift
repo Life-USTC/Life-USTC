@@ -34,8 +34,31 @@ extension RefreshAsyncStatus? {
     }
 }
 
+@MainActor
+class RefreshAsyncStatusUpdateObject: ObservableObject {
+    var action: (() async throws -> Void)?
+    @Published var status: RefreshAsyncStatus? = nil
+    
+    func exec() async {
+        status = .waiting
+        do {
+            try await action?()
+            status = .success
+        } catch {
+            print(error.localizedDescription)
+            status = .error(error.localizedDescription)
+        }
+    }
+    
+    init(action: (@escaping () async throws -> Void), status: RefreshAsyncStatus? = nil) {
+        self.action = action
+        self.status = status
+    }
+}
+
 // Used in SwiftUI struct View where modifying self.wrappedValue might not be possible
 extension Binding<RefreshAsyncStatus?> {
+    @available(*, deprecated, message: "Manaully copy the following code when requrired")
     func exec(_ action: @escaping () async throws -> Void) async throws {
         wrappedValue = .waiting
         do {

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ExamDetailView: View {
     @ManagedData(.exam) var exams: [Exam]
-
-    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+    
+    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
 
     var body: some View {
         List {
@@ -43,15 +43,28 @@ struct ExamDetailView: View {
         .refreshable {
             _exams.triggerRefresh()
         }
+        .onAppear {
+            saveToCalendar.action = {
+                try await self.exams.saveToCalendar()
+            }
+        }
         .toolbar {
             Button {
                 Task {
-                    try await $saveToCalendarStatus.exec {
-                        try await exams.saveToCalendar()
-                    }
+                    await self.saveToCalendar.exec()
                 }
             } label: {
-                Label("Save", systemImage: "square.and.arrow.down")
+                Label(
+                    "Save to calendar",
+                    systemImage: {
+                        switch(saveToCalendar.status) {
+                        case .none: return "square.and.arrow.down"
+                        case .waiting: return "arrow.clockwise"
+                        case .success: return "checkmark"
+                        case .error: return "exclamationmark.triangle"
+                        }
+                    }()
+                )
             }
         }
         .navigationTitle("Exam")
