@@ -65,7 +65,7 @@ extension Date {
 
     /// Start of this week
     func startOfWeek() -> Date {
-        Calendar.current
+        Calendar(identifier: .gregorian)
             .dateComponents(
                 [.calendar, .yearForWeekOfYear, .weekOfYear],
                 from: self
