@@ -58,7 +58,9 @@ struct CourseDetailView: View {
                 ForEach(course.lectures) { lecture in
                     NavigationLink(
                         destination: LectureDetailView(lecture: lecture)
-                    ) { Text(lecture.name) }
+                    ) {
+                        Text(lecture.name)
+                    }
                 }
             }
         }

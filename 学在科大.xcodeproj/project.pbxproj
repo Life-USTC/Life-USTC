@@ -132,6 +132,7 @@
 		56D175CE295457810070778F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CD295457810070778F /* FeedView.swift */; };
 		56D175D02954589D0070778F /* FeedVStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D175CF2954589D0070778F /* FeedVStackView.swift */; };
 		56D18BBE29E140DE002C6677 /* RectangleProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */; };
+		56D4AA542B9F3E3800267AC6 /* CurriculumListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D4AA532B9F3E3800267AC6 /* CurriculumListView.swift */; };
 		56D8A4992A6D21CA0027224C /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 56D8A4982A6D21CA0027224C /* KeychainAccess */; };
 		56D8A49B2A6D21D00027224C /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 56D8A49A2A6D21D00027224C /* KeychainAccess */; };
 		56D8A49D2A6D21F10027224C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D8A49C2A6D21ED0027224C /* Keychain.swift */; };
@@ -299,6 +300,7 @@
 		56D175CD295457810070778F /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		56D175CF2954589D0070778F /* FeedVStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVStackView.swift; sourceTree = "<group>"; };
 		56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleProgressBar.swift; sourceTree = "<group>"; };
+		56D4AA532B9F3E3800267AC6 /* CurriculumListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumListView.swift; sourceTree = "<group>"; };
 		56D8A49C2A6D21ED0027224C /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSettingPage.swift; sourceTree = "<group>"; };
@@ -545,6 +547,7 @@
 				569600122A9117C100677F15 /* CourseDetailView.swift */,
 				56D175BF295048A10070778F /* CurriculumDetailView.swift */,
 				569600102A9116F000677F15 /* LectureDetailView.swift */,
+				56D4AA532B9F3E3800267AC6 /* CurriculumListView.swift */,
 			);
 			path = Details;
 			sourceTree = "<group>";
@@ -1064,6 +1067,7 @@
 				E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */,
 				56558804294D93810010E060 /* FeaturesView.swift in Sources */,
 				565587B8294AE7910010E060 /* Feed.swift in Sources */,
+				56D4AA542B9F3E3800267AC6 /* CurriculumListView.swift in Sources */,
 				56E94E29298A77F80085241B /* FeedPage.swift in Sources */,
 				5699672E2A976FC200CC1EBB /* FeedSource.swift in Sources */,
 				56D175C8295438E20070778F /* FeedSourceExtensions.swift in Sources */,

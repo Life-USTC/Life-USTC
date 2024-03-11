@@ -175,13 +175,18 @@ struct CurriculumDetailView: View {
                     )
                 }
 
-                Button {
-                    showLandscape.toggle()
-                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-                    windowScene?
-                        .requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
+//                Button {
+//                    showLandscape.toggle()
+//                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+//                    windowScene?
+//                        .requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
+//                } label: {
+//                    Label("Flip", systemImage: showLandscape ? "rectangle.grid.2x2" : "rectangle.grid.1x2.fill")
+//                }
+                NavigationLink {
+                    CurriculumListView()
                 } label: {
-                    Label("Flip", systemImage: showLandscape ? "rectangle.grid.2x2" : "rectangle.grid.1x2.fill")
+                    Label("Details", systemImage: "info.circle")
                 }
             }
         }
