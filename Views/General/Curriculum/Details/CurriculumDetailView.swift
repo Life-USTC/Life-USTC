@@ -13,7 +13,10 @@ struct CurriculumDetailView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
     @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
-    @State var showLandscape: Bool = false
+    @State var showLandscape: Bool = {
+        UIDevice.current.orientation.isLandscape
+    }()
+
     @State var _date: Date = .now
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
