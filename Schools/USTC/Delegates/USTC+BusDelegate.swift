@@ -36,11 +36,12 @@ struct USTCRoute: Identifiable, Codable, Hashable {
 }
 
 struct USTCRouteSchedule: Identifiable, Codable {
-    var id: Int { route.hashValue }
+    var id: Int
     var route: USTCRoute
     var time: [[String?]]
 
     static let example = USTCRouteSchedule(
+        id: 1,
         route: .example,
         time: [
             ["07:50", "08:10"]
