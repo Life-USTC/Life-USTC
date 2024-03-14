@@ -173,6 +173,7 @@ struct LectureCardView: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(2, reservesSpace: true)
                     .font(.system(size: 12))
+                Spacer()
                 Text(lecture.location)
                     .lineLimit(1)
                     .font(.system(size: 10))
@@ -182,7 +183,6 @@ struct LectureCardView: View {
                 Text(lecture.teacherName)
                     .font(.system(size: 9))
             }
-            Spacer()
             
             Text(lecture.endDate.clockTime)
                 .font(.system(size: 9))
@@ -256,6 +256,7 @@ struct CurriculumWeekViewVerticalNew: View {
     var _date: Date
     var currentSemesterName: String
     var weekNumber: Int?
+    var hideWeekend: Bool
     
     var date: Date {
         _date.startOfWeek()
@@ -293,11 +294,23 @@ struct CurriculumWeekViewVerticalNew: View {
     }
     
     var body: some View {
-        GeometryReader { geo in
-            HStack(alignment: .top, spacing: 0) {
-                ForEach(0..<7) { index in
-                    makeVStack(index: index, heightPerClass: geo.size.height / 13)
-                        .frame(width: geo.size.width / 7, height: geo.size.height)
+        if hideWeekend {
+            GeometryReader { geo in
+                HStack(alignment: .top, spacing: 0) {
+                    ForEach(1..<6) { index in
+                        makeVStack(index: index, heightPerClass: geo.size.height / 13)
+                            .frame(width: geo.size.width / 5, height: geo.size.height)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+        } else {
+            GeometryReader { geo in
+                HStack(alignment: .top, spacing: 0) {
+                    ForEach(0..<7) { index in
+                        makeVStack(index: index, heightPerClass: geo.size.height / 13)
+                            .frame(width: geo.size.width / 7, height: geo.size.height)
+                    }
                 }
             }
         }

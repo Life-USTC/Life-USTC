@@ -35,7 +35,7 @@ struct USTCRoute: Identifiable, Codable, Hashable {
     )
 }
 
-struct USTCRouteSchedule: Identifiable, Codable {
+struct USTCRouteSchedule: Identifiable, Codable, Equatable {
     var id: Int
     var route: USTCRoute
     var time: [[String?]]

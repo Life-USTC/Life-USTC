@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CurriculumDetailView: View {
     @AppStorage("CurriculumDetailViewUseUI_v2") var useNewUI = true
+    @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
     @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
@@ -65,7 +66,8 @@ struct CurriculumDetailView: View {
                             lectures: lectures,
                             _date: _date,
                             currentSemesterName: currentSemester?.name ?? "All".localized,
-                            weekNumber: weekNumber
+                            weekNumber: weekNumber,
+                            hideWeekend: hideWeekend
                         )
                     } else {
                         CurriculumWeekViewVertical(
@@ -174,7 +176,14 @@ struct CurriculumDetailView: View {
                         }()                    
                     )
                 }
-
+                Button {
+                    hideWeekend = !hideWeekend
+                } label: {
+                    Label(
+                        "Hide weekend",
+                        systemImage: "timeline.selection"
+                    )
+                }
 //                Button {
 //                    showLandscape.toggle()
 //                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
