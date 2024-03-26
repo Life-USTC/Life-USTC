@@ -14,8 +14,6 @@ struct CurriculumListView: View {
 
     var body: some View {
         List {
-            AsyncStatusLight(status: _curriculum.status)
-            
             ForEach(curriculum.semesters) { semester in
                 Section {
                     ForEach(semester.courses, id: \.lessonCode) { course in
@@ -40,7 +38,7 @@ struct CurriculumListView: View {
                     HStack {
                         Text(semester.name)
                         Spacer()
-                        Group {
+                        HStack(spacing: 0) {
                             Text(semester.startDate, style: .date)
                             Text("~")
                             Text(semester.endDate, style: .date)
@@ -48,9 +46,9 @@ struct CurriculumListView: View {
                         .font(.system(.caption2, design: .monospaced, weight: .bold))
                         .foregroundColor(.secondary)
                     }
+                } footer: {
+                    Spacer()
                 }
-                
-                Spacer()
             }
         }
         .listStyle(.plain)

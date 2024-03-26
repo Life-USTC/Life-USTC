@@ -48,6 +48,10 @@ struct LectureView: View {
 
             Spacer()
         }
+        .background {
+            Color.gray.opacity(0.001)
+        }
+        .lectureSheet(lecture: lecture)
     }
 }
 

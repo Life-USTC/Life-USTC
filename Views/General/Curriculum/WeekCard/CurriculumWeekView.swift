@@ -154,10 +154,85 @@ struct CurriculumWeekView: View {
 fileprivate let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 //fileprivate let heightPerClass = 60.0
 
+struct LectureSheetModifier: ViewModifier {
+    var lecture: Lecture
+    @State var showPopUp: Bool = false
+    @ManagedData(.buildingImgMapping) var buildingImgMapping
+
+    func body(content: Content) -> some View {
+        content
+            .onTapGesture {
+                UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                showPopUp = true
+            }
+            .sheet(isPresented: $showPopUp) {
+                NavigationStack {
+                    VStack {
+                        HStack(alignment: .center) {
+                            VStack(alignment: .leading) {
+                                Text(lecture.name)
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .background {
+                                        GeometryReader { geo in
+                                            Rectangle()
+                                                .fill(Color.accentColor.opacity(0.2))
+                                                .frame(width: geo.size.width, height: geo.size.height / 2)
+                                                .offset(y: geo.size.height / 2)
+                                        }
+                                    }
+                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
+                                    .foregroundStyle(.secondary)
+                                    .bold()
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .leading) {
+                                HStack(alignment: .bottom) {
+                                    Text("Classroom: ".localized)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(lecture.location)
+                                }
+                                HStack(alignment: .bottom) {
+                                    Text("Teacher: ".localized)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(lecture.teacherName)
+                                }
+                            }
+                        }
+                        .padding([.top, .horizontal])
+                        
+                        if let url = buildingImgMapping.getURL(buildingName: lecture.location) {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: 400)
+                            .padding(5)
+                        }
+                        
+                        Spacer()
+                    }
+                }
+                .presentationDetents([.fraction(0.45)])
+            }
+    }
+}
+
+extension View {
+    func lectureSheet(lecture: Lecture) -> some View {
+        modifier(LectureSheetModifier(lecture: lecture))
+    }
+}
+
 struct LectureCardView: View {
     var lecture: Lecture
-    @State var showPopUp = false
-    @ManagedData(.buildingImgMapping) var buildingImgMapping
     
     var length: Int {
         (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
@@ -195,70 +270,7 @@ struct LectureCardView: View {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.accentColor.opacity(0.1))
         }
-        .onTapGesture {
-            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-            showPopUp = true
-        }
-        .sheet(isPresented: $showPopUp) {
-            NavigationStack {
-                VStack(alignment: .leading) {
-                    Text(lecture.name)
-                        .foregroundColor(Color.accentColor)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    Text(lecture.startDate.clockTime + " - " + lecture.endDate.clockTime)
-                        .bold()
-
-                    List {
-                        HStack {
-                            Text("Classroom: ".localized)
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text(lecture.location)
-                        }
-                        HStack {
-                            Text("Teacher: ".localized)
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text(lecture.teacherName)
-                        }
-                        if let url = buildingImgMapping.getURL(buildingName: lecture.location) {
-                            AsyncImage(url: url) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            } placeholder: {
-                                ProgressView()
-                                    .frame(maxWidth: .infinity, maxHeight: 200)
-                            }
-                        }
-//                        HStack {
-//                            Text("ID: ".localized)
-//                                .fontWeight(.semibold)
-//                            Spacer()
-//                            Text(lecture.lessonCode)
-//                        }
-//                        HStack {
-//                            Text("Week: ".localized)
-//                                .fontWeight(.semibold)
-//                            Spacer()
-//                            Text(lecture.weekString)
-//                        }
-//                        HStack {
-//                            Text("Time: ".localized)
-//                                .fontWeight(.semibold)
-//                            Spacer()
-//                            Text(course.timeDescription)
-//                        }
-                    }
-                    .listStyle(.plain)
-                    .scrollDisabled(true)
-                }
-                .hStackLeading()
-                .padding()
-            }
-            .presentationDetents([.fraction(0.5)])
-        }
+        .lectureSheet(lecture: lecture)
     }
 }
 

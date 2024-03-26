@@ -13,7 +13,6 @@ struct CurriculumDetailView: View {
     @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
     @ManagedData(.curriculum) var curriculum: Curriculum
     @State var semester: Semester? = nil
-    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
     @State var showLandscape: Bool = {
         UIDevice.current.orientation.isLandscape
     }()
@@ -142,9 +141,6 @@ struct CurriculumDetailView: View {
             semester = curriculum.semesters.first
             updateLecturesAndWeekNumber()
             updateSemester()
-            saveToCalendar.action = {
-                try await self.curriculum.saveToCalendar()
-            }
         }
         .onRotate { newOrientation in
             if newOrientation.isLandscape {
@@ -160,38 +156,13 @@ struct CurriculumDetailView: View {
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    Task {
-                        await self.saveToCalendar.exec()
-                    }
-                } label: {
-                    Label(
-                        "Save to calendar",
-                        systemImage: {
-                            switch(saveToCalendar.status) {
-                            case .none: return "square.and.arrow.down"
-                            case .waiting: return "arrow.clockwise"
-                            case .success: return "checkmark"
-                            case .error: return "exclamationmark.triangle"
-                            }
-                        }()                    
-                    )
-                }
-                Button {
-                    hideWeekend = !hideWeekend
+                    hideWeekend.toggle()
                 } label: {
                     Label(
                         "Hide weekend",
-                        systemImage: "timeline.selection"
+                        systemImage: hideWeekend ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
                     )
                 }
-//                Button {
-//                    showLandscape.toggle()
-//                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-//                    windowScene?
-//                        .requestGeometryUpdate(.iOS(interfaceOrientations: showLandscape ? .landscapeRight : .portrait))
-//                } label: {
-//                    Label("Flip", systemImage: showLandscape ? "rectangle.grid.2x2" : "rectangle.grid.1x2.fill")
-//                }
                 NavigationLink {
                     CurriculumListView()
                 } label: {

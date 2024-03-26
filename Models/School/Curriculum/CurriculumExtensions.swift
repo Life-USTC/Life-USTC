@@ -124,12 +124,6 @@ extension ManagedDataSource<[GeoLocationData]> {
     )
 }
 
-//typealias BuildingImgMappingData = [(regex: String, path: String)]
-//
-//extension BuildingImgMappingData: Codable {
-//    
-//}
-
 struct BuildingImgMappingData: Codable, ExampleDataProtocol {
     struct Mapping: Codable {
         var regex: String
