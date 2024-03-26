@@ -200,7 +200,11 @@ struct LectureSheetModifier: ViewModifier {
                                             .bold()
                                     }
                                 }
-                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime + " @ " + lecture.location)
+                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
+                                    .foregroundStyle(.secondary)
+                                    .bold()
+                                
+                                Text("@" + lecture.location)
                                     .foregroundStyle(.secondary)
                                     .bold()
                             }
