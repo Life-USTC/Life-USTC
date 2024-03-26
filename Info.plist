@@ -36,6 +36,17 @@
 	</dict>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>向日历中添加课表/考试信息</string>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>1C8F.1</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSRemindersFullAccessUsageDescription</key>
 	<string>向日历中添加课表/考试信息</string>
 	<key>NSUserActivityTypes</key>
