@@ -157,6 +157,7 @@ fileprivate let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri"
 struct LectureCardView: View {
     var lecture: Lecture
     @State var showPopUp = false
+    @ManagedData(.buildingImgMapping) var buildingImgMapping
     
     var length: Int {
         (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
@@ -220,6 +221,16 @@ struct LectureCardView: View {
                                 .fontWeight(.semibold)
                             Spacer()
                             Text(lecture.teacherName)
+                        }
+                        if let url = buildingImgMapping.getURL(buildingName: lecture.location) {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            } placeholder: {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, maxHeight: 200)
+                            }
                         }
 //                        HStack {
 //                            Text("ID: ".localized)
