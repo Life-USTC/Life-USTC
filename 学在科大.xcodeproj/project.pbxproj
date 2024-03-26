@@ -682,9 +682,10 @@
 				565587F4294D632D0010E060 /* Views */,
 				56FA8E7A297D7263000AC3A9 /* Widget */,
 				56DD03A7296D0924004C358C /* AppDelegate.swift */,
-				56BE91F82965D05A00822C98 /* README.md */,
+				5641255E2BB2ECCC00406113 /* PrivacyInfo.xcprivacy */,
 				568A959A295D75D2004272E2 /* LaunchScreen.storyboard */,
 				56F3EAD1296D0B8B0095AEF4 /* Life@USTC.entitlements */,
+				56BE91F82965D05A00822C98 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
