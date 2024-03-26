@@ -170,18 +170,37 @@ struct LectureSheetModifier: ViewModifier {
                     VStack {
                         HStack(alignment: .center) {
                             VStack(alignment: .leading) {
-                                Text(lecture.name)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .background {
-                                        GeometryReader { geo in
-                                            Rectangle()
-                                                .fill(Color.accentColor.opacity(0.2))
-                                                .frame(width: geo.size.width, height: geo.size.height / 2)
-                                                .offset(y: geo.size.height / 2)
+                                HStack(alignment: .bottom) {
+                                    Text(lecture.name)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .background {
+                                            GeometryReader { geo in
+                                                HStack {
+                                                    Rectangle()
+                                                        .fill(Color.accentColor.opacity(0.2))
+                                                        .frame(width: geo.size.width + 10, height: geo.size.height / 2)
+                                                    
+                                                    Rectangle()
+                                                        .fill(Color.secondary.opacity(0.6))
+                                                        .frame(width: 2, height: geo.size.height + 10)
+                                                        .rotationEffect(.degrees(20))
+                                                        .offset(x: -7)
+                                                }
+                                            }
                                         }
+                                    
+                                    if let code = lecture.course?.lessonCode {
+                                        Spacer()
+                                            .frame(width: 20)
+                                        
+                                        Text(code)
+                                            .font(.system(.caption, design: .monospaced))
+                                            .foregroundStyle(.secondary)
+                                            .bold()
                                     }
-                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
+                                }
+                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime + " @ " + lecture.location)
                                     .foregroundStyle(.secondary)
                                     .bold()
                             }
@@ -190,18 +209,19 @@ struct LectureSheetModifier: ViewModifier {
                             
                             VStack(alignment: .leading) {
                                 HStack(alignment: .bottom) {
-                                    Text("Classroom: ".localized)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    Text(lecture.location)
-                                }
-                                HStack(alignment: .bottom) {
                                     Text("Teacher: ".localized)
-                                        .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text(lecture.teacherName)
                                 }
+                                if let credit = lecture.course?.credit {
+                                    HStack(alignment: .bottom) {
+                                        Text("Credit: ".localized)
+                                            .foregroundStyle(.secondary)
+                                        Text(String(credit))
+                                    }
+                                }
                             }
+                            .font(.caption)
                         }
                         .padding([.top, .horizontal])
                         
@@ -239,36 +259,43 @@ struct LectureCardView: View {
     }
 
     var body: some View {
-        VStack(spacing: 3) {
-            Text(lecture.startDate.clockTime)
-                .font(.system(size: 9))
-                .fontWeight(.bold)
-                .hStackLeading()
-            VStack(alignment: .center) {
-                Text(lecture.name)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2, reservesSpace: true)
-                    .font(.system(size: 12))
-                Spacer()
-                Text(lecture.location)
-                    .lineLimit(1)
+        ZStack {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(lecture.startDate.stripTime() == Date().stripTime() ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(Color.accentColor.opacity(0.1), lineWidth: 1)
+                }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(lecture.startDate.clockTime)
                     .font(.system(size: 10))
                     .fontWeight(.bold)
+                Text(lecture.name)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2, reservesSpace: false)
+                    .font(.system(size: 15, weight: .light))
+                Text(lecture.location)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2, reservesSpace: false)
+                    .font(.system(size: 13, weight: .light, design: .monospaced))
+                
+                Spacer()
+
+                if length > 2 {
+                    Text(lecture.teacherName)
+                        .multilineTextAlignment(.trailing)
+                        .lineLimit(2, reservesSpace: false)
+                        .font(.system(size: 10))
+                        .hStackTrailing()
+                }
+
+                Text(lecture.endDate.clockTime)
+                    .font(.system(size: 10, weight: .bold))
+                    .hStackTrailing()
             }
-            if length > 1 {
-                Text(lecture.teacherName)
-                    .font(.system(size: 9))
-            }
-            
-            Text(lecture.endDate.clockTime)
-                .font(.system(size: 9))
-                .hStackTrailing()
-        }
-        .lineLimit(1)
-        .padding(2)
-        .background {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.accentColor.opacity(0.1))
+            .padding(.vertical, 2)
+            .padding(.horizontal, 5)
         }
         .lectureSheet(lecture: lecture)
     }
@@ -302,13 +329,13 @@ struct CurriculumWeekViewVerticalNew: View {
                 }
                 
                 Rectangle()
-                    .fill(Color.accentColor)
+                    .fill(Color.accentColor.opacity(0.4))
                     .frame(height: 1)
                     .offset(y: 5 * heightPerClass + 1.5)
                     .opacity(0.5)
                 
                 Rectangle()
-                    .fill(Color.accentColor)
+                    .fill(Color.accentColor.opacity(0.4))
                     .frame(height: 1)
                     .offset(y: 10 * heightPerClass + 1.5)
                     .opacity(0.5)
