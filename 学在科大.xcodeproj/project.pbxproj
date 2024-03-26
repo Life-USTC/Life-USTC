@@ -35,6 +35,8 @@
 		5638E27F2A581324001967D9 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		5638E2802A581CD6001967D9 /* Exam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F3EAD5296EB3B70095AEF4 /* Exam.swift */; };
 		5638E2822A58251A001967D9 /* SingleScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5638E2812A58251A001967D9 /* SingleScoreView.swift */; };
+		5641255F2BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5641255E2BB2ECCC00406113 /* PrivacyInfo.xcprivacy */; };
+		564125602BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5641255E2BB2ECCC00406113 /* PrivacyInfo.xcprivacy */; };
 		5647386F2A8E23D700608E46 /* AsyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5647386E2A8E23D700608E46 /* AsyncStatus.swift */; };
 		5653458A2A98D2480010B78C /* CurriculumWeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565345892A98D2480010B78C /* CurriculumWeekCard.swift */; };
 		5653458C2A98D43E0010B78C /* AllSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5653458B2A98D43E0010B78C /* AllSourceView.swift */; };
@@ -237,6 +239,7 @@
 		56333F572AD99A710029F665 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		56333F592AD99A7F0029F665 /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
 		5638E2812A58251A001967D9 /* SingleScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleScoreView.swift; sourceTree = "<group>"; };
+		5641255E2BB2ECCC00406113 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5647386E2A8E23D700608E46 /* AsyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatus.swift; sourceTree = "<group>"; };
 		565345892A98D2480010B78C /* CurriculumWeekCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekCard.swift; sourceTree = "<group>"; };
 		5653458B2A98D43E0010B78C /* AllSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSourceView.swift; sourceTree = "<group>"; };
@@ -669,6 +672,7 @@
 		56AC72F3294A012600A60F47 = {
 			isa = PBXGroup;
 			children = (
+				5641255E2BB2ECCC00406113 /* PrivacyInfo.xcprivacy */,
 				56558802294D75100010E060 /* Assets */,
 				56F3EAE2296EFC6C0095AEF4 /* Frameworks */,
 				56BE91F42962FDF000822C98 /* General */,
@@ -1005,6 +1009,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E51F2F8C2B8F3537007844C7 /* ustc_bus_data_v2.json in Resources */,
+				5641255F2BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */,
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
@@ -1017,6 +1022,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				564125602BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */,
 				56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */,
 				56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */,
 			);
