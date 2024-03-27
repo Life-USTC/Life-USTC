@@ -29,7 +29,8 @@ struct CurriculumTodayCard_old: View {
         .asyncStatusOverlay(
             _curriculum.status,
             text: "Curriculum",
-            showLight: false
+            showLight: false,
+            showToolbar: true
         )
         .card()
     }

@@ -6,7 +6,9 @@
 //
 
 import EventKit
-import Foundation
+import SwiftUI
+
+fileprivate let courseColors: [Color] = [.red, .orange, .yellow, .green, .mint, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
 
 class Course: Codable, Identifiable, Equatable {
     var id: Int = 0
@@ -18,6 +20,10 @@ class Course: Codable, Identifiable, Equatable {
     var description: String? = ""
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
+    
+    func color() -> Color {
+        return courseColors[id % courseColors.count]
+    }
     
     static func == (lhs: Course, rhs: Course) -> Bool {
         lhs.id == rhs.id

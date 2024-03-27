@@ -51,7 +51,7 @@ struct CurriculumListView: View {
                 }
             }
         }
-        .listStyle(.plain)
+        .listStyle(.grouped)
         .scrollContentBackground(.hidden)
         .asyncStatusOverlay(_curriculum.status, showLight: false)
         .refreshable {

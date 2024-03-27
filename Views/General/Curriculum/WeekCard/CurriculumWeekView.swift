@@ -168,7 +168,7 @@ struct LectureSheetModifier: ViewModifier {
             .sheet(isPresented: $showPopUp) {
                 NavigationStack {
                     VStack {
-                        HStack(alignment: .center) {
+                        HStack(alignment: .bottom) {
                             VStack(alignment: .leading) {
                                 HStack(alignment: .bottom) {
                                     Text(lecture.name)
@@ -183,9 +183,14 @@ struct LectureSheetModifier: ViewModifier {
                                             }
                                         }
                                 }
-                                Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
-                                    .foregroundStyle(.secondary)
-                                    .bold()
+                                HStack {
+                                    Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
+                                    if let startIndex = lecture.startIndex, let endIndex = lecture.endIndex {
+                                        Text("(\(startIndex)-\(endIndex))")
+                                    }
+                                }
+                                .foregroundStyle(.secondary)
+                                .bold()
                                 
                                 Text("@" + lecture.location)
                                     .foregroundStyle(.secondary)
@@ -254,10 +259,10 @@ struct LectureCardView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 5)
-                .fill(lecture.startDate.stripTime() == Date().stripTime() ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
+                .fill(lecture.course?.color().opacity(0.1) ?? Color.blue.opacity(0.1))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color.accentColor.opacity(0.1), lineWidth: 1)
+                        .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
                 }
             ZStack(alignment: .topLeading) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -315,7 +320,11 @@ struct CurriculumWeekViewVerticalNew: View {
                 .font(.system(.caption2, design: .monospaced, weight: .light))
             
             ZStack(alignment: .top) {
-                Color.clear
+                if (date.add(day: index) == Date().stripTime()) {
+                    Color.gray.opacity(0.06)
+                } else {
+                    Color.clear
+                }
                 
                 ForEach(lectures.filter {(date.add(day: index) ... date.add(day: index + 1)).contains($0.startDate)}) { lecture in
                     LectureCardView(lecture: lecture)
@@ -328,13 +337,11 @@ struct CurriculumWeekViewVerticalNew: View {
                     .fill(Color.accentColor.opacity(0.4))
                     .frame(height: 1)
                     .offset(y: 5 * heightPerClass + 1.5)
-                    .opacity(0.5)
                 
                 Rectangle()
                     .fill(Color.accentColor.opacity(0.4))
                     .frame(height: 1)
                     .offset(y: 10 * heightPerClass + 1.5)
-                    .opacity(0.5)
             }
         }
     }

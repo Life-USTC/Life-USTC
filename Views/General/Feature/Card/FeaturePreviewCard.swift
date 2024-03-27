@@ -14,7 +14,8 @@ struct FeaturePreviewCard: View {
             .asyncStatusOverlay(
                 AsyncStatus(local: .valid, refresh: .success),
                 text: "Features",
-                showLight: false
+                showLight: false,
+                showToolbar: true
             )
             .card()
     }

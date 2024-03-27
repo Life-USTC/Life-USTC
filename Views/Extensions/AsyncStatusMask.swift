@@ -36,6 +36,7 @@ struct AsyncStatusMask: ViewModifier {
     var status: AsyncStatus?
     var text: String?
     var showLight: Bool = true
+    var showToolbar: Bool = false
     var settingsView: (() -> any View)?
 
     var topBar: some View {
@@ -72,7 +73,9 @@ struct AsyncStatusMask: ViewModifier {
 
     func body(content: Content) -> some View {
         VStack {
-            topBar
+            if showToolbar {
+                topBar
+            }
 
             content
                 .grayscale(shouldGrayScale ? 0.8 : 0)
@@ -91,6 +94,7 @@ extension View {
         _ status: AsyncStatus?,
         text: String? = nil,
         showLight: Bool = true,
+        showToolbar: Bool = false,
         settingsView: @escaping () -> any View = { EmptyView() }
     ) -> some View {
         modifier(
@@ -98,6 +102,7 @@ extension View {
                 status: status,
                 text: text,
                 showLight: showLight,
+                showToolbar: showToolbar,
                 settingsView: settingsView
             )
         )

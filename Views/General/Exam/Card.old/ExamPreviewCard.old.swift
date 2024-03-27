@@ -12,7 +12,12 @@ struct ExamPreviewCard_old: View {
 
     var body: some View {
         ExamPreview_old(exams: exams)
-            .asyncStatusOverlay(_exams.status, text: "Exams", showLight: false)
+            .asyncStatusOverlay(
+                _exams.status,
+                text: "Exams",
+                showLight: false,
+                showToolbar: true
+            )
             .card()
     }
 }

@@ -37,8 +37,8 @@ struct CurriculumDetailView: View {
                     .padding(.horizontal, 20)
                     
                     HStack {
-                        Text(date ... date.add(day: 6))
-                        
+                        Text(currentSemester?.name ?? "All".localized)
+
                         if let weekNumber {
                             Spacer()
                             
@@ -55,7 +55,7 @@ struct CurriculumDetailView: View {
 
                         Spacer()
 
-                        Text(currentSemester?.name ?? "All".localized)
+                        Text(date ... date.add(day: 6))
                     }
                     .font(.system(.caption2, design: .monospaced, weight: .light))
                     .padding(.horizontal, 20)

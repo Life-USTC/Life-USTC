@@ -93,7 +93,8 @@ extension CurriculumWeekCard {
         .asyncStatusOverlay(
             _curriculum.status,
             text: "Curriculum",
-            showLight: false
+            showLight: false,
+            showToolbar: true
         ) {
             flipButton
         }
