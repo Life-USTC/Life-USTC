@@ -176,29 +176,12 @@ struct LectureSheetModifier: ViewModifier {
                                         .fontWeight(.bold)
                                         .background {
                                             GeometryReader { geo in
-                                                HStack {
-                                                    Rectangle()
-                                                        .fill(Color.accentColor.opacity(0.2))
-                                                        .frame(width: geo.size.width + 10, height: geo.size.height / 2)
-                                                    
-                                                    Rectangle()
-                                                        .fill(Color.secondary.opacity(0.6))
-                                                        .frame(width: 2, height: geo.size.height + 10)
-                                                        .rotationEffect(.degrees(20))
-                                                        .offset(x: -7)
-                                                }
+                                                Rectangle()
+                                                    .fill(Color.accentColor.opacity(0.2))
+                                                    .frame(width: geo.size.width + 10, height: geo.size.height / 2)
+                                                    .offset(x: -5, y: geo.size.height / 2)
                                             }
                                         }
-                                    
-                                    if let code = lecture.course?.lessonCode {
-                                        Spacer()
-                                            .frame(width: 20)
-                                        
-                                        Text(code)
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundStyle(.secondary)
-                                            .bold()
-                                    }
                                 }
                                 Text(lecture.startDate.clockTime + "-" + lecture.endDate.clockTime)
                                     .foregroundStyle(.secondary)
@@ -223,6 +206,12 @@ struct LectureSheetModifier: ViewModifier {
                                             .foregroundStyle(.secondary)
                                         Text(String(credit))
                                     }
+                                }
+                                if let code = lecture.course?.lessonCode {
+                                    Text(code)
+                                        .font(.system(.caption, design: .monospaced))
+                                        .foregroundStyle(.secondary)
+                                        .bold()
                                 }
                             }
                             .font(.caption)
@@ -263,43 +252,46 @@ struct LectureCardView: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 5)
                 .fill(lecture.startDate.stripTime() == Date().stripTime() ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.1), lineWidth: 1)
                 }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(lecture.startDate.clockTime)
-                    .font(.system(size: 10))
-                    .fontWeight(.bold)
-                Text(lecture.name)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2, reservesSpace: false)
-                    .font(.system(size: 15, weight: .light))
-                Text(lecture.location)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2, reservesSpace: false)
-                    .font(.system(size: 13, weight: .light, design: .monospaced))
-                
-                Spacer()
-
-                if length > 2 {
-                    Text(lecture.teacherName)
-                        .multilineTextAlignment(.trailing)
+            ZStack(alignment: .topLeading) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lecture.startDate.clockTime)
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    Text(lecture.name)
+                        .multilineTextAlignment(.leading)
                         .lineLimit(2, reservesSpace: false)
-                        .font(.system(size: 10))
-                        .hStackTrailing()
+                        .font(.system(size: 15, weight: .light))
+                    Text(lecture.location)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2, reservesSpace: false)
+                        .font(.system(size: 13, weight: .light, design: .monospaced))
+                    
+                    Spacer()
                 }
-
-                Text(lecture.endDate.clockTime)
-                    .font(.system(size: 10, weight: .bold))
+                
+                if length > 1 {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Spacer()
+                        
+                        Text(lecture.teacherName)
+                            .multilineTextAlignment(.trailing)
+                            .lineLimit(2, reservesSpace: false)
+                            .font(.system(size: 10))
+                        
+                        Text(lecture.endDate.clockTime)
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    }
                     .hStackTrailing()
+                }
             }
-            .padding(.vertical, 2)
             .padding(.horizontal, 5)
+            .padding(.vertical, 2)
         }
         .lectureSheet(lecture: lecture)
     }
