@@ -43,7 +43,7 @@ class Course: Codable, Identifiable, Equatable {
         lessonCode = try container.decode(String.self, forKey: .lessonCode)
         teacherName = try container.decode(String.self, forKey: .teacherName)
         lectures = try container.decode([Lecture].self, forKey: .lectures)
-        description = try container.decode(String.self, forKey: .description)
+        description = try container.decodeIfPresent(String.self, forKey: .description)
         credit = try container.decode(Double.self, forKey: .credit)
         additionalInfo = try container.decode([String: String].self, forKey: .additionalInfo)
         
