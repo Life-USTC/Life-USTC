@@ -264,30 +264,33 @@ struct LectureCardView: View {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
                 }
-            ZStack(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(lecture.startDate.clockTime)
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(lecture.startDate.clockTime)
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                
+                Group {
                     Text(lecture.name)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(2, reservesSpace: false)
                         .font(.system(size: 15, weight: .light))
-                    Text(lecture.location)
-                        .multilineTextAlignment(.leading)
                         .lineLimit(2, reservesSpace: false)
+                        .multilineTextAlignment(.leading)
+                        .minimumScaleFactor(0.01)
+                    Text(lecture.location)
                         .font(.system(size: 13, weight: .light, design: .monospaced))
-                    
-                    Spacer()
+                        .lineLimit(2, reservesSpace: false)
+                        .multilineTextAlignment(.leading)
+                        .minimumScaleFactor(0.01)
                 }
+                
+                Spacer()
                 
                 if length > 1 {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Spacer()
-                        
                         Text(lecture.teacherName)
-                            .multilineTextAlignment(.trailing)
-                            .lineLimit(2, reservesSpace: false)
                             .font(.system(size: 10))
+                            .lineLimit(2, reservesSpace: false)
+                            .multilineTextAlignment(.trailing)
+                            .minimumScaleFactor(0.01)
                         
                         Text(lecture.endDate.clockTime)
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
