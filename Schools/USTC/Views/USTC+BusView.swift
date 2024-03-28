@@ -201,6 +201,7 @@ struct USTC_SchoolBusView: View {
                 .refreshable {
                     _data.triggerRefresh()
                 }
+                .asyncStatusOverlay(_data.status)
                 .navigationTitle("Bus Timetable")
                 .navigationBarTitleDisplayMode(.inline)
 

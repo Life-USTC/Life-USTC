@@ -158,7 +158,7 @@ struct USTCClassroomView: View {
                 AsyncStatusLight(status: _classroom.status)
             }
         }
-        .asyncStatusOverlay(_classroom.status, showLight: false)
+        .asyncStatusOverlay(_classroom.status)
         .scrollContentBackground(.hidden)
         .refreshable {
             _classroom.triggerRefresh()

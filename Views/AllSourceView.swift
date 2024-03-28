@@ -40,7 +40,6 @@ struct AllSourceView: View {
             }
         }
         .listStyle(.sidebar)
-        //.asyncStatusOverlay(_feedSources.status, showLight: false)
         .refreshable {
             _feedSources.triggerRefresh()
         }

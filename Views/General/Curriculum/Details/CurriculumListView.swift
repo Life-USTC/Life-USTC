@@ -53,7 +53,7 @@ struct CurriculumListView: View {
         }
         .listStyle(.grouped)
         .scrollContentBackground(.hidden)
-        .asyncStatusOverlay(_curriculum.status, showLight: false)
+        .asyncStatusOverlay(_curriculum.status)
         .refreshable {
             _curriculum.triggerRefresh()
         }

@@ -90,7 +90,7 @@ struct HomeworkDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .asyncStatusOverlay(_homeworks.status, showLight: false)
+        .asyncStatusOverlay(_homeworks.status)
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .padding(.horizontal)
