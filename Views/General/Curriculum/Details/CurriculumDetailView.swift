@@ -143,6 +143,9 @@ struct CurriculumDetailView: View {
             updateSemester()
         }
         .onRotate { newOrientation in
+            if newOrientation.isFlat {
+                return
+            }
             if newOrientation.isLandscape {
                 showLandscape = true
             } else {
