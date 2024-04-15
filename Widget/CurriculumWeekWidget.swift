@@ -121,7 +121,7 @@ struct CurriculumWeekWidget: Widget {
         StaticConfiguration(kind: kind, provider: CurriculumWeekProvider()) {
             CurriculumWeekWidgetEntryView(entry: $0)
         }
-        .supportedFamilies([.systemLarge, .systemExtraLarge])
+        .supportedFamilies([.systemExtraLarge])
         .configurationDisplayName("Curriculum")
         .description("Show this week's curriculum")
     }
@@ -129,10 +129,7 @@ struct CurriculumWeekWidget: Widget {
 
 struct CurriculumWeekWidget_Previews: PreviewProvider {
     static var previews: some View {
-        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumWeekWidgetEntryView(entry: .example)
-                .previewContext(WidgetPreviewContext(family: family))
-                .previewDisplayName(family.description)
-        }
+        CurriculumWeekWidgetEntryView(entry: .example)
+            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
     }
 }

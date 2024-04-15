@@ -12,7 +12,7 @@ struct FeatureLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 0) {
             configuration.icon
-                .foregroundColor(Color("AccentColor"))
+                .foregroundColor(Color.accentColor)
                 .font(.title)
                 .symbolRenderingMode(.hierarchical)
                 .frame(width: 50, height: 50)

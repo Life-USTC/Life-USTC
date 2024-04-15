@@ -87,6 +87,7 @@ class Lecture: Codable, Identifiable {
         endDate: Date().stripTime() + DateComponents(hour: 12, minute: 10),
         name: "数学分析B1",
         location: "5104",
+        teacherName: "EXAMPLE",
         startIndex: 1,
         endIndex: 5
     )

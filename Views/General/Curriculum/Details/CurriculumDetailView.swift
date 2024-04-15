@@ -9,14 +9,20 @@ import Charts
 import SwiftUI
 
 struct CurriculumDetailView: View {
-    @AppStorage("CurriculumDetailViewUseUI_v2") var useNewUI = true
     @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
-    @ManagedData(.curriculum) var curriculum: Curriculum
-    @State var semester: Semester? = nil
-    @State var showLandscape: Bool = {
-        UIDevice.current.orientation.isLandscape
-    }()
+    @AppStorage(
+        "curriculumChartShouldHideEvening",
+        store: .appGroup
+    ) var curriculumChartShouldHideEvening: Bool = false
 
+    @ManagedData(.curriculum) var curriculum: Curriculum
+
+    @State var showLandscape: Bool = {
+        if UIDevice.current.orientation.isFlat {
+            return false
+        }
+        return UIDevice.current.orientation.isLandscape
+    }()
     @State var _date: Date = .now
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
@@ -24,89 +30,99 @@ struct CurriculumDetailView: View {
     var heightPerClass = 10
 
     var date: Date { _date.startOfWeek() }
+    
+    @ViewBuilder
+    var detailBarView: some View {
+        HStack {
+            Text(currentSemester?.name ?? "All".localized)
 
-    var normalView: some View {
-        GeometryReader { geo in
-            ScrollView {
-                VStack {
-                    HStack(alignment: .bottom) {
-                        AsyncStatusLight(status: _curriculum.status)
-                        Spacer()
-                        DatePicker(selection: $_date, displayedComponents: .date) {}
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    HStack {
-                        Text(currentSemester?.name ?? "All".localized)
-
-                        if let weekNumber {
-                            Spacer()
-                            
-                            if (date ... date.add(day: 7)).contains(Date().stripTime()) {
-                                Text(String(format: "Week %@".localized, String(weekNumber)))
-                            } else {
-                                Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
-                            }
-                        } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
-                            Spacer()
-
-                            Text("[NOT CURRENT]")
-                        }
-
-                        Spacer()
-
-                        Text(date ... date.add(day: 6))
-                    }
-                    .font(.system(.caption2, design: .monospaced, weight: .light))
-                    .padding(.horizontal, 20)
-
-                    if useNewUI {
-                        CurriculumWeekViewVerticalNew(
-                            lectures: lectures,
-                            _date: _date,
-                            currentSemesterName: currentSemester?.name ?? "All".localized,
-                            weekNumber: weekNumber,
-                            hideWeekend: hideWeekend
-                        )
-                    } else {
-                        CurriculumWeekViewVertical(
-                            lectures: lectures,
-                            _date: _date,
-                            currentSemesterName: currentSemester?.name ?? "All".localized,
-                            weekNumber: weekNumber
-                        )
-                        .padding(.horizontal, 20)
-                    }
+            if let weekNumber {
+                Spacer()
+                
+                if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                    Text(String(format: "Week %@".localized, String(weekNumber)))
+                } else {
+                    Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
                 }
-                .frame(
-                    minWidth: geo.size.width,
-                    minHeight: geo.size.height
-                )
-            }
-        }
-        .refreshable {
-            _curriculum.triggerRefresh()
-        }
-        .asyncStatusOverlay(_curriculum.status)
-    }
+            } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
+                Spacer()
 
-    var landscapeView: some View {
-        CurriculumWeekView(
-            lectures: lectures,
-            _date: _date,
-            currentSemesterName: currentSemester?.name ?? "All".localized,
-            weekNumber: weekNumber
-        )
-        .asyncStatusOverlay(_curriculum.status)
+                Text("[NOT CURRENT]")
+            }
+
+            Spacer()
+
+            Text(date ... date.add(day: 6))
+        }
+        .font(.system(.caption2, design: .monospaced, weight: .light))
+        .padding(.horizontal, 20)
     }
 
     var body: some View {
-        Group {
-            if showLandscape {
-                landscapeView
-            } else {
-                normalView
+        VStack {
+            if !showLandscape {
+                HStack(alignment: .bottom) {
+                    AsyncStatusLight(status: _curriculum.status)
+                    Spacer()
+                    DatePicker(selection: $_date, displayedComponents: .date) {}
+                }
+                .padding(.horizontal, 20)
             }
+            
+            detailBarView
+
+            if showLandscape {
+                CurriculumWeekView(
+                    lectures: lectures,
+                    _date: _date,
+                    currentSemesterName: currentSemester?.name ?? "All".localized,
+                    weekNumber: weekNumber
+                )
+                .id(curriculumChartShouldHideEvening) // so that a forced refresh would happen if the user toggles the setting
+            } else {
+                CurriculumWeekViewVerticalNew(
+                    lectures: lectures,
+                    _date: _date,
+                    currentSemesterName: currentSemester?.name ?? "All".localized,
+                    weekNumber: weekNumber,
+                    hideWeekend: hideWeekend
+                )
+            }
+        }
+        .asyncStatusOverlay(_curriculum.status)
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                if showLandscape {
+                    Button {
+                        curriculumChartShouldHideEvening.toggle()
+                    } label: {
+                        Label(
+                            "Hide evening",
+                            systemImage: curriculumChartShouldHideEvening ? "moon" : "moon.fill"
+                        )
+                    }
+                } else {
+                    Button {
+                        hideWeekend.toggle()
+                    } label: {
+                        Label(
+                            "Hide weekend",
+                            systemImage: hideWeekend ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
+                        )
+                    }
+                }
+
+                NavigationLink {
+                    CurriculumListView()
+                } label: {
+                    Label("Details", systemImage: "info.circle")
+                }
+            }
+        }
+        .navigationTitle("Curriculum")
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable {
+            _curriculum.triggerRefresh()
         }
         .gesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
@@ -134,17 +150,17 @@ struct CurriculumDetailView: View {
             updateLecturesAndWeekNumber()
             updateSemester()
         }
-        .onChange(of: _curriculum.status) { _ in
-            semester = curriculum.semesters.first
-        }
         .onAppear {
-            semester = curriculum.semesters.first
             updateLecturesAndWeekNumber()
             updateSemester()
         }
         .onRotate { newOrientation in
             if newOrientation.isFlat {
+#if DEBUG
+                showLandscape = false
+#else
                 return
+#endif
             }
             if newOrientation.isLandscape {
                 showLandscape = true
@@ -152,29 +168,6 @@ struct CurriculumDetailView: View {
                 showLandscape = false
             }
         }
-        .onDisappear {
-            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    hideWeekend.toggle()
-                } label: {
-                    Label(
-                        "Hide weekend",
-                        systemImage: hideWeekend ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
-                    )
-                }
-                NavigationLink {
-                    CurriculumListView()
-                } label: {
-                    Label("Details", systemImage: "info.circle")
-                }
-            }
-        }
-        .navigationTitle("Curriculum")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     func updateLecturesAndWeekNumber() {

@@ -202,7 +202,7 @@ struct ExamPreview: View {
             if exams.isEmpty {
                 HStack {
                     RoundedRectangle(cornerRadius: 2)
-                        .fill(Color("AccentColor"))
+                        .fill(Color.accentColor)
                         .frame(width: 5)
                         .frame(minHeight: 40, maxHeight: 50)
                     VStack(alignment: .leading) {

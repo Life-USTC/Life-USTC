@@ -24,6 +24,10 @@
 		5627D8D62A5EA8A800DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
 		5627D8D82A5EA97100DEB653 /* InAppNotificationTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */; };
 		5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */; };
+		562E641D2BCD2B7A00A58DD3 /* LectureCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562E641C2BCD2B7A00A58DD3 /* LectureCardView.swift */; };
+		562E641E2BCD2B7A00A58DD3 /* LectureCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562E641C2BCD2B7A00A58DD3 /* LectureCardView.swift */; };
+		562E64202BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562E641F2BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift */; };
+		562E64212BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562E641F2BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift */; };
 		56333F4C2AD99A460029F665 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4B2AD99A460029F665 /* Security.framework */; };
 		56333F4E2AD99A4B0029F665 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4D2AD99A4B0029F665 /* CoreLocation.framework */; };
 		56333F502AD99A550029F665 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56333F4F2AD99A550029F665 /* SystemConfiguration.framework */; };
@@ -230,6 +234,8 @@
 		562169212955BEDE00DF46BE /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5627D8D52A5EA8A800DEB653 /* InAppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotification.swift; sourceTree = "<group>"; };
 		5627D8D72A5EA97100DEB653 /* InAppNotificationTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationTabView.swift; sourceTree = "<group>"; };
+		562E641C2BCD2B7A00A58DD3 /* LectureCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LectureCardView.swift; sourceTree = "<group>"; };
+		562E641F2BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurriculumWeekViewVertical.swift; sourceTree = "<group>"; };
 		56333F4B2AD99A460029F665 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		56333F4D2AD99A4B0029F665 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		56333F4F2AD99A550029F665 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -424,8 +430,10 @@
 		5653458D2A98D6830010B78C /* WeekCard */ = {
 			isa = PBXGroup;
 			children = (
+				562E641C2BCD2B7A00A58DD3 /* LectureCardView.swift */,
 				565345892A98D2480010B78C /* CurriculumWeekCard.swift */,
 				569600142A92337E00677F15 /* CurriculumWeekView.swift */,
+				562E641F2BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift */,
 			);
 			path = WeekCard;
 			sourceTree = "<group>";
@@ -1068,6 +1076,7 @@
 				56F3EADA296EB7FD0095AEF4 /* ExamPreview.swift in Sources */,
 				56912EDD2A9C72CF003ACD8B /* ExamPreviewCard.old.swift in Sources */,
 				56EEA65C2A9A303E0034EE33 /* ExamPreviewCard.swift in Sources */,
+				562E64202BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift in Sources */,
 				56BE91F72963EF1600822C98 /* ExceptionExtension.swift in Sources */,
 				E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */,
 				E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */,
@@ -1092,6 +1101,7 @@
 				569600112A9116F000677F15 /* LectureDetailView.swift in Sources */,
 				56E94E25298A77990085241B /* LegalPage.swift in Sources */,
 				56E25CC32A8F29E50027E72F /* LoginClient.swift in Sources */,
+				562E641D2BCD2B7A00A58DD3 /* LectureCardView.swift in Sources */,
 				56E9A0922A8F0E6400A12B29 /* ManagedData.swift in Sources */,
 				56F16E0B2A991C8C00DBB3CA /* ManagedDataExample.swift in Sources */,
 				56E9A0942A8F12BF00A12B29 /* ManagedDataSource.swift in Sources */,
@@ -1153,6 +1163,7 @@
 				565345902A98D97D0010B78C /* CurriculumWeekView.swift in Sources */,
 				56C3A72629BDA10400A5017A /* CurriculumWeekWidget.swift in Sources */,
 				56734CED297D871500DBB45F /* DateExtension.swift in Sources */,
+				562E641E2BCD2B7A00A58DD3 /* LectureCardView.swift in Sources */,
 				5638E2802A581CD6001967D9 /* Exam.swift in Sources */,
 				56A8FC252A97AE1C009D94A3 /* ExamExtensions.swift in Sources */,
 				56EEA65D2A9A30400034EE33 /* ExamPreview.swift in Sources */,
@@ -1160,6 +1171,7 @@
 				56FA8E80297D7263000AC3A9 /* ExamWidget.swift in Sources */,
 				56734CEE297D871500DBB45F /* ExceptionExtension.swift in Sources */,
 				5699672C2A9746D500CC1EBB /* GenericsExtension.swift in Sources */,
+				562E64212BCD2BA600A58DD3 /* CurriculumWeekViewVertical.swift in Sources */,
 				5601B9192B1A084900C85F25 /* Homework.swift in Sources */,
 				56F508362B219CC900C2B914 /* HomeworkDetailView.swift in Sources */,
 				5627D8D92A5EB02A00DEB653 /* InAppNotification.swift in Sources */,
