@@ -43,6 +43,10 @@ struct LectureView: View {
                     .foregroundColor(.gray.opacity(0.8))
             }
         }
+        .background(
+            Color("BackgroundWhite")
+        )
+        .lectureSheet(lecture: lecture)
     }
 }
 
