@@ -122,6 +122,12 @@ class USTCExports: SchoolExport {
             ],
         ]
     }
+    
+    override var setCookiesBeforeWebView: (() async throws -> Void)? {
+        return {
+            _ = try await UstcCasClient.shared.login()
+        }
+    }
 }
 
 extension SchoolExport { static let ustc = USTCExports() }

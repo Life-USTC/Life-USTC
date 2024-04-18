@@ -55,4 +55,6 @@ class SchoolExport {
     }
 
     var features: [String: [FeatureWithView]] { [:] }
+    
+    var setCookiesBeforeWebView: (() async throws -> Void)? { nil }
 }

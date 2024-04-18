@@ -17,14 +17,18 @@ struct SwiftUIWebView: UIViewRepresentable {
     init(url: URL) {
         self.url = url
         let wkWebConfig = WKWebViewConfiguration()
-        for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies
-            ?? []
-        { wkWebConfig.websiteDataStore.httpCookieStore.setCookie(cookie) }
         wkWebConfig.defaultWebpagePreferences.preferredContentMode = .mobile
         wkWebConfig.upgradeKnownHostsToHTTPS = true
         webView = WKWebView(frame: .zero, configuration: wkWebConfig)
         // identify self as mobile client, so that the website will render the mobile version
         webView.customUserAgent = userAgent
+        updateCookies()
+    }
+    
+    func updateCookies() {
+        for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies ?? [] {
+            webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+        }
     }
 
     func makeUIView(context _: Context) -> WKWebView { webView }
@@ -38,6 +42,7 @@ struct Browser: View {
     @State var useReeed = false
     var url: URL
     var title: String = "Detail"
+    var webView: SwiftUIWebView
 
     var body: some View {
         Group {
@@ -62,7 +67,24 @@ struct Browser: View {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
         }
+        .id(url)
+        .task {
+            do {
+                if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
+                    try await setCookiesBeforeWebView()
+                }
+            } catch {
+                debugPrint(error)
+            }
+            webView.updateCookies()
+        }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    init (url _url: URL, title: String = "Detail") {
+        self.url = _url
+        self.title = title
+        self.webView = SwiftUIWebView(url: _url)
     }
 }
