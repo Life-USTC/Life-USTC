@@ -75,6 +75,7 @@
 		5677E1392A5AF20500EDCB53 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		5677E13E2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */; };
 		567FA93129D083180003050F /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567FA93029D083180003050F /* AppPage.swift */; };
+		56901B412BD13FC1009E5213 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56AC72FB294A012F00A60F47 /* Assets.xcassets */; };
 		56912ED02A9C6DA0003ACD8B /* CurriculumTodayCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F16E0E2A99F3A800DBB3CA /* CurriculumTodayCard.swift */; };
 		56912ED32A9C6E04003ACD8B /* ExamPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EEA65B2A9A303E0034EE33 /* ExamPreviewCard.swift */; };
 		56912ED62A9C7023003ACD8B /* CurriculumTodayView.old.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56912ED52A9C7023003ACD8B /* CurriculumTodayView.old.swift */; };
@@ -1032,6 +1033,7 @@
 			files = (
 				564125602BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */,
 				56FA8E83297D7264000AC3A9 /* Assets.xcassets in Resources */,
+				56901B412BD13FC1009E5213 /* Assets.xcassets in Resources */,
 				56EEA65A2A9A2D350034EE33 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
