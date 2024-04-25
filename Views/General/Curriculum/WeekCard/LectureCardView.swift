@@ -44,14 +44,14 @@ struct LectureSheetModifier: ViewModifier {
                                 }
                                 .foregroundStyle(.secondary)
                                 .bold()
-                                
+
                                 Text("@" + lecture.location)
                                     .foregroundStyle(.secondary)
                                     .bold()
                             }
-                            
+
                             Spacer()
-                            
+
                             VStack(alignment: .leading) {
                                 HStack(alignment: .bottom) {
                                     Text("Teacher: ".localized)
@@ -75,7 +75,7 @@ struct LectureSheetModifier: ViewModifier {
                             .font(.caption)
                         }
                         .padding([.top, .horizontal])
-                        
+
                         if let url = buildingImgMapping.getURL(buildingName: lecture.location) {
                             AsyncImage(url: url) { image in
                                 image
@@ -87,7 +87,7 @@ struct LectureSheetModifier: ViewModifier {
                             .frame(maxWidth: .infinity, maxHeight: 400)
                             .padding(5)
                         }
-                        
+
                         Spacer()
                     }
                 }
@@ -104,7 +104,7 @@ extension View {
 
 struct LectureCardView: View {
     var lecture: Lecture
-    
+
     var length: Int {
         (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
     }
@@ -117,11 +117,11 @@ struct LectureCardView: View {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
                 }
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(lecture.startDate.clockTime)
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
-                
+
                 Group {
                     Text(lecture.name)
                         .font(.system(size: 15, weight: .light))
@@ -134,9 +134,9 @@ struct LectureCardView: View {
                         .multilineTextAlignment(.leading)
                         .minimumScaleFactor(0.01)
                 }
-                
+
                 Spacer()
-                
+
                 if length > 1 {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(lecture.teacherName)
@@ -144,7 +144,7 @@ struct LectureCardView: View {
                             .lineLimit(2, reservesSpace: false)
                             .multilineTextAlignment(.trailing)
                             .minimumScaleFactor(0.01)
-                        
+
                         Text(lecture.endDate.clockTime)
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                     }
@@ -157,4 +157,3 @@ struct LectureCardView: View {
         .lectureSheet(lecture: lecture)
     }
 }
-

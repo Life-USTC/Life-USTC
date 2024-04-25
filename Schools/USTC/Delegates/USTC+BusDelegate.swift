@@ -28,7 +28,7 @@ struct USTCCampus: Identifiable, Codable, Hashable {
 struct USTCRoute: Identifiable, Codable, Hashable {
     var id: Int
     var campuses: [USTCCampus]
-    
+
     static let example = USTCRoute(
         id: 1,
         campuses: [.example, .example]
@@ -61,7 +61,7 @@ struct USTCBusData: ExampleDataProtocol, Codable {
 
     var weekday_routes: [USTCRouteSchedule]
     var weekend_routes: [USTCRouteSchedule]
-    
+
     var message: Message?
 
     static let example = USTCBusData(
@@ -78,9 +78,9 @@ class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
     override func refresh() async throws -> USTCBusData {
         let url = URL(string: "https://static.xzkd.online/bus_data_v3.json")
         let (data, _) = try await URLSession.shared.data(from: url!)
-//        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
-//        let url = URL(fileURLWithPath: path!)
-//        let data = try Data(contentsOf: url)
+        //        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
+        //        let url = URL(fileURLWithPath: path!)
+        //        let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 }

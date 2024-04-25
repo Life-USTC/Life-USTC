@@ -84,7 +84,6 @@ struct FeaturePreview: View {
     var body: some View {
         LazyVGrid(
             columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-//            spacing: 10
         ) {
             ForEach(features) { feature in
                 SingleFeaturePreview(feature: feature)

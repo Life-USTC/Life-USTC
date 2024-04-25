@@ -67,11 +67,11 @@ class USTCExports: SchoolExport {
     override var geoLocationDataURL: URL {
         ustcGeoLocationDataURL
     }
-    
+
     override var buildingimgMappingURL: URL {
         URL(string: "https://static.xzkd.online/building_img_rules.json")!
     }
-    
+
     override var buildingimgBaseURL: URL {
         URL(string: "https://static.xzkd.online/")!
     }
@@ -122,7 +122,7 @@ class USTCExports: SchoolExport {
             ],
         ]
     }
-    
+
     override var setCookiesBeforeWebView: (() async throws -> Void)? {
         return {
             _ = try await UstcCasClient.shared.login()

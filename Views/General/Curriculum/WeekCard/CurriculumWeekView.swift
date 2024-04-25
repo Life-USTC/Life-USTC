@@ -24,7 +24,7 @@ struct CurriculumWeekView: View {
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()
     }
-    
+
     func length(_ lecture: Lecture) -> Int {
         (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
     }

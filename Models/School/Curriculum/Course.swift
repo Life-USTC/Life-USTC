@@ -8,7 +8,7 @@
 import EventKit
 import SwiftUI
 
-fileprivate let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
+private let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
 
 class Course: Codable, Identifiable, Equatable {
     private var insideId: Int = 0
@@ -21,15 +21,15 @@ class Course: Codable, Identifiable, Equatable {
     var description: String? = ""
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
-    
+
     func color() -> Color {
         return courseColors[id % courseColors.count]
     }
-    
+
     static func == (lhs: Course, rhs: Course) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -41,7 +41,7 @@ class Course: Codable, Identifiable, Equatable {
         case credit
         case additionalInfo
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
@@ -53,12 +53,12 @@ class Course: Codable, Identifiable, Equatable {
         description = try container.decodeIfPresent(String.self, forKey: .description)
         credit = try container.decode(Double.self, forKey: .credit)
         additionalInfo = try container.decode([String: String].self, forKey: .additionalInfo)
-        
+
         for lecture in lectures {
             lecture.course = self
         }
     }
-    
+
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -71,7 +71,7 @@ class Course: Codable, Identifiable, Equatable {
         try container.encode(credit, forKey: .credit)
         try container.encode(additionalInfo, forKey: .additionalInfo)
     }
-    
+
     init(
         id: Int = 0,
         name: String,
@@ -81,7 +81,7 @@ class Course: Codable, Identifiable, Equatable {
         lectures: [Lecture],
         description: String? = "",
         credit: Double = 0,
-        additionalInfo: [String : String] = [:]
+        additionalInfo: [String: String] = [:]
     ) {
         self.id = id
         self.name = name
@@ -92,7 +92,7 @@ class Course: Codable, Identifiable, Equatable {
         self.description = description
         self.credit = credit
         self.additionalInfo = additionalInfo
-        
+
         for lecture in lectures {
             lecture.course = self
         }

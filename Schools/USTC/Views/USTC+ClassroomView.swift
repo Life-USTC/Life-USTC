@@ -40,7 +40,7 @@ struct USTCClassroomView: View {
         default: return .night
         }
     }()
-    
+
     @AppStorage("ustcClassroomUseBrowser") var useBrowser: Bool = true
 
     var date: Date {
@@ -183,7 +183,7 @@ struct USTCClassroomView: View {
                 Button {
                     useBrowser.toggle()
                 } label: {
-                    Image(systemName: useBrowser ? "doc.append": "safari")
+                    Image(systemName: useBrowser ? "doc.append" : "safari")
                 }
             }
         }

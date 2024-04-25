@@ -11,7 +11,6 @@ let defaultHomeViewOrder: [HomeViewCardType] = [
     .featurePreview,
     .curriculumToday,
     .examPreview,
-//    .curriculumWeek,
 ]
 
 struct HomeSettingPage: View {

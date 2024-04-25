@@ -11,7 +11,6 @@ enum HomeViewCardType: String, CaseIterable, Codable {
     case curriculumToday
     case examPreview
     case featurePreview
-//    case curriculumWeek
 
     case curriculumToday_old
     case examPreview_old
@@ -27,8 +26,6 @@ extension HomeViewCardType {
             ExamPreviewCard()
         case .featurePreview:
             FeaturePreviewCard()
-//        case .curriculumWeek:
-//            CurriculumWeekCard()
         case .curriculumToday_old:
             CurriculumTodayCard_old()
         case .examPreview_old:
@@ -44,8 +41,6 @@ extension HomeViewCardType {
             return "Exam Arrangement"
         case .featurePreview:
             return "Features"
-//        case .curriculumWeek:
-//            return "Week Schedule"
         case .curriculumToday_old:
             return "Curriculum (old)"
         case .examPreview_old:
@@ -60,7 +55,7 @@ struct HomeView: View {
 
     var body: some View {
         VStack {
-            ScrollView(showsIndicators: false)  {
+            ScrollView(showsIndicators: false) {
                 Spacer()
                     .frame(height: 10)
 

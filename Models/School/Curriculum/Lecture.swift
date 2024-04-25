@@ -19,9 +19,9 @@ class Lecture: Codable, Identifiable {
     var additionalInfo: [String: String] = [:]
     var startIndex: Int?
     var endIndex: Int?
-    
+
     var course: Course?
-    
+
     enum CodingKeys: String, CodingKey {
         case startDate
         case endDate
@@ -33,7 +33,7 @@ class Lecture: Codable, Identifiable {
         case startIndex
         case endIndex
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         startDate = try container.decode(Date.self, forKey: .startDate)
@@ -46,7 +46,7 @@ class Lecture: Codable, Identifiable {
         startIndex = try container.decodeIfPresent(Int.self, forKey: .startIndex)
         endIndex = try container.decodeIfPresent(Int.self, forKey: .endIndex)
     }
-    
+
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(startDate, forKey: .startDate)
@@ -59,15 +59,15 @@ class Lecture: Codable, Identifiable {
         try container.encodeIfPresent(startIndex, forKey: .startIndex)
         try container.encodeIfPresent(endIndex, forKey: .endIndex)
     }
-    
+
     init(
         startDate: Date,
         endDate: Date,
         name: String,
-        location: String  = "",
+        location: String = "",
         teacherName: String = "",
         periods: Double = 0,
-        additionalInfo: [String : String] = [:],
+        additionalInfo: [String: String] = [:],
         startIndex: Int? = nil,
         endIndex: Int? = nil
     ) {

@@ -17,18 +17,18 @@ struct LectureView: View {
                 .fill((lecture.course?.color() ?? color).opacity(0.8))
                 .frame(width: 5)
                 .frame(minHeight: 40, maxHeight: 50)
-            
+
             VStack(alignment: .leading) {
                 Text(lecture.name)
                     .font(.headline)
                     .fontWeight(.bold)
                 Text("\(lecture.teacherName) @ **\(lecture.location)**")
-                .font(.footnote)
-                .foregroundColor(.gray.opacity(0.8))
+                    .font(.footnote)
+                    .foregroundColor(.gray.opacity(0.8))
             }
-            
+
             Spacer()
-            
+
             VStack(alignment: .trailing) {
                 Text(lecture.startDate.stripHMwithTimezone())
                     .font(.subheadline)
@@ -51,18 +51,18 @@ struct CurriculumTodayView: View {
     var lectureListB: [Lecture] = []
     var listAText: String? = "Today"
     var listBText: String? = "Tomorrow"
-    
+
     @ViewBuilder
     var noLectureView: some View {
         ZStack {
             LectureView(lecture: .example)
                 .redacted(reason: .placeholder)
-            
+
             VStack {
                 Text("Nothing here")
                     .lineLimit(1)
                     .font(.system(.body, weight: .semibold))
-                
+
                 Text("Enjoy!")
                     .lineLimit(1)
                     .font(.caption)
@@ -71,7 +71,7 @@ struct CurriculumTodayView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func makeView(
         with lectures: [Lecture],
@@ -84,26 +84,26 @@ struct CurriculumTodayView: View {
                     .foregroundColor(.gray)
                     .font(.system(.subheadline, design: .monospaced, weight: .bold))
             }
-            
+
             ForEach(lectures) { lecture in
                 LectureView(lecture: lecture, color: color)
             }
-            
+
             if lectures.isEmpty {
                 noLectureView
             }
-            
+
             Spacer()
         }
     }
-    
+
     var body: some View {
         VStack {
             makeView(with: lectureListA, text: listAText, color: .mint)
-            
+
             Spacer()
                 .frame(height: 20)
-            
+
             makeView(with: lectureListB, text: listBText, color: .orange)
         }
     }
@@ -117,7 +117,7 @@ struct CurriculumTodayView: View {
                 lectureListB: [.example]
             )
             .card()
-            
+
             CurriculumTodayView(
                 lectureListA: [.example, .example],
                 lectureListB: []
@@ -141,7 +141,7 @@ extension CurriculumTodayView {
                     .fill(.mint)
             )
     }
-    
+
     @ViewBuilder
     func makeListWidget(
         with lectures: [Lecture],
@@ -154,20 +154,20 @@ extension CurriculumTodayView {
                 Spacer()
             }
             .padding(.bottom, 10)
-            
-            VStack (alignment: .leading) {
+
+            VStack(alignment: .leading) {
                 if !lectures.isEmpty {
                     ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
                         LectureView(lecture: lecture, color: color)
                     }
-                    
-                    if(lectures.count > numberToShow) {
+
+                    if lectures.count > numberToShow {
                         Text("And \(lectures.count - numberToShow) more")
                             .font(.footnote)
                             .foregroundColor(.gray.opacity(0.8))
                             .hStackTrailing()
                     }
-                    
+
                 } else {
                     noLectureView
                 }
@@ -180,31 +180,34 @@ extension CurriculumTodayView {
 #Preview {
     NavigationStack {
         VStack {
-            CurriculumTodayView().makeListWidget(
-                with: [],
-                color: .mint
-            )
-            .card()
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: [],
+                    color: .mint
+                )
+                .card()
 
-            CurriculumTodayView().makeListWidget(
-                with: [.example, .example, .example],
-                color: .mint
-            )
-            .card()
-            
-            CurriculumTodayView().makeListWidget(
-                with: [.example, .example, .example, .example, .example, .example, .example],
-                color: .mint
-            )
-            .card()
-            
-            
-            CurriculumTodayView().makeListWidget(
-                with: [.example, .example, .example, .example, .example, .example, .example],
-                color: .mint,
-                numberToShow: 5
-            )
-            .card()
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: [.example, .example, .example],
+                    color: .mint
+                )
+                .card()
+
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: [.example, .example, .example, .example, .example, .example, .example],
+                    color: .mint
+                )
+                .card()
+
+            CurriculumTodayView()
+                .makeListWidget(
+                    with: [.example, .example, .example, .example, .example, .example, .example],
+                    color: .mint,
+                    numberToShow: 5
+                )
+                .card()
         }
     }
 }
@@ -221,7 +224,7 @@ extension CurriculumTodayView {
             VStack(alignment: .leading) {
                 HStack {
                     titleView
-                    
+
                     Text(lecture.location)
                         .font(.callout)
                         .fontWeight(.semibold)
@@ -231,9 +234,9 @@ extension CurriculumTodayView {
                 Text(lecture.name)
                     .lineLimit(2)
                     .fontWeight(.bold)
-                
+
                 Spacer()
-                
+
                 Text(lecture.startDate.stripHMwithTimezone())
                     .font(.title3)
                     .fontWeight(.semibold)
@@ -250,8 +253,8 @@ extension CurriculumTodayView {
             .if(lecture_ == nil) {
                 $0.redacted(reason: .placeholder)
             }
-            
-            if(lecture_ == nil) {
+
+            if lecture_ == nil {
                 VStack(alignment: .center, spacing: 20) {
                     Image(systemName: "moon.stars")
                         .font(.system(size: 50))
@@ -276,7 +279,7 @@ extension CurriculumTodayView {
                 .frame(width: 200, height: 200)
                 .border(.blue)
                 .card()
-                
+
             CurriculumTodayView().makeWidget(with: .example)
                 .frame(width: 200, height: 200)
                 .border(.blue)

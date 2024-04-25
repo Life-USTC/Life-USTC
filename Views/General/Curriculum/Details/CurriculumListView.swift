@@ -17,16 +17,16 @@ struct CurriculumListView: View {
             ForEach(curriculum.semesters) { semester in
                 Section {
                     ForEach(semester.courses, id: \.lessonCode) { course in
-                        VStack (alignment: .leading) {
+                        VStack(alignment: .leading) {
                             HStack(alignment: .bottom) {
                                 Text(course.name)
                                 Text(String(course.credit))
                                     .font(.system(.caption, weight: .semibold))
                                     .foregroundColor(.secondary)
-                                
+
                                 Spacer()
                             }
-                                
+
                             if let description = course.description {
                                 Text(description)
                                     .font(.system(.caption2, weight: .light))

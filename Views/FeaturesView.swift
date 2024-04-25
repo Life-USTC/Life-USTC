@@ -83,7 +83,7 @@ struct FeaturesView: View {
     ]
 
     var gridView: some View {
-        VStack{
+        VStack {
             Spacer()
                 .frame(height: 10)
             ForEach(
@@ -152,11 +152,11 @@ struct FeaturesView: View {
     }
 
     var body: some View {
-        VStack (alignment: .leading){
+        VStack(alignment: .leading) {
             Group {
                 switch style {
                 case .grid:
-                    ScrollView (showsIndicators: false) {
+                    ScrollView(showsIndicators: false) {
                         VStack {
                             gridView
                                 .padding(.horizontal, 18)

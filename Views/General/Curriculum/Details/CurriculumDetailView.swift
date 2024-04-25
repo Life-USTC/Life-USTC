@@ -30,7 +30,7 @@ struct CurriculumDetailView: View {
     var heightPerClass = 10
 
     var date: Date { _date.startOfWeek() }
-    
+
     @ViewBuilder
     var detailBarView: some View {
         HStack {
@@ -38,7 +38,7 @@ struct CurriculumDetailView: View {
 
             if let weekNumber {
                 Spacer()
-                
+
                 if (date ... date.add(day: 7)).contains(Date().stripTime()) {
                     Text(String(format: "Week %@".localized, String(weekNumber)))
                 } else {
@@ -68,7 +68,7 @@ struct CurriculumDetailView: View {
                 }
                 .padding(.horizontal, 20)
             }
-            
+
             detailBarView
 
             if showLandscape {
@@ -78,7 +78,7 @@ struct CurriculumDetailView: View {
                     currentSemesterName: currentSemester?.name ?? "All".localized,
                     weekNumber: weekNumber
                 )
-                .id(curriculumChartShouldHideEvening) // so that a forced refresh would happen if the user toggles the setting
+                .id(curriculumChartShouldHideEvening)  // so that a forced refresh would happen if the user toggles the setting
             } else {
                 CurriculumWeekViewVerticalNew(
                     lectures: lectures,
@@ -107,7 +107,8 @@ struct CurriculumDetailView: View {
                     } label: {
                         Label(
                             "Hide weekend",
-                            systemImage: hideWeekend ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
+                            systemImage: hideWeekend
+                                ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
                         )
                     }
                 }

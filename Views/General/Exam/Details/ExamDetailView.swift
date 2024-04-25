@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ExamDetailView: View {
     @ManagedData(.exam) var exams: [Exam]
-    
-    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject{}
+
+    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject {}
 
     var body: some View {
         List {
@@ -57,7 +57,7 @@ struct ExamDetailView: View {
                 Label(
                     "Save to calendar",
                     systemImage: {
-                        switch(saveToCalendar.status) {
+                        switch saveToCalendar.status {
                         case .none: return "square.and.arrow.down"
                         case .waiting: return "arrow.clockwise"
                         case .success: return "checkmark"

@@ -38,7 +38,7 @@ extension RefreshAsyncStatus? {
 class RefreshAsyncStatusUpdateObject: ObservableObject {
     var action: (() async throws -> Void)?
     @Published var status: RefreshAsyncStatus? = nil
-    
+
     func exec() async {
         status = .waiting
         do {
@@ -49,7 +49,7 @@ class RefreshAsyncStatusUpdateObject: ObservableObject {
             status = .error(error.localizedDescription)
         }
     }
-    
+
     init(action: (@escaping () async throws -> Void), status: RefreshAsyncStatus? = nil) {
         self.action = action
         self.status = status

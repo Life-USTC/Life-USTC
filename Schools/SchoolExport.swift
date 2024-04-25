@@ -33,9 +33,9 @@ class SchoolExport {
     var curriculumBehavior: CurriculumBehavior { CurriculumBehavior() }
 
     var geoLocationDataURL: URL { exampleURL }
-    
+
     var buildingimgMappingURL: URL { exampleURL }
-    
+
     var buildingimgBaseURL: URL { exampleURL }
 
     var scoreDelegate: ScoreDelegateProtocol {
@@ -55,6 +55,6 @@ class SchoolExport {
     }
 
     var features: [String: [FeatureWithView]] { [:] }
-    
+
     var setCookiesBeforeWebView: (() async throws -> Void)? { nil }
 }

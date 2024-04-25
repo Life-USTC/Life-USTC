@@ -130,15 +130,17 @@ struct BuildingImgMappingData: Codable, ExampleDataProtocol {
         var path: String
     }
     var data: [Mapping]
-    
+
     static let example = BuildingImgMappingData(data: [
         Mapping(regex: ".*", path: "https://example.com/default.png")
     ])
-    
+
     func getURL(baseURL: URL = SchoolExport.shared.buildingimgBaseURL, buildingName: String) -> URL? {
-        if let mapping = (data.first {
-            buildingName.range(of: $0.regex, options: .regularExpression) != nil
-        }){
+        if let mapping =
+            (data.first {
+                buildingName.range(of: $0.regex, options: .regularExpression) != nil
+            })
+        {
             return baseURL.appendingPathComponent(mapping.path)
         }
         return nil
@@ -153,12 +155,14 @@ class BuildingImgMappingDelegate: ManagedRemoteUpdateProtocol<BuildingImgMapping
 
         let (data, _) = try await URLSession.shared.data(from: url)
         let json = try JSON(data: data)
-        return BuildingImgMappingData(data: json.arrayValue
-            .map {
-                let regex = $0["regex"].stringValue
-                let path = $0["path"].stringValue
-                return BuildingImgMappingData.Mapping(regex: regex, path: path)
-            })
+        return BuildingImgMappingData(
+            data: json.arrayValue
+                .map {
+                    let regex = $0["regex"].stringValue
+                    let path = $0["path"].stringValue
+                    return BuildingImgMappingData.Mapping(regex: regex, path: path)
+                }
+        )
     }
 }
 

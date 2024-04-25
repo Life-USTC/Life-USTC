@@ -24,7 +24,7 @@ struct SwiftUIWebView: UIViewRepresentable {
         webView.customUserAgent = userAgent
         updateCookies()
     }
-    
+
     func updateCookies() {
         for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies ?? [] {
             webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
@@ -81,8 +81,8 @@ struct Browser: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
     }
-    
-    init (url _url: URL, title: String = "Detail") {
+
+    init(url _url: URL, title: String = "Detail") {
         self.url = _url
         self.title = title
         self.webView = SwiftUIWebView(url: _url)
