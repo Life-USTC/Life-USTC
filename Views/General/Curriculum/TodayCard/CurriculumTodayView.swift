@@ -14,7 +14,7 @@ struct LectureView: View {
     var body: some View {
         HStack {
             RoundedRectangle(cornerRadius: 2)
-                .fill((lecture.course?.color() ?? color).opacity(0.4))
+                .fill((lecture.course?.color() ?? color).opacity(0.8))
                 .frame(width: 5)
                 .frame(minHeight: 40, maxHeight: 50)
             
@@ -22,11 +22,7 @@ struct LectureView: View {
                 Text(lecture.name)
                     .font(.headline)
                     .fontWeight(.bold)
-                HStack(spacing: 0) {
-                    Text("\(lecture.teacherName) @ ")
-                    Text(lecture.location)
-                        .bold()
-                }
+                Text("\(lecture.teacherName) @ **\(lecture.location)**")
                 .font(.footnote)
                 .foregroundColor(.gray.opacity(0.8))
             }

@@ -8,9 +8,10 @@
 import EventKit
 import SwiftUI
 
-fileprivate let courseColors: [Color] = [.red, .orange, .yellow, .green, .mint, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
+fileprivate let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
 
 class Course: Codable, Identifiable, Equatable {
+    private var insideId: Int = 0
     var id: Int = 0
     var name: String
     var courseCode: String
