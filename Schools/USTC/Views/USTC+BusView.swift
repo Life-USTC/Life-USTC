@@ -159,7 +159,8 @@ struct USTC_SchoolBusView: View {
                     Section {
                         ForEach(scheduleList) { schedule in
                             ZStack {
-                                Color.white.opacity(1e-10)
+                                Color.clear
+                                    .contentShape(Rectangle())
                                 makeTopView(schedule)
                             }
                             .onTapGesture {

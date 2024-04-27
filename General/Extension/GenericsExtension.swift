@@ -80,3 +80,9 @@ extension Int {
         return ((left % right) + right) % right
     }
 }
+
+extension Equatable where Self: Identifiable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+}

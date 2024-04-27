@@ -9,7 +9,7 @@ import EventKit
 import SwiftUI
 
 /// Represent one lecture
-class Lecture: Codable, Identifiable {
+class Lecture: Codable, Identifiable, Equatable {
     var startDate: Date
     var endDate: Date
     var name: String

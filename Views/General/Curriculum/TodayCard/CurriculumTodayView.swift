@@ -12,37 +12,44 @@ struct LectureView: View {
     var color: Color = .red
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             RoundedRectangle(cornerRadius: 2)
                 .fill((lecture.course?.color() ?? color).opacity(0.8))
-                .frame(width: 5)
-                .frame(minHeight: 40, maxHeight: 50)
+                .frame(width: 5, height: 50)
 
-            VStack(alignment: .leading) {
-                Text(lecture.name)
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Text("\(lecture.teacherName) @ **\(lecture.location)**")
-                    .font(.footnote)
-                    .foregroundColor(.gray.opacity(0.8))
-            }
+            ZStack {
+                RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
+                    .fill((lecture.course?.color() ?? color).opacity(0.05))
+                    .frame(height: 50)
 
-            Spacer()
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(lecture.name)
+                            .font(.headline)
+                            .fontWeight(.bold)
+                        Text("\(lecture.teacherName) @ **\(lecture.location)**")
+                            .font(.footnote)
+                            .foregroundColor(.gray.opacity(0.8))
+                    }
 
-            VStack(alignment: .trailing) {
-                Text(lecture.startDate.stripHMwithTimezone())
-                    .font(.subheadline)
-                    .fontWeight(.heavy)
-                    .foregroundColor(.mint)
-                Text(lecture.endDate.stripHMwithTimezone())
-                    .font(.caption)
-                    .foregroundColor(.gray.opacity(0.8))
+                    Spacer()
+
+                    VStack(alignment: .trailing) {
+                        Text(lecture.startDate.stripHMwithTimezone())
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.mint)
+                        Text(lecture.endDate.stripHMwithTimezone())
+                            .font(.caption)
+                            .foregroundColor(.gray.opacity(0.8))
+                    }
+                }
+                .padding(.horizontal, 10)
             }
         }
-        .background(
-            Color("BackgroundWhite")
-        )
-        .lectureSheet(lecture: lecture)
+        .if(lecture != Lecture.example) {
+            $0.lectureSheet(lecture: lecture)
+        }
     }
 }
 

@@ -157,11 +157,11 @@ struct CurriculumDetailView: View {
         }
         .onRotate { newOrientation in
             if newOrientation.isFlat {
-#if DEBUG
+                #if DEBUG
                 showLandscape = false
-#else
+                #else
                 return
-#endif
+                #endif
             }
             if newOrientation.isLandscape {
                 showLandscape = true

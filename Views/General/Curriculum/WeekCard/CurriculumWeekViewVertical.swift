@@ -65,6 +65,10 @@ struct CurriculumWeekViewVerticalNew: View {
                             .frame(width: geo.size.width / 5, height: geo.size.height)
                     }
                 }
+                .background {
+                    Color.clear
+                        .contentShape(Rectangle())
+                }
             }
             .padding(.horizontal, 20)
         } else {
@@ -74,6 +78,10 @@ struct CurriculumWeekViewVerticalNew: View {
                         makeVStack(index: index, heightPerClass: geo.size.height / 13)
                             .frame(width: geo.size.width / 7, height: geo.size.height)
                     }
+                }
+                .background {
+                    Color.clear
+                        .contentShape(Rectangle())
                 }
             }
         }
