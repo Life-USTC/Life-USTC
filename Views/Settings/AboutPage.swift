@@ -91,14 +91,14 @@ struct AboutApp: View {
         VStack {
             if life_ustc {
                 oldIconView
-                    .onTapGesture {
-                        life_ustc = !life_ustc
+                    .onTapGesture(count: 5) {
+                        life_ustc.toggle()
                         changeAppIcon(to: "NewAppIcon")
                     }
             } else {
                 iconView
-                    .onTapGesture {
-                        life_ustc = !life_ustc
+                    .onTapGesture(count: 5) {
+                        life_ustc.toggle()
                         changeAppIcon(to: "OldAppIcon")
                     }
             }

@@ -18,6 +18,7 @@ import SwiftUI
 }
 
 struct ContentView: View {
+    @AppStorage("Life-USTC") var life_ustc: Bool = false
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     // MARK: - Making iPhone View:
@@ -42,7 +43,7 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image("Icon")
+            Image(life_ustc ? "OldIcon" : "Icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
