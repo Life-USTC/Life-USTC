@@ -121,10 +121,12 @@ class UstcCasClient: LoginClientProtocol {
             .setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
         let _ = try await session.data(for: request)
-
-        return session.configuration.httpCookieStorage?.cookies?
-            .contains(where: { $0.name == "logins" || $0.name == "TGC" })
-            ?? false
+        
+        if let expireDate = session.configuration.httpCookieStorage?.cookies?.first(where: { $0.name == "logins"})?.expiresDate {
+            return expireDate > Date()
+        }
+        
+        return false
     }
 
     override func login() async throws -> Bool {
