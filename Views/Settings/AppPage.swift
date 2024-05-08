@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AppSettingPage: View {
+    @AppStorage("useUSTCBackend", store: .appGroup) var useUSTCBackend: Bool = false
     @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
     @AppStorage(
         "appShouldNOTUpdateAnything",
@@ -23,6 +24,10 @@ struct AppSettingPage: View {
     var body: some View {
         List {
             Section {
+                Toggle(
+                    "Use USTC Backend",
+                    isOn: $useUSTCBackend
+                )
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot

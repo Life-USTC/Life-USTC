@@ -13,11 +13,11 @@ enum USTCStudentType: String {
 }
 
 let ustcFeedListURL = URL(
-    string: "https://static.xzkd.online/feed_source.json"
+    string: "\(staticURLPrefix)/feed_source.json"
 )!
 
 let ustcGeoLocationDataURL = URL(
-    string: "https://static.xzkd.online/geo_data.json"
+    string: "\(staticURLPrefix)/geo_data.json"
 )!
 
 class USTCExports: SchoolExport {
@@ -69,11 +69,11 @@ class USTCExports: SchoolExport {
     }
 
     override var buildingimgMappingURL: URL {
-        URL(string: "https://static.xzkd.online/building_img_rules.json")!
+        URL(string: "\(staticURLPrefix)/building_img_rules.json")!
     }
 
     override var buildingimgBaseURL: URL {
-        URL(string: "https://static.xzkd.online/")!
+        URL(string: "\(staticURLPrefix)/")!
     }
 
     override var scoreDelegate: ScoreDelegateProtocol {

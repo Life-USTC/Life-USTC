@@ -37,6 +37,14 @@ var userAgent: String {
     "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari/602.1.50 xzkd-ios/\(Bundle.main.shortVersionDescription)"
 }
 
+var staticURLPrefix: String {
+    if UserDefaults.appGroup.bool(forKey: "useUSTCBackend") {
+        return "https://xzkd.ustc.edu.cn/static"
+    } else {
+        return "https://static.xzkd.online"
+    }
+}
+
 let exampleURL = URL(string: "https://example.com")!
 
 var appShouldPresentDemo: Bool {

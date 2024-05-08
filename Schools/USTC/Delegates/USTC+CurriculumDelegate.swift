@@ -23,7 +23,7 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     override func refreshSemesterBase() async throws -> [Semester] {
-        let request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
+        let request = URLRequest(url: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!)
         let (data, _) = try await URLSession.shared.data(for: request)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
@@ -68,7 +68,7 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
         var courseList: [Course] = []
         for lessonID in lessonIDs {
             let lessonURL = URL(
-                string: "https://static.xzkd.online/curriculum/\(inComplete.id)/\(lessonID).json"
+                string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
             )
             let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
             let decoder = JSONDecoder()
@@ -91,7 +91,7 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, s
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
     override func refreshSemesterList() async throws -> [(semesterId: String, studentId: String, semester: Semester)] {
-        var request = URLRequest(url: URL(string: "https://static.xzkd.online/curriculum/semesters.json")!)
+        var request = URLRequest(url: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!)
         var (data, _) = try await URLSession.shared.data(for: request)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
@@ -156,7 +156,7 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, s
         var courseList: [Course] = []
         for lessonID in lessonIDs {
             let lessonURL = URL(
-                string: "https://static.xzkd.online/curriculum/\(inComplete.id)/\(lessonID).json"
+                string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
             )
             let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
             let decoder = JSONDecoder()

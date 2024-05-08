@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftyJSON
 
 private let curriculumDataURL = URL(
-    string: "https://static.xzkd.online/curriculum/"
+    string: "\(staticURLPrefix)/curriculum/"
 )
 
 struct USTCAdditionalCourseView: View {
@@ -58,7 +58,7 @@ struct USTCAdditionalCourseView: View {
         }
         .task {
             Task {
-                let url = URL(string: "https://static.xzkd.online/curriculum/semesters.json")
+                let url = URL(string: "\(staticURLPrefix)/curriculum/semesters.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
                 let decoder = JSONDecoder()
@@ -142,7 +142,7 @@ struct USTCAdditionalCourseSemesterView: View {
         }
         .task {
             Task {
-                let url = URL(string: "https://static.xzkd.online/curriculum/\(semester.id)/courses.json")
+                let url = URL(string: "\(staticURLPrefix)/curriculum/\(semester.id)/courses.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
                 let decoder = JSONDecoder()
