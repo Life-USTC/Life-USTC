@@ -156,11 +156,13 @@ extension CurriculumTodayView {
         numberToShow: Int = 2
     ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                titleView
-                Spacer()
+            if numberToShow > 2 {
+                HStack {
+                    titleView
+                    Spacer()
+                }
+                .padding(.bottom, 10)
             }
-            .padding(.bottom, 10)
 
             VStack(alignment: .leading) {
                 if !lectures.isEmpty {
