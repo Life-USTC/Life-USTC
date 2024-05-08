@@ -11,6 +11,10 @@ import WidgetKit
 
 struct CurriculumPreviewProvider: TimelineProvider {
     @ManagedData(.curriculum) var curriculum: Curriculum
+    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
+    var canRefresh: Bool {
+        _widgetCanRefreshNewData ?? false
+    }
 
     func placeholder(in _: Context) -> CurriculumPreviewEntry {
         CurriculumPreviewEntry.example
@@ -20,7 +24,9 @@ struct CurriculumPreviewProvider: TimelineProvider {
         -> CurriculumPreviewEntry
     {
         let date = _date.stripTime()
-        let curriculum = try await _curriculum.retrive()!
+        guard let curriculum = try await canRefresh ? _curriculum.retrive() : _curriculum.retriveLocal() else {
+            throw BaseError.runtimeError("Failed to retrive curriculum data")
+        }
 
         let todayLectures =
             curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)

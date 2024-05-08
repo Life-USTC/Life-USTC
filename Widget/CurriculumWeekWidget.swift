@@ -11,6 +11,10 @@ import WidgetKit
 
 struct CurriculumWeekProvider: TimelineProvider {
     @ManagedData(.curriculum) var curriculum: Curriculum
+    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
+    var canRefresh: Bool {
+        _widgetCanRefreshNewData ?? false
+    }
 
     func placeholder(in _: Context) -> CurriculumWeekEntry {
         CurriculumWeekEntry.example
@@ -18,7 +22,9 @@ struct CurriculumWeekProvider: TimelineProvider {
 
     func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
         let date = _date.startOfWeek()
-        let curriculum = try await _curriculum.retrive()!
+        guard let curriculum = try await canRefresh ? _curriculum.retrive() : _curriculum.retriveLocal() else {
+            throw BaseError.runtimeError("Failed to retrive curriculum data")
+        }
         let currentSemester: Semester? =
             curriculum.semesters
             .filter { ($0.startDate ... $0.endDate).contains(date) }

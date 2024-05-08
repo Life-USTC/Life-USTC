@@ -18,6 +18,7 @@ struct AppSettingPage: View {
         store: .appGroup
     ) var curriculumChartShouldHideEvening: Bool = false
     @AppStorage("useBaiduStatistics") var useBaiduStatistics: Bool = true
+    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
 
     var body: some View {
         List {
@@ -33,6 +34,10 @@ struct AppSettingPage: View {
                 Toggle(
                     "Use Baidu Statistics",
                     isOn: $useBaiduStatistics
+                )
+                Toggle(
+                    "Allow widget to refresh data",
+                    isOn: $_widgetCanRefreshNewData ?? false
                 )
                 #if DEBUG
                 Toggle(

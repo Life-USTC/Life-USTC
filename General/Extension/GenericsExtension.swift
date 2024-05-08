@@ -5,7 +5,7 @@
 //  Created by Tiankai Ma on 2023/8/24.
 //
 
-import Foundation
+import SwiftUI
 
 //  Enable @AppStorage for [Codable]
 extension Array: RawRepresentable where Element: Codable {
@@ -86,3 +86,22 @@ extension Equatable where Self: Identifiable {
         lhs.id == rhs.id
     }
 }
+
+extension AppStorage where Value : ExpressibleByNilLiteral {
+    public init(wrappedValue: Value, _ key: String, store: UserDefaults? = nil) where Value == Bool? {
+        self.init(key, store: store)
+        if let _ = (store ?? UserDefaults.standard).object(forKey: key) {
+            return
+        }
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(wrappedValue: Value, _ key: String, store: UserDefaults? = nil) where Value == Int? {
+        self.init(key, store: store)
+        if let _ = (store ?? UserDefaults.standard).object(forKey: key) {
+            return
+        }
+        self.wrappedValue = wrappedValue
+    }
+}
+
