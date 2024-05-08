@@ -5,7 +5,7 @@
 //  Created by TiankaiMa on 2022/12/17.
 //
 
-import Foundation
+import SwiftUI
 import UIKit
 import Vision
 
@@ -18,6 +18,7 @@ class UstcCasClient: LoginClientProtocol {
 
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
+    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
 
     var precheckFails: Bool { username.isEmpty || password.isEmpty }
     var session: URLSession = .shared
@@ -101,14 +102,15 @@ class UstcCasClient: LoginClientProtocol {
             "warn": "",
             "showCode": "1",
             "qrcode": "",
+            "resultInput": "",
             "username": username,
             "password": password,
             "LT": captchaCode,
-            "button": "",
         ]
 
         var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = queries.map { "\($0.key)=\($0.value)" }
+        request.httpBody = queries
+            .map { "\($0.key)=\($0.value)" }
             .joined(separator: "&").data(using: .utf8)
         request.httpMethod = "POST"
         request.httpShouldHandleCookies = true
@@ -120,10 +122,28 @@ class UstcCasClient: LoginClientProtocol {
         session.configuration.httpCookieStorage?
             .setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 
-        let _ = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
         
-        if let expireDate = session.configuration.httpCookieStorage?.cookies?.first(where: { $0.name == "logins"})?.expiresDate {
-            return expireDate > Date()
+        // debugPrint(String(data: data, encoding: .utf8)!)
+        // debugPrint(response)
+        // debugPrint((response as! HTTPURLResponse))
+        
+        
+        // This won't work as URLSession will follow the redirect
+        // if ((response as? HTTPURLResponse)?.statusCode != 302) {
+        //     return false
+        // }
+        
+        // passport.u.e.c -> callback -> service redirect, this won't work as well.
+        // if((response as! HTTPURLResponse).url?.absoluteString != service?.absoluteString ?? "https://passport.ustc.edu.cn/success.jsp") {
+        //     return false
+        // }
+        
+        if let expireDate = session.configuration.httpCookieStorage?.cookies?.first(where: { $0.name == "logins"})?.expiresDate , expireDate > Date() {
+            if _widgetCanRefreshNewData == nil {
+                _widgetCanRefreshNewData = true
+            }
+            return true
         }
         
         return false
