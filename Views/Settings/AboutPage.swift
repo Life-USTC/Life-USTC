@@ -129,20 +129,6 @@ struct AboutApp: View {
     }
 }
 
-extension Bundle {
-    var releaseNumber: String? {
-        infoDictionary?["CFBundleShortVersionString"] as? String
-    }
-
-    var buildNumber: String? {
-        infoDictionary?["CFBundleVersion"] as? String
-    }
-
-    var versionDescription: String {
-        "Ver: \(releaseNumber ?? "") build\(buildNumber ?? "")"
-    }
-}
-
 struct AboutPage_Previews: PreviewProvider {
     static var previews: some View { AboutApp() }
 }
