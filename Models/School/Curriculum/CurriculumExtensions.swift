@@ -39,9 +39,20 @@ class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
             }
 
             for await child in group {
-                if let child { result.semesters.append(child) }
+                if let child {
+                    result.semesters.append(child)
+                }
             }
         }
+        
+        result.semesters = result.semesters
+            .filter { !$0.courses.isEmpty }
+            .sorted { $0.startDate > $1.startDate }
+        
+        if result.semesters.isEmpty {
+            throw BaseError.runtimeError("No courses found")
+        }
+        
         return result
     }
 }
@@ -71,13 +82,20 @@ class CurriculumProtocolB: ManagedRemoteUpdateProtocol<Curriculum> {
             }
 
             for await child in group {
-                if let child { result.semesters.append(child) }
+                if let child {
+                    result.semesters.append(child)
+                }
             }
         }
 
         // Remove semesters with no courses
-        result.semesters = result.semesters.filter { !$0.courses.isEmpty }
+        result.semesters = result.semesters
+            .filter { !$0.courses.isEmpty }
             .sorted { $0.startDate > $1.startDate }
+        
+        if result.semesters.isEmpty {
+            throw BaseError.runtimeError("No courses found")
+        }
 
         return result
     }
