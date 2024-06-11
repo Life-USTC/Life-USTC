@@ -74,7 +74,7 @@ struct FeaturesView: View {
         return features
     }
 
-    //TODO: should be change to enum in FeatureWithView
+    // TODO: should be change to enum in FeatureWithView
     var sectionPriority: [String: Int] = [
         "AAS": 2,
         "Feed": 4,
