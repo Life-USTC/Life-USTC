@@ -17,7 +17,7 @@ extension View {
 
 struct USTCCASLoginView: View {
     @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
-    @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .undergraduate
+    @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
 
     enum Field: Int, Hashable {
         case username
