@@ -14,19 +14,27 @@ struct SingleExamView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading) {
                 Text("\(exam.courseName)")
-                    .font(.system(.title2, weight: .bold))
+                    .font(.system(.title2, weight: .medium))
                     .strikethrough(exam.isFinished)
                     .foregroundColor(exam.isFinished ? .gray : .primary)
+                    .background {
+                        GeometryReader { geo in
+                            Rectangle()
+                                .fill(Color.accentColor.opacity(0.2))
+                                .frame(width: geo.size.width + 10, height: geo.size.height / 2)
+                                .offset(x: -5, y: geo.size.height / 2)
+                        }
+                    }
 
                 Text("\(exam.lessonCode)")
-                    .font(.subheadline)
+                    .font(.system(.subheadline, design: .monospaced, weight: .light))
                     .foregroundColor(.gray)
             }
 
             Spacer()
 
             Text("\(exam.typeName)")
-                .font(.subheadline)
+                .font(.system(.subheadline, design: .monospaced, weight: .light))
                 .foregroundColor(.gray)
         }
     }
@@ -64,7 +72,7 @@ struct SingleExamView: View {
                     Spacer()
                 }
             }
-            .font(.callout)
+            .font(.footnote)
 
             timeInfoView
         }

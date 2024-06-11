@@ -44,8 +44,8 @@ struct CurriculumPreviewProvider: TimelineProvider {
 
         return .init(
             date: date,
-            todayLectures: todayLectures,
-            tomorrowLectures: tomorrowLectures
+            todayLectures: todayLectures.clean(),
+            tomorrowLectures: tomorrowLectures.clean()
         )
     }
 
@@ -95,21 +95,19 @@ struct CurriculumPreviewWidgetEntryView: View {
             if widgetFamily == .systemLarge {
                 CurriculumTodayView()
                     .makeListWidget(
-                        with: entry.todayLectures.union(),
+                        with: entry.todayLectures,
                         numberToShow: 4
                     )
             } else if widgetFamily == .systemMedium {
                 CurriculumTodayView()
                     .makeListWidget(
-                        with: entry.todayLectures.union(),
+                        with: entry.todayLectures,
                         numberToShow: 2
                     )
             } else if widgetFamily == .systemSmall {
                 CurriculumTodayView()
                     .makeWidget(
-                        with: (entry.todayLectures.union().filter { $0.startDate > Date() }
-                            + entry.todayLectures.union().filter { $0.startDate <= Date() })
-                            .first
+                        with: entry.todayLectures.first
                     )
             }
         }

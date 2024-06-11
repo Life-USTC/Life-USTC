@@ -12,6 +12,7 @@ import WidgetKit
 struct ExamProvider: TimelineProvider {
     @ManagedData(.exam) var exams: [Exam]
     @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
+
     var canRefresh: Bool {
         _widgetCanRefreshNewData ?? false
     }
@@ -19,14 +20,18 @@ struct ExamProvider: TimelineProvider {
     func placeholder(in _: Context) -> ExamEntry {
         ExamEntry.example
     }
+    
+    func makeEntry(for _date: Date = Date()) async throws -> ExamEntry {
+        guard let exams = try await canRefresh ? _exams.retrive() : _exams.retriveLocal() else {
+            throw BaseError.runtimeError("Failed to retrive exams")
+        }
+
+        return ExamEntry(exams: exams.clean())
+    }
 
     func getSnapshot(in _: Context, completion: @escaping (ExamEntry) -> Void) {
         Task {
-            guard let exams = try await canRefresh ? _exams.retrive() : _exams.retriveLocal() else {
-                throw BaseError.runtimeError("Failed to retrive exams")
-            }
-
-            let entry = ExamEntry(exams: exams)
+            let entry = try await makeEntry()
             completion(entry)
         }
     }
@@ -36,11 +41,7 @@ struct ExamProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            guard let exams = try await canRefresh ? _exams.retrive() : _exams.retriveLocal() else {
-                throw BaseError.runtimeError("Failed to retrive exams")
-            }
-
-            let entry = ExamEntry(exams: exams)
+            let entry = try await makeEntry()
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)

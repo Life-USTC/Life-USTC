@@ -250,3 +250,5 @@
 "Credit: " = "学分: ";
 
 "Allow widget to refresh data" = "允许小组件刷新数据";
+"Total: %@ exams" = "共 %@ 场考试";
+"Total: %@ lectures" = "共 %@ 节课";

@@ -26,11 +26,11 @@ struct LectureSheetModifier: ViewModifier {
                                 HStack(alignment: .bottom) {
                                     Text(lecture.name)
                                         .font(.title)
-                                        .fontWeight(.bold)
+                                        .fontWeight(.medium)
                                         .background {
                                             GeometryReader { geo in
                                                 Rectangle()
-                                                    .fill(Color.accentColor.opacity(0.2))
+                                                    .fill((lecture.course?.color() ?? .accentColor).opacity(0.2))
                                                     .frame(width: geo.size.width + 10, height: geo.size.height / 2)
                                                     .offset(x: -5, y: geo.size.height / 2)
                                             }

@@ -47,6 +47,11 @@ struct LectureView: View {
                 .padding(.horizontal, 10)
             }
         }
+        .if(lecture.endDate < Date()) {
+            $0
+                .strikethrough()
+                .grayscale(1.0)
+        }
         .if(lecture != Lecture.example) {
             $0.lectureSheet(lecture: lecture)
         }
@@ -151,37 +156,39 @@ extension CurriculumTodayView {
 
     @ViewBuilder
     func makeListWidget(
-        with lectures: [Lecture],
+        with lectures_: [Lecture],
         color: Color = Color.accentColor,
         numberToShow: Int = 2
     ) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if numberToShow > 2 {
-                HStack {
-                    titleView
-                    Spacer()
-                }
-                .padding(.bottom, 10)
+        VStack(spacing: 0) {
+            HStack(alignment: .bottom) {
+                titleView
+                Spacer()
+                
+                Text(String(format: "Total: %@ lectures".localized, String(lectures_.count)))
+                    .font(.system(.caption, design: .monospaced, weight: .light))
             }
+            .padding(.bottom, 10)
 
-            VStack(alignment: .leading) {
-                if !lectures.isEmpty {
+            let lectures = lectures_.isEmpty ? Array(repeating: .example, count: 6) : lectures_
+
+            ZStack {
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
                         LectureView(lecture: lecture, color: color)
                     }
+                }.if(lectures_.isEmpty) {
+                    $0
+                        .redacted(reason: .placeholder)
+                        .blur(radius: 5)
+                }
 
-                    if lectures.count > numberToShow {
-                        Text("And \(lectures.count - numberToShow) more")
-                            .font(.footnote)
-                            .foregroundColor(.gray.opacity(0.8))
-                            .hStackTrailing()
-                    }
-
-                } else {
-                    noLectureView
+                if lectures_.isEmpty {
+                    Text("No courses today!")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.secondary)
                 }
             }
-            Spacer()
         }
     }
 }
@@ -224,8 +231,7 @@ extension CurriculumTodayView {
 extension CurriculumTodayView {
     @ViewBuilder
     func makeWidget(
-        with lecture_: Lecture?,
-        color: Color = Color.accentColor
+        with lecture_: Lecture?
     ) -> some View {
         let lecture = lecture_ ?? .example
 
@@ -260,7 +266,9 @@ extension CurriculumTodayView {
                 .foregroundColor(.gray.opacity(0.8))
             }
             .if(lecture_ == nil) {
-                $0.redacted(reason: .placeholder)
+                $0
+                    .redacted(reason: .placeholder)
+                    .blur(radius: 5)
             }
 
             if lecture_ == nil {

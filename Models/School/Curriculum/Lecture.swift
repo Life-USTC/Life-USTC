@@ -132,4 +132,10 @@ extension [Lecture] {
         }
         return unionedLectures
     }
+    
+    func clean() -> [Lecture] {
+        let lectures = self.union()
+        return (lectures.filter { $0.startDate > Date() }
+                + lectures.filter { $0.startDate <= Date() })
+    }
 }

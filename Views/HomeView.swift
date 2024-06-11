@@ -11,10 +11,6 @@ enum HomeViewCardType: String, CaseIterable, Codable {
     case curriculumToday
     case examPreview
     case featurePreview
-
-    case curriculumToday_old
-    case examPreview_old
-
 }
 
 extension HomeViewCardType {
@@ -26,10 +22,6 @@ extension HomeViewCardType {
             ExamPreviewCard()
         case .featurePreview:
             FeaturePreviewCard()
-        case .curriculumToday_old:
-            CurriculumTodayCard_old()
-        case .examPreview_old:
-            ExamPreviewCard_old()
         }
     }
 
@@ -41,10 +33,6 @@ extension HomeViewCardType {
             return "Exam Arrangement"
         case .featurePreview:
             return "Features"
-        case .curriculumToday_old:
-            return "Curriculum (old)"
-        case .examPreview_old:
-            return "Exam Arrangement (old)"
         }
     }
 }
