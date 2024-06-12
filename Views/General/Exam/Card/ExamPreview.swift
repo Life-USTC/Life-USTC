@@ -13,19 +13,21 @@ struct ExamWidgetView: View {
     var body: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading) {
-                Text(exam.courseName)
-                    .font(.headline)
-                    .strikethrough(exam.isFinished)
-                    .bold()
+                HStack {
+                    Text(exam.courseName)
+                        .font(.headline)
+                        .strikethrough(exam.isFinished)
+                        .bold()
+                    Text(exam.classRoomName)
+                        .font(.caption)
+                        .foregroundColor(.gray.opacity(0.8))
+                }
                 HStack {
                     Text(exam.startDate, format: .dateTime.day().month())
                         .font(.footnote)
                         .fontWeight(.heavy)
                         .foregroundColor(.blue.opacity(0.8))
                     Text(exam.startDate ... exam.endDate)
-                        .font(.caption)
-                        .foregroundColor(.gray.opacity(0.8))
-                    Text(exam.classRoomName)
                         .font(.caption)
                         .foregroundColor(.gray.opacity(0.8))
                 }
