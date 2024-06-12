@@ -172,6 +172,8 @@ struct ExamPreview: View {
                         .foregroundColor(.secondary)
                 }
             }
+
+            Spacer()
         }
     }
 

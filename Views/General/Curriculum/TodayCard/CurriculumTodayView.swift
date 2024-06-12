@@ -189,6 +189,10 @@ extension CurriculumTodayView {
                         .foregroundColor(.secondary)
                 }
             }
+
+            if numberToShow > 2 {
+                Spacer()
+            }
         }
     }
 }
