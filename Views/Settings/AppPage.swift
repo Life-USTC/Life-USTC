@@ -24,10 +24,10 @@ struct AppSettingPage: View {
     var body: some View {
         List {
             Section {
-                Toggle(
-                    "Use USTC Backend",
-                    isOn: $useUSTCBackend
-                )
+//                Toggle(
+//                    "Use USTC Backend",
+//                    isOn: $useUSTCBackend
+//                )
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
