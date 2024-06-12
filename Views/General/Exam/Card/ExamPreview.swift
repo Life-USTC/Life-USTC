@@ -37,13 +37,11 @@ struct ExamWidgetView: View {
                     .font(.subheadline)
                     .fontWeight(.heavy)
             } else {
-                Text(
-                    exam.daysLeft == 1
-                        ? "1 day left".localized : String(format: "%@ days left".localized, String(exam.daysLeft))
-                )
-                .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-                .font(.subheadline)
-                .fontWeight(.heavy)
+                Text(exam.startDate, style: .relative)
+                    .fontWeight(.bold)
+                    .foregroundColor(
+                        exam.daysLeft <= 7 ? .red : .accentColor
+                    )
             }
         }
     }
