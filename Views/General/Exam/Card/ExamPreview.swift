@@ -39,11 +39,12 @@ struct ExamWidgetView: View {
                     .font(.subheadline)
                     .fontWeight(.heavy)
             } else {
-                Text(exam.startDate, style: .relative)
-                    .fontWeight(.bold)
+                Text(RelativeDateTimeFormatter().localizedString(for: exam.startDate, relativeTo: Date()))
                     .foregroundColor(
                         exam.daysLeft <= 7 ? .red : .accentColor
                     )
+                    .font(.subheadline)
+                    .fontWeight(.heavy)
             }
         }
     }
