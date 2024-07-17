@@ -32,7 +32,7 @@ import SwiftUI
     }
 
     var shouldRefresh: Bool {
-        local.status != .valid && remote.status != .waiting
+        local.status != .valid && remote.status == nil
     }
 
     func retriveLocal() -> D? {
