@@ -18,9 +18,11 @@ class UstcCasClient: LoginClientProtocol {
 
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
+    @AppSecureStorage("passportDeviceID") private var deviceID: String
+    @AppSecureStorage("passportFingerprint") private var fingerPrint: String
     @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
 
-    var precheckFails: Bool { username.isEmpty || password.isEmpty }
+    var precheckFails: Bool { username.isEmpty || password.isEmpty || deviceID.isEmpty || fingerPrint.isEmpty }
     var session: URLSession = .shared
 
     func getLtTokenFromCAS(
@@ -93,7 +95,14 @@ class UstcCasClient: LoginClientProtocol {
         -> Bool
     {
         if precheckFails { throw BaseError.runtimeError("Precheck fails") }
-        let (ltToken, cookies, captchaCode) = try await getLtTokenFromCAS(url: url)
+        var (ltToken, cookies, captchaCode) = try await getLtTokenFromCAS(url: url)
+
+        cookies.append(HTTPCookie(properties: [
+            .domain: "https://passport.ustc.edu.cn",
+            .path: "/",
+            .name: "device",
+            .value: deviceID,
+        ])!)
 
         let queries: [String: String] = [
             "model": "uplogin.jsp",
@@ -102,7 +111,7 @@ class UstcCasClient: LoginClientProtocol {
             "warn": "",
             "showCode": "1",
             "qrcode": "",
-            "resultInput": "",
+            "resultInput": fingerPrint,
             "username": username,
             "password": password,
             "LT": captchaCode,
@@ -119,6 +128,7 @@ class UstcCasClient: LoginClientProtocol {
             forHTTPHeaderField: "Content-Type"
         )
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        session.configuration.httpCookieStorage?.cookieAcceptPolicy = .always
         session.configuration.httpCookieStorage?
             .setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
 

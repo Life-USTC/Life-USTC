@@ -22,6 +22,8 @@ struct USTCCASLoginView: View {
     enum Field: Int, Hashable {
         case username
         case password
+        case deviceID
+        case fingerPrint
     }
 
     @Binding var casLoginSheet: Bool  // used to signal the sheet to close
@@ -91,9 +93,59 @@ struct USTCCASLoginView: View {
                     )
                     .focused($foucusField, equals: .password)
                     .onSubmit {
-                        checkAndLogin()
+                        foucusField = .deviceID
                     }
                     .submitLabel(.done)
+                    Divider()
+                }
+                .frame(width: 200)
+            }
+            HStack(alignment: .center) {
+                Text("DeviceID:")
+                    .font(.system(.caption, design: .monospaced, weight: .bold))
+                Spacer()
+                VStack {
+                    TextField(
+                        "DeviceID",
+                        text: $ustcCASViewModel.inputDeviceID
+                    )
+                    .focused($foucusField, equals: .deviceID)
+                    .onSubmit {
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + 0.1
+                        ) {
+                            foucusField = .fingerPrint
+                        }
+                    }
+                    .submitLabel(.next)
+                    .autocorrectionDisabled(true)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.asciiCapable)
+                    Divider()
+                }
+                .frame(width: 200)
+            }
+            HStack(alignment: .center) {
+                Text("Fingerprint:")
+                    .font(.system(.caption, design: .monospaced, weight: .bold))
+                Spacer()
+                VStack {
+                    TextField(
+                        "Fingerprint",
+                        text: $ustcCASViewModel.inputFingerPrint
+                    )
+                    .focused($foucusField, equals: .fingerPrint)
+                    .onSubmit {
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + 0.1
+                        ) {
+                            checkAndLogin()
+                        }
+                    }
+                    .submitLabel(.next)
+                    .autocorrectionDisabled(true)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.asciiCapable)
                     Divider()
                 }
                 .frame(width: 200)
