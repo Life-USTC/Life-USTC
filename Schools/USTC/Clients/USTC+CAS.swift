@@ -104,7 +104,7 @@ class UstcCasClient: LoginClientProtocol {
             .value: deviceID,
         ])!)
 
-        let queries: [String: String] = [
+        var queries: [String: String] = [
             "model": "uplogin.jsp",
             "CAS_LT": ltToken,
             "service": service?.absoluteString ?? "",
@@ -116,6 +116,13 @@ class UstcCasClient: LoginClientProtocol {
             "password": password,
             "LT": captchaCode,
         ]
+        
+        queries = try queries.mapValues { v in
+            guard let encodedValue = v.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                throw BaseError.runtimeError("Invalid value provided")
+            }
+            return encodedValue
+        }
 
         var request = URLRequest(url: ustcLoginUrl)
         request.httpBody = queries
