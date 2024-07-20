@@ -173,6 +173,13 @@ struct USTCCASLoginView: View {
                     Spacer()
                 }
             }
+            
+            HStack {
+                Text("For more information, visit <https://notes.tiankaima.dev/blog/xzkd-new-tokens/>")
+                    .font(.system(.caption, design: .rounded, weight: .bold))
+                    .foregroundColor(.gray)
+                Spacer()
+            }
         }
         .padding(.horizontal, 30)
     }
