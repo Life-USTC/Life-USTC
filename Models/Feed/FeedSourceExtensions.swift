@@ -42,6 +42,8 @@ class FeedSourceDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
             if let feeds = parseResult?.rssFeed?.items?
                 .map({
                     Feed(item: $0, source: source)
+                }) ?? parseResult?.atomFeed?.entries?.map({
+                    Feed(entry: $0, source: source)
                 })
             {
                 source.feed = feeds

@@ -42,4 +42,14 @@ extension Feed {
         url = URL(string: item.link!)!
         colorHex = source.colorHex
     }
+    
+    init(entry: AtomFeedEntry, source: FeedSource) {
+        title = entry.title ?? "!!No title found for this Feed"
+        self.source = source.name
+        keywords = Set(entry.categories?.map { $0.attributes?.label ?? "" } ?? [])
+        description = entry.summary?.value
+        datePosted = entry.updated ?? Date()
+        url = URL(string: entry.links?.first?.attributes?.href ?? "example.com")!
+        colorHex = source.colorHex
+    }
 }
