@@ -10,7 +10,7 @@ jobs:
     deploy:
         runs-on: macos-13
         steps:
-          - uses: actions/checkout@v2
+          - uses: actions/checkout@v4
             with:
                 submodules: true
                 token: ${{ secrets.PAT_TOKEN }}
@@ -24,7 +24,7 @@ jobs:
                 ASC_KEY: ${{ secrets.ASC_KEY }}
 
           - name: Upload app-store ipa and dsyms to artifacts
-            uses: actions/upload-artifact@v2
+            uses: actions/upload-artifact@v4
             with:
                 name: app-store ipa & dsyms
                 path: |
@@ -38,7 +38,7 @@ jobs:
             if: always()
 
           - name: Upload build_log.zip to artifacts
-            uses: actions/upload-artifact@v2
+            uses: actions/upload-artifact@v4
             with:
                 name: build_log
                 path: ${{ github.workspace }}/build_log.zip
