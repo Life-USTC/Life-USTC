@@ -29,7 +29,7 @@
 "casHint" = "此功能由USTC统一身份认证向您提供, 并非我们.\n如需了解更多信息, 打开 设置 > 法律信息 > 声明";
 "Username:" = "用户名:";
 "Password:" = "密码:";
-"Check & Login" = "确认 & 登陆";
+"Check & Login" = "确认 & 登录";
 
 "Icon source" = "图标来源";
 "Feedkit source" = "Feedkit 来源";
@@ -252,3 +252,5 @@
 "Allow widget to refresh data" = "允许小组件刷新数据";
 "Total: %@ exams" = "共 %@ 场考试";
 "Total: %@ lectures" = "共 %@ 节课";
+
+"Login to USTC" = "登录到中国科大";

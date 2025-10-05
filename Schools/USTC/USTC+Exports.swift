@@ -22,6 +22,7 @@ let ustcGeoLocationDataURL = URL(
 
 class USTCExports: SchoolExport {
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
 
     override var abbrName: String { "USTC" }
 
@@ -125,7 +126,7 @@ class USTCExports: SchoolExport {
 
     override var setCookiesBeforeWebView: (() async throws -> Void)? {
         return {
-            _ = try await UstcCasClient.shared.login()
+            _ = try await self._casClient.requireLogin()
         }
     }
 }

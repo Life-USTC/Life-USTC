@@ -34,7 +34,7 @@ class UstcBlackboardClient: LoginClientProtocol {
 
         // jw.ustc.edu.cn login.
         _ = try await session.data(from: urlA)
-        _ = try await casClient.loginToCAS(url: urlB, service: urlA)
+        _ = try await casClient.loginToCAS(urlB)
 
         // now try login url, see if that directs to home page
         var request = URLRequest(url: urlB)

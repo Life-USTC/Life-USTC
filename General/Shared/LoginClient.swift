@@ -62,7 +62,6 @@ class LoginClientProtocol {
 
     init(_ wrappedValue: T) {
         self.wrappedValue = wrappedValue
-        self.clearLoginStatus()
     }
 }
 

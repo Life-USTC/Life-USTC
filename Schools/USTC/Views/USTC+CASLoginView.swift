@@ -18,19 +18,19 @@ extension View {
 struct USTCCASLoginView: View {
     @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-
-    enum Field: Int, Hashable {
-        case username
-        case password
-        case deviceID
-        case fingerPrint
-    }
-
+    @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
+    
     @Binding var casLoginSheet: Bool  // used to signal the sheet to close
+    @State var presenterInjected = true
     @StateObject var ustcCASViewModel = UstcCasViewModel.shared
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
     @State var failedMessage = ""
+    enum Field: Int, Hashable {
+        case username
+        case password
+        case studentType
+    }
     @FocusState var foucusField: Field?
 
     var title: LocalizedStringKey = "CAS Settings"
@@ -93,59 +93,9 @@ struct USTCCASLoginView: View {
                     )
                     .focused($foucusField, equals: .password)
                     .onSubmit {
-                        foucusField = .deviceID
-                    }
-                    .submitLabel(.done)
-                    Divider()
-                }
-                .frame(width: 200)
-            }
-            HStack(alignment: .center) {
-                Text("DeviceID:")
-                    .font(.system(.caption, design: .monospaced, weight: .bold))
-                Spacer()
-                VStack {
-                    TextField(
-                        "DeviceID",
-                        text: $ustcCASViewModel.inputDeviceID
-                    )
-                    .focused($foucusField, equals: .deviceID)
-                    .onSubmit {
-                        DispatchQueue.main.asyncAfter(
-                            deadline: .now() + 0.1
-                        ) {
-                            foucusField = .fingerPrint
-                        }
+                        foucusField = .studentType
                     }
                     .submitLabel(.next)
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
-                    .keyboardType(.asciiCapable)
-                    Divider()
-                }
-                .frame(width: 200)
-            }
-            HStack(alignment: .center) {
-                Text("Fingerprint:")
-                    .font(.system(.caption, design: .monospaced, weight: .bold))
-                Spacer()
-                VStack {
-                    TextField(
-                        "Fingerprint",
-                        text: $ustcCASViewModel.inputFingerPrint
-                    )
-                    .focused($foucusField, equals: .fingerPrint)
-                    .onSubmit {
-                        DispatchQueue.main.asyncAfter(
-                            deadline: .now() + 0.1
-                        ) {
-                            checkAndLogin()
-                        }
-                    }
-                    .submitLabel(.next)
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
-                    .keyboardType(.asciiCapable)
                     Divider()
                 }
                 .frame(width: 200)
@@ -161,6 +111,8 @@ struct USTCCASLoginView: View {
                     Text("Graduate")
                         .tag(USTCStudentType.graduate)
                 }
+                .focused($foucusField, equals: .password)
+                .submitLabel(.done)
                 .pickerStyle(.segmented)
                 .frame(width: 200)
             }
@@ -172,13 +124,6 @@ struct USTCCASLoginView: View {
                         .foregroundColor(.gray)
                     Spacer()
                 }
-            }
-            
-            HStack {
-                Text("For more information, visit <https://notes.tiankaima.dev/blog/xzkd-new-tokens/>")
-                    .font(.system(.caption, design: .rounded, weight: .bold))
-                    .foregroundColor(.gray)
-                Spacer()
             }
         }
         .padding(.horizontal, 30)
@@ -239,6 +184,14 @@ struct USTCCASLoginView: View {
             )
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
+            .background(
+                PresenterInjectorView(onResolve: { vc in
+                    guard !presenterInjected else { return }
+                    ustcCasClient.setPresenter(vc)
+                    presenterInjected = true
+                })
+                .frame(width: 0, height: 0)
+            )
         }
     }
 
@@ -276,6 +229,7 @@ extension USTCCASLoginView {
     static func sheet(isPresented: Binding<Bool>) -> USTCCASLoginView {
         USTCCASLoginView(
             casLoginSheet: isPresented,
+            presenterInjected: false,
             title: "One more step...",
             isInSheet: true
         )

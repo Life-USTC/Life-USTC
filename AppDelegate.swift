@@ -11,6 +11,9 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate,
     UNUserNotificationCenterDelegate, ObservableObject
 {
+    @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
+    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+
     #if IOS_SIMULATOR
     func preparePreviews() {
         InAppNotificationDelegate.shared.addInfoMessage("Preview debug message")
@@ -41,6 +44,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         return true
     }
 
+    func startup() {
+        _ustcCasClient.clearLoginStatus()
+        _ustcAASClient.clearLoginStatus()
+    }
+
     #if IOS_SIMULATOR
     // dummy definitions to avoid using TPNS service inside simulator
     // as XCFramework lib isn't fully supported with Apple chips
@@ -49,6 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         preparePreviews()
+        startup()
         return true
     }
     #else
@@ -56,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        startup()
         return true
     }
     #endif

@@ -10,13 +10,6 @@ import SwiftUI
 import SwiftyJSON
 import WidgetKit
 
-private let urlA = URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!
-private let urlB = URL(
-    string:
-        "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin"
-)!
-private let urlC = URL(string: "https://jw.ustc.edu.cn/home")!
-
 /// USTC Undergraduate Academic Affairs System
 class UstcAASClient: LoginClientProtocol {
     static let shared = UstcAASClient()
@@ -25,18 +18,24 @@ class UstcAASClient: LoginClientProtocol {
     var session: URLSession = .shared
 
     override func login() async throws -> Bool {
+        if !(try await _casClient.requireLogin()) {
+            throw BaseError.runtimeError("UstcCAS Not logined")
+        }
 
         // jw.ustc.edu.cn login.
-        _ = try await session.data(from: urlA)
-        _ = try await casClient.loginToCAS(url: urlB, service: urlA)
+        _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!)
+        _ = try await casClient.loginToCAS(URL(
+            string:
+                "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin"
+        )!)
 
-        // now try login url, see if that directs to home page
-        var request = URLRequest(url: urlB)
+        // now try if we are logined by visiting the home page
+        var request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/")!)
         request.httpMethod = "GET"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await session.data(for: request)
 
-        return (response.url == urlC)
+        return (response.url == URL(string: "https://jw.ustc.edu.cn/home")!)
     }
 }
 

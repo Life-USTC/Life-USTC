@@ -1377,7 +1377,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS;
 				PRODUCT_NAME = "学在科大";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS 1696245195";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1433,7 +1433,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.linzihan.XZKDiOS;
 				PRODUCT_NAME = "学在科大";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS 1696245195";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.linzihan.XZKDiOS";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

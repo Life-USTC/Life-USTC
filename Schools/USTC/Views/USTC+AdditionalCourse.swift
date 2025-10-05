@@ -91,8 +91,10 @@ struct USTCAdditionalCourseSemesterView: View {
     var coursesToShow: [Course] {
         guard searchKeyword.isEmpty else {
             return courses.filter({
-                $0.name.contains(searchKeyword) || $0.teacherName.contains(searchKeyword)
-                    || $0.courseCode.contains(searchKeyword) || $0.lessonCode.contains(searchKeyword)
+                $0.name.contains(searchKeyword)
+                    || $0.teacherName.contains(searchKeyword)
+                    || $0.courseCode.contains(searchKeyword)
+                    || $0.lessonCode.contains(searchKeyword)
             })
         }
         return courses

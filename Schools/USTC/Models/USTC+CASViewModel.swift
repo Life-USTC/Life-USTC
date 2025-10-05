@@ -13,22 +13,16 @@ class UstcCasViewModel: ObservableObject {
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
     @AppSecureStorage("passportUsername") private var username: String
     @AppSecureStorage("passportPassword") private var password: String
-    @AppSecureStorage("passportDeviceID") private var deviceID: String
-    @AppSecureStorage("passportFingerprint") private var fingerPrint: String
     @Published public var inputUsername: String = ""
     @Published public var inputPassword: String = ""
-    @Published public var inputDeviceID: String = ""
-    @Published public var inputFingerPrint: String = ""
 
     init() {
         inputUsername = username
         inputPassword = password
-        inputDeviceID = deviceID
-        inputFingerPrint = fingerPrint
     }
 
     func checkAndLogin() async throws -> Bool {
-        if (inputUsername.isEmpty || inputPassword.isEmpty || inputDeviceID.isEmpty || inputFingerPrint.isEmpty) {
+        if inputUsername.isEmpty || inputPassword.isEmpty {
             return false
         }
 
@@ -40,11 +34,7 @@ class UstcCasViewModel: ObservableObject {
 
         username = inputUsername
         password = inputPassword
-        deviceID = inputDeviceID
-        fingerPrint = inputFingerPrint
 
-        _casClient.clearLoginStatus()
-        await URLSession.shared.reset()
         return try await _casClient.requireLogin()
     }
 }

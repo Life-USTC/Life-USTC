@@ -18,7 +18,7 @@ struct CurriculumBehavior {
     var convertFrom: (Int) -> Int = { $0 }
 }
 
-/// Usage: `class exampleDelegaet: CurriculumProtocolA & CurriculumProtocol`
+/// Usage: `class exampleDelegate: CurriculumProtocolA & CurriculumProtocol`
 class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
     func refreshSemesterList() async throws -> [T] {
         assert(true)
@@ -44,15 +44,15 @@ class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
                 }
             }
         }
-        
+
         result.semesters = result.semesters
             .filter { !$0.courses.isEmpty }
             .sorted { $0.startDate > $1.startDate }
-        
+
         if result.semesters.isEmpty {
             throw BaseError.runtimeError("No courses found")
         }
-        
+
         return result
     }
 }
@@ -92,7 +92,7 @@ class CurriculumProtocolB: ManagedRemoteUpdateProtocol<Curriculum> {
         result.semesters = result.semesters
             .filter { !$0.courses.isEmpty }
             .sorted { $0.startDate > $1.startDate }
-        
+
         if result.semesters.isEmpty {
             throw BaseError.runtimeError("No courses found")
         }

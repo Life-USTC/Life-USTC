@@ -38,11 +38,7 @@ var userAgent: String {
 }
 
 var staticURLPrefix: String {
-    if UserDefaults.appGroup.bool(forKey: "useUSTCBackend") {
-        return "https://xzkd.ustc.edu.cn/static"
-    } else {
-        return "https://static.xzkd.online"
-    }
+    return "https://static.xzkd.online"
 }
 
 let exampleURL = URL(string: "https://example.com")!

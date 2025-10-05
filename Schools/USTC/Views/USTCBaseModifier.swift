@@ -8,35 +8,47 @@
 import SwiftUI
 
 struct USTCBaseModifier: ViewModifier {
-    @LoginClient(.ustcCAS) var casClient: UstcCasClient
-    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+    @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
 
-    @State var casLoginSheet: Bool = false
+    @State private var presenterInjected = false
 
     func body(content: Content) -> some View {
-        content.sheet(isPresented: $casLoginSheet) {
-            USTCCASLoginView.sheet(isPresented: $casLoginSheet)
-        }
-        .onAppear(perform: onLoadFunction)
+        content
+            // Inject a presenter for background login when no explicit sheet is up
+            .background(
+                PresenterInjectorView(onResolve: { vc in
+                    guard !presenterInjected else { return }
+                    ustcCasClient.setPresenter(vc)
+                    presenterInjected = true
+                })
+                .frame(width: 0, height: 0)
+            )
+    }
+}
+
+// MARK: - Presenter Injector (shared helper)
+struct PresenterInjectorView: UIViewControllerRepresentable {
+    var onResolve: (UIViewController) -> Void
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        Resolver(onResolve: onResolve)
     }
 
-    func onLoadFunction() {
-        Task {
-            //            let k = try await USTCBusDataDelegate.shared.refresh()
-            //            debugPrint(k)
-            if appShouldPresentDemo {
-                return
-            }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 
-            _casClient.clearLoginStatus()
-            _ustcAASClient.clearLoginStatus()
+    private final class Resolver: UIViewController {
+        let onResolve: (UIViewController) -> Void
 
-            if casClient.precheckFails {
-                casLoginSheet = true
-                return
-            }
-            // if the login result fails, present the user with the sheet.
-            casLoginSheet = try await !_casClient.requireLogin()
+        init(onResolve: @escaping (UIViewController) -> Void) {
+            self.onResolve = onResolve
+            super.init(nibName: nil, bundle: nil)
+        }
+
+        required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            onResolve(self)
         }
     }
 }

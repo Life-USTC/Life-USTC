@@ -40,16 +40,21 @@ struct SwiftUIWebView: UIViewRepresentable {
 
 struct Browser: View {
     @State var useReeed = false
+    @State var isCookiesReady = false
     var url: URL
     var title: String = "Detail"
     var webView: SwiftUIWebView
 
     var body: some View {
         Group {
-            if useReeed {
-                ReeeederView(url: url)
+            if isCookiesReady {
+                if useReeed {
+                    ReeeederView(url: url)
+                } else {
+                    webView
+                }
             } else {
-                SwiftUIWebView(url: url)
+                ProgressView("Loading...")
             }
         }
         .padding([.leading, .trailing], 2)
@@ -69,14 +74,18 @@ struct Browser: View {
         }
         .id(url)
         .task {
-            do {
-                if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
-                    try await setCookiesBeforeWebView()
+            // Set cookies before allowing web view to load
+            if !isCookiesReady {
+                do {
+                    if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
+                        try await setCookiesBeforeWebView()
+                    }
+                } catch {
+                    debugPrint(error)
                 }
-            } catch {
-                debugPrint(error)
+                webView.updateCookies()
+                isCookiesReady = true
             }
-            webView.updateCookies()
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)

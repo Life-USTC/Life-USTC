@@ -45,10 +45,14 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         let (_, response) = try await URLSession.shared.data(for: request)
 
-        let match = response.url?.absoluteString
-            .matches(of: try! Regex(#"\d+"#))
-        var tableID = "0"
-        if let match { if !match.isEmpty { tableID = String(match.first!.0) } }
+        guard
+            let tableID = response.url?.absoluteString
+                .matches(of: try! Regex(#"\d+"#))
+                .first
+                .map({ String($0.0) })
+        else {
+            throw BaseError.runtimeError("No tableID found in response URL")
+        }
 
         // Step 2: Get lessonIDs
         let url = URL(
@@ -67,14 +71,18 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
 
         var courseList: [Course] = []
         for lessonID in lessonIDs {
-            let lessonURL = URL(
-                string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
-            )
-            let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            let course = try decoder.decode(Course.self, from: courseJSONData)
-            courseList.append(course)
+            do {
+                let lessonURL = URL(
+                    string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
+                )
+                let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .secondsSince1970
+                let course = try decoder.decode(Course.self, from: courseJSONData)
+                courseList.append(course)
+            } catch {
+                continue
+            }
         }
 
         var returnSemester = inComplete
@@ -120,6 +128,7 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, s
         request.httpMethod = "POST"
         (data, response) = try await URLSession.shared.data(for: request)
         let json = try JSON(data: data)
+        debugPrint(json)
 
         // if empty json, raise error
         if json.arrayValue.isEmpty {
@@ -155,14 +164,18 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, s
 
         var courseList: [Course] = []
         for lessonID in lessonIDs {
-            let lessonURL = URL(
-                string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
-            )
-            let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            let course = try decoder.decode(Course.self, from: courseJSONData)
-            courseList.append(course)
+            do {
+                let lessonURL = URL(
+                    string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
+                )
+                let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .secondsSince1970
+                let course = try decoder.decode(Course.self, from: courseJSONData)
+                courseList.append(course)
+            } catch {
+                continue
+            }
         }
 
         var returnSemester = inComplete

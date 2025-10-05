@@ -7,178 +7,249 @@
 
 import SwiftUI
 import UIKit
-import Vision
+import WebKit
 
-private let ustcCasUrl = URL(string: "https://passport.ustc.edu.cn")!
-private let ustcLoginUrl = URL(string: "https://passport.ustc.edu.cn/login")!
-
-/// A cas client to login to https://passport.ustc.edu.cn/
 class UstcCasClient: LoginClientProtocol {
     static let shared = UstcCasClient()
 
-    @AppSecureStorage("passportUsername") private var username: String
-    @AppSecureStorage("passportPassword") private var password: String
-    @AppSecureStorage("passportDeviceID") private var deviceID: String
-    @AppSecureStorage("passportFingerprint") private var fingerPrint: String
     @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
 
-    var precheckFails: Bool { username.isEmpty || password.isEmpty || deviceID.isEmpty || fingerPrint.isEmpty }
-    var session: URLSession = .shared
+    var session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.httpCookieStorage = HTTPCookieStorage.shared
+        config.httpShouldSetCookies = true
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        return URLSession(configuration: config)
+    }()
 
-    func getLtTokenFromCAS(
-        url: URL = ustcLoginUrl
-    ) async throws -> (
-        ltToken: String,
-        cookie: [HTTPCookie],
-        captacha: String
-    ) {
-        let findLtStringRegex = try! Regex("LT-[0-9a-z]+")
+    private var loginContinuation: CheckedContinuation<Bool, Error>?
+    private var loginWebViewController: UIViewController?
+    private weak var presenterViewController: UIViewController?
 
-        // loading the LT-Token requires a non-logined status
-        // using a ephemeral session would achieve this.
-        let session = URLSession(configuration: .ephemeral)
-        var request = URLRequest(url: url)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (data, _) = try await session.data(for: request)
-
-        guard let dataString = String(data: data, encoding: .utf8),
-            let match = dataString.firstMatch(of: findLtStringRegex)
-        else {
-            throw BaseError.runtimeError("Failed to fetch raw LT-Token")
+    // Default login keeps previous behavior for API compatibility but requires presenter to be set beforehand.
+    override func login() async throws -> Bool {
+        guard let presenterViewController else {
+            throw BaseError.runtimeError("Login presenter not set. Call login(presentingFrom:) from UI.")
         }
-
-        let captchaCode = try await getCaptchaCodeFromCAS(session: session)
-
-        return (
-            String(match.0),
-            session.configuration.httpCookieStorage?.cookies ?? [],
-            captchaCode
-        )
+        return try await login(presentingFrom: presenterViewController, shouldAutoLogin: true)
     }
 
-    func getCaptchaCodeFromCAS(session: URLSession) async throws -> String {
-        let capatchaURL = URL(string: "https://passport.ustc.edu.cn/validatecode.jsp?type=login")!
-
-        var request = URLRequest(url: capatchaURL)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (data, _) = try await session.data(for: request)
-
-        guard let cgImage = UIImage(data: data)?.cgImage else {
-            throw BaseError.runtimeError("Failed to fetch captcha code")
-        }
-
-        return try await withCheckedThrowingContinuation { continuation in
-            func recognizeTextHandler(request: VNRequest, error: Error?) {
-                guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                    return
-                }
-                let recognizedStrings =
-                    observations.compactMap { observation in
-                        return observation.topCandidates(1).first?.string
-                    }
-                    .joined()
-                continuation.resume(returning: recognizedStrings)
-            }
-
-            let vnrequestHandler = VNImageRequestHandler(cgImage: cgImage)
-            let vnRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-
-            do {
-                try vnrequestHandler.perform([vnRequest])
-            } catch {
-                continuation.resume(throwing: error)
-            }
-        }
-    }
-
-    func loginToCAS(url: URL = ustcLoginUrl, service: URL? = nil) async throws
+    // New API that accepts a presenter VC, suitable for app extensions and clearer control from UI layer.
+    func login(presentingFrom presenterViewController: UIViewController, shouldAutoLogin: Bool = false) async throws
         -> Bool
     {
-        if precheckFails { throw BaseError.runtimeError("Precheck fails") }
-        var (ltToken, cookies, captchaCode) = try await getLtTokenFromCAS(url: url)
-
-        cookies.append(HTTPCookie(properties: [
-            .domain: "https://passport.ustc.edu.cn",
-            .path: "/",
-            .name: "device",
-            .value: deviceID,
-        ])!)
-
-        var queries: [String: String] = [
-            "model": "uplogin.jsp",
-            "CAS_LT": ltToken,
-            "service": service?.absoluteString ?? "",
-            "warn": "",
-            "showCode": "1",
-            "qrcode": "",
-            "resultInput": fingerPrint,
-            "username": username,
-            "password": password,
-            "LT": captchaCode,
-        ]
-        
-        queries = try queries.mapValues { v in
-            guard let encodedValue = v.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-                throw BaseError.runtimeError("Invalid value provided")
+        return try await withCheckedThrowingContinuation { continuation in
+            self.loginContinuation = continuation
+            Task.detached { @MainActor in
+                self.presentLoginWebView(presentingFrom: presenterViewController, shouldAutoLogin: shouldAutoLogin)
             }
-            return encodedValue
+        }
+    }
+
+    // Allow UI to inject a presenter ahead of time so requireLogin()->login() can work
+    func setPresenter(_ presenter: UIViewController) {
+        self.presenterViewController = presenter
+    }
+
+    @MainActor private func presentLoginWebView(
+        presentingFrom presenterViewController: UIViewController,
+        shouldAutoLogin: Bool = false
+    ) {
+        let webViewController = CASWebViewController()
+        webViewController.shouldAutoLogin = shouldAutoLogin
+
+        let navigationController = UINavigationController(rootViewController: webViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+
+        // Find the topmost presented view controller to ensure presentation works
+        var topController = presenterViewController
+        while let presented = topController.presentedViewController {
+            topController = presented
         }
 
-        var request = URLRequest(url: ustcLoginUrl)
-        request.httpBody = queries
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: "&").data(using: .utf8)
-        request.httpMethod = "POST"
-        request.httpShouldHandleCookies = true
-        request.setValue(
-            "application/x-www-form-urlencoded",
-            forHTTPHeaderField: "Content-Type"
-        )
+        topController.present(navigationController, animated: true)
+
+        loginWebViewController = navigationController
+    }
+
+    func loginToCAS(_ url: URL) async throws {
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        session.configuration.httpCookieStorage?.cookieAcceptPolicy = .always
-        session.configuration.httpCookieStorage?
-            .setCookies(cookies, for: ustcCasUrl, mainDocumentURL: ustcCasUrl)
+        let (_, response) = try await session.data(for: request)
 
-        let (data, response) = try await session.data(for: request)
-        
-        // debugPrint(String(data: data, encoding: .utf8)!)
-        // debugPrint(response)
-        // debugPrint((response as! HTTPURLResponse))
-        
-        
-        // This won't work as URLSession will follow the redirect
-        // if ((response as? HTTPURLResponse)?.statusCode != 302) {
-        //     return false
-        // }
-        
-        // passport.u.e.c -> callback -> service redirect, this won't work as well.
-        // if((response as! HTTPURLResponse).url?.absoluteString != service?.absoluteString ?? "https://passport.ustc.edu.cn/success.jsp") {
-        //     return false
-        // }
-        
-        if let expireDate = session.configuration.httpCookieStorage?.cookies?.first(where: { $0.name == "logins"})?.expiresDate , expireDate > Date() {
-            if _widgetCanRefreshNewData == nil {
-                _widgetCanRefreshNewData = true
-            }
-            return true
+        guard let redirectURL = response.url else {
+            throw BaseError.runtimeError("No redirect URL after CAS login.")
         }
-        
-        return false
+
+        debugPrint(session.configuration.httpCookieStorage!.cookies.map({ $0.map { "\($0.name) = \($0.value)" } })!)
+
+        // Follow redirect to service URL
+        var serviceRequest = URLRequest(url: redirectURL)
+        serviceRequest.httpMethod = "GET"
+        serviceRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        _ = try await session.data(for: serviceRequest)
     }
 
-    override func login() async throws -> Bool {
-        try await loginToCAS()
+    func loginSuccess() {
+        loginContinuation?.resume(returning: true)
+        loginContinuation = nil
+        dismissLoginWebView()
     }
 
-    override init() {}
+    func loginFailed() {
+        loginContinuation?.resume(returning: false)
+        loginContinuation = nil
+        dismissLoginWebView()
+    }
+
+    private func dismissLoginWebView() {
+        loginWebViewController?.dismiss(animated: true)
+        loginWebViewController = nil
+    }
 }
 
 extension LoginClientProtocol {
     static let ustcCAS = UstcCasClient.shared
 }
 
+class CASWebViewController: UIViewController, WKNavigationDelegate {
+    @AppSecureStorage("passportUsername") private var username: String
+    @AppSecureStorage("passportPassword") private var password: String
+
+    private var webView: WKWebView!
+    var onLoginSuccess: (() -> Void)?
+    var shouldAutoLogin: Bool = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .white
+
+        let config = WKWebViewConfiguration()
+        let contentController = WKUserContentController()
+        contentController.add(self, name: "formSubmit")
+        config.userContentController = contentController
+
+        webView = WKWebView(frame: view.bounds, configuration: config)
+        webView.navigationDelegate = self
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        } else {
+        }
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(webView)
+        webView.load(URLRequest(url: URL(string: "https://id.ustc.edu.cn/")!))
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(cancelLogin)
+        )
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        if let url = navigationAction.request.url,
+            url.absoluteString.hasPrefix("https://id.ustc.edu.cn/gate/cas-success")
+        {
+            // Success! Extract cookies and notify client
+            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                HTTPCookieStorage.shared.setCookies(
+                    cookies,
+                    for: URL(string: "https://id.ustc.edu.cn"),
+                    mainDocumentURL: nil
+                )
+                UstcCasClient.shared.loginSuccess()
+                self.onLoginSuccess?()
+            }
+            decisionHandler(.cancel)
+            return
+        }
+        decisionHandler(.allow)
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        // Inject username and password after page loads
+        Task {
+            try await Task.sleep(nanoseconds: 500_000_000)
+
+            let combinedScript = """
+                (function() {
+                    if (document.readyState === 'complete') {
+                        setTimeout(fillForm, 1000);
+                    } else {
+                        window.addEventListener('load', setTimeout(fillForm, 1000));
+                    }
+
+                    function fillForm() {
+                        document.querySelector('input[id="nameInput"]').value = '\(username.replacingOccurrences(of: "'", with: "\\'"))';
+                        document.querySelector('input[type="password"]').value = '\(password.replacingOccurrences(of: "'", with: "\\'"))';
+
+                        const usernameInput = document.querySelector('input[id="nameInput"]');
+                        const passwordInput = document.querySelector('input[type="password"]');
+                        if (usernameInput) {
+                            usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        if (passwordInput) {
+                            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+
+                        const submitBtn = document.querySelector('button[id="submitBtn"]');
+                        if (submitBtn) {
+                            submitBtn.addEventListener('click', function(e) {
+                                const usernameValue = document.querySelector('input[id="nameInput"]').value;
+                                const passwordValue = document.querySelector('input[type="password"]').value;
+                                window.webkit.messageHandlers.formSubmit.postMessage({
+                                    username: usernameValue,
+                                    password: passwordValue
+                                });
+                            });
+
+                            // Auto-submit if enabled
+                            if (\(shouldAutoLogin ? "true" : "false")) {
+                                setTimeout(function() {
+                                    submitBtn.click();
+                                }, 500);
+                            }
+                        }
+                    }
+                })();
+                """
+
+            try await webView.evaluateJavaScript(combinedScript)
+        }
+    }
+
+    @objc private func cancelLogin() {
+        UstcCasClient.shared.loginFailed()
+    }
+}
+
+extension CASWebViewController: WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "formSubmit",
+            let body = message.body as? [String: String],
+            let usernameValue = body["username"],
+            let passwordValue = body["password"]
+        {
+            // Store the credentials before form submission
+            self.username = usernameValue
+            self.password = passwordValue
+            debugPrint("Credentials stored before form submission")
+        }
+    }
+}
+
 extension URL {
     func ustcCASLoginMarkup() -> URL {
-        CASLoginMarkup(casServer: ustcCasUrl)
+        // https://passport.ustc.edu.cn is the old url used for redirecting
+        // owing to the fact that many system still uses this endpoint, we still mark with this url
+        CASLoginMarkup(casServer: URL(string: "https://passport.ustc.edu.cn")!)
     }
 }
