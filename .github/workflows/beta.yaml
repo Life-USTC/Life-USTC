@@ -1,45 +1,46 @@
 name: Build & Beta
 
 on:
-    push:
-        tags:
-            - v*
-    workflow_dispatch:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        runs-on: macos-15
-        steps:
-          - uses: actions/checkout@v4
-            with:
-                submodules: true
-                token: ${{ secrets.PAT_TOKEN }}
-          - name: Build & Beta
-            run: fastlane ios beta > build.log
-            env:
-                MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-                MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-                ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-                ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-                ASC_KEY: ${{ secrets.ASC_KEY }}
+  deploy:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT_TOKEN }}
 
-          - name: Upload app-store ipa and dsyms to artifacts
-            uses: actions/upload-artifact@v4
-            with:
-                name: app-store ipa & dsyms
-                path: |
-                    ${{ github.workspace }}/Life@USTC.ipa
-                    ${{ github.workspace }}/*.app.dSYM.zip
+      - name: Build & Beta
+        run: fastlane ios beta > build.log
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.ASC_KEY }}
 
-          - name: Encrypt build.log with password
-            run: |
-                zip -P ${{ secrets.BUILD_LOG_PASSWORD }} build_log.zip build.log
-                rm build.log
-            if: always()
+      - name: Upload app-store ipa and dsyms to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store ipa & dsyms
+          path: |
+            ${{ github.workspace }}/*.ipa
+            ${{ github.workspace }}/*.app.dSYM.zip
 
-          - name: Upload build_log.zip to artifacts
-            uses: actions/upload-artifact@v4
-            with:
-                name: build_log
-                path: ${{ github.workspace }}/build_log.zip
-            if: always()
+      - name: Encrypt build.log with password
+        run: |
+          zip -P ${{ secrets.BUILD_LOG_PASSWORD }} build_log.zip build.log
+          rm build.log
+        if: always()
+
+      - name: Upload build_log.zip to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_log
+          path: ${{ github.workspace }}/build_log.zip
+        if: always()
