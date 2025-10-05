@@ -2,7 +2,7 @@ platform :ios do
   desc "Build"
   lane :build do
     setup_ci if is_ci
-    xcode_select("/Applications/Xcode_15.0.app") if is_ci
+    xcode_select("/Applications/Xcode_16.app") if is_ci
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     gym(
@@ -20,7 +20,7 @@ platform :ios do
   desc "Submit a new Beta Build to Apple TestFlight"
   lane :beta do
     setup_ci if is_ci
-    xcode_select("/Applications/Xcode_15.0.app") if is_ci
+    xcode_select("/Applications/Xcode_16.app") if is_ci
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     app_store_connect_api_key(
