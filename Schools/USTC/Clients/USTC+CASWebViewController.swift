@@ -94,38 +94,37 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
                 }
 
                 function fillForm() {
+                    const usernameInput = document.querySelector('input[id="nameInput"]');
+                    const passwordInput = document.querySelector('input[type="password"]');
+                    const submitBtn = document.querySelector('button[id="submitBtn"]');
+
                     document.querySelector('input[id="nameInput"]').value = '\(username.replacingOccurrences(of: "'", with: "\\'"))';
                     document.querySelector('input[type="password"]').value = '\(password.replacingOccurrences(of: "'", with: "\\'"))';
 
-                    const usernameInput = document.querySelector('input[id="nameInput"]');
-                    const passwordInput = document.querySelector('input[type="password"]');
-                    if (usernameInput && passwordInput) {
-                        usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    } else {
-                        setTimeout(fillForm, 500);
-                        return
+                    if (!(usernameInput && passwordInput && submitBtn)) {
+                        setTimeout(fillForm, 1000);
+                        return;
                     }
 
-                    const submitBtn = document.querySelector('button[id="submitBtn"]');
-                    if (submitBtn) {
-                        submitBtn.addEventListener('click', function(e) {
-                            const usernameValue = document.querySelector('input[id="nameInput"]').value;
-                            const passwordValue = document.querySelector('input[type="password"]').value;
-                            window.webkit.messageHandlers.formSubmit.postMessage({
-                                username: usernameValue,
-                                password: passwordValue
-                            });
-                        });
+                    usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-                        // Auto-submit if enabled
-                        if (\(shouldAutoLogin ? "true" : "false")) {
-                            setTimeout(function() {
-                                submitBtn.click();
-                            }, 500);
-                        }
+                    submitBtn.addEventListener('click', function(e) {
+                        const usernameValue = document.querySelector('input[id="nameInput"]').value;
+                        const passwordValue = document.querySelector('input[type="password"]').value;
+                        window.webkit.messageHandlers.formSubmit.postMessage({
+                            username: usernameValue,
+                            password: passwordValue
+                        });
+                    });
+
+                    // Auto-submit if enabled
+                    if (\(shouldAutoLogin ? "true" : "false")) {
+                        setTimeout(function() {
+                            submitBtn.click();
+                        }, 500);
                     }
                 }
             })();
