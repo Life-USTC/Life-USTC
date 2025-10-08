@@ -71,14 +71,14 @@ extension USTCExports {
                 url: "https://lib.ustc.edu.cn",
                 markUp: false
             ),
-            .init(
-                name: "Library Appointment",
-                image: "lasso.and.sparkles",
-                description: "预约西区/高新区图书馆自习室",
-                url:
-                    "https://lib.ustc.edu.cn/%e5%9b%be%e4%b9%a6%e9%a6%86%e7%a0%94%e4%bf%ae%e9%97%b4%e9%a2%84%e7%ba%a6%e7%b3%bb%e7%bb%9f/",
-                markUp: false
-            ),
+            // .init(
+            //     name: "Library Appointment",
+            //     image: "lasso.and.sparkles",
+            //     description: "预约西区/高新区图书馆自习室",
+            //     url:
+            //         "https://lib.ustc.edu.cn/%e5%9b%be%e4%b9%a6%e9%a6%86%e7%a0%94%e4%bf%ae%e9%97%b4%e9%a2%84%e7%ba%a6%e7%b3%bb%e7%bb%9f/",
+            //     markUp: false
+            // ),
             .init(
                 name: "Email",
                 image: "mail.stack",
@@ -132,10 +132,23 @@ extension USTCExports {
                 markUp: false
             ),
             .init(
-                name: "Meeting Room Appointment",
+                name: "Meeting Room Appointment for Central Campus",
                 image: "clock.badge.checkmark",
                 description: "预约中区研讨室/青年之家会议室",
                 url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
+                markUp: true
+            ),
+            .init(
+                name: "Meeting Room Appointment for West Campus",
+                image: "clock.badge.checkmark",
+                description: "西区未来学习中心",
+                url: "http://ic.lib.ustc.edu.cn/",
+            ),
+            .init(
+                name: "Meeting Room Appointment for Gaoxin Campus",
+                image: "clock.badge.checkmark",
+                description: "高新校区交流体验中心",
+                url: "http://hs.lib.ustc.edu.cn/account/Login",
                 markUp: true
             ),
             .init(
@@ -190,7 +203,7 @@ extension USTCExports {
             .init(
                 name: "Hanhai Platform",
                 image: "books.vertical",
-                description: "本科教育提升计划-网络课程平台",
+                description: "本科教育提升计划 - 网络课程平台",
                 url: "http://course.ustc.edu.cn/sso/ustc",
                 markUp: true
             ),
