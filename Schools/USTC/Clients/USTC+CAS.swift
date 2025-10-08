@@ -72,6 +72,7 @@ class UstcCasClient: LoginClientProtocol {
         loginWebViewController = navigationController
     }
 
+    @available(*, deprecated, message: "Request these URLs yourself")
     func loginToCAS(_ url: URL) async throws {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -141,6 +142,15 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
         view.addSubview(webView)
         webView.load(URLRequest(url: URL(string: "https://id.ustc.edu.cn/")!))
 
+        let fillButton = UIBarButtonItem(
+            title: "Fill",
+            style: .plain,
+            target: self,
+            action: #selector(manualFillForm)
+        )
+        fillButton.accessibilityLabel = "Fill credentials"
+        fillButton.image = UIImage(systemName: "rectangle.and.pencil.and.ellipsis")
+        navigationItem.leftBarButtonItem = fillButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -175,54 +185,65 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // Inject username and password after page loads
         Task {
-            try await Task.sleep(nanoseconds: 500_000_000)
+            await injectCredentials()
+        }
+    }
 
-            let combinedScript = """
-                (function() {
-                    if (document.readyState === 'complete') {
-                        setTimeout(fillForm, 1000);
+    private func injectCredentials() async {
+        try? await Task.sleep(nanoseconds: 500_000_000)
+
+        let combinedScript = """
+            (function() {
+                if (document.readyState === 'complete') {
+                    setTimeout(fillForm, 1000);
+                } else {
+                    window.addEventListener('load', setTimeout(fillForm, 1000));
+                }
+
+                function fillForm() {
+                    document.querySelector('input[id="nameInput"]').value = '\(username.replacingOccurrences(of: "'", with: "\\'"))';
+                    document.querySelector('input[type="password"]').value = '\(password.replacingOccurrences(of: "'", with: "\\'"))';
+
+                    const usernameInput = document.querySelector('input[id="nameInput"]');
+                    const passwordInput = document.querySelector('input[type="password"]');
+                    if (usernameInput && passwordInput) {
+                        usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
                     } else {
-                        window.addEventListener('load', setTimeout(fillForm, 1000));
+                        setTimeout(fillForm, 500);
+                        return
                     }
 
-                    function fillForm() {
-                        document.querySelector('input[id="nameInput"]').value = '\(username.replacingOccurrences(of: "'", with: "\\'"))';
-                        document.querySelector('input[type="password"]').value = '\(password.replacingOccurrences(of: "'", with: "\\'"))';
-
-                        const usernameInput = document.querySelector('input[id="nameInput"]');
-                        const passwordInput = document.querySelector('input[type="password"]');
-                        if (usernameInput) {
-                            usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                        if (passwordInput) {
-                            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-
-                        const submitBtn = document.querySelector('button[id="submitBtn"]');
-                        if (submitBtn) {
-                            submitBtn.addEventListener('click', function(e) {
-                                const usernameValue = document.querySelector('input[id="nameInput"]').value;
-                                const passwordValue = document.querySelector('input[type="password"]').value;
-                                window.webkit.messageHandlers.formSubmit.postMessage({
-                                    username: usernameValue,
-                                    password: passwordValue
-                                });
+                    const submitBtn = document.querySelector('button[id="submitBtn"]');
+                    if (submitBtn) {
+                        submitBtn.addEventListener('click', function(e) {
+                            const usernameValue = document.querySelector('input[id="nameInput"]').value;
+                            const passwordValue = document.querySelector('input[type="password"]').value;
+                            window.webkit.messageHandlers.formSubmit.postMessage({
+                                username: usernameValue,
+                                password: passwordValue
                             });
+                        });
 
-                            // Auto-submit if enabled
-                            if (\(shouldAutoLogin ? "true" : "false")) {
-                                setTimeout(function() {
-                                    submitBtn.click();
-                                }, 500);
-                            }
+                        // Auto-submit if enabled
+                        if (\(shouldAutoLogin ? "true" : "false")) {
+                            setTimeout(function() {
+                                submitBtn.click();
+                            }, 500);
                         }
                     }
-                })();
-                """
+                }
+            })();
+            """
 
-            try await webView.evaluateJavaScript(combinedScript)
+        _ = try? await webView.evaluateJavaScript(combinedScript)
+    }
+
+    @objc private func manualFillForm() {
+        Task {
+            await injectCredentials()
         }
     }
 
