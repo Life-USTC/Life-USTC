@@ -9,7 +9,9 @@ import Charts
 import SwiftUI
 
 struct CurriculumDetailView: View {
-    @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
+    var heightPerClass = 10
+    var date: Date { _date.startOfWeek() }
+
     @AppStorage(
         "curriculumChartShouldHideEvening",
         store: .appGroup
@@ -18,7 +20,7 @@ struct CurriculumDetailView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
     @State var showLandscape: Bool = {
-        if UIDevice.current.orientation.isFlat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
             return false
         }
         return UIDevice.current.orientation.isLandscape
@@ -27,9 +29,6 @@ struct CurriculumDetailView: View {
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
     @State var weekNumber: Int?
-    var heightPerClass = 10
-
-    var date: Date { _date.startOfWeek() }
 
     @ViewBuilder
     var detailBarView: some View {
@@ -39,12 +38,12 @@ struct CurriculumDetailView: View {
             if let weekNumber {
                 Spacer()
 
-                if (date ... date.add(day: 7)).contains(Date().stripTime()) {
+                if (date ... date.add(day: 6)).contains(Date().stripTime()) {
                     Text(String(format: "Week %@".localized, String(weekNumber)))
                 } else {
                     Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
                 }
-            } else if !(date ... date.add(day: 7)).contains(Date().stripTime()) {
+            } else if !(date ... date.add(day: 6)).contains(Date().stripTime()) {
                 Spacer()
 
                 Text("[NOT CURRENT]")
@@ -156,18 +155,12 @@ struct CurriculumDetailView: View {
             updateSemester()
         }
         .onRotate { newOrientation in
-            if newOrientation.isFlat {
-                #if DEBUG
+            if UIDevice.current.userInterfaceIdiom == .pad {
                 showLandscape = false
-                #else
                 return
-                #endif
             }
-            if newOrientation.isLandscape {
-                showLandscape = true
-            } else {
-                showLandscape = false
-            }
+
+            showLandscape = newOrientation.isLandscape
         }
     }
 
