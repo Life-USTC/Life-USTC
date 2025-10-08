@@ -104,7 +104,12 @@ class USTCExports: SchoolExport {
                     image: "doc.text.magnifyingglass",
                     title: "Classroom Status",
                     subTitle: "",
-                    destinationView: { USTCClassroomView() }
+                    destinationView: {
+                        Browser(
+                            url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!,
+                            title: "Classroom Status"
+                        )
+                    }
                 ),
                 .init(
                     image: "bus",
