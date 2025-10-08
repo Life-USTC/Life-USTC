@@ -43,7 +43,12 @@ struct FeaturePreview: View {
             image: "doc.text.magnifyingglass",
             title: "Classroom Status",
             subTitle: "",
-            destinationView: { USTCClassroomView() }
+            destinationView: {
+                Browser(
+                    url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!,
+                    title: "Classroom Status"
+                )
+            }
         ),
         .init(
             image: "bus",
@@ -56,8 +61,7 @@ struct FeaturePreview: View {
                 name: "Email",
                 image: "mail.stack",
                 description: "科大邮箱",
-                url:
-                    "https://mail.ustc.edu.cn",
+                url: "https://mail.ustc.edu.cn",
                 markUp: false
             )
         ),

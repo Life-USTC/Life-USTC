@@ -56,11 +56,9 @@
 		56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* USTC+CASLoginView.swift */; };
 		56558804294D93810010E060 /* FeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558803294D93810010E060 /* FeaturesView.swift */; };
 		56558809294DC9D40010E060 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558808294DC9D40010E060 /* SettingsView.swift */; };
-		566933022A9A4B6B002AFB91 /* USTC+ClassroomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */; };
 		566933032A9A4B70002AFB91 /* AsyncStatusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */; };
 		56734CDF297D86C600DBB45F /* USTC+CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* USTC+CAS.swift */; };
 		56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5655880A294DEA6B0010E060 /* USTC+CAS.swift */; };
-		56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */; };
 		56734CEA297D86F200DBB45F /* USTC+UgAAS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */; };
 		56734CEB297D871500DBB45F /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91FA296677A300822C98 /* StringExtension.swift */; };
 		56734CED297D871500DBB45F /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621691B2955BEC500DF46BE /* DateExtension.swift */; };
@@ -120,7 +118,6 @@
 		56AF3E8A2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */; };
 		56AF3E8B2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */; };
 		56B86B8A2A8F58AD003440D2 /* AsyncStatusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */; };
-		56B9F3152A2E028A00DE8838 /* ustc_feed_source.json in Resources */ = {isa = PBXBuildFile; fileRef = 56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */; };
 		56BE91F32962F77800822C98 /* UUIDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F22962F77800822C98 /* UUIDExtension.swift */; };
 		56BE91F72963EF1600822C98 /* ExceptionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BE91F62963EF1600822C98 /* ExceptionExtension.swift */; };
 		56BE91F92965D05A00822C98 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 56BE91F82965D05A00822C98 /* README.md */; };
@@ -146,8 +143,6 @@
 		56E22BDE2A9F2A310078455B /* HomeSettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */; };
 		56E25CC32A8F29E50027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
 		56E25CC42A8F2D210027E72F /* LoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC22A8F29E50027E72F /* LoginClient.swift */; };
-		56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
-		56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */; };
 		56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
 		56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */; };
 		56E6E5972ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */; };
@@ -155,9 +150,7 @@
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
-		56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */; };
 		56E8AD722973EC0F009006D0 /* ustc_rooms.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E8AD712973EC0F009006D0 /* ustc_rooms.json */; };
-		56E8AD752973F25E009006D0 /* USTC+ClassroomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */; };
 		56E94E23298A77790085241B /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E22298A77790085241B /* AboutPage.swift */; };
 		56E94E25298A77990085241B /* LegalPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E24298A77990085241B /* LegalPage.swift */; };
 		56E94E29298A77F80085241B /* FeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E28298A77F80085241B /* FeedPage.swift */; };
@@ -193,7 +186,6 @@
 		E5162ED22AB2F26C00C34CA3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED02AB2F26C00C34CA3 /* Bus.swift */; };
 		E5162ED42AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
 		E5162ED52AB2FD4400C34CA3 /* USTC+BusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */; };
-		E51F2F8C2B8F3537007844C7 /* ustc_bus_data_v2.json in Resources */ = {isa = PBXBuildFile; fileRef = E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */; };
 		E534DA052AB7498C00DA0368 /* FeaturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA042AB7498C00DA0368 /* FeaturePreview.swift */; };
 		E534DA072AB749A500DA0368 /* FeaturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */; };
 /* End PBXBuildFile section */
@@ -292,7 +284,6 @@
 		56AC72FB294A012F00A60F47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56AC7300294A012F00A60F47 /* 学在科大.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "学在科大.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncStatusMask.swift; sourceTree = "<group>"; };
-		56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ustc_feed_source.json; sourceTree = "<group>"; };
 		56BE91F22962F77800822C98 /* UUIDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDExtension.swift; sourceTree = "<group>"; };
 		56BE91F62963EF1600822C98 /* ExceptionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionExtension.swift; sourceTree = "<group>"; };
 		56BE91F82965D05A00822C98 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -310,14 +301,11 @@
 		56DD03A7296D0924004C358C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56E22BDD2A9F2A310078455B /* HomeSettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSettingPage.swift; sourceTree = "<group>"; };
 		56E25CC22A8F29E50027E72F /* LoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginClient.swift; sourceTree = "<group>"; };
-		56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ClassroomDelegate.swift"; sourceTree = "<group>"; };
 		56E25CC92A8F32A20027E72F /* USTC+CASViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CASViewModel.swift"; sourceTree = "<group>"; };
 		56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+AdditionalCourse.swift"; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
-		56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Catalog.swift"; sourceTree = "<group>"; };
 		56E8AD712973EC0F009006D0 /* ustc_rooms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ustc_rooms.json; sourceTree = "<group>"; };
-		56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+ClassroomView.swift"; sourceTree = "<group>"; };
 		56E94E22298A77790085241B /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
 		56E94E24298A77990085241B /* LegalPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
@@ -344,7 +332,6 @@
 		E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusView.swift"; sourceTree = "<group>"; };
 		E5162ED02AB2F26C00C34CA3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+BusDelegate.swift"; sourceTree = "<group>"; };
-		E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ustc_bus_data_v2.json; sourceTree = "<group>"; };
 		E534DA042AB7498C00DA0368 /* FeaturePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreview.swift; sourceTree = "<group>"; };
 		E534DA062AB749A500DA0368 /* FeaturePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturePreviewCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -523,7 +510,6 @@
 				56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */,
 				E5162EC92AB2E97300C34CA3 /* USTC+BusView.swift */,
 				56558800294D74BB0010E060 /* USTC+CASLoginView.swift */,
-				56E8AD742973F25E009006D0 /* USTC+ClassroomView.swift */,
 				56A8FC2E2A97AFC3009D94A3 /* USTCBaseModifier.swift */,
 			);
 			path = Views;
@@ -541,9 +527,7 @@
 		5677E13C2A5AF6BD00EDCB53 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				56B9F3142A2E028A00DE8838 /* ustc_feed_source.json */,
 				56E8AD712973EC0F009006D0 /* ustc_rooms.json */,
-				E51F2F8B2B8F3537007844C7 /* ustc_bus_data_v2.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -688,7 +672,6 @@
 			children = (
 				5601B9152B1A067B00C85F25 /* USTC+BBHomeworkDelegate.swift */,
 				E5162ED32AB2FD4400C34CA3 /* USTC+BusDelegate.swift */,
-				56E25CC62A8F30040027E72F /* USTC+ClassroomDelegate.swift */,
 				56A3B87829A8B8A400BFE64F /* USTC+CurriculumDelegate.swift */,
 				56A3B87429A8B86700BFE64F /* USTC+ExamDelegate.swift */,
 				56A3B87A29A8B8C600BFE64F /* USTC+ScoreDelegate.swift */,
@@ -781,7 +764,6 @@
 				56432FBE2E9634D9007CBAF0 /* USTC+CASWebViewController.swift */,
 				5601B9172B1A070600C85F25 /* USTC+Blackboard.swift */,
 				5655880A294DEA6B0010E060 /* USTC+CAS.swift */,
-				56E8AD6F2973D0DB009006D0 /* USTC+Catalog.swift */,
 				565587F0294C4E5D0010E060 /* USTC+UgAAS.swift */,
 			);
 			path = Clients;
@@ -993,12 +975,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E51F2F8C2B8F3537007844C7 /* ustc_bus_data_v2.json in Resources */,
 				5641255F2BB2ECCC00406113 /* PrivacyInfo.xcprivacy in Resources */,
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
-				56B9F3152A2E028A00DE8838 /* ustc_feed_source.json in Resources */,
 				56E8AD722973EC0F009006D0 /* ustc_rooms.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1104,9 +1084,6 @@
 				56558801294D74BB0010E060 /* USTC+CASLoginView.swift in Sources */,
 				56E25CCA2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
 				56432FBF2E9634E9007CBAF0 /* USTC+CASWebViewController.swift in Sources */,
-				56E8AD702973D0DB009006D0 /* USTC+Catalog.swift in Sources */,
-				56E25CC72A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
-				56E8AD752973F25E009006D0 /* USTC+ClassroomView.swift in Sources */,
 				56AF3E8A2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,
 				56A3B87529A8B86700BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1202A5AB5A100EDCB53 /* USTC+Exports.swift in Sources */,
@@ -1173,9 +1150,6 @@
 				56734CE5297D86F200DBB45F /* USTC+CAS.swift in Sources */,
 				5677E1232A5AB66F00EDCB53 /* USTC+CASLoginView.swift in Sources */,
 				56E25CCB2A8F32A20027E72F /* USTC+CASViewModel.swift in Sources */,
-				56734CE9297D86F200DBB45F /* USTC+Catalog.swift in Sources */,
-				56E25CC82A8F30040027E72F /* USTC+ClassroomDelegate.swift in Sources */,
-				566933022A9A4B6B002AFB91 /* USTC+ClassroomView.swift in Sources */,
 				56AF3E8B2A8EA81C0076F936 /* USTC+CurriculumDelegate.swift in Sources */,
 				56A3B87629A8B88400BFE64F /* USTC+ExamDelegate.swift in Sources */,
 				5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */,
