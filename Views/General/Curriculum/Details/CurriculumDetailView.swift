@@ -10,12 +10,13 @@ import SwiftUI
 
 struct CurriculumDetailView: View {
     var heightPerClass = 10
-    var date: Date { _date.startOfWeek() }
+    var weekStartDate: Date { _date.startOfWeek() }
 
     @AppStorage(
         "curriculumChartShouldHideEvening",
         store: .appGroup
     ) var curriculumChartShouldHideEvening: Bool = false
+    @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
 
     @ManagedData(.curriculum) var curriculum: Curriculum
 
@@ -38,12 +39,12 @@ struct CurriculumDetailView: View {
             if let weekNumber {
                 Spacer()
 
-                if (date ... date.add(day: 6)).contains(Date().stripTime()) {
+                if (weekStartDate ... weekStartDate.add(day: 6)).contains(Date().stripTime()) {
                     Text(String(format: "Week %@".localized, String(weekNumber)))
                 } else {
                     Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
                 }
-            } else if !(date ... date.add(day: 6)).contains(Date().stripTime()) {
+            } else if !(weekStartDate ... weekStartDate.add(day: 6)).contains(Date().stripTime()) {
                 Spacer()
 
                 Text("[NOT CURRENT]")
@@ -51,7 +52,7 @@ struct CurriculumDetailView: View {
 
             Spacer()
 
-            Text(date ... date.add(day: 6))
+            Text(weekStartDate ... weekStartDate.add(day: 6))
         }
         .font(.system(.caption2, design: .monospaced, weight: .light))
         .padding(.horizontal, 20)
@@ -63,7 +64,6 @@ struct CurriculumDetailView: View {
                 HStack(alignment: .bottom) {
                     AsyncStatusLight(status: _curriculum.status)
                     Spacer()
-                    DatePicker(selection: $_date, displayedComponents: .date) {}
                 }
                 .padding(.horizontal, 20)
             }
@@ -90,13 +90,19 @@ struct CurriculumDetailView: View {
         }
         .asyncStatusOverlay(_curriculum.status)
         .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .secondaryAction) {
+                Button {
+                    _curriculum.triggerRefresh()
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+
                 if showLandscape {
                     Button {
                         curriculumChartShouldHideEvening.toggle()
                     } label: {
                         Label(
-                            "Hide evening",
+                            curriculumChartShouldHideEvening ? "Show evening" : "Hide evening",
                             systemImage: curriculumChartShouldHideEvening ? "moon" : "moon.fill"
                         )
                     }
@@ -105,17 +111,40 @@ struct CurriculumDetailView: View {
                         hideWeekend.toggle()
                     } label: {
                         Label(
-                            "Hide weekend",
+                            hideWeekend ? "Show weekend" : "Hide weekend",
                             systemImage: hideWeekend
                                 ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
                         )
                     }
                 }
+            }
 
+            ToolbarItem(placement: .primaryAction) {
                 NavigationLink {
                     CurriculumListView()
                 } label: {
                     Label("Details", systemImage: "info.circle")
+                }
+            }
+
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button {
+                    _date = _date.add(day: -7)
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+
+                Spacer()
+
+                DatePicker("Pick Date", selection: $_date, displayedComponents: .date)
+                    .labelsHidden()
+
+                Spacer()
+
+                Button {
+                    _date = _date.add(day: 7)
+                } label: {
+                    Image(systemName: "chevron.right")
                 }
             }
         }
@@ -124,7 +153,7 @@ struct CurriculumDetailView: View {
         .refreshable {
             _curriculum.triggerRefresh()
         }
-        .gesture(
+        .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
                     if abs(value.translation.width) < 20 {
@@ -160,6 +189,10 @@ struct CurriculumDetailView: View {
                 return
             }
 
+            if newOrientation.isFlat {
+                return
+            }
+
             showLandscape = newOrientation.isLandscape
         }
     }
@@ -171,7 +204,7 @@ struct CurriculumDetailView: View {
             : currentSemester!.courses.flatMap(\.lectures))
             .filter {
                 (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(date))
+                    .contains($0.startDate.stripTime().timeIntervalSince(weekStartDate))
             }
 
         if let currentSemester {
@@ -180,11 +213,18 @@ struct CurriculumDetailView: View {
                     .dateComponents(
                         [.weekOfYear],
                         from: currentSemester.startDate,
-                        to: date
+                        to: weekStartDate
                     )
                     .weekOfYear ?? 0) + 1
         } else {
             weekNumber = nil
+        }
+
+        if lectures.contains(where: { lecture in
+            let weekday = Calendar.current.component(.weekday, from: lecture.startDate)
+            return weekday == 7 || weekday == 1  // Saturday (7) or Sunday (1)
+        }) {
+            hideWeekend = false
         }
     }
 

@@ -28,7 +28,7 @@ struct CurriculumWeekViewVerticalNew: View {
 
             ZStack(alignment: .top) {
                 if date.add(day: index) == Date().stripTime() {
-                    Color.gray.opacity(0.06)
+                    Color.backgroundWhite.colorInvert().opacity(0.06)
                 } else {
                     Color.clear
                 }
@@ -37,6 +37,7 @@ struct CurriculumWeekViewVerticalNew: View {
                 { lecture in
                     LectureCardView(lecture: lecture)
                         .frame(
+                            width: .infinity,
                             height: heightPerClass * Double((lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1) - 4
                         )
                         .offset(y: Double((lecture.startIndex ?? 1) - 1) * heightPerClass + 2)
@@ -70,7 +71,6 @@ struct CurriculumWeekViewVerticalNew: View {
                         .contentShape(Rectangle())
                 }
             }
-            .padding(.horizontal, 20)
         } else {
             GeometryReader { geo in
                 HStack(alignment: .top, spacing: 0) {
