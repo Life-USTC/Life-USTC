@@ -10,44 +10,34 @@ import SwiftUI
 import WebKit
 
 struct SwiftUIWebView: UIViewRepresentable {
-    typealias UIViewType = WKWebView
     let webView: WKWebView
     var url: URL
 
     init(url: URL) {
         self.url = url
-        let wkWebConfig = WKWebViewConfiguration()
-        wkWebConfig.defaultWebpagePreferences.preferredContentMode = .mobile
-        wkWebConfig.upgradeKnownHostsToHTTPS = true
-        webView = WKWebView(frame: .zero, configuration: wkWebConfig)
-        // identify self as mobile client, so that the website will render the mobile version
-        webView.customUserAgent = userAgent
-        updateCookies()
+        self.webView = WKWebView(frame: .zero)
     }
 
-    func updateCookies() {
-        for cookie in URLSession.shared.configuration.httpCookieStorage?.cookies ?? [] {
-            webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
-        }
+    func makeUIView(context _: Context) -> WKWebView {
+        self.webView
     }
-
-    func makeUIView(context _: Context) -> WKWebView { webView }
 
     func updateUIView(_: WKWebView, context _: Context) {
-        webView.load(URLRequest(url: url))
+        self.webView.load(URLRequest(url: self.url))
     }
 }
 
 struct Browser: View {
-    @State var useReeed = false
-    @State var isCookiesReady = false
     var url: URL
     var title: String = "Detail"
     var webView: SwiftUIWebView
 
+    @State var useReeed = false
+    @State var prepared = false
+
     var body: some View {
         Group {
-            if isCookiesReady {
+            if prepared {
                 if useReeed {
                     ReeeederView(url: url)
                 } else {
@@ -59,23 +49,47 @@ struct Browser: View {
         }
         .padding([.leading, .trailing], 2)
         .toolbar {
-            Button {
-                useReeed.toggle()
-            } label: {
-                Label(
-                    "Reeed",
-                    systemImage: useReeed
-                        ? "doc.plaintext.fill" : "doc.plaintext"
-                )
-            }
-            ShareLink(item: self.url) {
-                Label("Share", systemImage: "square.and.arrow.up")
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button {
+                    webView.webView.goBack()
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                .disabled(useReeed || !webView.webView.canGoBack)
+
+                Button {
+                    webView.webView.goForward()
+                } label: {
+                    Image(systemName: "chevron.right")
+                }
+                .disabled(useReeed || !webView.webView.canGoForward)
+
+                Spacer()
+
+                Button {
+                    webView.webView.reload()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(useReeed)
+
+                Spacer()
+
+                Button {
+                    useReeed.toggle()
+                } label: {
+                    Label("Reeed", systemImage: useReeed ? "doc.plaintext.fill" : "doc.plaintext")
+                }
+
+                ShareLink(item: self.url) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
             }
         }
         .id(url)
         .task {
             // Set cookies before allowing web view to load
-            if !isCookiesReady {
+            if !prepared {
                 do {
                     if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
                         try await setCookiesBeforeWebView()
@@ -83,8 +97,7 @@ struct Browser: View {
                 } catch {
                     debugPrint(error)
                 }
-                webView.updateCookies()
-                isCookiesReady = true
+                prepared = true
             }
         }
         .navigationTitle(title)

@@ -22,20 +22,20 @@
 "About Study@USTC" = "关于「学在科大」";
 "Legal Info" = "法律信息";
 
-"Use new UI for tabBar" = "在标签栏位置使用新版UI";
+"Use new UI for tabBar" = "在标签栏位置使用新版 UI";
 
 "Input USTC CAS username & password" = "输入统一身份认证账户&密码";
 
-"casHint" = "此功能由USTC统一身份认证向您提供, 并非我们.\n如需了解更多信息, 打开 设置 > 法律信息 > 声明";
-"Username:" = "用户名:";
-"Password:" = "密码:";
+"casHint" = "此功能由 USTC 统一身份认证向您提供，并非我们.\n如需了解更多信息，打开 设置 > 法律信息 > 声明";
+"Username:" = "用户名：";
+"Password:" = "密码：";
 "Check & Login" = "确认 & 登录";
 
 "Icon source" = "图标来源";
 "Feedkit source" = "Feedkit 来源";
 "SwiftyJSON source" = "SwiftyJSON 来源";
-"USTC CAS DISCLAIMER:" = "USTC 统一身份认证使用须知:";
-"casFullHint" = "此功能由USTC统一身份认证向您提供, 并非我们.\n如需了解更多信息和用户协议,访问 https://passport.ustc.edu.cn/\n当处理你的用户名和密码时, 我们只会将其以行业标准的方式存储在本地. 我们使用你的账户和密码来跳过网页或者程序接口所需要的认证功能, 这一过程是通过模拟用户的行为来做到的, 在后台每15分钟运行一次(如果高频使用的话). 这一行为并不违反统一身份认证的用户协议, 但此协议并不由我们拥有, 因此随时有可能在没有预先通知的前提下进行更改.\n这个过程可能会触发统一身份认证的警告, 并且可能在将来失效. 因此我们不会对这个功能的可用性负责, 请用户自担风险.";
+"USTC CAS DISCLAIMER:" = "USTC 统一身份认证使用须知：";
+"casFullHint" = "此功能由 USTC 统一身份认证向您提供，并非我们.\n如需了解更多信息和用户协议，访问 https://passport.ustc.edu.cn/\n当处理你的用户名和密码时, 我们只会将其以行业标准的方式存储在本地。我们使用你的账户和密码来跳过网页或者程序接口所需要的认证功能，这一过程是通过模拟用户的行为来做到的，在后台每 15 分钟运行一次 (如果高频使用的话). 这一行为并不违反统一身份认证的用户协议，但此协议并不由我们拥有，因此随时有可能在没有预先通知的前提下进行更改.\n这个过程可能会触发统一身份认证的警告，并且可能在将来失效。因此我们不会对这个功能的可用性负责，请用户自担风险。";
 
 "Before we continue..." = "在我们继续之前...";
 "Choose an identity" = "请选择你的身份";
@@ -43,7 +43,7 @@
 "Teacher" = "教师";
 "Notice; Teacher AAS" = "通知; 教师教务系统";
 "Parent" = "家长";
-"Notice(Without CAS)" = "通知(校外)";
+"Notice(Without CAS)" = "通知 (校外)";
 "Undergraduate" = "本科生";
 "Notice; Undergraduate AAS" = "通知; 本科生教务系统";
 "Graduate" = "研究生";
@@ -76,7 +76,9 @@
 "E-Card" = "一卡通";
 "Work-integrated Learning" = "学工一体化";
 "Hanhai Platform" = "瀚海教学网";
-"Meeting Room Appointment" = "中区研讨室";
+"Meeting Room Appointment for Central Campus" = "中区研讨室";
+"Meeting Room Appointment for West Campus" = "西区未来学习中心";
+"Meeting Room Appointment for Gaoxin Campus" = "高新校区交流体验中心";
 "Library" = "图书馆";
 "Calendar" = "教学日历";
 "TA" = "助教管理系统";
@@ -104,11 +106,11 @@
 "Sat&Sun" = "显示周六&周日";
 "Select time" = "选择课表";
 "Save to Calendar" = "保存到日历";
-"Location: " = "位置: ";
-"Teacher: " = "教师: ";
-"ID: " = "课程号: ";
-"Week: " = "周数: ";
-"Time: " = "时间: ";
+"Location: " = "位置：";
+"Teacher: " = "教师：";
+"ID: " = "课程号：";
+"Week: " = "周数：";
+"Time: " = "时间：";
 
 "Exam" = "考试";
 "Exams" = "考试";
@@ -125,10 +127,10 @@
 "No More Exam!" = "暂无考试！";
 
 "Score" = "成绩单";
-"Semester: %@" = "选择学期: %@";
+"Semester: %@" = "选择学期：%@";
 "Sort by: %@" = "按%@排序";
 "Course Code" = "课程号";
-"Ranking:" = "排名:";
+"Ranking:" = "排名：";
 
 "Public" = "公开";
 "Classroom Status" = "教室情况";
@@ -139,12 +141,12 @@
 "Show one line" = "仅显示一行";
 "Buildings to show" = "选择教学楼";
 "Details" = "详情";
-"Lesson name: " = "课程名称: ";
-"Classroom: " = "教室: ";
-"Duration: " = "时间: ";
+"Lesson name: " = "课程名称：";
+"Classroom: " = "教室：";
+"Duration: " = "时间：";
 
-"Front page post numbers: " = "首页展示通知数量: ";
-"Use new UI" = "使用新版UI";
+"Front page post numbers: " = "首页展示通知数量：";
+"Use new UI" = "使用新版 UI";
 "Use reader" = "使用阅读器";
 "General" = "概览";
 "Reader would generaly improve reading experience for web page that aren't optimized for mobile." = "阅读器会改善部分未针对手机优化的网页";
@@ -159,7 +161,7 @@
 "Exam name to hide" = "隐藏显示的考试名";
 "Name" = "名称";
 "Save exams to calendar" = "保存考试日程到日历";
-"When exam contains these words, they will be shown at the bottom even they comes first in time" = "如果考试名称中包含这些词, 它们将会被显示在最下方, 即使它们的时间比其他考试早";
+"When exam contains these words, they will be shown at the bottom even they comes first in time" = "如果考试名称中包含这些词，它们将会被显示在最下方，即使它们的时间比其他考试早";
 "Add new" = "新增";
 "Health Check" = "健康打卡";
 
@@ -170,7 +172,7 @@
 "Sort by: Default" = "按默认值排序";
 "Something went wrong" = "出现了故障";
 "UI Preference" = "UI 设置";
-"Use new UI layout" = "使用新版UI布局";
+"Use new UI layout" = "使用新版 UI 布局";
 "Prevent screenshot when showing score" = "在「成绩」阻止截图";
 
 "Lesson" = "上课";
@@ -190,14 +192,14 @@
 "TBC" = "待定";
 
 "No More Exam..." = "无更多考试";
-"Open the app to make sure though..." = "打开App来确认";
+"Open the app to make sure though..." = "打开 App 来确认";
 "Days Left" = "天后";
-"Time: %@" = "时间: %@";
-"Location: %@" = "地址: %@";
+"Time: %@" = "时间：%@";
+"Location: %@" = "地址：%@";
 "+%@ More Exam..." = "还有%@个考试";
 "Upcoming Exams" = "接下来的考试";
 "Exam Arrangements" = "考试安排";
-"Exams:" = "考试:";
+"Exams:" = "考试：";
 "+%@D" = "%@天后";
 "%@+%@D" = "%@%@天后";
 "Exams" = "考试";
@@ -235,19 +237,19 @@
 "Double check your username and password" = "检查用户名和密码";
 "Hide evening in Curriculum" = "在「课表」中隐藏晚上的课程";
 "Close and reopen the app to take effect." = "关闭并重新打开应用来生效。";
-"Type:" = "类型:";
+"Type:" = "类型：";
 "AAS" = "教务系统";
 
 "Tap on a route to expand" = "点击路线来展开";
-"Open source code usage:" = "开源代码使用情况:";
+"Open source code usage:" = "开源代码使用情况：";
 "Disable update for everything" = "禁用所有内容更新";
 "Week %@" = "第 %@ 周";
 "Week %@ [NOT CURRENT]" = "第 %@ 周 [非本周]";
 "[NOT CURRENT]" = "[非本周]";
-"Tap on a route to expand, Long press to pin/unpin" = "点击路线来展开, 长按来固定/取消固定";
+"Tap on a route to expand, Long press to pin/unpin" = "点击路线来展开，长按来固定/取消固定";
 "No more bus today" = "今日无更多校车";
 
-"Credit: " = "学分: ";
+"Credit: " = "学分：";
 
 "Allow widget to refresh data" = "允许小组件刷新数据";
 "Total: %@ exams" = "共 %@ 场考试";
