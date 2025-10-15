@@ -54,9 +54,6 @@ struct HomeView: View {
                         )
                     }
                 }
-
-                Spacer()
-                    .frame(height: 70)
             }
             .padding(.horizontal, 20)
         }

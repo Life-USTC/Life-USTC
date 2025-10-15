@@ -89,6 +89,7 @@ struct CurriculumDetailView: View {
             }
         }
         .asyncStatusOverlay(_curriculum.status)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
                 Button {

@@ -140,36 +140,30 @@ struct FeaturesView: View {
                     Text(key.localized)
                 }
             }
-
-            Section {
-
-            } footer: {
-                Spacer()
-                    .frame(height: 70)
-            }
         }
         .listStyle(.sidebar)
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Group {
-                switch style {
-                case .grid:
-                    ScrollView(showsIndicators: false) {
-                        VStack {
-                            gridView
-                                .padding(.horizontal, 18)
-                            Spacer()
-                                .frame(height: 70)
-                        }
+        Group {
+            switch style {
+            case .grid:
+                ScrollView(showsIndicators: false) {
+                    VStack {
+                        gridView
+                            .padding(.horizontal, 18)
+                        Spacer()
+                            .frame(height: 70)
                     }
-                case .list:
-                    listView
                 }
+                .background(Color(.systemGroupedBackground))
+            case .list:
+                listView
             }
-            .navigationTitle("Features")
-            .toolbar {
+        }
+        .navigationTitle("Features")
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     withAnimation {
                         style = style.next()
@@ -183,14 +177,13 @@ struct FeaturesView: View {
                     Image(systemName: "gearshape")
                 }
             }
-            .sheet(isPresented: $navigationToSettingsView) {
-                NavigationStack {
-                    SettingsView()
-                }
-            }
-            .searchable(text: $searchText, placement: .automatic)
         }
-        .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $navigationToSettingsView) {
+            NavigationStack {
+                SettingsView()
+            }
+        }
+        .searchable(text: $searchText)
     }
 
     init() {

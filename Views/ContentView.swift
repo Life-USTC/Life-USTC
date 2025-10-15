@@ -25,12 +25,29 @@ struct ContentView: View {
 
     @State var tabSelection: ContentViewTab = .position_1
     var iPhoneView: some View {
-        NavigationStack {
-            ContentViewTabBarContainerView(selection: $tabSelection) {
-                ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
-                    eachTab.view
-                        .tabBarItem(tab: eachTab, selection: $tabSelection)
-                    Spacer()
+        Group {
+            if #available(iOS 26, *) {
+                // if false {
+                TabView(selection: $tabSelection) {
+                    ForEach(ContentViewTab.allCases, id: \.self) { tab in
+                        NavigationStack {
+                            tab.view
+                        }
+                        .tabItem {
+                            tab.label
+                        }
+                        .tag(tab)
+                    }
+                }
+            } else {
+                NavigationStack {
+                    ContentViewTabBarContainerView(selection: $tabSelection) {
+                        ForEach(ContentViewTab.allCases, id: \.self) { tab in
+                            tab.view
+                                .tabBarItem(tab: tab, selection: $tabSelection)
+                            Spacer()
+                        }
+                    }
                 }
             }
         }
@@ -53,21 +70,21 @@ struct ContentView: View {
                         .stroke(Color.accentColor, style: .init(lineWidth: 2))
                 }
 
-            ForEach(ContentViewTab.allCases, id: \.self) { eachTab in
+            ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 Button {
-                    if tabSelection == eachTab, columnVisibility == .all {
+                    if tabSelection == tab, columnVisibility == .all {
                         columnVisibility = .detailOnly
                     } else {
                         columnVisibility = .all
-                        tabSelection = eachTab
+                        tabSelection = tab
                     }
                 } label: {
-                    eachTab.label.foregroundColor(
-                        eachTab == tabSelection ? eachTab.color : .primary
+                    tab.label.foregroundColor(
+                        tab == tabSelection ? tab.color : .primary
                     )
                 }
                 .keyboardShortcut(
-                    KeyEquivalent(Character(String(eachTab.rawValue))),
+                    KeyEquivalent(Character(String(tab.rawValue))),
                     modifiers: .command
                 )
             }

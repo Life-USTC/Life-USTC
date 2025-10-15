@@ -78,7 +78,7 @@ struct ContentViewTabBarContainerView<Content: View>: View {
         ZStack {
             content
         }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom) {
             ContentViewTabBarView(selection: $selection)
         }
     }
