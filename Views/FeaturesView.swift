@@ -40,7 +40,7 @@ struct FeaturesView: View {
         }
     }
 
-    @ManagedData(.feedSource) var feedSourceList: [FeedSource]
+    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
 
     @State var navigationToSettingsView = false
 
@@ -55,7 +55,7 @@ struct FeaturesView: View {
         GridItem(.adaptive(minimum: 125)),
     ]
 
-    var features: [String: [FeatureWithView]] = [:]
+    @State var features: [String: [FeatureWithView]] = [:]
     var featureSearched: [String: [FeatureWithView]] {
         guard searchText.isEmpty else {
             var result: [String: [FeatureWithView]] = [:]
@@ -184,10 +184,12 @@ struct FeaturesView: View {
             }
         }
         .searchable(text: $searchText)
-    }
-
-    init() {
-        features = collectFeatures()
+        .onChange(of: feedSourceList) { _ in
+            features = collectFeatures()
+        }
+        .onAppear {
+            features = collectFeatures()
+        }
     }
 }
 
