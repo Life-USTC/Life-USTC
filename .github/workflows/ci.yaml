@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      beta:
+        description: "Deploy to TestFlight beta"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  determine_action:
+    name: Determine Build Action
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.should_deploy.outputs.deploy }}
+      should_add_to_group: ${{ steps.should_deploy.outputs.deploy }}
+    steps:
+      - name: Calculate if shipping to TestFlight
+        id: should_deploy
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "deploy=${{ inputs.beta }}" >> $GITHUB_OUTPUT
+            elif [[ "${{ github.ref }}" == refs/heads/main || "${{ github.ref }}" == refs/heads/ci-* ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    name: Build IPA
+    runs-on: macos-26
+    needs: determine_action
+    outputs:
+      build_number: ${{ steps.get_build_number.outputs.build_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Build IPA
+        run: fastlane ios build_ipa
+        env:
+          TZ: Asia/Shanghai
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+
+      - name: Upload app-store ipa and dsyms to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-ipa-dsyms
+          path: |
+            ${{ github.workspace }}/*.ipa
+            ${{ github.workspace }}/*.app.dSYM.zip
+
+      - name: Get build number
+        id: get_build_number
+        run: |
+          BUILD_NUMBER=$(agvtool what-version -terse)
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "Build number: $BUILD_NUMBER"
+
+  upload_to_testflight:
+    name: Upload to TestFlight
+    runs-on: macos-26
+    needs: [determine_action, build]
+    if: needs.determine_action.outputs.should_deploy == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download IPA and dSYMs
+        uses: actions/download-artifact@v4
+        with:
+          name: app-store-ipa-dsyms
+
+      - name: Upload to TestFlight
+        run: fastlane ios testflight_upload
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.ASC_KEY }}
+
+  add_to_testflight_group:
+    name: Add to TestFlight Group
+    runs-on: macos-26
+    needs: [determine_action, build, upload_to_testflight]
+    if: needs.determine_action.outputs.should_add_to_group == 'true' && !cancelled()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for TestFlight build processing
+        run: fastlane ios testflight_wait_for_processing build_number:${{ needs.build.outputs.build_number }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.ASC_KEY }}
+
+      - name: Add to TestFlight group
+        run: fastlane ios testflight_add_build_to_group build_number:${{ needs.build.outputs.build_number }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.ASC_KEY }}

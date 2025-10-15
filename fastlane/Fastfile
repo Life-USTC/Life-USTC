@@ -1,7 +1,10 @@
 platform :ios do
-  desc "Build"
-  lane :build do
+  desc "Build IPA for App Store distribution"
+  lane :build_ipa do
     setup_ci if is_ci
+    # set build-number to YYYYMMDDHHMMSS
+    build_number = Time.now.strftime("%Y%m%d%H%M%S")
+    increment_build_number(build_number: build_number)
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     gym(
@@ -16,11 +19,9 @@ platform :ios do
     )
   end
 
-  desc "Submit a new Beta Build to Apple TestFlight"
-  lane :beta do
+  desc "Upload existing IPA to TestFlight"
+  lane :testflight_upload do
     setup_ci if is_ci
-    match(type: "development", readonly: true)
-    match(type: "appstore", readonly: true)
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
@@ -28,29 +29,56 @@ platform :ios do
       is_key_content_base64: true,
       in_house: false,
     )
-    increment_build_number({
-      build_number: latest_testflight_build_number(
-        version: get_version_number(
-          target: "学在科大",
-        ),
-        app_identifier: "com.linzihan.XZKDiOS",
-      ) + 1,
-    })
-    gym(
-      scheme: "学在科大",
-      export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-          "com.linzihan.XZKDiOS": "match AppStore com.linzihan.XZKDiOS",
-          "com.linzihan.XZKDiOS.Widget": "match AppStore com.linzihan.XZKDiOS.Widget",
-        },
-      },
+    pilot(
+      skip_waiting_for_build_processing: true,
+      ipa: Dir["*.ipa"].first
     )
-    pilot(skip_waiting_for_build_processing: true)
   end
 
-  desc "For all available versions, add to TestFlight group: 送测"
-  lane :add_all_to_testflight_group do
+  desc "Wait for specific TestFlight build to finish processing"
+  lane :testflight_wait_for_processing do |options|
+    build_number = options[:build_number]
+    UI.user_error!("No build_number provided in options!") unless build_number
+
+    setup_ci if is_ci
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_content: ENV["ASC_KEY"],
+      is_key_content_base64: true,
+      in_house: false,
+    )
+
+    app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
+    version = get_version_number(target: "学在科大")
+
+    UI.message("Waiting for build #{version} (#{build_number}) to finish processing...")
+    loop do
+      builds = app.get_builds(filter: { version: build_number })
+      if builds.empty?
+        UI.message("Build not found yet, waiting...")
+        sleep(30)
+        next
+      end
+
+      build = builds.first
+      processing_state = build.processing_state
+      UI.message("Current processing state: #{processing_state}")
+
+      if build.processed?
+        UI.success("Build #{version} (#{build_number}) has finished processing!")
+        break
+      end
+      UI.message("Still processing, checking again in 30 seconds...")
+      sleep(30)
+    end
+  end
+
+  desc "Add specific builds to TestFlight group: 送测"
+  lane :testflight_add_build_to_group do |options|
+    build_number = options[:build_number]
+    UI.user_error!("No build_number provided in options!") unless build_number
+
     setup_ci if is_ci
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
@@ -59,12 +87,12 @@ platform :ios do
       is_key_content_base64: true,
       in_house: false
     )
+
     app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
     groups = app.get_beta_groups(filter: {name: "送测"})
-    builds = app.get_builds
-    builds.each do |build|
-      build.add_beta_groups(beta_groups: groups)
-      UI.message("Added Build ID: #{build.id} to Beta Group: 送测")
-    end
+
+    build = app.get_builds(filter: { version: build_number }).first or UI.user_error!("No builds found with build number #{build_number}")
+    build.add_beta_groups(beta_groups: groups)
+    UI.message("Added Build ID: #{build.id} to Beta Group: 送测")
   end
 end
