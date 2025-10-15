@@ -150,7 +150,6 @@
 		56E8AD67296F069E009006D0 /* Reeeed in Frameworks */ = {isa = PBXBuildFile; productRef = 56E8AD66296F069E009006D0 /* Reeeed */; };
 		56E8AD6A296FE880009006D0 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD69296FE880009006D0 /* Score.swift */; };
 		56E8AD6D296FEEE9009006D0 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8AD6C296FEEE9009006D0 /* ScoreView.swift */; };
-		56E8AD722973EC0F009006D0 /* ustc_rooms.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E8AD712973EC0F009006D0 /* ustc_rooms.json */; };
 		56E94E23298A77790085241B /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E22298A77790085241B /* AboutPage.swift */; };
 		56E94E25298A77990085241B /* LegalPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E24298A77990085241B /* LegalPage.swift */; };
 		56E94E29298A77F80085241B /* FeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E94E28298A77F80085241B /* FeedPage.swift */; };
@@ -305,7 +304,6 @@
 		56E6E5962ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+AdditionalCourse.swift"; sourceTree = "<group>"; };
 		56E8AD69296FE880009006D0 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
 		56E8AD6C296FEEE9009006D0 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
-		56E8AD712973EC0F009006D0 /* ustc_rooms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ustc_rooms.json; sourceTree = "<group>"; };
 		56E94E22298A77790085241B /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
 		56E94E24298A77990085241B /* LegalPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalPage.swift; sourceTree = "<group>"; };
 		56E94E28298A77F80085241B /* FeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPage.swift; sourceTree = "<group>"; };
@@ -485,7 +483,6 @@
 		5677E11C2A5AB4B500EDCB53 /* USTC */ = {
 			isa = PBXGroup;
 			children = (
-				5677E13C2A5AF6BD00EDCB53 /* Assets */,
 				56E25CC52A8F2E200027E72F /* Clients */,
 				56B86B882A8F49F4003440D2 /* Delegates */,
 				5677E11D2A5AB4F000EDCB53 /* Models */,
@@ -522,14 +519,6 @@
 				56AAAB172A968A68000561FE /* SchoolExport.swift */,
 			);
 			path = Schools;
-			sourceTree = "<group>";
-		};
-		5677E13C2A5AF6BD00EDCB53 /* Assets */ = {
-			isa = PBXGroup;
-			children = (
-				56E8AD712973EC0F009006D0 /* ustc_rooms.json */,
-			);
-			path = Assets;
 			sourceTree = "<group>";
 		};
 		567ED62C2A9535A100F3A38B /* Details */ = {
@@ -979,7 +968,6 @@
 				56AC730D294A012F00A60F47 /* Assets.xcassets in Resources */,
 				565587EA294B46900010E060 /* Localizable.strings in Resources */,
 				56BE91F92965D05A00822C98 /* README.md in Resources */,
-				56E8AD722973EC0F009006D0 /* ustc_rooms.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
