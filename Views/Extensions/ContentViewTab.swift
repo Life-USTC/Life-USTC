@@ -11,6 +11,7 @@ enum ContentViewTab: Int, CaseIterable {
     case position_1 = 1
     case position_2 = 2
     case position_3 = 3
+    case position_4 = 4
 
     @ViewBuilder
     var view: some View {
@@ -19,6 +20,7 @@ enum ContentViewTab: Int, CaseIterable {
             case .position_1: HomeView()
             case .position_2: FeaturesView()
             case .position_3: AllSourceView()
+            case .position_4: SettingsView()
             }
         }
     }
@@ -28,6 +30,7 @@ enum ContentViewTab: Int, CaseIterable {
         case .position_1: return .accentColor
         case .position_2: return .green
         case .position_3: return .red
+        case .position_4: return .blue
         }
     }
 
@@ -36,9 +39,11 @@ enum ContentViewTab: Int, CaseIterable {
         case .position_1: Label("Home", systemImage: "square.stack.3d.up")
         case .position_2: Label("Features", systemImage: "square.grid.2x2")
         case .position_3: Label("Feed", systemImage: "doc.richtext.fill")
+        case .position_4: Label("Settings", systemImage: "gearshape.fill")
         }
     }
 }
+
 
 struct ContentViewTabBarItemModifier: ViewModifier {
     let tab: ContentViewTab

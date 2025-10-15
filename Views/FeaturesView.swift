@@ -42,8 +42,6 @@ struct FeaturesView: View {
 
     @ManagedData(.feedSources) var feedSources: [FeedSource]
 
-    @State var navigationToSettingsView = false
-
     @State var searchText = ""
 
     @AppStorage("featureViewStyle") private var style: Style = .grid
@@ -171,16 +169,6 @@ struct FeaturesView: View {
                 } label: {
                     Label("Switch", systemImage: style.next().imageName)
                 }
-                Button {
-                    navigationToSettingsView = true
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-            }
-        }
-        .sheet(isPresented: $navigationToSettingsView) {
-            NavigationStack {
-                SettingsView()
             }
         }
         .searchable(text: $searchText)
