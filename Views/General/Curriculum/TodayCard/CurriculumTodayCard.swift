@@ -33,16 +33,17 @@ struct CurriculumTodayCard: View {
     }
 
     var body: some View {
-        CurriculumTodayView(
-            lectureListA: todayLectures,
-            lectureListB: tomorrowLectures
-        )
-        .asyncStatusOverlay(
-            _curriculum.status,
-            text: "Curriculum",
-            showLight: false,
-            showToolbar: true
-        )
+        VStack {
+            HStack {
+                Text("Curriculum")
+                    .font(.system(.title2, weight: .medium))
+                Spacer()
+            }
+            CurriculumTodayView(
+                lectureListA: todayLectures,
+                lectureListB: tomorrowLectures
+            )
+        }
         .card()
     }
 }

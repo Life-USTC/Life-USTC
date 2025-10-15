@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct FeaturePreviewCard: View {
-
     var body: some View {
-        FeaturePreview()
-            .asyncStatusOverlay(
-                AsyncStatus(local: .valid, refresh: .success),
-                text: "Features",
-                showLight: false,
-                showToolbar: true
-            )
-            .card()
+        VStack {
+            HStack {
+                Text("Features")
+                    .font(.system(.title2, weight: .medium))
+                Spacer()
+            }
+            FeaturePreview()
+        }
+        .card()
     }
 }

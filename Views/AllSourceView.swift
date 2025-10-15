@@ -50,6 +50,7 @@ struct AllSourceView: View {
                 ) {
                     FeedView(feed: $0)
                 }
+                .asyncStatusOverlay(_feedSources.status)
 
                 if feedsSearched.isEmpty {
                     Text("No feeds found.")

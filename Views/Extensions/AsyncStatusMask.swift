@@ -34,34 +34,6 @@ struct AsyncStatusLight: View {
 
 struct AsyncStatusMask: ViewModifier {
     var status: AsyncStatus?
-    var text: String?
-    var showLight: Bool = true
-    var showToolbar: Bool = false
-    var settingsView: (() -> any View)?
-
-    var topBar: some View {
-        HStack {
-            if let text {
-                Text(text.localized)
-                    .font(
-                        .system(.title2, weight: .medium)
-                    )
-            }
-
-            if showLight {
-                AsyncStatusLight(status: status)
-            }
-
-            Spacer()
-
-            if let settingsView {
-                AnyView(
-                    settingsView()
-                )
-            }
-        }
-        .padding(.bottom, 5)
-    }
 
     var shouldGrayScale: Bool {
         status?.local == .outDated || status?.refresh == .waiting
@@ -72,38 +44,24 @@ struct AsyncStatusMask: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        VStack {
-            if showToolbar {
-                topBar
+        content
+            .grayscale(shouldGrayScale ? 0.8 : 0)
+            .redacted(reason: shouldRedact ? .placeholder : [])
+            .overlay {
+                if status?.refresh == .waiting {
+                    ProgressView()
+                }
             }
-
-            content
-                .grayscale(shouldGrayScale ? 0.8 : 0)
-                .redacted(reason: shouldRedact ? .placeholder : [])
-        }
-        .overlay {
-            if status?.refresh == .waiting {
-                ProgressView()
-            }
-        }
     }
 }
 
 extension View {
     func asyncStatusOverlay(
-        _ status: AsyncStatus?,
-        text: String? = nil,
-        showLight: Bool = true,
-        showToolbar: Bool = false,
-        settingsView: @escaping () -> any View = { EmptyView() }
+        _ status: AsyncStatus?
     ) -> some View {
         modifier(
             AsyncStatusMask(
-                status: status,
-                text: text,
-                showLight: showLight,
-                showToolbar: showToolbar,
-                settingsView: settingsView
+                status: status
             )
         )
     }

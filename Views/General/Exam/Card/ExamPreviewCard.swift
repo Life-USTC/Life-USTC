@@ -11,13 +11,17 @@ struct ExamPreviewCard: View {
     @ManagedData(.exam) var exams: [Exam]
 
     var body: some View {
-        ExamPreview(exams: exams)
-            .asyncStatusOverlay(
-                _exams.status,
-                text: "Exams",
-                showLight: false,
-                showToolbar: true
-            )
-            .card()
+        VStack {
+            HStack {
+                Text("Exams")
+                    .font(.system(.title2, weight: .medium))
+                Spacer()
+            }
+            ExamPreview(exams: exams)
+                .asyncStatusOverlay(
+                    _exams.status,
+                )
+        }
+        .card()
     }
 }
