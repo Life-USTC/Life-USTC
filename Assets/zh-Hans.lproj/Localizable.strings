@@ -67,7 +67,6 @@
 "Weekday" = "工作日";
 "Weekend" = "周末";
 "Holiday" = "节假日";
-"Show departed buses" = "显示已出发校车";
 "Show Departed Buses" = "显示已出发校车";
 "Route Filter" = "路线筛选";
 "Show All Routes" = "显示所有路线";
@@ -269,7 +268,6 @@
 "Hide Past" = "隐藏过去";
 "No more buses today" = "今日无更多校车";
 "即停" = "即停";
-"Show Past Departures" = "显示过去的班次";
 "No Routes Available" = "无可用路线";
 "Configure Routes" = "配置路线";
 

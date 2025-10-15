@@ -17,7 +17,6 @@ struct USTC_SchoolBusView: View {
     @ManagedData(.ustcBus) var data: USTCBusData
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
     @AppStorage("ustcbusview_selected_routes") var selectedRouteIds: [Int] = []
-    @State private var calculatedScheduleList: [USTCRouteSchedule] = []
     @State var selection: Selection = {
         let dayOfWeek = Calendar.current.component(.weekday, from: Date())
         return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
@@ -35,26 +34,20 @@ struct USTC_SchoolBusView: View {
         }
     }
 
-    // Function to update the calculated schedule list
-    func updateScheduleList() {
-        if selectedRouteIds.isEmpty {
-            calculatedScheduleList = allScheduleList
-        } else {
-            calculatedScheduleList = allScheduleList.filter { selectedRouteIds.contains($0.id) }
+    var calculatedScheduleList: [USTCRouteSchedule] {
+        var result = allScheduleList
+        if !selectedRouteIds.isEmpty {
+            result = allScheduleList.filter { selectedRouteIds.contains($0.route.id) }
         }
+
+        for index in result.indices {
+            result[index].time = result[index].time.filter { showPassBus || !$0.passed() }
+        }
+        return result
     }
 
-    var currentRoute: USTCRouteSchedule? {
-        guard !calculatedScheduleList.isEmpty else { return nil }
-        return calculatedScheduleList[safe: currentRouteIndex] ?? calculatedScheduleList.first
-    }
-
-    var availableRoutes: [USTCRouteSchedule] {
-        return allScheduleList.sorted { $0.id < $1.id }
-    }
-
-    private var pageCount: Int {
-        return calculatedScheduleList.count
+    var availableRoutes: [USTCRoute] {
+        return data.routes
     }
 
     // Time table for a specific route's schedule
@@ -93,7 +86,7 @@ struct USTC_SchoolBusView: View {
     // Card view for a route - main component of the UI
     @ViewBuilder
     func RouteCardView(_ schedule: USTCRouteSchedule) -> some View {
-        VStack(alignment: .center, spacing: 12) {
+        VStack {
             // Route header with campus names
             HStack {
                 ForEach(schedule.route.campuses.indices, id: \.self) { index in
@@ -119,57 +112,36 @@ struct USTC_SchoolBusView: View {
 
             // Show next departure in large text if available
             if let nextTime = schedule.nextDeparture {
-                VStack(spacing: 8) {
-                    Text("Next Departure")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                Text("Next Departure")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
 
-                    HStack {
-                        ForEach(nextTime.indices, id: \.self) { index in
-                            VStack {
-                                Text(index == 0 ? "Depart" : index == nextTime.count - 1 ? "Arrive" : "")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                HStack {
+                    ForEach(nextTime.indices, id: \.self) { index in
+                        VStack {
+                            Text(index == 0 ? "Depart" : index == nextTime.count - 1 ? "Arrive" : "")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
 
-                                Text(nextTime[index] ?? "即停".localized)
-                                    .font(.system(.title2, design: .monospaced))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(
-                                        (index == 0 || index == nextTime.count - 1) ? .accentColor : .secondary
-                                    )
-                            }
+                            Text(nextTime[index] ?? "即停".localized)
+                                .font(.system(.title2, design: .monospaced))
+                                .fontWeight(.bold)
+                                .foregroundColor(
+                                    (index == 0 || index == nextTime.count - 1) ? .accentColor : .secondary
+                                )
+                        }
 
-                            if index < nextTime.count - 1 {
-                                Spacer()
-                            }
+                        if index < nextTime.count - 1 {
+                            Spacer()
                         }
                     }
-
-                    Divider()
-
-                    Text("Schedule")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-
-                    ScrollViewReader { proxy in
-                        ScrollView(.vertical, showsIndicators: false) {
-                            makeTimeTableView(schedule.time.filter { showPassBus || !$0.passed() })
-                        }
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                withAnimation {
-                                    proxy.scrollTo(nextTime.hashValue, anchor: .center)
-                                }
-                            }
-                        }
-                    }
-                    .frame(height: 250)
                 }
             } else {
-                VStack(spacing: 16) {
-                    Spacer()
+                VStack(spacing: 8) {
+                    if schedule.time.isEmpty {
+                        Spacer()
+                    }
 
                     Image(systemName: "bus.fill")
                         .font(.system(size: 40))
@@ -180,18 +152,41 @@ struct USTC_SchoolBusView: View {
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
 
-                    if !showPassBus && !schedule.time.isEmpty {
-                        Button("Show Past Departures") {
+                    if schedule.time.isEmpty {
+                        Button("Show Departed Buses") {
                             showPassBus = true
-                            updateScheduleList()
                         }
                         .font(.subheadline)
                         .buttonStyle(.bordered)
-                    }
 
-                    Spacer()
+                        Spacer()
+                    }
                 }
-                .padding(.vertical, 40)
+                .padding(.vertical)
+            }
+
+            if !schedule.time.isEmpty {
+                Divider()
+                Text("Schedule")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+
+                ScrollViewReader { proxy in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        makeTimeTableView(schedule.time)
+                    }
+                    .onAppear {
+                        if let nextTime = schedule.nextDeparture {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    proxy.scrollTo(nextTime.hashValue, anchor: .center)
+                                }
+                            }
+                        }
+                    }
+                }
+                .frame(height: 250)
             }
         }
         .padding(20)
@@ -257,7 +252,7 @@ struct USTC_SchoolBusView: View {
                             currentRouteIndex = 0
                         } label: {
                             HStack {
-                                Text(route.routeDescription)
+                                Text(route.description)
                                 Spacer()
                                 if isSelected {
                                     Image(systemName: "checkmark")
@@ -366,25 +361,10 @@ struct USTC_SchoolBusView: View {
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .asyncStatusOverlay(_data.status)
         .onAppear {
-            // Initialize calculated schedule list
-            updateScheduleList()
-
             // Make sure currentRouteIndex is valid
             if !calculatedScheduleList.isEmpty && currentRouteIndex >= calculatedScheduleList.count {
                 currentRouteIndex = 0
             }
-        }
-        .onChange(of: selection) { _ in
-            updateScheduleList()
-        }
-        .onChange(of: data) { _ in
-            updateScheduleList()
-        }
-        .onChange(of: showPassBus) { _ in
-            updateScheduleList()
-        }
-        .onChange(of: selectedRouteIds) { _ in
-            updateScheduleList()
         }
     }
 }

@@ -54,6 +54,12 @@ struct USTCRoute: Identifiable, Codable, Hashable {
         id: 1,
         campuses: [.example, .example]
     )
+    
+    var description: String {
+        let start = campuses.first?.name ?? ""
+        let end = campuses.last?.name ?? ""
+        return "\(start) - \(end)"
+    }
 }
 
 struct USTCRouteSchedule: Identifiable, Codable, Equatable {
@@ -68,12 +74,6 @@ struct USTCRouteSchedule: Identifiable, Codable, Equatable {
             ["07:50", "08:10"]
         ]
     )
-
-    var routeDescription: String {
-        let start = route.campuses.first?.name ?? ""
-        let end = route.campuses.last?.name ?? ""
-        return "\(start) - \(end)"
-    }
 
     var nextDeparture: [TimeString?]? {
         return time.filter { !$0.passed() }.first
