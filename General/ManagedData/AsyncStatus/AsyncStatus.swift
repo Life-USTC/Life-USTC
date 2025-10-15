@@ -21,6 +21,19 @@ enum RefreshAsyncStatus: Equatable {
     case error(String)
 }
 
+extension RefreshAsyncStatus {
+    var iconName: String {
+        switch self {
+        case .waiting:
+            return "hourglass"
+        case .success:
+            return "checkmark.circle"
+        case .error:
+            return "exclamationmark.triangle"
+        }
+    }
+}
+
 /// Status mark for data cached in local
 struct AsyncStatus: Equatable {
     var local: LocalAsyncStatus?

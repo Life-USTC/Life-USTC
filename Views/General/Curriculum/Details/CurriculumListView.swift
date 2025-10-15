@@ -10,7 +10,8 @@ import SwiftUI
 
 struct CurriculumListView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
-    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+
+    var dismissAction: (() -> Void)
 
     var body: some View {
         List {
@@ -58,14 +59,12 @@ struct CurriculumListView: View {
             _curriculum.triggerRefresh()
         }
         .toolbar {
-            Button {
-                Task {
-                    try await $saveToCalendarStatus.exec {
-                        try await curriculum.saveToCalendar()
-                    }
+            ToolbarItem(placement: .cancellationAction) {
+                Button {
+                    dismissAction()
+                } label: {
+                    Label("Done", systemImage: "xmark")
                 }
-            } label: {
-                Label("Save", systemImage: "square.and.arrow.down")
             }
         }
         .navigationTitle("Curriculum")

@@ -30,6 +30,8 @@ struct CurriculumDetailView: View {
     @State var lectures: [Lecture] = []
     @State var currentSemester: Semester?
     @State var weekNumber: Int?
+    @State var showCurriculumDetails = false
+    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
     @ViewBuilder
     var detailBarView: some View {
@@ -92,12 +94,6 @@ struct CurriculumDetailView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
-                Button {
-                    _curriculum.triggerRefresh()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-
                 if showLandscape {
                     Button {
                         curriculumChartShouldHideEvening.toggle()
@@ -118,13 +114,33 @@ struct CurriculumDetailView: View {
                         )
                     }
                 }
-            }
 
-            ToolbarItem(placement: .primaryAction) {
-                NavigationLink {
-                    CurriculumListView()
+                Button {
+                    _curriculum.triggerRefresh()
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+
+                Button {
+                    showCurriculumDetails = true
                 } label: {
                     Label("Details", systemImage: "info.circle")
+                }
+            }
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await $saveToCalendarStatus.exec {
+                            try await curriculum.saveToCalendar()
+                        }
+                    }
+                } label: {
+                    Label(
+                        "Save to Calendar",
+                        systemImage: saveToCalendarStatus == nil
+                            ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
+                    )
                 }
             }
 
@@ -195,6 +211,15 @@ struct CurriculumDetailView: View {
             }
 
             showLandscape = newOrientation.isLandscape
+        }
+        .sheet(isPresented: $showCurriculumDetails) {
+            NavigationStack {
+                CurriculumListView(
+                    dismissAction: {
+                        showCurriculumDetails = false
+                    }
+                )
+            }
         }
     }
 
