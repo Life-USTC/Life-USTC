@@ -201,7 +201,7 @@ extension FeaturesView {
                 image: "graduationcap",
                 title: "Score",
                 subTitle: "",
-                destinationView: { ScoreView() }
+                destinationView: { ScoreDetailView() }
             ),
         ]
 

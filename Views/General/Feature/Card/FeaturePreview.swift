@@ -37,7 +37,7 @@ struct FeaturePreview: View {
             image: "graduationcap",
             title: "Score",
             subTitle: "",
-            destinationView: { ScoreView() }
+            destinationView: { ScoreDetailView() }
         ),
         .init(
             image: "doc.text.magnifyingglass",

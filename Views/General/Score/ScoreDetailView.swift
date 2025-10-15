@@ -12,7 +12,7 @@ private enum SortPreference: String, CaseIterable {
     case code = "Course Code"
 }
 
-struct ScoreView: View {
+struct ScoreDetailView: View {
     @ManagedData(.score) var score: Score
 
     @State var semesterNameToRemove: [String] = []
@@ -89,7 +89,7 @@ struct ScoreView: View {
     }
 }
 
-extension ScoreView {
+extension ScoreDetailView {
     var sortedScore: [(name: String, courses: [CourseScore])] {
         score.courses
             .filter { course in
@@ -126,7 +126,7 @@ extension ScoreView {
     }
 }
 
-extension ScoreView {
+extension ScoreDetailView {
     var semesterButton: some View {
         Menu {
             ForEach(semesterNameList, id: \.self) { semester in
@@ -191,6 +191,6 @@ extension ScoreView {
 
 struct ScoreView_Previews: PreviewProvider {
     static var previews: some View {
-        ScoreView()
+        ScoreDetailView()
     }
 }
