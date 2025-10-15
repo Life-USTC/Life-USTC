@@ -16,15 +16,21 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
-    class Coordinator: NSObject, WKNavigationDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate, UIScrollViewDelegate {
         var parent: BrowserUIKitView
         weak var viewController: UIViewController?
         var webView: WKWebView?
+        var toolbar: UIToolbar?
         var backItem: UIBarButtonItem?
         var forwardItem: UIBarButtonItem?
         var readerItem: UIBarButtonItem?
         var canGoBackObs: NSKeyValueObservation?
         var canGoForwardObs: NSKeyValueObservation?
+
+        // Toolbar auto-hide properties
+        var lastContentOffset: CGFloat = 0
+        var isToolbarHidden = false
+        var toolbarBottomConstraint: NSLayoutConstraint?
 
         init(_ parent: BrowserUIKitView) { self.parent = parent }
 
@@ -35,6 +41,9 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
             canGoForwardObs = webView.observe(\.canGoForward, options: [.initial, .new]) { [weak self] webView, _ in
                 self?.forwardItem?.isEnabled = webView.canGoForward
             }
+
+            // Set up scroll view delegate for toolbar hiding
+            webView.scrollView.delegate = self
         }
 
         @objc func goBack() { webView?.goBack() }
@@ -54,6 +63,64 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         func refreshReaderAppearance() {
             let symbol = parent.useReeed ? "doc.plaintext.fill" : "doc.plaintext"
             readerItem?.image = UIImage(systemName: symbol)
+        }
+
+        // Handle scroll events to show/hide toolbar
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            guard let toolbar = toolbar, let constraint = toolbarBottomConstraint else { return }
+
+            // Don't react if content is bouncing
+            if scrollView.contentOffset.y < 0
+                || scrollView.contentOffset.y > (scrollView.contentSize.height - scrollView.frame.size.height)
+            {
+                return
+            }
+
+            // Determine scroll direction
+            let currentOffset = scrollView.contentOffset.y
+            let diff = currentOffset - lastContentOffset
+            lastContentOffset = currentOffset
+
+            // Show toolbar when scrolling up, hide when scrolling down
+            if diff < -4 && isToolbarHidden {  // Scrolling up significantly
+                showToolbar(toolbar: toolbar, constraint: constraint)
+            } else if diff > 8 && !isToolbarHidden && currentOffset > 20 {  // Scrolling down significantly and not at top
+                hideToolbar(toolbar: toolbar, constraint: constraint)
+            }
+        }
+
+        func hideToolbar(toolbar: UIToolbar, constraint: NSLayoutConstraint) {
+            guard !isToolbarHidden else { return }
+
+            // Move toolbar completely below screen bounds
+            let safeAreaInsets = self.viewController?.view.safeAreaInsets.bottom ?? 0
+            let toolbarHeight = toolbar.frame.height + safeAreaInsets
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    constraint.constant = toolbarHeight
+                    toolbar.alpha = 0.0  // Fade out for smoother transition
+                    self.viewController?.view.layoutIfNeeded()
+                }
+            ) { _ in
+                self.isToolbarHidden = true
+            }
+        }
+
+        func showToolbar(toolbar: UIToolbar, constraint: NSLayoutConstraint) {
+            guard isToolbarHidden else { return }
+
+            // Make toolbar visible again
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    constraint.constant = 0
+                    toolbar.alpha = 1.0  // Restore visibility
+                    self.viewController?.view.layoutIfNeeded()
+                }
+            ) { _ in
+                self.isToolbarHidden = false
+            }
         }
     }
 
@@ -105,21 +172,26 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         context.coordinator.readerItem = reader
         context.coordinator.viewController = vc
         context.coordinator.webView = webView
+        context.coordinator.toolbar = toolbar
 
         toolbar.items = [back, forward, flexible, reload, flexible, reader, share]
 
         vc.view.addSubview(webView)
         vc.view.addSubview(toolbar)
 
+        // Create a bottom constraint that can be animated
+        let toolbarBottomConstraint = toolbar.bottomAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.bottomAnchor)
+        context.coordinator.toolbarBottomConstraint = toolbarBottomConstraint
+
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.topAnchor),
+            webView.topAnchor.constraint(equalTo: vc.view.topAnchor),
             webView.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-            webView.bottomAnchor.constraint(equalTo: toolbar.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: vc.view.bottomAnchor),
 
             toolbar.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
             toolbar.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-            toolbar.bottomAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.bottomAnchor),
+            toolbarBottomConstraint,
         ])
 
         context.coordinator.setupObservers(for: webView)
@@ -132,6 +204,13 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
         if context.coordinator.webView?.url != url {
             context.coordinator.webView?.load(URLRequest(url: url))
+            // Reset toolbar visibility state when URL changes
+            if let toolbar = context.coordinator.toolbar, let constraint = context.coordinator.toolbarBottomConstraint,
+                context.coordinator.isToolbarHidden
+            {
+                context.coordinator.showToolbar(toolbar: toolbar, constraint: constraint)
+                context.coordinator.lastContentOffset = 0
+            }
         }
         // Keep reader icon in sync with state changes from SwiftUI
         context.coordinator.refreshReaderAppearance()
@@ -140,6 +219,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
     static func dismantleUIViewController(_ uiViewController: UIViewController, coordinator: Coordinator) {
         coordinator.canGoBackObs?.invalidate()
         coordinator.canGoForwardObs?.invalidate()
+        coordinator.webView?.scrollView.delegate = nil
         coordinator.webView?.navigationDelegate = nil
     }
 }
@@ -157,7 +237,10 @@ struct Browser: View {
                 if useReeed {
                     ReeeederView(url: url)
                 } else {
-                    BrowserUIKitView(url: url, useReeed: $useReeed)
+                    Group {
+                        BrowserUIKitView(url: url, useReeed: $useReeed)
+                    }
+                    .ignoresSafeArea()
                 }
             } else {
                 ProgressView("Loading...")
