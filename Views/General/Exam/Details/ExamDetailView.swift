@@ -10,7 +10,7 @@ import SwiftUI
 struct ExamDetailView: View {
     @ManagedData(.exam) var exams: [Exam]
 
-    @StateObject var saveToCalendar = RefreshAsyncStatusUpdateObject {}
+    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
     var body: some View {
         List {
@@ -37,32 +37,24 @@ struct ExamDetailView: View {
             }
         }
         .asyncStatusOverlay(_exams.status)
-        .padding(.horizontal)
         .refreshable {
             _exams.triggerRefresh()
         }
-        .onAppear {
-            saveToCalendar.action = {
-                try await self.exams.saveToCalendar()
-            }
-        }
         .toolbar {
-            Button {
-                Task {
-                    await self.saveToCalendar.exec()
-                }
-            } label: {
-                Label(
-                    "Save to calendar",
-                    systemImage: {
-                        switch saveToCalendar.status {
-                        case .none: return "square.and.arrow.down"
-                        case .waiting: return "arrow.clockwise"
-                        case .success: return "checkmark"
-                        case .error: return "exclamationmark.triangle"
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await $saveToCalendarStatus.exec {
+                            try await exams.saveToCalendar()
                         }
-                    }()
-                )
+                    }
+                } label: {
+                    Label(
+                        "Save to Calendar",
+                        systemImage: saveToCalendarStatus == nil
+                            ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
+                    )
+                }
             }
         }
         .navigationTitle("Exam")
