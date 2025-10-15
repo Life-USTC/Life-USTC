@@ -186,7 +186,7 @@ struct Browser: View {
             if !prepared {
                 do {
                     if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
-                        try await setCookiesBeforeWebView()
+                        try await setCookiesBeforeWebView(url)
                     }
                 } catch {
                     debugPrint(error)

@@ -129,8 +129,12 @@ class USTCExports: SchoolExport {
         ]
     }
 
-    override var setCookiesBeforeWebView: (() async throws -> Void)? {
-        return {
+    override var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? {
+        return { url in
+            // url should start with *.ustc.edu.cn
+            guard url.host?.hasSuffix("ustc.edu.cn") == true else {
+                return
+            }
             _ = try await self._casClient.requireLogin()
         }
     }
