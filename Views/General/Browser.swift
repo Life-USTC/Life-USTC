@@ -13,6 +13,7 @@ import WebKit
 struct BrowserUIKitView: UIViewControllerRepresentable {
     let url: URL
     @Binding var useReeed: Bool
+    var reeedMode: ReeedEnabledMode
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
@@ -174,7 +175,14 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         context.coordinator.webView = webView
         context.coordinator.toolbar = toolbar
 
-        toolbar.items = [back, forward, flexible, reload, flexible, reader, share]
+        // Determine toolbar items based on ReeedEnabledMode
+        if reeedMode == .never {
+            // Hide reader button if reeedMode is .never
+            toolbar.items = [back, forward, flexible, reload, flexible, share]
+        } else {
+            // Otherwise show the reader button
+            toolbar.items = [back, forward, flexible, reload, flexible, reader, share]
+        }
 
         vc.view.addSubview(webView)
         vc.view.addSubview(toolbar)
@@ -230,6 +238,7 @@ struct Browser: View {
 
     @State var useReeed = false
     @State var prepared = false
+    @State private var reeedMode: ReeedEnabledMode = .userDefined
 
     var body: some View {
         Group {
@@ -238,7 +247,7 @@ struct Browser: View {
                     ReeeederView(url: url)
                 } else {
                     Group {
-                        BrowserUIKitView(url: url, useReeed: $useReeed)
+                        BrowserUIKitView(url: url, useReeed: $useReeed, reeedMode: reeedMode)
                     }
                     .ignoresSafeArea()
                 }
@@ -268,6 +277,14 @@ struct Browser: View {
             // Set cookies before allowing web view to load
             if !prepared {
                 do {
+                    // Determine reed mode for this URL
+                    reeedMode = SchoolExport.shared.reeedEnabledMode(for: url)
+
+                    // Auto-enable Reed if mode is .always
+                    if reeedMode == .always {
+                        useReeed = true
+                    }
+
                     if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
                         try await setCookiesBeforeWebView(url)
                     }

@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+enum ReeedEnabledMode {
+    case always
+    case userDefined
+    case never
+}
+
 class SchoolExport {
     static var shared: SchoolExport { USTCExports() }
 
@@ -57,4 +63,6 @@ class SchoolExport {
     var features: [String: [FeatureWithView]] { [:] }
 
     var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? { nil }
+
+    func reeedEnabledMode(for url: URL) -> ReeedEnabledMode { .userDefined }
 }

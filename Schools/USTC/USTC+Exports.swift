@@ -138,6 +138,32 @@ class USTCExports: SchoolExport {
             _ = try await self._casClient.requireLogin()
         }
     }
+
+    override func reeedEnabledMode(for url: URL) -> ReeedEnabledMode {
+        guard let host = url.host?.lowercased() else {
+            return .never
+        }
+
+        // Always use reader mode for ustc.edu.cn & (www.)?.teach.ustc.edu.cn:
+        if host == "ustc.edu.cn" || host == "www.ustc.edu.cn"
+            || host == "teach.ustc.edu.cn" || host == "www.teach.ustc.edu.cn"
+        {
+            return .always
+        }
+
+        // for all other ustc.edu.cn subdomains, .never
+        if host.hasSuffix(".ustc.edu.cn") {
+            return .never
+        }
+
+        // special rule for mp.weixin.qq.com & icourse.club, .never
+        if host == "mp.weixin.qq.com" || host == "icourse.club" {
+            return .never
+        }
+
+        // Default to user choice
+        return .userDefined
+    }
 }
 
 extension SchoolExport { static let ustc = USTCExports() }
