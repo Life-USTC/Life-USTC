@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CurriculumListView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
+    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
     var dismissAction: (() -> Void)
 
@@ -28,42 +29,67 @@ struct CurriculumListView: View {
                                 Spacer()
                             }
 
-                            if let description = course.description {
-                                Text(description)
-                                    .font(.system(.caption2, weight: .light))
-                                    .foregroundColor(.secondary)
+                            Text(course.lessonCode)
+                                .font(.system(.caption2, weight: .light))
+                                .foregroundColor(.secondary)
+
+                            if let dateTimePlacePersonText = course.dateTimePlacePersonText,
+                                !dateTimePlacePersonText.isEmpty
+                            {
+                                HStack {
+                                    Spacer()
+                                    Text(dateTimePlacePersonText)
+                                        .font(.system(.caption2, design: .monospaced, weight: .light))
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }
                 } header: {
                     HStack {
                         Text(semester.name)
-                        Spacer()
-                        HStack(spacing: 0) {
-                            Text(semester.startDate, style: .date)
-                            Text("~")
-                            Text(semester.endDate, style: .date)
-                        }
-                        .font(.system(.caption2, design: .monospaced, weight: .bold))
-                        .foregroundColor(.secondary)
                     }
                 } footer: {
-                    Spacer()
+                    HStack(spacing: 0) {
+                        Text(semester.startDate, style: .date)
+                        Text("~")
+                        Text(semester.endDate, style: .date)
+                    }
+                    .font(.system(.caption2, design: .monospaced, weight: .bold))
+                    .foregroundColor(.secondary)
                 }
             }
         }
-        .listStyle(.grouped)
-        .scrollContentBackground(.hidden)
         .asyncStatusOverlay(_curriculum.status)
-        .refreshable {
-            _curriculum.triggerRefresh()
-        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {
                     dismissAction()
                 } label: {
                     Label("Done", systemImage: "xmark")
+                }
+            }
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    _curriculum.triggerRefresh()
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+
+                Button {
+                    Task {
+                        try await $saveToCalendarStatus.exec {
+                            try await curriculum.saveToCalendar()
+                        }
+                    }
+                } label: {
+                    Label(
+                        "Save to Calendar",
+                        systemImage: saveToCalendarStatus == nil
+                            ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
+                    )
                 }
             }
         }

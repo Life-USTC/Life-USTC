@@ -21,6 +21,7 @@ class Course: Codable, Identifiable, Equatable {
     var description: String? = ""
     var credit: Double = 0
     var additionalInfo: [String: String] = [:]
+    var dateTimePlacePersonText: String? = ""
 
     func color() -> Color {
         return courseColors[id % courseColors.count]
@@ -40,6 +41,7 @@ class Course: Codable, Identifiable, Equatable {
         case description
         case credit
         case additionalInfo
+        case dateTimePlacePersonText
     }
 
     required init(from decoder: Decoder) throws {
@@ -53,6 +55,7 @@ class Course: Codable, Identifiable, Equatable {
         description = try container.decodeIfPresent(String.self, forKey: .description)
         credit = try container.decode(Double.self, forKey: .credit)
         additionalInfo = try container.decode([String: String].self, forKey: .additionalInfo)
+        dateTimePlacePersonText = try container.decodeIfPresent(String.self, forKey: .dateTimePlacePersonText)
 
         for lecture in lectures {
             lecture.course = self
@@ -70,6 +73,7 @@ class Course: Codable, Identifiable, Equatable {
         try container.encode(description, forKey: .description)
         try container.encode(credit, forKey: .credit)
         try container.encode(additionalInfo, forKey: .additionalInfo)
+        try container.encode(dateTimePlacePersonText, forKey: .dateTimePlacePersonText)
     }
 
     init(
@@ -81,7 +85,8 @@ class Course: Codable, Identifiable, Equatable {
         lectures: [Lecture],
         description: String? = "",
         credit: Double = 0,
-        additionalInfo: [String: String] = [:]
+        additionalInfo: [String: String] = [:],
+        dateTimePlacePersonText: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -92,6 +97,7 @@ class Course: Codable, Identifiable, Equatable {
         self.description = description
         self.credit = credit
         self.additionalInfo = additionalInfo
+        self.dateTimePlacePersonText = dateTimePlacePersonText
 
         for lecture in lectures {
             lecture.course = self
@@ -99,7 +105,7 @@ class Course: Codable, Identifiable, Equatable {
     }
 
     static let example = Course(
-        name: "数学分析B1",
+        name: "数学分析 B1",
         courseCode: "MATH10001",
         lessonCode: "MATH10001.01",
         teacherName: "程艺",
