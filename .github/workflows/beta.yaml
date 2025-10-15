@@ -2,21 +2,49 @@ name: Build & Beta
 
 on:
   push:
+    branches:
+      - "*"
     tags:
       - v*
   workflow_dispatch:
+    inputs:
+      beta:
+        description: "Deploy to TestFlight beta"
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   deploy:
-    runs-on: macos-15
+    runs-on: macos-26
+    outputs:
+      deploy: ${{ steps.should_deploy.outputs.deploy }}
     steps:
+      - name: Calculate if shipping to TestFlight
+        id: should_deploy
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "deploy=${{ inputs.beta }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v4
         with:
           submodules: true
           token: ${{ secrets.PAT_TOKEN }}
 
+      - run: brew uninstall rsync || true
+
       - name: Build & Beta
-        run: fastlane ios beta > build.log
+        run: |
+          if [[ "${{ steps.should_deploy.outputs.deploy }}" == "true" ]]; then
+            fastlane ios beta > build.log
+          else
+            fastlane ios build > build.log
+          fi
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
@@ -44,3 +72,15 @@ jobs:
           name: build_log
           path: ${{ github.workspace }}/build_log.zip
         if: always()
+
+  post_deploy:
+    name: Post-deploy Actions
+    needs: deploy
+    if: needs.deploy.outputs.deploy == 'true' && !cancelled()
+    runs-on: macos-26
+    steps:
+      - name: Wait 10 minutes
+        run: sleep 600
+      - name: Post-deploy task
+        run: |
+          fastlane ios add_all_to_testflight_group

@@ -2,7 +2,6 @@ platform :ios do
   desc "Build"
   lane :build do
     setup_ci if is_ci
-    xcode_select("/Applications/Xcode_16.4.app") if is_ci
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     gym(
@@ -20,7 +19,6 @@ platform :ios do
   desc "Submit a new Beta Build to Apple TestFlight"
   lane :beta do
     setup_ci if is_ci
-    xcode_select("/Applications/Xcode_16.4.app") if is_ci
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     app_store_connect_api_key(
@@ -49,5 +47,24 @@ platform :ios do
       },
     )
     pilot(skip_waiting_for_build_processing: true)
+  end
+
+  desc "For all available versions, add to TestFlight group: 送测"
+  lane :add_all_to_testflight_group do
+    setup_ci if is_ci
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_content: ENV["ASC_KEY"],
+      is_key_content_base64: true,
+      in_house: false
+    )
+    app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
+    groups = app.get_beta_groups(filter: {name: "送测"})
+    builds = app.get_builds
+    builds.each do |build|
+      build.add_beta_groups(beta_groups: groups)
+      UI.message("Added Build ID: #{build.id} to Beta Group: 送测")
+    end
   end
 end
