@@ -244,19 +244,16 @@ struct Browser: View {
         Group {
             if prepared {
                 if useReeed {
-                    ReeeederView(url: url)
+                    ReeeederView(url: url, options: .init(includeExitReaderButton: false))
                 } else {
-                    Group {
-                        BrowserUIKitView(url: url, useReeed: $useReeed, reeedMode: reeedMode)
-                    }
-                    .ignoresSafeArea()
+                    BrowserUIKitView(url: url, useReeed: $useReeed, reeedMode: reeedMode)
                 }
             } else {
                 ProgressView("Loading...")
             }
         }
+        .ignoresSafeArea()
         .toolbar(.hidden, for: .tabBar)
-        // Provide a minimal bottom toolbar when in Reader mode (UIKit toolbar is used in web mode)
         .toolbar {
             if useReeed {
                 ToolbarItemGroup(placement: .bottomBar) {

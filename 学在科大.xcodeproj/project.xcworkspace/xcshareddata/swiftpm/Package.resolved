@@ -1,4 +1,5 @@
 {
+  "originHash" : "2ba8cceda6ba02771117fefb3515c2705f28e5bd6adaf8ebcb08247ffa9fd888",
   "pins" : [
     {
       "identity" : "feedkit",
@@ -42,7 +43,7 @@
       "location" : "https://github.com/tiankaima/reeeed",
       "state" : {
         "branch" : "main",
-        "revision" : "e825d2141a345d3502f039c13186522c1ca803c2"
+        "revision" : "590d2341fe639914146049cf2df76586fc9c5e2b"
       }
     },
     {
@@ -91,5 +92,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
