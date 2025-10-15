@@ -9,8 +9,8 @@ import SwiftUI
 
 struct FeedSettingView: View {
     @ManagedData(.feedSources) var feedSources: [FeedSource]
-
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
+    var dismissAction: (() -> Void)? = nil
 
     var body: some View {
         List {
@@ -24,7 +24,8 @@ struct FeedSettingView: View {
                         }
                     } label: {
                         HStack {
-                            Text(name).foregroundColor(.primary)
+                            Text(name)
+                                .foregroundColor(.primary)
                             Spacer()
                             if !removedNameList.contains(name) {
                                 Image(systemName: "checkmark.circle.fill")
@@ -34,7 +35,8 @@ struct FeedSettingView: View {
                 }
             } header: {
                 HStack {
-                    Text("Feed source to show").textCase(.none)
+                    Text("Feed source to show")
+                        .textCase(.none)
                     AsyncStatusLight(status: _feedSources.status)
                 }
             } footer: {
@@ -47,6 +49,17 @@ struct FeedSettingView: View {
                     _feedSources.triggerRefresh()
                 } label: {
                     Label("Refresh List", systemImage: "arrow.clockwise")
+                }
+            }
+
+            // Show Done button only when dismissAction is provided
+            if let dismissAction = dismissAction {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismissAction()
+                    } label: {
+                        Label("Done", systemImage: "xmark")
+                    }
                 }
             }
         }
