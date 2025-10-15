@@ -10,12 +10,11 @@ import SwiftUI
 struct AllSourceView: View {
     @ManagedData(.feedSources) var feedSources: [FeedSource]
     @State var searchText = ""
-
-    var feeds: [Feed] {
-        feedSources.flatMap(\.feed)
-    }
+    @State private var showingFeedSettings = false
 
     var feedsSearched: [Feed] {
+        let feeds = feedSources.flatMap(\.feed)
+
         guard !searchText.isEmpty else {
             return feeds
         }
@@ -67,5 +66,19 @@ struct AllSourceView: View {
         .searchable(text: $searchText)
         .navigationTitle("Feed")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingFeedSettings = true
+                } label: {
+                    Label("Feed Settings", systemImage: "gear")
+                }
+            }
+        }
+        .sheet(isPresented: $showingFeedSettings) {
+            NavigationStack {
+                FeedSettingView()
+            }
+        }
     }
 }
