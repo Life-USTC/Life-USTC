@@ -19,7 +19,6 @@ struct FeedVStackView: View {
                 FeedView(feed: $0)
             }
         }
-        .listStyle(.grouped)
         .scrollContentBackground(.hidden)
     }
 }

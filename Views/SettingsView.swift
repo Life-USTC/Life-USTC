@@ -61,7 +61,6 @@ struct SettingsView: View {
                     .textCase(.none)
             }
         }
-        .scrollContentBackground(.hidden)
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
     }

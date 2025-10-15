@@ -55,7 +55,6 @@ struct AppSettingPage: View {
                     .textCase(.none)
             }
         }
-        .scrollContentBackground(.hidden)
         .navigationBarTitle("App Settings", displayMode: .inline)
     }
 }

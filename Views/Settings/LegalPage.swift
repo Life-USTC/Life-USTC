@@ -23,7 +23,6 @@ struct LegalInfoView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .scrollContentBackground(.hidden)
         }
         .navigationBarTitle("Legal", displayMode: .inline)
     }

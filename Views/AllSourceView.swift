@@ -59,7 +59,6 @@ struct AllSourceView: View {
                 AsyncStatusLight(status: _feedSources.status)
             }
         }
-        .listStyle(.sidebar)
         .refreshable {
             _feedSources.triggerRefresh()
         }

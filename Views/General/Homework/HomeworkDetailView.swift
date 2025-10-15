@@ -91,8 +91,6 @@ struct HomeworkDetailView: View {
             }
         }
         .asyncStatusOverlay(_homeworks.status)
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
         .padding(.horizontal)
         .refreshable {
             _homeworks.triggerRefresh()

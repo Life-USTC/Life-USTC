@@ -40,7 +40,6 @@ struct ExamSettingView: View {
             }
             EmptyView()
         }
-        .scrollContentBackground(.hidden)
         .navigationBarTitle("Exam Settings", displayMode: .inline)
     }
 }

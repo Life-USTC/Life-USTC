@@ -139,7 +139,6 @@ struct FeaturesView: View {
                 }
             }
         }
-        .listStyle(.sidebar)
     }
 
     var body: some View {

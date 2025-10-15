@@ -81,8 +81,6 @@ struct ScoreView: View {
             scoreListView
         }
         .asyncStatusOverlay(_score.status)
-        .listStyle(.grouped)
-        .scrollContentBackground(.hidden)
         .refreshable {
             _score.triggerRefresh()
         }

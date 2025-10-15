@@ -193,7 +193,6 @@ struct USTC_SchoolBusView: View {
                     }
                 }
                 .padding(.top, 10)
-                .listStyle(.insetGrouped)
                 .refreshable {
                     _data.triggerRefresh()
                 }
