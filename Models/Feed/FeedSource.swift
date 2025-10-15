@@ -5,7 +5,9 @@
 //  Created by Tiankai Ma on 2023/8/24.
 //
 
+import FeedKit
 import SwiftUI
+import SwiftyJSON
 
 struct FeedSource: Codable, Identifiable, Equatable, ExampleDataProtocol {
     var id = UUID()

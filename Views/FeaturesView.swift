@@ -40,7 +40,7 @@ struct FeaturesView: View {
         }
     }
 
-    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
+    @ManagedData(.feedSources) var feedSources: [FeedSource]
 
     @State var navigationToSettingsView = false
 
@@ -184,7 +184,7 @@ struct FeaturesView: View {
             }
         }
         .searchable(text: $searchText)
-        .onChange(of: feedSourceList) { _ in
+        .onChange(of: feedSources) { _ in
             features = collectFeatures()
         }
         .onAppear {
@@ -229,7 +229,7 @@ extension FeaturesView {
                             .navigationBarTitleDisplayMode(.inline)
                     }
                 )
-            ] + feedSourceList.map { FeatureWithView($0) }
+            ] + feedSources.map { FeatureWithView($0) }
 
         for (key, features) in SchoolExport.shared.features {
             if results.keys.contains(key) {

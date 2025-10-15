@@ -42,7 +42,7 @@ extension Feed {
         url = URL(string: item.link!)!
         colorHex = source.colorHex
     }
-    
+
     init(entry: AtomFeedEntry, source: FeedSource) {
         title = entry.title ?? "!!No title found for this Feed"
         self.source = source.name

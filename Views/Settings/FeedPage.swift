@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct FeedSettingView: View {
-    @ManagedData(.feedSourceList) var feedSourceList: [FeedSource]
+    @ManagedData(.feedSources) var feedSources: [FeedSource]
 
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
 
     var body: some View {
         List {
             Section {
-                ForEach(feedSourceList.map(\.name), id: \.self) { name in
+                ForEach(feedSources.map(\.name), id: \.self) { name in
                     Button {
                         if removedNameList.contains(name) {
                             removedNameList.removeAll(where: { $0 == name })
@@ -35,7 +35,7 @@ struct FeedSettingView: View {
             } header: {
                 HStack {
                     Text("Feed source to show").textCase(.none)
-                    AsyncStatusLight(status: _feedSourceList.status)
+                    AsyncStatusLight(status: _feedSources.status)
                 }
             } footer: {
                 Text("A reload may be required for this to take effect.")
@@ -44,13 +44,13 @@ struct FeedSettingView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    _feedSourceList.triggerRefresh()
+                    _feedSources.triggerRefresh()
                 } label: {
                     Label("Refresh List", systemImage: "arrow.clockwise")
                 }
             }
         }
-        .asyncStatusOverlay(_feedSourceList.status)
+        .asyncStatusOverlay(_feedSources.status)
         .scrollContentBackground(.hidden)
         .navigationBarTitle("Feed Source Settings", displayMode: .inline)
     }

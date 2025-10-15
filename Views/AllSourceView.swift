@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AllSourceView: View {
-    @ManagedData(.feedSource) var feedSources: [FeedSource]
+    @ManagedData(.feedSources) var feedSources: [FeedSource]
     @State var searchText = ""
 
     var feeds: [Feed] {
