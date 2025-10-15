@@ -49,15 +49,17 @@ struct CurriculumListView: View {
                 } header: {
                     HStack {
                         Text(semester.name)
+
+                        Spacer()
+
+                        HStack(spacing: 0) {
+                            Text(semester.startDate, style: .date)
+                            Text("~")
+                            Text(semester.endDate, style: .date)
+                        }
+                        .font(.system(.caption2, design: .monospaced, weight: .light))
                     }
                 } footer: {
-                    HStack(spacing: 0) {
-                        Text(semester.startDate, style: .date)
-                        Text("~")
-                        Text(semester.endDate, style: .date)
-                    }
-                    .font(.system(.caption2, design: .monospaced, weight: .bold))
-                    .foregroundColor(.secondary)
                 }
             }
         }
@@ -73,12 +75,6 @@ struct CurriculumListView: View {
 
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    _curriculum.triggerRefresh()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-
-                Button {
                     Task {
                         try await $saveToCalendarStatus.exec {
                             try await curriculum.saveToCalendar()
@@ -90,6 +86,12 @@ struct CurriculumListView: View {
                         systemImage: saveToCalendarStatus == nil
                             ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
                     )
+                }
+
+                Button {
+                    _curriculum.triggerRefresh()
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
                 }
             }
         }
