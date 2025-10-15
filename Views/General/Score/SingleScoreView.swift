@@ -11,58 +11,12 @@ struct SingleScoreView: View {
     var courseScore: CourseScore
     var color: Color
 
-    var noScoreView: some View {
-        Image(systemName: "xmark")
-            .font(.body)
-            .foregroundColor(.white)
-            .padding(4)
-            .frame(width: 85, height: 30)
-            .background(
-                Stripes(
-                    config: .init(
-                        background: .gray,
-                        foreground: .white.opacity(0.4)
-                    )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-            )
-    }
-
-    var noGPAView: some View {
-        Text("\(String(courseScore.score))")
-            .fontWeight(.bold)
-            .foregroundColor(.white)
-            .padding(4)
-            .frame(width: 85, height: 30)
-            .background(
-                Stripes(
-                    config: .init(
-                        background: .cyan,
-                        foreground: .white.opacity(0.4)
-                    )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-            )
-    }
-
-    var normalView: some View {
-        HStack(alignment: .center, spacing: 0) {
-            Text("\(courseScore.score)")
-                .frame(width: 35)
-                .padding(.horizontal, 4)
-            Divider()
-            Text("\(String(courseScore.gpa!))")
-                .frame(width: 35)
-                .padding(.horizontal, 4)
+    var cornerRadius: CGFloat = {
+        guard #available(iOS 26, *) else {
+            return 5
         }
-        .fontWeight(.bold)
-        .foregroundColor(.white)
-        .frame(width: 85, height: 30)
-        .background(
-            RoundedRectangle(cornerRadius: 5)
-                .fill(color)
-        )
-    }
+        return 10
+    }()
 
     var body: some View {
         HStack {
@@ -81,15 +35,53 @@ struct SingleScoreView: View {
 
             Spacer()
 
-            if courseScore.gpa == nil {
-                if courseScore.score.isEmpty {
-                    noScoreView
+            Group {
+                if courseScore.gpa == nil {
+                    if courseScore.score.isEmpty {
+                        Image(systemName: "xmark")
+                            .frame(width: 85, height: 30)
+                            .background(
+                                Stripes(
+                                    config: .init(
+                                        background: .gray,
+                                        foreground: .white.opacity(0.4)
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                            )
+                    } else {
+                        Text("\(String(courseScore.score))")
+                            .frame(width: 85, height: 30)
+                            .background(
+                                Stripes(
+                                    config: .init(
+                                        background: .cyan,
+                                        foreground: .white.opacity(0.4)
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                            )
+                    }
                 } else {
-                    noGPAView
+                    HStack(alignment: .center, spacing: 0) {
+                        Text("\(courseScore.score)")
+                            .frame(width: 35)
+                            .padding(.horizontal, 4)
+                        Divider()
+                        Text("\(String(courseScore.gpa!))")
+                            .frame(width: 35)
+                            .padding(.horizontal, 4)
+                    }
+                    .frame(width: 85, height: 30)
+                    .background(
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(color)
+                    )
                 }
-            } else {
-                normalView
             }
+            .font(.body)
+            .fontWeight(.bold)
+            .foregroundColor(.white)
         }
     }
 }
@@ -98,10 +90,6 @@ struct SingleScoreView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .trailing) {
             SingleScoreView(courseScore: .example, color: .accentColor)
-            SingleScoreView(courseScore: .example, color: .accentColor)
-                .noGPAView
-            SingleScoreView(courseScore: .example, color: .accentColor)
-                .noScoreView
         }
         .padding(.horizontal)
     }
