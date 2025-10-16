@@ -76,7 +76,6 @@ struct CurriculumDetailView: View {
                 CurriculumWeekView(
                     lectures: lectures,
                     _date: _date,
-                    currentSemesterName: currentSemester?.name ?? "All".localized,
                     weekNumber: weekNumber
                 )
                 .id(curriculumChartShouldHideEvening)  // so that a forced refresh would happen if the user toggles the setting
@@ -84,7 +83,6 @@ struct CurriculumDetailView: View {
                 CurriculumWeekViewVerticalNew(
                     lectures: lectures,
                     _date: _date,
-                    currentSemesterName: currentSemester?.name ?? "All".localized,
                     weekNumber: weekNumber,
                     hideWeekend: hideWeekend
                 )

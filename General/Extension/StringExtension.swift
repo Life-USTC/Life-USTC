@@ -47,3 +47,9 @@ extension String {
             )
     }
 }
+
+extension LocalizedStringKey: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(String(describing: self))
+    }
+}

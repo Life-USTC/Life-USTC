@@ -60,7 +60,7 @@ class SchoolExport {
         { USTCCASLoginView.sheet(isPresented: $0) }
     }
 
-    var features: [String: [FeatureWithView]] { [:] }
+    var features: [LocalizedStringKey: [FeatureWithView]] { [:] }
 
     var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? { nil }
 

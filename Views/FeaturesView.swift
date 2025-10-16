@@ -53,17 +53,16 @@ struct FeaturesView: View {
         GridItem(.adaptive(minimum: 125)),
     ]
 
-    @State var features: [String: [FeatureWithView]] = [:]
-    var featureSearched: [String: [FeatureWithView]] {
+    var features: [LocalizedStringKey: [FeatureWithView]] {
+        collectFeatures()
+    }
+    var featureSearched: [LocalizedStringKey: [FeatureWithView]] {
         guard searchText.isEmpty else {
-            var result: [String: [FeatureWithView]] = [:]
+            var result: [LocalizedStringKey: [FeatureWithView]] = [:]
             for (key, value) in features {
                 let tmp = value.filter {
-                    $0.title.lowercased().contains(searchText.lowercased())
-                        || $0.subTitle.lowercased()
-                            .contains(searchText.lowercased())
-                        || $0.title.localized.contains(searchText)
-                        || $0.subTitle.localized.contains(searchText)
+                    String(describing: $0.title).lowercased().contains(searchText.lowercased())
+                        || String(describing: $0.subTitle).lowercased().contains(searchText.lowercased())
                 }
                 if !tmp.isEmpty { result[key] = tmp }
             }
@@ -72,8 +71,7 @@ struct FeaturesView: View {
         return features
     }
 
-    // TODO: should be change to enum in FeatureWithView
-    var sectionPriority: [String: Int] = [
+    var sectionPriority: [LocalizedStringKey: Int] = [
         "AAS": 2,
         "Feed": 4,
         "Public": 1,
@@ -89,7 +87,7 @@ struct FeaturesView: View {
                 id: \.key
             ) { key, features in
                 VStack(alignment: .leading) {
-                    Text(key.localized)
+                    Text(key)
                         .font(.title2)
                         .fontWeight(.medium)
                         .padding(.top, 20)
@@ -99,7 +97,7 @@ struct FeaturesView: View {
                             NavigationLink {
                                 AnyView(feature.destinationView())
                             } label: {
-                                Label(feature.title.localized, systemImage: feature.image)
+                                Label(feature.title, systemImage: feature.image)
                                     .labelStyle(FeatureLabelStyle())
                             }
                         }
@@ -128,14 +126,14 @@ struct FeaturesView: View {
                             AnyView(feature.destinationView())
                         } label: {
                             Label(
-                                feature.title.localized,
+                                feature.title,
                                 systemImage: feature.image
                             )
                             .symbolRenderingMode(.hierarchical)
                         }
                     }
                 } header: {
-                    Text(key.localized)
+                    Text(key)
                 }
             }
         }
@@ -171,18 +169,12 @@ struct FeaturesView: View {
             }
         }
         .searchable(text: $searchText)
-        .onChange(of: feedSources) { _ in
-            features = collectFeatures()
-        }
-        .onAppear {
-            features = collectFeatures()
-        }
     }
 }
 
 extension FeaturesView {
-    func collectFeatures() -> [String: [FeatureWithView]] {
-        var results: [String: [FeatureWithView]] = [:]
+    func collectFeatures() -> [LocalizedStringKey: [FeatureWithView]] {
+        var results: [LocalizedStringKey: [FeatureWithView]] = [:]
 
         results["AAS"] = [
             .init(

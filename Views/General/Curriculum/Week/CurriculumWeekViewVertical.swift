@@ -12,7 +12,6 @@ private let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "S
 struct CurriculumWeekViewVerticalNew: View {
     var lectures: [Lecture]
     var _date: Date
-    var currentSemesterName: String
     var weekNumber: Int?
     var hideWeekend: Bool
 

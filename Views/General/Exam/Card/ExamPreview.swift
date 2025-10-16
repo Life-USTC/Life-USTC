@@ -34,7 +34,7 @@ struct ExamWidgetView: View {
             }
             Spacer()
             if exam.isFinished {
-                Text("Finished".localized)
+                Text("Finished")
                     .foregroundColor(.gray)
                     .font(.subheadline)
                     .fontWeight(.heavy)

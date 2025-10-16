@@ -18,7 +18,7 @@ struct HomeSettingPage: View {
 
     var body: some View {
         List($homeViewOrder, id: \.rawValue, editActions: .all) { $type in
-            Text(type.name.localized)
+            Text(type.name)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -28,7 +28,7 @@ struct HomeSettingPage: View {
                             Button {
                                 homeViewOrder.append(type)
                             } label: {
-                                Label(type.name.localized, systemImage: "plus")
+                                Label(type.name, systemImage: "plus")
                             }
                         }
                     }

@@ -13,7 +13,7 @@ struct SingleFeaturePreview: View {
         NavigationLink {
             AnyView(feature.destinationView())
         } label: {
-            Label(feature.title.localized, systemImage: feature.image)
+            Label(feature.title, systemImage: feature.image)
                 .labelStyle(FeatureLabelStyle())
         }
     }

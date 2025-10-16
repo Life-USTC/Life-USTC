@@ -11,7 +11,6 @@ import SwiftUI
 struct CurriculumWeekView: View {
     var lectures: [Lecture]
     var _date: Date
-    var currentSemesterName: String
     var weekNumber: Int?
     var fontSize: Double = 10
 

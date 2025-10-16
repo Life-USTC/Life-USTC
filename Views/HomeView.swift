@@ -14,18 +14,20 @@ enum HomeViewCardType: String, CaseIterable, Codable {
 }
 
 extension HomeViewCardType {
-    var view: any View {
-        switch self {
-        case .curriculumToday:
-            CurriculumTodayCard()
-        case .examPreview:
-            ExamPreviewCard()
-        case .featurePreview:
-            FeaturePreviewCard()
+    var view: some View {
+        Group {
+            switch self {
+            case .curriculumToday:
+                CurriculumTodayCard()
+            case .examPreview:
+                ExamPreviewCard()
+            case .featurePreview:
+                FeaturePreviewCard()
+            }
         }
     }
 
-    var name: String {
+    var name: LocalizedStringKey {
         switch self {
         case .curriculumToday:
             return "Curriculum"

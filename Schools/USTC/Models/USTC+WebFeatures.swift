@@ -9,16 +9,16 @@ import SwiftUI
 
 struct USTCWebFeature: Identifiable {
     var id = UUID()
-    var name: String
+    var name: LocalizedStringKey
     var image: String
-    var description: String
+    var description: LocalizedStringKey
     var url: URL
 
     init(
         id: UUID = UUID(),
-        name: String,
+        name: LocalizedStringKey,
         image: String,
-        description: String,
+        description: LocalizedStringKey,
         url: String,
         markUp: Bool = false
     ) {
@@ -41,7 +41,7 @@ extension FeatureWithView {
             title: feature.name,
             subTitle: feature.description,
             destinationView: {
-                Browser(url: feature.url, title: feature.name.localized)
+                Browser(url: feature.url, title: feature.name)
             }
         )
     }
@@ -83,24 +83,21 @@ extension USTCExports {
                 name: "Email",
                 image: "mail.stack",
                 description: "科大邮箱",
-                url:
-                    "https://mail.ustc.edu.cn",
+                url: "https://mail.ustc.edu.cn",
                 markUp: false
             ),
             .init(
                 name: "Teaching Secretary",
                 image: "envelope",
                 description: "教学秘书联系方式",
-                url:
-                    "https://www.teach.ustc.edu.cn/service/svc-student/4427.html",
+                url: "https://www.teach.ustc.edu.cn/service/svc-student/4427.html",
                 markUp: false
             ),
             .init(
                 name: "Course Rating",
                 image: "person.fill.questionmark",
                 description: "评课社区",
-                url:
-                    "https://icourse.club",
+                url: "https://icourse.club",
                 markUp: false
             ),
             .init(

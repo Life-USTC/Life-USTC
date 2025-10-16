@@ -19,13 +19,13 @@ struct USTCCASLoginView: View {
     @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
     @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
-    
+
     @Binding var casLoginSheet: Bool  // used to signal the sheet to close
     @State var presenterInjected = true
     @StateObject var ustcCASViewModel = UstcCasViewModel.shared
     @State var showFailedAlert = false
     @State var showSuccessAlert = false
-    @State var failedMessage = ""
+    @State var failedMessage: LocalizedStringKey = "Double check your username and password"
     enum Field: Int, Hashable {
         case username
         case password
@@ -167,15 +167,15 @@ struct USTCCASLoginView: View {
             }
             .padding([.top, .horizontal])
             .alert(
-                "Login Failed".localized,
+                "Login Failed",
                 isPresented: $showFailedAlert,
                 actions: {},
                 message: {
-                    Text(failedMessage.localized)
+                    Text(failedMessage)
                 }
             )
             .alert(
-                "Login Success".localized,
+                "Login Success",
                 isPresented: $showSuccessAlert,
                 actions: {},
                 message: {
@@ -215,10 +215,10 @@ struct USTCCASLoginView: View {
                     return
                 }
 
-                failedMessage = "Double check your username and password".localized
+                failedMessage = "Double check your username and password"
                 showFailedAlert = true
             } catch {
-                failedMessage = error.localizedDescription
+                failedMessage = LocalizedStringKey(error.localizedDescription)
                 showFailedAlert = true
             }
         }

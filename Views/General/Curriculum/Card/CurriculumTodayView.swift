@@ -61,8 +61,8 @@ struct LectureView: View {
 struct CurriculumTodayView: View {
     var lectureListA: [Lecture] = []
     var lectureListB: [Lecture] = []
-    var listAText: String? = "Today"
-    var listBText: String? = "Tomorrow"
+    var listAText: LocalizedStringKey? = "Today"
+    var listBText: LocalizedStringKey? = "Tomorrow"
 
     @ViewBuilder
     var noLectureView: some View {
@@ -87,12 +87,12 @@ struct CurriculumTodayView: View {
     @ViewBuilder
     func makeView(
         with lectures: [Lecture],
-        text: String? = nil,
+        text: LocalizedStringKey? = nil,
         color: Color = Color.accentColor
     ) -> some View {
         VStack(alignment: .leading) {
             if let text {
-                Text(text.localized)
+                Text(text)
                     .foregroundColor(.gray)
                     .font(.system(.subheadline, design: .monospaced, weight: .bold))
             }
@@ -164,7 +164,7 @@ extension CurriculumTodayView {
             HStack(alignment: .bottom) {
                 titleView
                 Spacer()
-                
+
                 Text(String(format: "Total: %@ lectures".localized, String(lectures_.count)))
                     .font(.system(.caption, design: .monospaced, weight: .light))
             }
@@ -177,7 +177,8 @@ extension CurriculumTodayView {
                     ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
                         LectureView(lecture: lecture, color: color)
                     }
-                }.if(lectures_.isEmpty) {
+                }
+                .if(lectures_.isEmpty) {
                     $0
                         .redacted(reason: .placeholder)
                         .blur(radius: 5)

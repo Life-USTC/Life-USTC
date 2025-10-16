@@ -1,5 +1,5 @@
 //
-//  FeatureWithView.swift
+//  ExtensionViews.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/7/9.
@@ -14,8 +14,8 @@ struct FeatureWithView: Identifiable, Hashable {
 
     var id = UUID()
     var image: String
-    var title: String
-    var subTitle: String
+    var title: LocalizedStringKey
+    var subTitle: LocalizedStringKey
     var destinationView: () -> any View
 
     func hash(into hasher: inout Hasher) {
@@ -25,6 +25,6 @@ struct FeatureWithView: Identifiable, Hashable {
 
 struct SettingWithView: Identifiable {
     var id = UUID()
-    var name: String
+    var name: LocalizedStringKey
     var destinationView: () -> any View
 }

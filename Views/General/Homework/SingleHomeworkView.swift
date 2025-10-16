@@ -35,7 +35,7 @@ struct SingleHomeWorkView: View {
             Spacer()
 
             if homework.isFinished {
-                Text("Finished".localized)
+                Text("Finished")
                     .fontWeight(.bold)
                     .foregroundColor(.gray)
 

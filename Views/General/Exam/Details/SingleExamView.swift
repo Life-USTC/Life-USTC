@@ -42,7 +42,7 @@ struct SingleExamView: View {
     var timeInfoView: some View {
         Group {
             if exam.isFinished {
-                Text("Finished".localized)
+                Text("Finished")
                     .fontWeight(.bold)
                     .foregroundColor(.gray)
             } else {

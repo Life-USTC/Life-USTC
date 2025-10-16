@@ -109,7 +109,6 @@ struct CurriculumWeekWidgetEntryView: View {
         CurriculumWeekView(
             lectures: entry.lectures,
             _date: entry.date,
-            currentSemesterName: entry.currentSemesterName,
             weekNumber: entry.weekNumber,
             fontSize: widgetFamily == .systemExtraLarge ? 15 : 10
         )

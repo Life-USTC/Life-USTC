@@ -234,7 +234,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
 
 struct Browser: View {
     var url: URL
-    var title: String = "Detail"
+    var title: LocalizedStringKey = "Detail"
 
     @State var useReeed = false
     @State var prepared = false
@@ -293,10 +293,5 @@ struct Browser: View {
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    init(url _url: URL, title: String = "Detail") {
-        self.url = _url
-        self.title = title
     }
 }

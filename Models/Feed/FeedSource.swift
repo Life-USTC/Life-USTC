@@ -33,8 +33,8 @@ extension FeatureWithView {
     init(_ feedSource: FeedSource) {
         self.init(
             image: feedSource.image ?? "doc.richtext",
-            title: feedSource.name,
-            subTitle: feedSource.description ?? "",
+            title: LocalizedStringKey(stringLiteral: feedSource.name),
+            subTitle: LocalizedStringKey(stringLiteral: feedSource.description ?? ""),
             destinationView: { FeedSourceView(feedSource: feedSource) }
         )
     }

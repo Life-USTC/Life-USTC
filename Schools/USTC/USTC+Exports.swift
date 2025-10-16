@@ -93,7 +93,7 @@ class USTCExports: SchoolExport {
         { USTCCASLoginView.sheet(isPresented: $0) }
     }
 
-    override var features: [String: [FeatureWithView]] {
+    override var features: [LocalizedStringKey: [FeatureWithView]] {
         if appShouldPresentDemo {
             return [:]
         }

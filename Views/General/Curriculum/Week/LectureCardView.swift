@@ -54,13 +54,13 @@ struct LectureSheetModifier: ViewModifier {
 
                             VStack(alignment: .leading) {
                                 HStack(alignment: .bottom) {
-                                    Text("Teacher: ".localized)
+                                    Text("Teacher: ")
                                         .foregroundStyle(.secondary)
                                     Text(lecture.teacherName)
                                 }
                                 if let credit = lecture.course?.credit {
                                     HStack(alignment: .bottom) {
-                                        Text("Credit: ".localized)
+                                        Text("Credit: ")
                                             .foregroundStyle(.secondary)
                                         Text(String(credit))
                                     }

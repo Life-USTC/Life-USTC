@@ -72,8 +72,8 @@
 		5677E1222A5AB66A00EDCB53 /* USTC+Exports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */; };
 		5677E1232A5AB66F00EDCB53 /* USTC+CASLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56558800294D74BB0010E060 /* USTC+CASLoginView.swift */; };
 		5677E1352A5AF13D00EDCB53 /* SwiftUIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587FD294D67D80010E060 /* SwiftUIExtension.swift */; };
-		5677E1372A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */; };
-		5677E1382A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */; };
+		5677E1372A5AF1AB00EDCB53 /* ExtensionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1362A5AF1AB00EDCB53 /* ExtensionViews.swift */; };
+		5677E1382A5AF1AB00EDCB53 /* ExtensionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E1362A5AF1AB00EDCB53 /* ExtensionViews.swift */; };
 		5677E1392A5AF20500EDCB53 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565587B5294ACEFD0010E060 /* Browser.swift */; };
 		5677E13E2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */; };
 		567FA93129D083180003050F /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567FA93029D083180003050F /* AppPage.swift */; };
@@ -253,7 +253,7 @@
 		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExamView.swift; sourceTree = "<group>"; };
 		5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Exports.swift"; sourceTree = "<group>"; };
-		5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedExtensionViews.swift; sourceTree = "<group>"; };
+		5677E1362A5AF1AB00EDCB53 /* ExtensionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionViews.swift; sourceTree = "<group>"; };
 		5677E13D2A5AF6ED00EDCB53 /* USTC+WebFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+WebFeatures.swift"; sourceTree = "<group>"; };
 		567FA93029D083180003050F /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		568A959A295D75D2004272E2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -512,6 +512,7 @@
 			children = (
 				5677E11C2A5AB4B500EDCB53 /* USTC */,
 				56AAAB172A968A68000561FE /* SchoolExport.swift */,
+				5677E1362A5AF1AB00EDCB53 /* ExtensionViews.swift */,
 			);
 			path = Schools;
 			sourceTree = "<group>";
@@ -587,7 +588,6 @@
 				56B86B892A8F58AD003440D2 /* AsyncStatusMask.swift */,
 				569967282A97431600CC1EBB /* ContentViewTab.swift */,
 				56D18BBD29E140DE002C6677 /* RectangleProgressBar.swift */,
-				5677E1362A5AF1AB00EDCB53 /* SharedExtensionViews.swift */,
 				5606AE5C2A3C5D6A00E1132B /* Strips.swift */,
 				565587FD294D67D80010E060 /* SwiftUIExtension.swift */,
 			);
@@ -1044,7 +1044,7 @@
 				56E8AD6D296FEEE9009006D0 /* ScoreDetailView.swift in Sources */,
 				56A0C1922A8E0B7700BFEAB9 /* Semester.swift in Sources */,
 				56558809294DC9D40010E060 /* SettingsView.swift in Sources */,
-				5677E1372A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */,
+				5677E1372A5AF1AB00EDCB53 /* ExtensionViews.swift in Sources */,
 				5677E1152A5A83FC00EDCB53 /* SingleExamView.swift in Sources */,
 				5638E2822A58251A001967D9 /* SingleScoreView.swift in Sources */,
 				56BE91FB296677A300822C98 /* StringExtension.swift in Sources */,
@@ -1116,7 +1116,7 @@
 				56AAAB192A968A68000561FE /* SchoolExport.swift in Sources */,
 				5638E27F2A581324001967D9 /* Score.swift in Sources */,
 				56A0C1932A8E0B7700BFEAB9 /* Semester.swift in Sources */,
-				5677E1382A5AF1AB00EDCB53 /* SharedExtensionViews.swift in Sources */,
+				5677E1382A5AF1AB00EDCB53 /* ExtensionViews.swift in Sources */,
 				56734CEB297D871500DBB45F /* StringExtension.swift in Sources */,
 				5677E1352A5AF13D00EDCB53 /* SwiftUIExtension.swift in Sources */,
 				56E6E5982ADC2F7A00EAB800 /* USTC+AdditionalCourse.swift in Sources */,

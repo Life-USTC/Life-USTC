@@ -15,7 +15,7 @@ struct FeedView: View {
         NavigationLink {
             Browser(
                 url: feed.url,
-                title: feed.title
+                title: LocalizedStringKey(stringLiteral: feed.title)
             )
         } label: {
             FeedViewPreview(feed: feed)
