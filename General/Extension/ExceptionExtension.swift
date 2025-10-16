@@ -14,7 +14,7 @@ enum BaseError: Error {
 extension BaseError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case let .runtimeError(string): return string
+        case .runtimeError(let string): return string
         }
     }
 }

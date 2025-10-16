@@ -11,49 +11,72 @@ struct LectureView: View {
     var lecture: Lecture
     var color: Color = .red
 
+    private var lectureColor: Color {
+        (lecture.course?.color() ?? color).opacity(0.8)
+    }
+
+    private var isCompleted: Bool {
+        lecture.endDate < Date()
+    }
+
     var body: some View {
         HStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill((lecture.course?.color() ?? color).opacity(0.8))
-                .frame(width: 5, height: 50)
-
-            ZStack {
-                RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
-                    .fill((lecture.course?.color() ?? color).opacity(0.05))
-                    .frame(height: 50)
-
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(lecture.name)
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        Text("\(lecture.teacherName) @ **\(lecture.location)**")
-                            .font(.footnote)
-                            .foregroundColor(.gray.opacity(0.8))
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing) {
-                        Text(lecture.startDate.stripHMwithTimezone())
-                            .font(.subheadline)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.mint)
-                        Text(lecture.endDate.stripHMwithTimezone())
-                            .font(.caption)
-                            .foregroundColor(.gray.opacity(0.8))
-                    }
-                }
-                .padding(.horizontal, 10)
-            }
+            colorBar
+            contentContainer
         }
-        .if(lecture.endDate < Date()) {
+        .if(isCompleted) {
             $0
                 .strikethrough()
                 .grayscale(1.0)
         }
         .if(lecture != Lecture.example) {
             $0.lectureSheet(lecture: lecture)
+        }
+    }
+
+    private var colorBar: some View {
+        RoundedRectangle(cornerRadius: 2)
+            .fill(lectureColor)
+            .frame(width: 5, height: 50)
+    }
+
+    private var contentContainer: some View {
+        ZStack {
+            // Background
+            RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
+                .fill(lectureColor.opacity(0.05))
+                .frame(height: 50)
+
+            // Content
+            HStack {
+                lectureInfo
+                Spacer()
+                timeInfo
+            }
+            .padding(.horizontal, 10)
+        }
+    }
+
+    private var lectureInfo: some View {
+        VStack(alignment: .leading) {
+            Text(lecture.name)
+                .font(.headline)
+                .fontWeight(.bold)
+            Text("\(lecture.teacherName) @ **\(lecture.location)**")
+                .font(.footnote)
+                .foregroundColor(.gray.opacity(0.8))
+        }
+    }
+
+    private var timeInfo: some View {
+        VStack(alignment: .trailing) {
+            Text(lecture.startDate.stripHMwithTimezone())
+                .font(.subheadline)
+                .fontWeight(.heavy)
+                .foregroundColor(.mint)
+            Text(lecture.endDate.stripHMwithTimezone())
+                .font(.caption)
+                .foregroundColor(.gray.opacity(0.8))
         }
     }
 }

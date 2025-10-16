@@ -18,21 +18,21 @@ prefix func ! <T>(lhs: Binding<T?>) -> Binding<T> {
     Binding(get: { lhs.wrappedValue! }, set: { lhs.wrappedValue = $0 })
 }
 
-struct FlipableCard: View {
+struct FlipableCard<Main: View, Settings: View>: View {
     @Binding var flipped: Bool
     var flippedDegrees: Double { flipped ? 180 : 0 }
 
-    var mainView: () -> any View
-    var settingsView: () -> any View
+    var mainView: () -> Main
+    var settingsView: () -> Settings
 
     var body: some View {
         ZStack {
-            AnyView(mainView())
+            mainView()
                 .card()
                 .flipRotate(flippedDegrees)
                 .opacity(flipped ? 0 : 1)
 
-            AnyView(settingsView())
+            settingsView()
                 .card()
                 .flipRotate(-180 + flippedDegrees)
                 .opacity(flipped ? 1 : 0)
@@ -91,15 +91,14 @@ extension View {
         )
     }
 
-    func widgetBackground(_ backgroundView: some View) -> some View {
+    @ViewBuilder
+    func widgetBackground<T: View>(_ backgroundView: T) -> some View {
         if #available(iOSApplicationExtension 17.0, iOS 17, *) {
-            AnyView(
-                containerBackground(for: .widget) {
-                    backgroundView
-                }
-            )
+            containerBackground(for: .widget) {
+                backgroundView
+            }
         } else {
-            AnyView(background(backgroundView))
+            background(backgroundView)
         }
     }
 }

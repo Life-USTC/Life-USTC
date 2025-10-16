@@ -8,26 +8,15 @@
 import SwiftUI
 
 struct AppSettingPage: View {
-    @AppStorage("useUSTCBackend", store: .appGroup) var useUSTCBackend: Bool = false
-    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot: Bool = false
-    @AppStorage(
-        "appShouldNOTUpdateAnything",
-        store: .appGroup
-    ) var appShouldNOTUpdateAnything: Bool = false
-    @AppStorage(
-        "curriculumChartShouldHideEvening",
-        store: .appGroup
-    ) var curriculumChartShouldHideEvening: Bool = false
-    @AppStorage("useBaiduStatistics") var useBaiduStatistics: Bool = true
-    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
+    @AppStorage("scoreViewPreventScreenShot") var preventScreenShot = false
+    @AppStorage("appShouldNOTUpdateAnything", store: .appGroup) var appShouldNOTUpdateAnything = false
+    @AppStorage("curriculumChartShouldHideEvening", store: .appGroup) var curriculumChartShouldHideEvening = false
+    @AppStorage("useBaiduStatistics") var useBaiduStatistics = true
+    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var widgetCanRefreshNewData: Bool? = nil
 
     var body: some View {
         List {
             Section {
-//                Toggle(
-//                    "Use USTC Backend",
-//                    isOn: $useUSTCBackend
-//                )
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
@@ -42,7 +31,7 @@ struct AppSettingPage: View {
                 )
                 Toggle(
                     "Allow widget to refresh data",
-                    isOn: $_widgetCanRefreshNewData ?? false
+                    isOn: $widgetCanRefreshNewData ?? false
                 )
                 #if DEBUG
                 Toggle(
@@ -55,7 +44,7 @@ struct AppSettingPage: View {
                     .textCase(.none)
             }
         }
-        .navigationBarTitle("App Settings", displayMode: .inline)
+        .navigationTitle("App Settings")
     }
 }
 

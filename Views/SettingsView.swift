@@ -8,27 +8,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State var searchText = ""
-    @AppStorage("Life-USTC") var life_ustc: Bool = false
+    @AppStorage("Life-USTC") var lifeUstc = false
+
+    var aboutTitle: LocalizedStringKey {
+        lifeUstc ? "About Life@USTC" : "About Study@USTC"
+    }
+
     var body: some View {
         List {
             Section {
-                NavigationLink(
-                    "App Settings",
-                    destination: AppSettingPage()
-                )
-                NavigationLink(
-                    "Home Page Settings",
-                    destination: HomeSettingPage()
-                )
-                NavigationLink(
-                    "Feed Source Settings",
-                    destination: FeedSettingView()
-                )
-                NavigationLink(
-                    "Exam Settings",
-                    destination: ExamSettingView()
-                )
+                NavigationLink("App Settings", destination: AppSettingPage())
+                NavigationLink("Home Page Settings", destination: HomeSettingPage())
+                NavigationLink("Feed Source Settings", destination: FeedSettingView())
+                NavigationLink("Exam Settings", destination: ExamSettingView())
             } header: {
                 Text("General")
                     .textCase(.none)
@@ -37,9 +29,7 @@ struct SettingsView: View {
             Section {
                 ForEach(SchoolExport.shared.settings) { setting in
                     NavigationLink(setting.name) {
-                        AnyView(
-                            setting.destinationView()
-                        )
+                        AnyView(setting.destinationView())
                     }
                 }
             } header: {
@@ -48,20 +38,13 @@ struct SettingsView: View {
             }
 
             Section {
-                NavigationLink(
-                    life_ustc ? "About Life@USTC" : "About Study@USTC",
-                    destination: AboutApp()
-                )
-                NavigationLink(
-                    "Legal Info",
-                    destination: LegalInfoView()
-                )
+                NavigationLink(aboutTitle, destination: AboutApp())
+                NavigationLink("Legal Info", destination: LegalInfoView())
             } header: {
                 Text("More")
                     .textCase(.none)
             }
         }
         .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.large)
     }
 }

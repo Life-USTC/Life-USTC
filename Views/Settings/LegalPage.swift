@@ -24,7 +24,7 @@ struct LegalInfoView: View {
                 }
             }
         }
-        .navigationBarTitle("Legal", displayMode: .inline)
+        .navigationTitle("Legal")
     }
 }
 

@@ -87,7 +87,7 @@ extension Equatable where Self: Identifiable {
     }
 }
 
-extension AppStorage where Value : ExpressibleByNilLiteral {
+extension AppStorage where Value: ExpressibleByNilLiteral {
     public init(wrappedValue: Value, _ key: String, store: UserDefaults? = nil) where Value == Bool? {
         self.init(key, store: store)
         if let _ = (store ?? UserDefaults.standard).object(forKey: key) {
@@ -104,4 +104,3 @@ extension AppStorage where Value : ExpressibleByNilLiteral {
         self.wrappedValue = wrappedValue
     }
 }
-

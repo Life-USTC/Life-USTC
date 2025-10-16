@@ -8,16 +8,12 @@
 import SwiftOverlayShims
 import SwiftUI
 
-@ViewBuilder func HTextField(title: any StringProtocol, text: Binding<String>)
-    -> AnyView
-{
-    AnyView(
-        LabeledContent {
-            TextField(title, text: text, axis: .vertical)
-        } label: {
-            Text(title)
-        }
-    )
+@ViewBuilder func HTextField<S: StringProtocol>(title: S, text: Binding<String>) -> some View {
+    LabeledContent {
+        TextField(title, text: text, axis: .vertical)
+    } label: {
+        Text(title)
+    }
 }
 
 struct PushNotification: View {
@@ -79,7 +75,7 @@ struct PushNotification: View {
             )
         }
         .navigationTitle("Push Notification")
-        .navigationBarTitleDisplayMode(.inline)
+
     }
 }
 

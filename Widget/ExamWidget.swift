@@ -20,7 +20,7 @@ struct ExamProvider: TimelineProvider {
     func placeholder(in _: Context) -> ExamEntry {
         ExamEntry.example
     }
-    
+
     func makeEntry(for _date: Date = Date()) async throws -> ExamEntry {
         guard let exams = try await canRefresh ? _exams.retrive() : _exams.retriveLocal() else {
             throw BaseError.runtimeError("Failed to retrive exams")

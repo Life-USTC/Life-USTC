@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-@main struct Life_USTCApp: App {
+@main
+struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
@@ -18,16 +19,17 @@ import SwiftUI
 }
 
 struct ContentView: View {
-    @AppStorage("Life-USTC") var life_ustc: Bool = false
+    @AppStorage("firstLogin_2") var firstLogin = true
+    @AppStorage("Life-USTC") var lifeUstc = false
+
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    // MARK: - Making iPhone View:
-
+    @State var columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
+
     var iPhoneView: some View {
         Group {
             if #available(iOS 26, *) {
-                // if false {
                 TabView(selection: $tabSelection) {
                     ForEach(ContentViewTab.allCases, id: \.self) { tab in
                         NavigationStack {
@@ -53,14 +55,11 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Making iPad View:
-
-    @State var columnVisibility: NavigationSplitViewVisibility = .all
     var sideBarView: some View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image(life_ustc ? "OldIcon" : "Icon")
+            Image(lifeUstc ? "OldIcon" : "Icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
@@ -107,23 +106,14 @@ struct ContentView: View {
         .navigationSplitViewStyle(.balanced)
     }
 
-    @AppStorage("firstLogin_2") var firstLogin: Bool = true
-
     var body: some View {
-        // When user first login, present the view here,
         if firstLogin {
-            AnyView(
-                SchoolExport.shared.firstLoginView($firstLogin)
-            )
+            AnyView(SchoolExport.shared.firstLoginView($firstLogin))
         } else {
-            ZStack {
-                if UIDevice.current.userInterfaceIdiom == .pad,
-                    horizontalSizeClass == .regular
-                {
-                    // iPad:
+            Group {
+                if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView
                 } else {
-                    // iOS (including iPad in Stage Manager):
                     iPhoneView
                 }
             }

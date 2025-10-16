@@ -41,7 +41,11 @@ extension HomeViewCardType {
 
 struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
-    @AppStorage("Life-USTC") var life_ustc: Bool = false
+    @AppStorage("Life-USTC") var lifeUstc = false
+
+    var navigationTitle: LocalizedStringKey {
+        lifeUstc ? "Life@USTC" : "Study@USTC"
+    }
 
     var body: some View {
         VStack {
@@ -51,15 +55,13 @@ struct HomeView: View {
 
                 VStack(spacing: 40) {
                     ForEach(homeViewOrder, id: \.self) { cardType in
-                        AnyView(
-                            cardType.view
-                        )
+                        cardType.view
                     }
                 }
             }
             .padding(.horizontal, 20)
         }
-        .navigationTitle(life_ustc ? "Life@USTC" : "Study@USTC")
+        .navigationTitle(navigationTitle)
         .background(Color(.systemGroupedBackground))
     }
 }

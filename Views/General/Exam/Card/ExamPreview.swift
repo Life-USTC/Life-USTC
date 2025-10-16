@@ -53,7 +53,7 @@ struct ExamWidgetView: View {
 struct ExamPreview: View {
     var exams: [Exam] = []
     var numberToShow: Int = 1
-    
+
     var titleView: some View {
         Text("Exam")
             .padding(.horizontal, 5)
@@ -66,13 +66,28 @@ struct ExamPreview: View {
                     .fill(.blue.opacity(0.8))
             )
     }
-    
+
     @ViewBuilder
     func makeWidget(
-        with exam_: Exam?
+        with optionalExam: Exam?
     ) -> some View {
-        let exam = exam_ ?? .example
+        let exam = optionalExam ?? .example
 
+        ZStack {
+            examContentView(for: exam)
+                .if(optionalExam == nil) {
+                    $0.redacted(reason: .placeholder)
+                        .blur(radius: 5)
+                }
+
+            if optionalExam == nil {
+                noExamView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func examContentView(for exam: Exam) -> some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading) {
                 HStack {
@@ -87,18 +102,13 @@ struct ExamPreview: View {
                     .lineLimit(2)
                     .fontWeight(.bold)
             }
+
             Spacer()
+
+            // Footer section with date and room info
             VStack(alignment: .leading) {
-                HStack(alignment: .lastTextBaseline) {
-                    Text(
-                        exam.daysLeft == 1
-                            ? "1 day left".localized
-                            : String(format: "%@ days left".localized, String(exam.daysLeft))
-                    )
-                    .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                }
+                daysLeftView(for: exam)
+
                 HStack {
                     Text(exam.startDate, format: .dateTime.hour().minute())
                     Spacer()
@@ -109,32 +119,41 @@ struct ExamPreview: View {
                 .font(.subheadline)
                 .fontWeight(.regular)
             }
-        }.if(exam_ == nil) {
-            $0
-                .redacted(reason: .placeholder)
-                .blur(radius: 5)
-        }
-
-        if exam_ == nil {
-            VStack(alignment: .center, spacing: 20) {
-                Image(systemName: "moon.stars")
-                    .font(.system(size: 50))
-                    .fontWeight(.regular)
-                    .frame(width: 60, height: 60)
-                    .padding(5)
-                    .fontWeight(.heavy)
-                    .foregroundColor(.blue.opacity(0.8))
-                Text("No More Exam!")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.secondary)
-            }
-            .padding()
         }
     }
 
     @ViewBuilder
+    private func daysLeftView(for exam: Exam) -> some View {
+        let daysLeftText =
+            exam.daysLeft == 1
+            ? "1 day left".localized : String(format: "%@ days left".localized, String(exam.daysLeft))
+
+        Text(daysLeftText)
+            .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+            .font(.title3)
+            .fontWeight(.semibold)
+    }
+
+    @ViewBuilder
+    private func noExamView() -> some View {
+        VStack(alignment: .center, spacing: 20) {
+            Image(systemName: "moon.stars")
+                .font(.system(size: 50))
+                .fontWeight(.regular)
+                .frame(width: 60, height: 60)
+                .padding(5)
+                .fontWeight(.heavy)
+                .foregroundColor(.blue.opacity(0.8))
+            Text("No More Exam!")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.secondary)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
     func makeListWidget(
-        with exams_: [Exam],
+        with examList: [Exam],
         color: Color = .cyan,
         numberToShow: Int = 2
     ) -> some View {
@@ -143,12 +162,12 @@ struct ExamPreview: View {
                 titleView
                 Spacer()
 
-                Text(String(format: "Total: %@ exams".localized, String(exams_.count)))
+                Text(String(format: "Total: %@ exams".localized, String(examList.count)))
                     .font(.system(.caption, design: .monospaced, weight: .light))
             }
             .padding(.bottom, 10)
 
-            let exams = exams_.isEmpty ? Array(repeating: Exam.example, count: 4) : exams_
+            let exams = examList.isEmpty ? Array(repeating: Exam.example, count: 4) : examList
 
             ZStack {
                 VStack(spacing: 0) {
@@ -161,13 +180,14 @@ struct ExamPreview: View {
                         }
 
                     }
-                }.if(exams_.isEmpty) {
+                }
+                .if(examList.isEmpty) {
                     $0
                         .redacted(reason: .placeholder)
                         .blur(radius: 5)
                 }
 
-                if exams_.isEmpty {
+                if examList.isEmpty {
                     Text("No More Exam!")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.secondary)

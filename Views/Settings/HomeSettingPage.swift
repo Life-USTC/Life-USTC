@@ -42,7 +42,6 @@ struct HomeSettingPage: View {
             }
         }
         .navigationTitle("Home Page Settings")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

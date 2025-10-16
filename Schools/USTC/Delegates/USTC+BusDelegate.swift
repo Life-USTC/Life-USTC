@@ -54,7 +54,7 @@ struct USTCRoute: Identifiable, Codable, Hashable {
         id: 1,
         campuses: [.example, .example]
     )
-    
+
     var description: String {
         let start = campuses.first?.name ?? ""
         let end = campuses.last?.name ?? ""

@@ -38,9 +38,8 @@ struct ExamSettingView: View {
                     "When exam contains these words, they will be shown at the bottom even they comes first in time"
                 )
             }
-            EmptyView()
         }
-        .navigationBarTitle("Exam Settings", displayMode: .inline)
+        .navigationTitle("Exam Settings")
     }
 }
 

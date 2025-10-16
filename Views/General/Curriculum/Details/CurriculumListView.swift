@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CurriculumListView: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
+
     @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
     var dismissAction: (() -> Void)

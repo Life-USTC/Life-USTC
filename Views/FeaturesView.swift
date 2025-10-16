@@ -26,7 +26,7 @@ struct FeatureLabelStyle: LabelStyle {
 }
 
 struct FeaturesView: View {
-    private enum Style: String, CaseIterable {
+    enum Style: String, CaseIterable {
         case list
         case grid
 
@@ -38,13 +38,20 @@ struct FeaturesView: View {
                 return "square.grid.2x2"
             }
         }
+
+        func next() -> Style {
+            let allCases = Style.allCases
+            let currentIndex = allCases.firstIndex(of: self)!
+            let nextIndex = (currentIndex + 1) % allCases.count
+            return allCases[nextIndex]
+        }
     }
 
     @ManagedData(.feedSources) var feedSources: [FeedSource]
 
-    @State var searchText = ""
+    @AppStorage("featureViewStyle") var style: Style = .grid
 
-    @AppStorage("featureViewStyle") private var style: Style = .grid
+    @State var searchText = ""
 
     let gridItemLayout = [
         GridItem(.adaptive(minimum: 125)),
@@ -53,37 +60,37 @@ struct FeaturesView: View {
         GridItem(.adaptive(minimum: 125)),
     ]
 
-    var features: [LocalizedStringKey: [FeatureWithView]] {
-        collectFeatures()
-    }
-    var featureSearched: [LocalizedStringKey: [FeatureWithView]] {
-        guard searchText.isEmpty else {
-            var result: [LocalizedStringKey: [FeatureWithView]] = [:]
-            for (key, value) in features {
-                let tmp = value.filter {
-                    String(describing: $0.title).lowercased().contains(searchText.lowercased())
-                        || String(describing: $0.subTitle).lowercased().contains(searchText.lowercased())
-                }
-                if !tmp.isEmpty { result[key] = tmp }
-            }
-            return result
-        }
-        return features
-    }
-
-    var sectionPriority: [LocalizedStringKey: Int] = [
+    let sectionPriority: [LocalizedStringKey: Int] = [
         "AAS": 2,
         "Feed": 4,
         "Public": 1,
         "Web": 3,
     ]
 
+    var features: [LocalizedStringKey: [FeatureWithView]] {
+        collectFeatures()
+    }
+
+    var featuresSearched: [LocalizedStringKey: [FeatureWithView]] {
+        guard !searchText.isEmpty else { return features }
+
+        var result: [LocalizedStringKey: [FeatureWithView]] = [:]
+        for (key, value) in features {
+            let filtered = value.filter { feature in
+                String(describing: feature.title).lowercased().contains(searchText.lowercased())
+                    || String(describing: feature.subTitle).lowercased().contains(searchText.lowercased())
+            }
+            if !filtered.isEmpty { result[key] = filtered }
+        }
+        return result
+    }
+
     var gridView: some View {
         VStack {
             Spacer()
                 .frame(height: 10)
             ForEach(
-                featureSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
+                featuresSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
                 id: \.key
             ) { key, features in
                 VStack(alignment: .leading) {
@@ -117,7 +124,7 @@ struct FeaturesView: View {
     var listView: some View {
         List {
             ForEach(
-                featureSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
+                featuresSearched.sorted(by: { sectionPriority[$0.key] ?? 10 < sectionPriority[$1.key] ?? 10 }),
                 id: \.key
             ) { key, features in
                 Section {
@@ -125,11 +132,8 @@ struct FeaturesView: View {
                         NavigationLink {
                             AnyView(feature.destinationView())
                         } label: {
-                            Label(
-                                feature.title,
-                                systemImage: feature.image
-                            )
-                            .symbolRenderingMode(.hierarchical)
+                            Label(feature.title, systemImage: feature.image)
+                                .symbolRenderingMode(.hierarchical)
                         }
                     }
                 } header: {
@@ -205,7 +209,6 @@ extension FeaturesView {
                     subTitle: "",
                     destinationView: {
                         AllSourceView()
-                            .navigationBarTitleDisplayMode(.inline)
                     }
                 )
             ] + feedSources.map { FeatureWithView($0) }

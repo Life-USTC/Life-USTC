@@ -6,10 +6,9 @@
 //
 
 import SwiftUI
-import SwiftyJSON
 
 struct AboutApp: View {
-    @AppStorage("Life-USTC") var life_ustc: Bool = false
+    @AppStorage("Life-USTC") var lifeUstc = false
     @State var contributorList: [(name: String, avatar: URL?)] = [
         (
             "tiankaima",
@@ -22,7 +21,7 @@ struct AboutApp: View {
     ]
 
     var iconView: some View {
-        Image(life_ustc ? "OldIcon" : "Icon")
+        Image(lifeUstc ? "OldIcon" : "Icon")
             .resizable()
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -62,11 +61,11 @@ struct AboutApp: View {
 
             iconView
                 .onTapGesture(count: 5) {
-                    life_ustc.toggle()
-                    changeAppIcon(to: life_ustc ? "OldAppIcon" : "NewAppIcon")
+                    lifeUstc.toggle()
+                    changeAppIcon(to: lifeUstc ? "OldAppIcon" : "NewAppIcon")
                 }
 
-            Text(life_ustc ? "Life@USTC" : "Study@USTC")
+            Text(lifeUstc ? "Life@USTC" : "Study@USTC")
                 .font(.system(.title, weight: .bold))
             Text(Bundle.main.versionDescription)
                 .font(.system(.caption, weight: .bold))
@@ -79,8 +78,7 @@ struct AboutApp: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(life_ustc ? "About Life@USTC" : "About Study@USTC")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(lifeUstc ? "About Life@USTC" : "About Study@USTC")
     }
 
     private func changeAppIcon(to iconName: String) {

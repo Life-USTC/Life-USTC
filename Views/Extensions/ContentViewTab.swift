@@ -44,7 +44,6 @@ enum ContentViewTab: Int, CaseIterable {
     }
 }
 
-
 struct ContentViewTabBarItemModifier: ViewModifier {
     let tab: ContentViewTab
     @Binding var selection: ContentViewTab

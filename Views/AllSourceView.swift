@@ -9,8 +9,9 @@ import SwiftUI
 
 struct AllSourceView: View {
     @ManagedData(.feedSources) var feedSources: [FeedSource]
+
     @State var searchText = ""
-    @State private var showingFeedSettings = false
+    @State var showingFeedSettings = false
 
     var feedsSearched: [Feed] {
         let feeds = feedSources.flatMap(\.feed)
@@ -23,20 +24,16 @@ struct AllSourceView: View {
             searchText
             .lowercased()
             .split(separator: " ")
-            .map { String($0) }
-            .filter { !$0.isEmpty }
+            .map { substring in String(substring) }
+            .filter { keyword in !keyword.isEmpty }
 
         guard !keywords.isEmpty else {
             return feeds
         }
 
         return feeds.filter { feed in
-            let titleLowercased = feed.title.lowercased()
-            let sourceLowercased = feed.source.lowercased()
-
-            // Check if all keywords are found in either title or source name
-            return keywords.allSatisfy { keyword in
-                titleLowercased.contains(keyword) || sourceLowercased.contains(keyword)
+            keywords.allSatisfy { keyword in
+                feed.title.lowercased().contains(keyword) || feed.source.lowercased().contains(keyword)
             }
         }
     }
@@ -45,9 +42,9 @@ struct AllSourceView: View {
         List {
             Section {
                 ForEach(
-                    feedsSearched.sorted(by: { $0.datePosted > $1.datePosted })
-                ) {
-                    FeedView(feed: $0)
+                    feedsSearched.sorted(by: { feed1, feed2 in feed1.datePosted > feed2.datePosted })
+                ) { feed in
+                    FeedView(feed: feed)
                 }
                 .asyncStatusOverlay(_feedSources.status)
 
@@ -64,7 +61,6 @@ struct AllSourceView: View {
         }
         .searchable(text: $searchText)
         .navigationTitle("Feed")
-        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

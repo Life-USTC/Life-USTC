@@ -18,9 +18,7 @@ struct ExamPreviewCard: View {
                 Spacer()
             }
             ExamPreview(exams: exams)
-                .asyncStatusOverlay(
-                    _exams.status,
-                )
+                .asyncStatusOverlay(_exams.status)
         }
         .card()
     }

@@ -64,7 +64,7 @@ struct FeedSettingView: View {
             }
         }
         .asyncStatusOverlay(_feedSources.status)
-        .navigationBarTitle("Feed Source Settings", displayMode: .inline)
+        .navigationTitle("Feed Source Settings")
     }
 }
 

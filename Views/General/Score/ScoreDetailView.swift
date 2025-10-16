@@ -34,7 +34,7 @@ struct ScoreDetailView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
                 }
-                Text("GPA: " + String(score.gpa))  // Double formatting problem noticed
+                Text("GPA: \(String(format: "%.2f", score.gpa))")
                     .font(.title2).bold()
             }
         } header: {
@@ -90,27 +90,37 @@ struct ScoreDetailView: View {
 }
 
 extension ScoreDetailView {
+    private var filteredCourses: [CourseScore] {
+        score.courses.filter { course in
+            !semesterNameToRemove.contains(course.semesterName)
+        }
+    }
+
+    private var sortedCourses: [CourseScore] {
+        filteredCourses.sorted { lhs, rhs in
+            guard let preference = sortPreference else { return true }
+
+            switch preference {
+            case .gpa:
+                return (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
+            case .code:
+                return lhs.lessonCode < rhs.lessonCode
+            }
+        }
+    }
+
     var sortedScore: [(name: String, courses: [CourseScore])] {
-        score.courses
-            .filter { course in
-                !semesterNameToRemove.contains(course.semesterName)
-            }
-            .sorted(by: { lhs, rhs in
-                switch sortPreference {
-                case .none: return true
-                case let .some(wrapped):
-                    switch wrapped {
-                    case .gpa: return (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
-                    case .code: return lhs.lessonCode < rhs.lessonCode
-                    }
-                }
-            })
-            .categorise { course in
-                course.semesterName
-            }
-            .sorted(by: { lhs, rhs in
+        // Group courses by semester
+        let groupedBySemester = sortedCourses.categorise { course in
+            course.semesterName
+        }
+
+        // Sort semesters by semester ID (descending)
+        return
+            groupedBySemester
+            .sorted { lhs, rhs in
                 lhs.value[0].semesterID > rhs.value[0].semesterID
-            })
+            }
             .map { ($0.key, $0.value) }
     }
 
