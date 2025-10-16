@@ -52,12 +52,12 @@ struct CurriculumWeekView: View {
                 BarMark(
                     xStart: .value(
                         "Start Time",
-                        behavior.convertTo(lecture.startDate.HHMM)
+                        behavior.convertTo(lecture.startDate.minutesSinceMidnight)
                     ),
 
                     xEnd: .value(
                         "End Time",
-                        behavior.convertTo(lecture.endDate.HHMM)
+                        behavior.convertTo(lecture.endDate.minutesSinceMidnight)
                     ),
                     y: .value("Date", lecture.startDate.stripTime(), unit: .day)
                 )
@@ -88,11 +88,11 @@ struct CurriculumWeekView: View {
             }
 
             if (mergedTimes.first! ... mergedTimes.last!)
-                .contains(behavior.convertTo(Date().stripDate().HHMM))
+                .contains(behavior.convertTo(Date().stripDate().minutesSinceMidnight))
             {
                 AxisMarks(
                     position: .bottom,
-                    values: [behavior.convertTo(Date().stripDate().HHMM)]
+                    values: [behavior.convertTo(Date().stripDate().minutesSinceMidnight)]
                 ) { _ in
                     AxisGridLine(stroke: .init(dash: []))
                         .foregroundStyle(.red)

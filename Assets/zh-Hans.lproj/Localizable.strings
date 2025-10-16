@@ -61,9 +61,18 @@
 "Features" = "功能";
 "Classroom Status" = "教室情况";
 "Bus Timetable" = "校车时间表";
+"Bus Settings" = "校车设置";
+"Bus Schedule" = "校车时刻";
+"Schedule Type" = "时刻表类型";
 "Weekday" = "工作日";
 "Weekend" = "周末";
+"Holiday" = "节假日";
 "Show departed buses" = "显示已出发校车";
+"Show Departed Buses" = "显示已出发校车";
+"Route Filter" = "路线筛选";
+"Show All Routes" = "显示所有路线";
+"Message" = "消息";
+"Done" = "完成";
 "No data" = "数据丢失";
 
 "Email" = "邮箱";
@@ -252,6 +261,17 @@
 "[NOT CURRENT]" = "[非本周]";
 "Tap on a route to expand, Long press to pin/unpin" = "点击路线来展开，长按来固定/取消固定";
 "No more bus today" = "今日无更多校车";
+"Next Departure" = "下一班";
+"Depart" = "出发";
+"Arrive" = "到达";
+"Schedule" = "时刻表";
+"Show All" = "显示全部";
+"Hide Past" = "隐藏过去";
+"No more buses today" = "今日无更多校车";
+"即停" = "即停";
+"Show Past Departures" = "显示过去的班次";
+"No Routes Available" = "无可用路线";
+"Configure Routes" = "配置路线";
 
 "Credit: " = "学分：";
 

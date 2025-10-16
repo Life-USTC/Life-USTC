@@ -18,21 +18,6 @@ prefix func ! <T>(lhs: Binding<T?>) -> Binding<T> {
     Binding(get: { lhs.wrappedValue! }, set: { lhs.wrappedValue = $0 })
 }
 
-struct HStackModifier: ViewModifier {
-    var trailing = false
-    func body(content: Content) -> some View {
-        HStack {
-            if trailing {
-                Spacer()
-                content
-            } else {
-                content
-                Spacer()
-            }
-        }
-    }
-}
-
 struct FlipableCard: View {
     @Binding var flipped: Bool
     var flippedDegrees: Double { flipped ? 180 : 0 }
@@ -56,12 +41,18 @@ struct FlipableCard: View {
 }
 
 extension View {
-    func hStackLeading() -> some View {
-        modifier(HStackModifier())
+    func hStackTrailing() -> some View {
+        HStack {
+            Spacer()
+            self
+        }
     }
 
-    func hStackTrailing() -> some View {
-        modifier(HStackModifier(trailing: true))
+    func hStackLeading() -> some View {
+        HStack {
+            self
+            Spacer()
+        }
     }
 
     func edgesIgnoringHorizontal(_: Edge.Set) -> some View {

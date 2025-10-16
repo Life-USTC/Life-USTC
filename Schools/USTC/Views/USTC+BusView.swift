@@ -8,25 +8,6 @@
 import SwiftUI
 import SwiftyJSON
 
-extension String {
-    fileprivate var hhmm_value: Int {
-        let components = self.split(separator: ":")
-        return Int(components[0])! * 60 + Int(components[1])!
-    }
-}
-
-extension [String?] {
-    fileprivate func passed(_ date: Date = Date()) -> Bool {
-        return self[0] == nil ? false : self[0]!.hhmm_value < date.HHMM
-    }
-}
-
-extension [[String?]] {
-    fileprivate func filterAfter(_ date: Date = Date()) -> [[String?]] {
-        return self.filter { !$0.passed(date) }
-    }
-}
-
 struct USTC_SchoolBusView: View {
     enum Selection: String, CaseIterable {
         case weekday
@@ -35,14 +16,17 @@ struct USTC_SchoolBusView: View {
 
     @ManagedData(.ustcBus) var data: USTCBusData
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
-    @AppStorage("ustcbusview_schdule_expand_list") var expandList: [USTCRoute] = []
-    @AppStorage("ustcbusview_pineed_routes_id_list") var pinnedRoutes: [Int] = []
+    @AppStorage("ustcbusview_selected_routes") var selectedRouteIds: [Int] = []
+    @State private var calculatedScheduleList: [USTCRouteSchedule] = []
     @State var selection: Selection = {
         let dayOfWeek = Calendar.current.component(.weekday, from: Date())
         return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
     }()
 
-    var _scheduleList: [USTCRouteSchedule] {
+    @State private var showingSettings = false
+    @State private var currentRouteIndex = 0
+
+    var allScheduleList: [USTCRouteSchedule] {
         switch selection {
         case .weekday:
             return data.weekday_routes
@@ -51,203 +35,357 @@ struct USTC_SchoolBusView: View {
         }
     }
 
-    var scheduleList: [USTCRouteSchedule] {
-        _scheduleList.filter { pinnedRoutes.contains($0.id) } + _scheduleList.filter { !pinnedRoutes.contains($0.id) }
+    // Function to update the calculated schedule list
+    func updateScheduleList() {
+        if selectedRouteIds.isEmpty {
+            calculatedScheduleList = allScheduleList
+        } else {
+            calculatedScheduleList = allScheduleList.filter { selectedRouteIds.contains($0.id) }
+        }
     }
 
-    @ViewBuilder func makeTopView(_ schedule: USTCRouteSchedule) -> some View {
-        HStack(spacing: 0) {
-            Group {
-                if pinnedRoutes.contains(schedule.id) {
-                    Image(systemName: "pin.fill")
-                        .rotationEffect(.degrees(-45))
-                        .foregroundColor(.accentColor)
-                        .font(.caption)
-                } else {
-                    Spacer()
-                }
-            }
-            .frame(width: 2)
+    var currentRoute: USTCRouteSchedule? {
+        guard !calculatedScheduleList.isEmpty else { return nil }
+        return calculatedScheduleList[safe: currentRouteIndex] ?? calculatedScheduleList.first
+    }
 
-            if let nextTimes = schedule.time.filter({ !$0.passed() }).first {
+    var availableRoutes: [USTCRouteSchedule] {
+        return allScheduleList.sorted { $0.id < $1.id }
+    }
+
+    private var pageCount: Int {
+        return calculatedScheduleList.count
+    }
+
+    // Time table for a specific route's schedule
+    @ViewBuilder
+    func makeTimeTableView(_ time: [[TimeString?]]) -> some View {
+        VStack(spacing: 4) {
+            // Determine next departure
+            let nextDeparture = time.filter({ !$0.passed() }).first
+
+            ForEach(time.indices, id: \.self) { rowIndex in
                 HStack {
-                    ForEach(schedule.route.campuses.indices, id: \.self) { index in
-                        VStack(alignment: .center) {
-                            Text(schedule.route.campuses[index].name)
-                                .foregroundColor(
-                                    (index == 0 || index == schedule.route.campuses.count - 1) ? .primary : .secondary
-                                )
-                                .frame(width: 60)
-                            Text(nextTimes[index] ?? "即停")
-                                .font(.system(.caption, design: .monospaced))
-                                .fontWeight(.semibold)
-                                .foregroundStyle(
-                                    (index == 0 || index == nextTimes.count - 1)
-                                        ? Color.accentColor : Color.secondary
-                                )
-                        }
-                        if index != nextTimes.count - 1 {
+                    ForEach(time[rowIndex].indices, id: \.self) { colIndex in
+                        Text(time[rowIndex][colIndex] ?? "即停".localized)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(
+                                time[rowIndex] == nextDeparture
+                                    ? .accentColor
+                                    : ((colIndex == 0 || colIndex == time[rowIndex].count - 1)
+                                        ? .primary
+                                        : .secondary)
+                            )
+                            .fontWeight(time[rowIndex] == nextDeparture ? .bold : .regular)
+                            .frame(minWidth: 60)
+
+                        if colIndex != time[rowIndex].count - 1 {
                             Spacer()
                         }
                     }
+                }
+                .padding(.vertical, 2)
+                .id(time[rowIndex].hashValue)
+            }
+        }
+    }
+
+    // Card view for a route - main component of the UI
+    @ViewBuilder
+    func RouteCardView(_ schedule: USTCRouteSchedule) -> some View {
+        VStack(alignment: .center, spacing: 12) {
+            // Route header with campus names
+            HStack {
+                ForEach(schedule.route.campuses.indices, id: \.self) { index in
+                    VStack(spacing: 0) {
+                        Text(schedule.route.campuses[index].name)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    }
+
+                    if index < schedule.route.campuses.count - 1 {
+                        Spacer()
+                        Image(systemName: "arrow.right")
+                            .foregroundColor(.secondary)
+                            .font(.headline)
+                        Spacer()
+                    }
+                }
+            }
+            .padding(.bottom, 10)
+
+            Divider()
+
+            // Show next departure in large text if available
+            if let nextTime = schedule.nextDeparture {
+                VStack(spacing: 8) {
+                    Text("Next Departure")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+
+                    HStack {
+                        ForEach(nextTime.indices, id: \.self) { index in
+                            VStack {
+                                Text(index == 0 ? "Depart" : index == nextTime.count - 1 ? "Arrive" : "")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+
+                                Text(nextTime[index] ?? "即停".localized)
+                                    .font(.system(.title2, design: .monospaced))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(
+                                        (index == 0 || index == nextTime.count - 1) ? .accentColor : .secondary
+                                    )
+                            }
+
+                            if index < nextTime.count - 1 {
+                                Spacer()
+                            }
+                        }
+                    }
+
+                    Divider()
+
+                    Text("Schedule")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+
+                    ScrollViewReader { proxy in
+                        ScrollView(.vertical, showsIndicators: false) {
+                            makeTimeTableView(schedule.time.filter { showPassBus || !$0.passed() })
+                        }
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    proxy.scrollTo(nextTime.hashValue, anchor: .center)
+                                }
+                            }
+                        }
+                    }
+                    .frame(height: 250)
                 }
             } else {
-                VStack {
-                    HStack {
-                        // bold first and last, spacer in between
-                        ForEach(schedule.route.campuses.indices, id: \.self) { index in
-                            Text(schedule.route.campuses[index].name)
-                                .foregroundColor(
-                                    (index == 0 || index == schedule.route.campuses.count - 1) && showPassBus
-                                        ? .primary : .secondary
-                                )
-                                .frame(width: 60)
-                            if index != schedule.route.campuses.count - 1 {
-                                Spacer()
-                            }
-                            if index == 0 && schedule.route.campuses.count == 2 {
-                                Rectangle()
-                                    .frame(width: 40, height: 1)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
+                VStack(spacing: 16) {
+                    Spacer()
+
+                    Image(systemName: "bus.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary.opacity(0.5))
+
+                    Text("No more buses today")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    if !showPassBus && !schedule.time.isEmpty {
+                        Button("Show Past Departures") {
+                            showPassBus = true
+                            updateScheduleList()
                         }
+                        .font(.subheadline)
+                        .buttonStyle(.bordered)
                     }
 
-                    Text("No more bus today")
-                        //                        .padding(.top, schedule.route.campuses.count == 2 ? 0 : 2)
-                        .foregroundStyle(.secondary)
-                        .font(.system(.caption2, design: .monospaced))
+                    Spacer()
+                }
+                .padding(.vertical, 40)
+            }
+        }
+        .padding(20)
+        .frame(width: UIScreen.main.bounds.width - 40, height: 500)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.secondarySystemGroupedBackground))
+
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+            }
+        )
+    }
+
+    // Settings sheet view
+    @ViewBuilder
+    func SettingsView() -> some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Picker("Schedule Type", selection: $selection) {
+                        ForEach(Selection.allCases, id: \.self) {
+                            Text($0.rawValue.capitalized.localized)
+                        }
+                    }
+                    Toggle("Show Departed Buses", isOn: $showPassBus)
+                } header: {
+                    AsyncStatusLight(status: _data.status)
+                } footer: {
+                    if let message = data.message?.message, let _url = data.message?.url, let url = URL(string: _url) {
+                        Link(message, destination: url)
+                    }
+                }
+
+                Section {
+                    Toggle(
+                        isOn: Binding(
+                            get: { selectedRouteIds.isEmpty },
+                            set: {
+                                if $0 {
+                                    selectedRouteIds = []
+                                    currentRouteIndex = 0
+                                }
+                            }
+                        )
+                    ) {
+                        Text("Show All Routes")
+                    }
+
+                    ForEach(availableRoutes) { route in
+                        let isSelected = selectedRouteIds.contains(route.id)
+                        Button {
+                            if isSelected {
+                                selectedRouteIds.removeAll { $0 == route.id }
+                            } else {
+                                if selectedRouteIds.isEmpty {
+                                    selectedRouteIds = [route.id]
+                                } else {
+                                    selectedRouteIds.append(route.id)
+                                }
+                            }
+                            currentRouteIndex = 0
+                        } label: {
+                            HStack {
+                                Text(route.routeDescription)
+                                Spacer()
+                                if isSelected {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                    }
+                } header: {
+                    Text("Route Filter")
+                }
+            }
+            .navigationTitle("Bus Settings")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        showingSettings = false
+                    } label: {
+                        Label("Done", systemImage: "xmark")
+                    }
                 }
             }
         }
     }
 
-    @ViewBuilder func makeExpanedView(_ time: [[String?]]) -> some View {
-        VStack {
-            ForEach(time.indices, id: \.self) { indice_i in
-                HStack {
-                    ForEach(time[indice_i].indices, id: \.self) { index in
-                        Text(time[indice_i][index] ?? "即停")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(
-                                (time[indice_i] == time.filter({ !$0.passed() }).first)
-                                    ? Color.accentColor
-                                    : ((index == 0 || index == time[indice_i].count - 1) && !time[indice_i].passed()
-                                        ? Color.primary : Color.secondary)
-                            )
-                            .fontWeight(
-                                time[indice_i] == time.filter({ !$0.passed() }).first ? .heavy : .regular
-                            )
-
-                        if index != time[indice_i].count - 1 {
-                            Spacer()
-                        }
-                    }
-                    .foregroundStyle(.secondary)
-                }
+    // Page indicator view
+    @ViewBuilder
+    func PageIndicator(currentPage: Int, pageCount: Int) -> some View {
+        HStack(spacing: 8) {
+            ForEach(0 ..< pageCount, id: \.self) { page in
+                Circle()
+                    .fill(page == currentPage ? Color.accentColor : Color.gray.opacity(0.5))
+                    .frame(width: 8, height: 8)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.vertical, 20)
     }
 
     var body: some View {
-        @State var isExpanded = false
-        ZStack(alignment: .bottom) {
-            ZStack(alignment: .top) {
-                List {
-                    Section {
-                        ForEach(scheduleList) { schedule in
-                            ZStack {
-                                Color.clear
-                                    .contentShape(Rectangle())
-                                makeTopView(schedule)
-                            }
-                            .onTapGesture {
-                                if expandList.contains(schedule.route) {
-                                    expandList.removeAll { $0 == schedule.route }
-                                } else {
-                                    expandList.append(schedule.route)
-                                }
-                            }
-                            .onLongPressGesture(minimumDuration: 0.2) {
-                                if pinnedRoutes.contains(schedule.id) {
-                                    pinnedRoutes.removeAll { $0 == schedule.id }
-                                } else {
-                                    pinnedRoutes.append(schedule.id)
-                                }
-                            }
-
-                            let time = (showPassBus ? schedule.time : schedule.time.filterAfter())
-                            if expandList.contains(schedule.route) && !time.isEmpty {
-                                makeExpanedView(time)
-                            }
-                        }
-                    } header: {
-                        AsyncStatusLight(status: _data.status)
-                    } footer: {
-                        VStack {
-                            Text("Tap on a route to expand, Long press to pin/unpin")
-                            Spacer(minLength: 80)
-                        }
-                    }
-                }
-                .padding(.top, 10)
-                .refreshable {
-                    _data.triggerRefresh()
-                }
-                .asyncStatusOverlay(_data.status)
-                .navigationTitle("Bus Timetable")
-                .navigationBarTitleDisplayMode(.inline)
-
-                Picker(
-                    "Time",
-                    selection: $selection
-                ) {
+        VStack {
+            HStack {
+                Picker("", selection: $selection) {
                     ForEach(Selection.allCases, id: \.self) {
                         Text($0.rawValue.capitalized.localized)
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 10)
-                .background(
-                    Rectangle()
-                        .fill(Color(.systemGroupedBackground))
-                )
-            }
+                .frame(width: 180)
+                .onChange(of: selection) { _ in
+                    currentRouteIndex = 0  // Reset route index when changing schedule type
+                }
 
-            VStack {
+                Spacer()
+
                 Button {
-                    showPassBus.toggle()
+                    showingSettings.toggle()
                 } label: {
-                    HStack {
-                        Text("Show departed buses")
-                            .foregroundColor(.primary)
-                        Spacer()
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .font(.system(size: 22))
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
 
-                        Image(systemName: showPassBus ? "checkmark.circle.fill" : "circle")
+            // Main content - horizontal scrolling cards
+            if calculatedScheduleList.isEmpty {
+                VStack(spacing: 20) {
+                    Image(systemName: "bus.doubledecker")
+                        .font(.system(size: 60))
+                        .foregroundColor(.secondary.opacity(0.5))
+
+                    Text("No Routes Available")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+
+                    Button("Configure Routes") {
+                        showingSettings = true
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding(40)
+            } else {
+                TabView(selection: $currentRouteIndex) {
+                    ForEach(Array(calculatedScheduleList.enumerated()), id: \.element.id) { index, schedule in
+                        RouteCardView(schedule)
+                            .tag(index)
                     }
                 }
-                .padding([.top, .horizontal])
+                .tabViewStyle(.page(indexDisplayMode: .never))
 
-                if let message = data.message?.message, let _url = data.message?.url, let url = URL(string: _url) {
-                    Link(message, destination: url)
-                        .font(.caption2)
-                        .padding(.vertical, 4)
+                // Page indicator
+                if calculatedScheduleList.count > 1 {
+                    PageIndicator(currentPage: currentRouteIndex, pageCount: calculatedScheduleList.count)
                 }
             }
-            .background {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color("BackgroundWhite"))
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.blue.opacity(0.1))
-                }
-            }
-            .padding(.horizontal, 20)
+
+            Spacer()
         }
-        .background(Color(.systemGroupedBackground))
+        .padding(.vertical)
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
+        }
+        .navigationTitle("Bus Timetable")
+        .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .asyncStatusOverlay(_data.status)
+        .onAppear {
+            // Initialize calculated schedule list
+            updateScheduleList()
+
+            // Make sure currentRouteIndex is valid
+            if !calculatedScheduleList.isEmpty && currentRouteIndex >= calculatedScheduleList.count {
+                currentRouteIndex = 0
+            }
+        }
+        .onChange(of: selection) { _ in
+            updateScheduleList()
+        }
+        .onChange(of: data) { _ in
+            updateScheduleList()
+        }
+        .onChange(of: showPassBus) { _ in
+            updateScheduleList()
+        }
+        .onChange(of: selectedRouteIds) { _ in
+            updateScheduleList()
+        }
     }
 }
 

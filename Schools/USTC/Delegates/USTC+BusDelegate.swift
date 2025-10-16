@@ -9,6 +9,28 @@ import Foundation
 import SwiftUI
 import SwiftyJSON
 
+// Typealias for time strings in "HH:MM" format
+typealias TimeString = String
+
+extension TimeString {
+    var minutesSinceMidnight: Int {
+        let components = self.split(separator: ":")
+        return Int(components[0])! * 60 + Int(components[1])!
+    }
+}
+
+extension [TimeString?] {
+    func passed(_ date: Date = Date()) -> Bool {
+        return self[0] == nil ? false : self[0]!.minutesSinceMidnight < date.minutesSinceMidnight
+    }
+}
+
+extension [[TimeString?]] {
+    func filterAfter(_ date: Date = Date()) -> [[TimeString?]] {
+        return self.filter { !$0.passed(date) }
+    }
+}
+
 struct USTCCampus: Identifiable, Codable, Hashable {
     var id: Int
     var name: String
@@ -24,7 +46,6 @@ struct USTCCampus: Identifiable, Codable, Hashable {
     )
 }
 
-//typealias USTCRoute = [USTCCampus]
 struct USTCRoute: Identifiable, Codable, Hashable {
     var id: Int
     var campuses: [USTCCampus]
@@ -38,7 +59,7 @@ struct USTCRoute: Identifiable, Codable, Hashable {
 struct USTCRouteSchedule: Identifiable, Codable, Equatable {
     var id: Int
     var route: USTCRoute
-    var time: [[String?]]
+    var time: [[TimeString?]]
 
     static let example = USTCRouteSchedule(
         id: 1,
@@ -47,14 +68,24 @@ struct USTCRouteSchedule: Identifiable, Codable, Equatable {
             ["07:50", "08:10"]
         ]
     )
+
+    var routeDescription: String {
+        let start = route.campuses.first?.name ?? ""
+        let end = route.campuses.last?.name ?? ""
+        return "\(start) - \(end)"
+    }
+
+    var nextDeparture: [TimeString?]? {
+        return time.filter { !$0.passed() }.first
+    }
 }
 
-struct Message: Codable {
+struct Message: Codable, Equatable {
     var message: String
     var url: String
 }
 
-struct USTCBusData: ExampleDataProtocol, Codable {
+struct USTCBusData: ExampleDataProtocol, Codable, Equatable {
     var campuses: [USTCCampus]
 
     var routes: [USTCRoute]
@@ -78,9 +109,6 @@ class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
     override func refresh() async throws -> USTCBusData {
         let url = URL(string: "\(staticURLPrefix)/bus_data_v3.json")
         let (data, _) = try await URLSession.shared.data(from: url!)
-        //        let path = Bundle.main.path(forResource: "ustc_bus_data_v2", ofType: "json")
-        //        let url = URL(fileURLWithPath: path!)
-        //        let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 }

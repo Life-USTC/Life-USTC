@@ -2,3 +2,5 @@
 "casFullHint" = "This service is brought to you by USTC CAS server, not this app.\nFor more information and license agreement, checkout https://passport.ustc.edu.cn/\nWhen dealing with your username and password, we only store it on your device and follow industry standards.\nWe use your username & password to skip the verification process on webpage/API services by validating the token in the background in a 15-minute cycle(if actively used). That means we simulate user's behaviour and send out requests as if they were sent by users. This doesn't viloate USTC CAS's License Agreement, but they are subject to change without pre-notice.\nThis process could potentially trigger warnings of USTC, and could potentially fail. In turn, We do NOT take any responsiblity and/or make any commitment about this feature's usability, USE THIS FEATURE AT YOUR OWN RISK.\n";
 
 "disclaimer" = "Double check with information provided on your school's website. Information here might be incorrect or out-dated. We take no responsiblity for any of that.";
+
+"即停" = "Stop briefly";

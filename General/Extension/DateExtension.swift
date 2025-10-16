@@ -50,7 +50,7 @@ extension Date {
     }
 
     /// hour * 60 + minute
-    var HHMM: Int {
+    var minutesSinceMidnight: Int {
         let components = Calendar.current.dateComponents(
             [.hour, .minute],
             from: self
