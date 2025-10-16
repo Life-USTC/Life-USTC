@@ -85,7 +85,7 @@ extension DateComponents {
 }
 
 // Enable @AppStorage ... Date
-extension Date: RawRepresentable {
+extension Date: @retroactive RawRepresentable {
     public var rawValue: String { timeIntervalSinceReferenceDate.description }
 
     public init?(rawValue: String) {

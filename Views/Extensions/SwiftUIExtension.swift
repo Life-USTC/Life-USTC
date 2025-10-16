@@ -104,7 +104,7 @@ extension View {
     }
 }
 
-extension WidgetFamily: CaseIterable {
+extension WidgetFamily: @retroactive CaseIterable {
     public static var allCases: [WidgetFamily] = [
         .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
         .accessoryRectangular, .accessoryInline, .accessoryCircular,

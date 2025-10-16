@@ -8,7 +8,7 @@
 import SwiftUI
 
 //  Enable @AppStorage for [Codable]
-extension Array: RawRepresentable where Element: Codable {
+extension Array: @retroactive RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
             let result = try? JSONDecoder().decode([Element].self, from: data)
@@ -24,7 +24,7 @@ extension Array: RawRepresentable where Element: Codable {
     }
 }
 
-extension Dictionary: RawRepresentable where Key == String, Value: Codable {
+extension Dictionary: @retroactive RawRepresentable where Key == String, Value: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
             let result = try? JSONDecoder().decode([Key: Value].self, from: data)
