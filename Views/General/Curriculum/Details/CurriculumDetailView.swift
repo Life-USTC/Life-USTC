@@ -164,7 +164,6 @@ struct CurriculumDetailView: View {
             }
         }
         .navigationTitle("Curriculum")
-        .navigationBarTitleDisplayMode(.inline)
         .refreshable {
             _curriculum.triggerRefresh()
         }

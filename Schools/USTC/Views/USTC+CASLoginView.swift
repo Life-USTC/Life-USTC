@@ -31,7 +31,7 @@ struct USTCCASLoginView: View {
         case password
         case studentType
     }
-    @FocusState var foucusField: Field?
+    @FocusState var focusField: Field?
 
     var title: LocalizedStringKey = "CAS Settings"
     var isInSheet = false
@@ -66,12 +66,12 @@ struct USTCCASLoginView: View {
                         "Username",
                         text: $ustcCASViewModel.inputUsername
                     )
-                    .focused($foucusField, equals: .username)
+                    .focused($focusField, equals: .username)
                     .onSubmit {
                         DispatchQueue.main.asyncAfter(
                             deadline: .now() + 0.1
                         ) {
-                            foucusField = .password
+                            focusField = .password
                         }
                     }
                     .submitLabel(.next)
@@ -91,9 +91,9 @@ struct USTCCASLoginView: View {
                         "Password",
                         text: $ustcCASViewModel.inputPassword
                     )
-                    .focused($foucusField, equals: .password)
+                    .focused($focusField, equals: .password)
                     .onSubmit {
-                        foucusField = .studentType
+                        focusField = .studentType
                     }
                     .submitLabel(.next)
                     Divider()
@@ -111,7 +111,7 @@ struct USTCCASLoginView: View {
                     Text("Graduate")
                         .tag(USTCStudentType.graduate)
                 }
-                .focused($foucusField, equals: .password)
+                .focused($focusField, equals: .password)
                 .submitLabel(.done)
                 .pickerStyle(.segmented)
                 .frame(width: 200)
@@ -165,7 +165,7 @@ struct USTCCASLoginView: View {
 
                 loginButton
             }
-            .padding([.top, .horizontal])
+            .padding()
             .alert(
                 "Login Failed",
                 isPresented: $showFailedAlert,
@@ -183,7 +183,7 @@ struct USTCCASLoginView: View {
                 }
             )
             .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .tabBar)
             .background(
                 PresenterInjectorView(onResolve: { vc in
                     guard !presenterInjected else { return }

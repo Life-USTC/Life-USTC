@@ -52,7 +52,6 @@ struct HomeworkDetailView: View {
             _homeworks.triggerRefresh()
         }
         .navigationTitle("Homework (Blackboard)")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
 }

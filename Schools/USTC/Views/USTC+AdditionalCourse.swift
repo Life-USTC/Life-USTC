@@ -67,7 +67,6 @@ struct USTCAdditionalCourseView: View {
             }
         }
         .navigationTitle("Select Additional Course")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -154,6 +153,5 @@ struct USTCAdditionalCourseSemesterView: View {
         }
         .searchable(text: $searchKeyword)
         .navigationTitle(semester.name)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

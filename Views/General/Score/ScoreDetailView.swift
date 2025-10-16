@@ -85,7 +85,6 @@ struct ScoreDetailView: View {
             _score.triggerRefresh()
         }
         .navigationTitle("Score")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

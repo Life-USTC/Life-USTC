@@ -58,7 +58,6 @@ struct ExamDetailView: View {
             }
         }
         .navigationTitle("Exam")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

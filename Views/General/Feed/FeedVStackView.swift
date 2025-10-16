@@ -29,6 +29,5 @@ struct FeedSourceView: View {
     var body: some View {
         FeedVStackView(feeds: feedSource.feed)
             .navigationTitle(feedSource.name)
-            .navigationBarTitleDisplayMode(.inline)
     }
 }

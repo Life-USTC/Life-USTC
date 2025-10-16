@@ -97,6 +97,5 @@ struct CurriculumListView: View {
             }
         }
         .navigationTitle("Curriculum")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

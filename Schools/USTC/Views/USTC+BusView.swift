@@ -357,7 +357,6 @@ struct USTC_SchoolBusView: View {
             SettingsView()
         }
         .navigationTitle("Bus Timetable")
-        .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .asyncStatusOverlay(_data.status)
         .onAppear {
