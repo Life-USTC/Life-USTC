@@ -48,18 +48,13 @@ struct HomeView: View {
     }
 
     var body: some View {
-        VStack {
-            ScrollView(showsIndicators: false) {
-                Spacer()
-                    .frame(height: 10)
-
-                VStack(spacing: 40) {
-                    ForEach(homeViewOrder, id: \.self) { cardType in
-                        cardType.view
-                    }
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 40) {
+                ForEach(homeViewOrder, id: \.self) { cardType in
+                    cardType.view
+                        .padding(.horizontal, 20)
                 }
             }
-            .padding(.horizontal, 20)
         }
         .navigationTitle(navigationTitle)
         .background(Color(.systemGroupedBackground))
