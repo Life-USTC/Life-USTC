@@ -250,7 +250,6 @@
 		56558803294D93810010E060 /* FeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturesView.swift; sourceTree = "<group>"; };
 		56558808294DC9D40010E060 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5655880A294DEA6B0010E060 /* USTC+CAS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+CAS.swift"; sourceTree = "<group>"; };
-		565A11B729FF565E00310C8B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		5677E1142A5A83FC00EDCB53 /* SingleExamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleExamView.swift; sourceTree = "<group>"; };
 		5677E11F2A5AB5A100EDCB53 /* USTC+Exports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USTC+Exports.swift"; sourceTree = "<group>"; };
 		5677E1362A5AF1AB00EDCB53 /* ExtensionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionViews.swift; sourceTree = "<group>"; };
@@ -420,7 +419,6 @@
 				56A3B86A29A8899800BFE64F /* Extensions */,
 				565587FC294D65E30010E060 /* General */,
 				56E94E21298A775C0085241B /* Settings */,
-				565A11B629FF563600310C8B /* StartUp */,
 				5653458B2A98D43E0010B78C /* AllSourceView.swift */,
 				562169212955BEDE00DF46BE /* ContentView.swift */,
 				56558803294D93810010E060 /* FeaturesView.swift */,
@@ -465,14 +463,6 @@
 				565587EC294B46900010E060 /* Localizable.strings */,
 			);
 			path = Assets;
-			sourceTree = "<group>";
-		};
-		565A11B629FF563600310C8B /* StartUp */ = {
-			isa = PBXGroup;
-			children = (
-				565A11B729FF565E00310C8B /* WelcomeView.swift */,
-			);
-			path = StartUp;
 			sourceTree = "<group>";
 		};
 		5677E11C2A5AB4B500EDCB53 /* USTC */ = {
