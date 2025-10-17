@@ -35,7 +35,7 @@ struct Exam: Codable, Identifiable, Equatable, ExampleDataProtocol {
 
     static let example: Exam = .init(
         lessonCode: "MATH10001.01",
-        courseName: "数学分析B1",
+        courseName: "数学分析 B1",
         typeName: "期末考试",
         startDate: Date().stripTime() + DateComponents(hour: 14, minute: 0),
         endDate: Date().stripTime() + DateComponents(hour: 16, minute: 30),

@@ -8,53 +8,108 @@
 import Combine
 import SwiftUI
 
-struct ExamWidgetView: View {
+struct ExamItemView: View {
     var exam: Exam
+    var color: Color = .blue
+
+    var examColor: Color {
+        exam.daysLeft <= 7 ? .red.opacity(0.8) : color.opacity(0.8)
+    }
+
+    var isFinished: Bool {
+        exam.isFinished
+    }
+
     var body: some View {
-        HStack(alignment: .bottom) {
+        HStack {
             VStack(alignment: .leading) {
-                HStack {
-                    Text(exam.courseName)
-                        .font(.headline)
-                        .strikethrough(exam.isFinished)
-                        .bold()
-                    Text(exam.classRoomName)
-                        .font(.caption)
-                        .foregroundColor(.gray.opacity(0.8))
-                }
-                HStack {
-                    Text(exam.startDate, format: .dateTime.day().month())
-                        .font(.footnote)
-                        .fontWeight(.heavy)
-                        .foregroundColor(.blue.opacity(0.8))
-                    Text(exam.startDate ... exam.endDate)
-                        .font(.caption)
-                        .foregroundColor(.gray.opacity(0.8))
-                }
+                Text(exam.courseName)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Text("\(exam.startDate, format: .dateTime.day().month()) @ **\(exam.classRoomName)**")
+                    .font(.footnote)
+                    .foregroundColor(.gray.opacity(0.8))
             }
+
             Spacer()
-            if exam.isFinished {
-                Text("Finished")
-                    .foregroundColor(.gray)
-                    .font(.subheadline)
-                    .fontWeight(.heavy)
-            } else {
-                Text(RelativeDateTimeFormatter().localizedString(for: exam.startDate, relativeTo: Date()))
-                    .foregroundColor(
-                        exam.daysLeft <= 7 ? .red : .accentColor
-                    )
-                    .font(.subheadline)
-                    .fontWeight(.heavy)
+
+            VStack(alignment: .trailing) {
+                if isFinished {
+                    Text("Finished")
+                        .foregroundColor(.gray)
+                        .font(.subheadline)
+                        .fontWeight(.heavy)
+                } else {
+                    Text(RelativeDateTimeFormatter().localizedString(for: exam.startDate, relativeTo: Date()))
+                        .foregroundColor(examColor)
+                        .font(.subheadline)
+                        .fontWeight(.heavy)
+                }
+                Text(exam.startDate ... exam.endDate)
+                    .font(.caption)
+                    .foregroundColor(.gray.opacity(0.8))
             }
+        }
+        .padding(.leading, 15)
+        .padding(.trailing, 10)
+        .padding(.vertical, 5)
+        .background {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(examColor)
+                    .frame(width: 5)
+                RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
+                    .fill(examColor.opacity(0.05))
+            }
+        }
+        .if(isFinished) {
+            $0
+                .strikethrough()
+                .grayscale(1.0)
         }
     }
 }
 
 struct ExamPreview: View {
     var exams: [Exam] = []
-    var numberToShow: Int = 1
+    var color: Color = .blue
 
-    var titleView: some View {
+    @ViewBuilder
+    var noExamView: some View {
+        ZStack {
+            ExamItemView(exam: .example)
+                .redacted(reason: .placeholder)
+
+            VStack {
+                Text("No More Exam!")
+                    .lineLimit(1)
+                    .font(.system(.body, weight: .semibold))
+
+                Text("Enjoy!")
+                    .lineLimit(1)
+                    .font(.caption)
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            ForEach(exams) { exam in
+                ExamItemView(exam: exam, color: color)
+            }
+
+            if exams.isEmpty {
+                noExamView
+            }
+        }
+    }
+}
+
+extension ExamPreview {
+    @ViewBuilder
+    static var titleView: some View {
         Text("Exam")
             .padding(.horizontal, 5)
             .padding(.vertical, 3)
@@ -68,93 +123,9 @@ struct ExamPreview: View {
     }
 
     @ViewBuilder
-    func makeWidget(
-        with optionalExam: Exam?
-    ) -> some View {
-        let exam = optionalExam ?? .example
-
-        ZStack {
-            examContentView(for: exam)
-                .if(optionalExam == nil) {
-                    $0.redacted(reason: .placeholder)
-                        .blur(radius: 5)
-                }
-
-            if optionalExam == nil {
-                noExamView()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func examContentView(for exam: Exam) -> some View {
-        VStack(alignment: .leading) {
-            VStack(alignment: .leading) {
-                HStack {
-                    titleView
-                    Text(exam.startDate, format: .dateTime.day().month())
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                        .foregroundColor(.blue)
-                }
-                Text(exam.courseName)
-                    .lineLimit(2)
-                    .fontWeight(.bold)
-            }
-
-            Spacer()
-
-            // Footer section with date and room info
-            VStack(alignment: .leading) {
-                daysLeftView(for: exam)
-
-                HStack {
-                    Text(exam.startDate, format: .dateTime.hour().minute())
-                    Spacer()
-                    Text(exam.classRoomName)
-                }
-                .lineLimit(1)
-                .foregroundColor(.gray.opacity(0.8))
-                .font(.subheadline)
-                .fontWeight(.regular)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func daysLeftView(for exam: Exam) -> some View {
-        let daysLeftText =
-            exam.daysLeft == 1
-            ? "1 day left".localized : String(format: "%@ days left".localized, String(exam.daysLeft))
-
-        Text(daysLeftText)
-            .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
-            .font(.title3)
-            .fontWeight(.semibold)
-    }
-
-    @ViewBuilder
-    private func noExamView() -> some View {
-        VStack(alignment: .center, spacing: 20) {
-            Image(systemName: "moon.stars")
-                .font(.system(size: 50))
-                .fontWeight(.regular)
-                .frame(width: 60, height: 60)
-                .padding(5)
-                .fontWeight(.heavy)
-                .foregroundColor(.blue.opacity(0.8))
-            Text("No More Exam!")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.secondary)
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    func makeListWidget(
-        with examList: [Exam],
-        color: Color = .cyan,
+    static func makeListWidget(
+        with exams_: [Exam],
+        color: Color = Color.blue,
         numberToShow: Int = 2
     ) -> some View {
         VStack(spacing: 0) {
@@ -162,66 +133,136 @@ struct ExamPreview: View {
                 titleView
                 Spacer()
 
-                Text(String(format: "Total: %@ exams".localized, String(examList.count)))
+                Text(String(format: "Total: %@ exams".localized, String(exams_.count)))
                     .font(.system(.caption, design: .monospaced, weight: .light))
             }
             .padding(.bottom, 10)
 
-            let exams = examList.isEmpty ? Array(repeating: Exam.example, count: 4) : examList
+            let exams = exams_.isEmpty ? Array(repeating: .example, count: 4) : exams_
 
             ZStack {
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 5) {
                     ForEach(Array(exams.prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
-                        ExamWidgetView(exam: exam)
-
-                        if index < exams.count - 1 && index < numberToShow - 1 {
-                            Divider()
-                                .padding(.vertical, 7)
-                        }
-
+                        ExamItemView(exam: exam, color: color)
                     }
                 }
-                .if(examList.isEmpty) {
+                .if(exams_.isEmpty) {
                     $0
                         .redacted(reason: .placeholder)
                         .blur(radius: 5)
                 }
 
-                if examList.isEmpty {
+                if exams_.isEmpty {
                     Text("No More Exam!")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.secondary)
                 }
             }
 
-            Spacer()
+            if numberToShow >= 2 {
+                Spacer()
+            }
+        }
+        .dynamicTypeSize(.medium)
+    }
+}
+
+extension ExamPreview {
+    @ViewBuilder
+    static func makeDayWidget(
+        with exam_: Exam?
+    ) -> some View {
+        let exam = exam_ ?? .example
+
+        ZStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    titleView
+
+                    Text(exam.classRoomName)
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                        .foregroundColor(.blue)
+                }
+                .padding(.bottom, 3)
+
+                Text(exam.courseName)
+                    .lineLimit(2)
+                    .fontWeight(.bold)
+
+                Spacer()
+
+                let daysLeftText =
+                    exam.daysLeft == 1
+                    ? "1 day left".localized : String(format: "%@ days left".localized, String(exam.daysLeft))
+                Text(daysLeftText)
+                    .foregroundColor(exam.daysLeft <= 7 ? .red.opacity(0.8) : .blue.opacity(0.8))
+                    .font(.title3)
+                    .fontWeight(.semibold)
+
+                HStack {
+                    Text(exam.startDate, format: .dateTime.hour().minute())
+                    Spacer()
+                    Text(exam.startDate, format: .dateTime.day().month())
+                }
+                .font(.subheadline)
+                .fontWeight(.regular)
+                .foregroundColor(.gray.opacity(0.8))
+            }
+            .if(exam_ == nil) {
+                $0
+                    .redacted(reason: .placeholder)
+                    .blur(radius: 5)
+            }
+
+            if exam_ == nil {
+                VStack(alignment: .center, spacing: 20) {
+                    Image(systemName: "moon.stars")
+                        .font(.system(size: 50))
+                        .fontWeight(.regular)
+                        .frame(width: 60, height: 60)
+                        .padding(5)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.blue.opacity(0.8))
+                    Text("No More Exam!")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .dynamicTypeSize(.medium)
+    }
+}
+
+#Preview {
+    TabView {
+        ForEach(0 ..< 10) { count in
+            NavigationStack {
+                ExamPreview
+                    .makeListWidget(
+                        with: Array(repeating: .example, count: count),
+                        color: .blue,
+                        numberToShow: 4
+                    )
+                    .card()
+                    .border(.blue)
+                    .frame(height: 400)
+            }
         }
     }
+}
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            ForEach(Array(exams.clean().enumerated()), id: \.1.id) { index, exam in
-                ExamWidgetView(exam: exam)
-                if index < exams.count - 1 {
-                    Divider()
-                }
-            }
+#Preview {
+    NavigationStack {
+        VStack {
+            ExamPreview
+                .makeDayWidget(with: nil)
+                .frame(width: 200, height: 200)
 
-            if exams.isEmpty {
-                HStack {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.accentColor)
-                        .frame(width: 5)
-                        .frame(minHeight: 40, maxHeight: 50)
-                    VStack(alignment: .leading) {
-                        Text("No More Exam!")
-                            .fontWeight(.bold)
-                        Text("Enjoy!")
-                            .font(.system(.caption, design: .monospaced))
-                    }
-                    Spacer()
-                }
-            }
+            ExamPreview
+                .makeDayWidget(with: .example)
+                .frame(width: 200, height: 200)
         }
     }
 }

@@ -33,12 +33,11 @@ struct CurriculumTodayCard: View {
     }
 
     var body: some View {
-        VStack {
-            HStack {
-                Text("Curriculum")
-                    .font(.system(.title2, weight: .medium))
-                Spacer()
-            }
+        VStack(spacing: 15) {
+            Text("Curriculum")
+                .font(.system(.title2, weight: .medium))
+                .hStackLeading()
+
             CurriculumTodayView(
                 lectureListA: todayLectures,
                 lectureListB: tomorrowLectures

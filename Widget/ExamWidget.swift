@@ -63,20 +63,20 @@ struct ExamWidgetEntryView: View {
     var body: some View {
         VStack {
             if widgetFamily == .systemMedium {
-                ExamPreview()
+                ExamPreview
                     .makeListWidget(
                         with: entry.exams,
                         numberToShow: 2
                     )
             } else if widgetFamily == .systemLarge {
-                ExamPreview()
+                ExamPreview
                     .makeListWidget(
                         with: entry.exams,
                         numberToShow: 6
                     )
             } else if widgetFamily == .systemSmall {
-                ExamPreview()
-                    .makeWidget(
+                ExamPreview
+                    .makeDayWidget(
                         with: entry.exams.filter { !$0.isFinished }.first
                     )
             }

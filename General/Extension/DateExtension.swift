@@ -24,8 +24,8 @@ extension Date {
             from: self
         )
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
+        dateFormatter.dateFormat = "HH:mm"
+        dateFormatter.locale = Locale(identifier: "en_GB")
         let formattedDate = dateFormatter.string(from: Calendar.current.date(from: components)!)
 
         return formattedDate
