@@ -2,8 +2,8 @@ platform :ios do
   desc "Build IPA for App Store distribution"
   lane :build_ipa do
     setup_ci if is_ci
-    # set build-number to YYYYMMDDHHMMSS
-    build_number = Time.now.strftime("%Y%m%d%H%M%S")
+    # set build-number to YYYY.MM.DD.HH:MM:SS
+    build_number = Time.now.strftime("%Y.%m.%d.%H.%M.%S")
     increment_build_number(build_number: build_number)
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
