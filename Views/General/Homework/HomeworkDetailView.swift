@@ -1,6 +1,6 @@
 //
 //  HomeworkDetailView.swift
-//  学在科大
+//  Life@USTC
 //
 //  Created by TianKai Ma on 2023/12/1.
 //

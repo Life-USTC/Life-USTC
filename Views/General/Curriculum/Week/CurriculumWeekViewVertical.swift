@@ -1,6 +1,6 @@
 //
 //  CurriculumWeekViewVertical.swift
-//  学在科大
+//  Life@USTC
 //
 //  Created by TianKai Ma on 2024/4/15.
 //

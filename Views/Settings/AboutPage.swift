@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AboutApp: View {
-    @AppStorage("Life-USTC") var lifeUstc = false
     @State var contributorList: [(name: String, avatar: URL?)] = [
         (
             "tiankaima",
@@ -19,14 +18,6 @@ struct AboutApp: View {
             URL(string: "https://avatars.githubusercontent.com/u/42104346?v=4")
         ),
     ]
-
-    var iconView: some View {
-        Image(lifeUstc ? "OldIcon" : "Icon")
-            .resizable()
-            .frame(width: 100, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .shadow(radius: 2)
-    }
 
     var authorListView: some View {
         VStack {
@@ -59,13 +50,13 @@ struct AboutApp: View {
         VStack {
             Spacer()
 
-            iconView
-                .onTapGesture(count: 5) {
-                    lifeUstc.toggle()
-                    changeAppIcon(to: lifeUstc ? "OldAppIcon" : "NewAppIcon")
-                }
+            Image("Icon")
+                .resizable()
+                .frame(width: 100, height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(radius: 2)
 
-            Text(lifeUstc ? "Life@USTC" : "Study@USTC")
+            Text("Life@USTC")
                 .font(.system(.title, weight: .bold))
             Text(Bundle.main.versionDescription)
                 .font(.system(.caption, weight: .bold))
@@ -78,7 +69,7 @@ struct AboutApp: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(lifeUstc ? "About Life@USTC" : "About Study@USTC")
+        .navigationTitle("About Life@USTC")
     }
 
     private func changeAppIcon(to iconName: String) {

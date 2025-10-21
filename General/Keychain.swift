@@ -11,8 +11,8 @@ import SwiftUI
 @propertyWrapper public struct AppSecureStorage: DynamicProperty {
     private let key: String
     private let keychain = Keychain(
-        service: "com.linzihan.XZKDiOS",
-        accessGroup: "group.com.linzihan.XZKDiOS"
+        service: "dev.tiankaima.Life-USTC",
+        accessGroup: "group.dev.tiankaima.Life-USTC"
     )
 
     public var wrappedValue: String {

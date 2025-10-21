@@ -12,14 +12,12 @@
 "Before %@" = "%@ 之前";
 "" = "";
 "ustc.edu.cn" = "官网";
-"Study@USTC" = "学在科大";
 
 "App Settings" = "应用设置";
 "Feed Source Settings" = "通知设置";
 "CAS Settings" = "统一身份认证设置";
 "Change User Type" = "更改用户类型";
 "Notification Settings" = "应用消息设置";
-"About Study@USTC" = "关于「学在科大」";
 "Legal Info" = "法律信息";
 
 "Use new UI for tabBar" = "在标签栏位置使用新版 UI";

@@ -47,11 +47,6 @@ let defaultHomeViewOrder: [HomeViewCardType] = [
 
 struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
-    @AppStorage("Life-USTC") var lifeUstc = false
-
-    var navigationTitle: LocalizedStringKey {
-        lifeUstc ? "Life@USTC" : "Study@USTC"
-    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -62,7 +57,7 @@ struct HomeView: View {
                 }
             }
         }
-        .navigationTitle(navigationTitle)
+        .navigationTitle("Life@USTC")
         .background(Color(.systemGroupedBackground))
     }
 }

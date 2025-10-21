@@ -3,17 +3,17 @@ platform :ios do
   lane :build_ipa do
     setup_ci if is_ci
     # set build-number to YYYY.MM.DD.HH:MM:SS
-    build_number = Time.now.strftime("%Y%m%d%H%M%S") # TODO: change to YYYY.MM.DD.HHMMSS next version
+    build_number = Time.now.strftime("%Y.%m.%d.%H%M%S") # TODO: change to YYYY.MM.DD.HHMMSS next version
     increment_build_number(build_number: build_number)
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
     gym(
-      scheme: "学在科大",
+      scheme: "Life-USTC",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "com.linzihan.XZKDiOS": "match AppStore com.linzihan.XZKDiOS",
-          "com.linzihan.XZKDiOS.Widget": "match AppStore com.linzihan.XZKDiOS.Widget",
+          "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
+          "dev.tiankaima.Life-USTC.Widget": "match AppStore dev.tiankaima.Life-USTC.Widget",
         },
       },
     )
@@ -49,7 +49,7 @@ platform :ios do
       in_house: false,
     )
 
-    app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
+    app = Spaceship::ConnectAPI::App.find("dev.tiankaima.Life-USTC")
 
     UI.message("Waiting for build (#{build_number}) to finish processing...")
     loop do
@@ -87,7 +87,7 @@ platform :ios do
       in_house: false
     )
 
-    app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
+    app = Spaceship::ConnectAPI::App.find("dev.tiankaima.Life-USTC")
     groups = app.get_beta_groups(filter: {name: "送测"})
 
     build = app.get_builds(filter: { version: build_number }).first or UI.user_error!("No builds found with build number (#{build_number})")

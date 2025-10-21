@@ -8,12 +8,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("Life-USTC") var lifeUstc = false
-
-    var aboutTitle: LocalizedStringKey {
-        lifeUstc ? "About Life@USTC" : "About Study@USTC"
-    }
-
     var body: some View {
         List {
             Section {
@@ -38,7 +32,7 @@ struct SettingsView: View {
             }
 
             Section {
-                NavigationLink(aboutTitle, destination: AboutApp())
+                NavigationLink("About Life@USTC", destination: AboutApp())
                 NavigationLink("Legal Info", destination: LegalInfoView())
             } header: {
                 Text("More")

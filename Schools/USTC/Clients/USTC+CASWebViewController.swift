@@ -1,6 +1,6 @@
 //
 //  USTC+CASWebViewController.swift
-//  学在科大
+//  Life@USTC
 //
 //  Created by TianKai Ma on 10/8/25.
 //

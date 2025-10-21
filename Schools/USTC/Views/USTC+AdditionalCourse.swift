@@ -1,6 +1,6 @@
 //
 //  USTC+AdditionalCourse.swift
-//  学在科大
+//  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/10/15.
 //
