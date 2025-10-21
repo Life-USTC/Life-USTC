@@ -3,7 +3,7 @@ platform :ios do
   lane :build_ipa do
     setup_ci if is_ci
     # set build-number to YYYY.MM.DD.HH:MM:SS
-    build_number = Time.now.strftime("%Y.%m.%d.%H.%M.%S")
+    build_number = Time.now.strftime("%Y%m%d%H%M%S") # TODO: change to YYYY.MM.DD.HHMMSS next version
     increment_build_number(build_number: build_number)
     match(type: "development", readonly: true)
     match(type: "appstore", readonly: true)
@@ -50,9 +50,8 @@ platform :ios do
     )
 
     app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
-    version = get_version_number(target: "学在科大")
 
-    UI.message("Waiting for build #{version} (#{build_number}) to finish processing...")
+    UI.message("Waiting for build (#{build_number}) to finish processing...")
     loop do
       builds = app.get_builds(filter: { version: build_number })
       if builds.empty?
@@ -66,7 +65,7 @@ platform :ios do
       UI.message("Current processing state: #{processing_state}")
 
       if build.processed?
-        UI.success("Build #{version} (#{build_number}) has finished processing!")
+        UI.success("Build (#{build_number}) has finished processing!")
         break
       end
       UI.message("Still processing, checking again in 30 seconds...")
@@ -91,7 +90,7 @@ platform :ios do
     app = Spaceship::ConnectAPI::App.find("com.linzihan.XZKDiOS")
     groups = app.get_beta_groups(filter: {name: "送测"})
 
-    build = app.get_builds(filter: { version: build_number }).first or UI.user_error!("No builds found with build number #{build_number}")
+    build = app.get_builds(filter: { version: build_number }).first or UI.user_error!("No builds found with build number (#{build_number})")
     build.add_beta_groups(beta_groups: groups)
     UI.message("Added Build ID: #{build.id} to Beta Group: 送测")
   end

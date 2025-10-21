@@ -39,6 +39,12 @@ extension HomeViewCardType {
     }
 }
 
+let defaultHomeViewOrder: [HomeViewCardType] = [
+    .featurePreview,
+    .curriculumToday,
+    .examPreview,
+]
+
 struct HomeView: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
     @AppStorage("Life-USTC") var lifeUstc = false

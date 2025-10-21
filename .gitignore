@@ -4,6 +4,10 @@ buildServer.json
 
 *.app.dSYM.zip
 *.ipa
+*.entitlements
+*.plist
+
+**/*.xcodeproj/
 
 **/xcuserdata/
 **/xcdebugger/

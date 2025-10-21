@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-let defaultHomeViewOrder: [HomeViewCardType] = [
-    .featurePreview,
-    .curriculumToday,
-    .examPreview,
-]
-
 struct HomeSettingPage: View {
     @AppStorage("homeViewOrder") var homeViewOrder: [HomeViewCardType] = defaultHomeViewOrder
 

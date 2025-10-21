@@ -39,5 +39,5 @@
   - But you should always keep the file header comments.
 - Remove unnecessary `self.`.
 - Expand $0 and $1 to meaningful names in closures.
-- Run `xcodebuild -project "学在科大.xcodeproj" -scheme "学在科大" -configuration Debug -quiet build && echo "BUILD SUCCEEDED" || echo "BUILD FAILED"` to see if the code compiles.
+- Run `xcodegen --spec project.yml && xcodebuild -project "学在科大.xcodeproj" -scheme "学在科大" -configuration Debug -quiet build && echo "BUILD SUCCEEDED" || echo "BUILD FAILED"` to see if the code compiles.
 - Run `swift-format format -i $filePath` to format the code.

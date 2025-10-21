@@ -27,7 +27,7 @@ struct CurriculumWeekViewVerticalNew: View {
 
             ZStack(alignment: .top) {
                 if date.add(day: index) == Date().stripTime() {
-                    Color.backgroundWhite.colorInvert().opacity(0.06)
+                    Color("BackgroundWhite").colorInvert().opacity(0.06)
                 } else {
                     Color.clear
                 }
