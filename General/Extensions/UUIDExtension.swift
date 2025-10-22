@@ -9,16 +9,27 @@ import CommonCrypto
 import Foundation
 
 extension UUID {
+    /// Standard UUIDv5 namespace identifiers defined in RFC 4122
     enum UUIDv5NameSpace: String {
+        /// DNS namespace for domain names
         case dns = "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        /// URL namespace for URLs
         case url = "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
+        /// ISO OID namespace
         case oid = "6ba7b812-9dad-11d1-80b4-00c04fd430c8"
+        /// X.500 DN namespace
         case x500 = "6ba7b814-9dad-11d1-80b4-00c04fd430c8"
     }
 
-    /// UUIDv5 implementation
+    /// Creates a UUIDv5 (name-based UUID using SHA-1)
+    /// 
+    /// UUIDv5 generates deterministic UUIDs from a namespace and name.
+    /// Same name in same namespace always produces the same UUID.
     ///
-    /// See https://stackoverflow.com/a/48076401, thx
+    /// - Parameters:
+    ///   - name: The name string to hash
+    ///   - nameSpace: The UUID namespace to use (dns, url, oid, or x500)
+    /// - Note: Implementation based on https://stackoverflow.com/a/48076401
     init(name: String, nameSpace: UUIDv5NameSpace) {
         // Get UUID bytes from name space:
         var spaceUID = UUID(uuidString: nameSpace.rawValue)!.uuid

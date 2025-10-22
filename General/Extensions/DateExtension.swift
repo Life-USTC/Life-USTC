@@ -7,17 +7,23 @@
 
 import SwiftUI
 
+/// Operator overload to add DateComponents to a Date
+/// - Parameters:
+///   - lhs: The base Date
+///   - rhs: DateComponents to add
+/// - Returns: New Date with components added
 func + (lhs: Date, rhs: DateComponents) -> Date {
     Calendar.current.date(byAdding: rhs, to: lhs)!
 }
 
 extension Date {
-    /// Base time at 1970
+    /// Base time at Unix epoch (1970-01-01 00:00:00 UTC)
     static var zero: Date {
         Date(timeIntervalSince1970: 0)
     }
 
-    /// Keep hour and minute only
+    /// Returns time string in HH:mm format (24-hour)
+    /// - Returns: Formatted time string like "14:30"
     func stripHMwithTimezone() -> String {
         let components = Calendar.current.dateComponents(
             [.hour, .minute],
@@ -31,7 +37,9 @@ extension Date {
         return formattedDate
     }
 
-    /// Keep year month and day components only
+    /// Removes time components, keeping only year, month, and day
+    /// Useful for date-only comparisons
+    /// - Returns: Date with time set to 00:00:00
     func stripTime() -> Date {
         let components = Calendar.current.dateComponents(
             [.year, .month, .day],
@@ -40,7 +48,8 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 
-    /// Keep hour minute second. nanosecond components only
+    /// Removes date components, keeping only time (hour, minute, second, nanosecond)
+    /// - Returns: Time portion of the date from midnight
     func stripDate() -> Date {
         let components = Calendar.current.dateComponents(
             [.hour, .minute, .second, .nanosecond],
@@ -49,7 +58,8 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 
-    /// hour * 60 + minute
+    /// Calculate total minutes since midnight
+    /// - Returns: Number of minutes (hour * 60 + minute)
     var minutesSinceMidnight: Int {
         let components = Calendar.current.dateComponents(
             [.hour, .minute],
@@ -58,12 +68,18 @@ extension Date {
         return (components.hour ?? 0) * 60 + (components.minute ?? 0)
     }
 
-    /// Shorthand for adding DateComponents
+    /// Convenience method to add date components
+    /// - Parameters:
+    ///   - year: Years to add (default 0)
+    ///   - month: Months to add (default 0)
+    ///   - day: Days to add (default 0)
+    /// - Returns: New Date with components added
     func add(year: Int = 0, month: Int = 0, day: Int = 0) -> Date {
         self + DateComponents(year: year, month: month, day: day)
     }
 
-    /// Start of this week
+    /// Returns the start of the week (Monday) for this date
+    /// - Returns: Date representing the beginning of the week
     func startOfWeek() -> Date {
         Calendar(identifier: .gregorian)
             .dateComponents(
@@ -84,7 +100,8 @@ extension DateComponents {
     }
 }
 
-// Enable @AppStorage ... Date
+/// Enable @AppStorage to store Date values
+/// Stores dates as time intervals since reference date
 extension Date: @retroactive RawRepresentable {
     public var rawValue: String { timeIntervalSinceReferenceDate.description }
 
@@ -92,6 +109,7 @@ extension Date: @retroactive RawRepresentable {
         self = Date(timeIntervalSinceReferenceDate: Double(rawValue) ?? 0.0)
     }
 
+    /// Returns formatted time string (short style)
     var clockTime: String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .short

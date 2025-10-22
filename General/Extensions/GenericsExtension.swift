@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-//  Enable @AppStorage for [Codable]
+/// Enable @AppStorage for Array of Codable elements
+/// Allows storing arrays directly in UserDefaults by encoding/decoding as JSON
 extension Array: @retroactive RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
@@ -24,6 +25,8 @@ extension Array: @retroactive RawRepresentable where Element: Codable {
     }
 }
 
+/// Enable @AppStorage for Dictionary with String keys and Codable values
+/// Allows storing dictionaries directly in UserDefaults by encoding/decoding as JSON
 extension Dictionary: @retroactive RawRepresentable where Key == String, Value: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
@@ -40,14 +43,16 @@ extension Dictionary: @retroactive RawRepresentable where Key == String, Value: 
     }
 }
 
-// Access Array with ...[safe: index] -> Element? to avoid index out of range issue
+/// Provides safe array/collection access to avoid index out of range errors
+/// Usage: `array[safe: index]` returns `Element?` instead of crashing
 extension Collection where Indices.Iterator.Element == Index {
     public subscript(safe index: Index) -> Iterator.Element? {
         (startIndex <= index && index < endIndex) ? self[index] : nil
     }
 }
 
-// Provide .next() methof for CaseIterable
+/// Provides .next() method for CaseIterable enums to cycle through cases
+/// Automatically wraps around to the first case after the last one
 extension CaseIterable where Self: Equatable {
     func next() -> Self {
         let all = Self.allCases
@@ -57,7 +62,10 @@ extension CaseIterable where Self: Equatable {
     }
 }
 
-// Shorthand to convert array to dict, like group in pandas
+/// Provides categorise() method to group sequences by a key function
+/// Similar to pandas groupby or SQL GROUP BY
+/// - Parameter key: Function to extract the grouping key from each element
+/// - Returns: Dictionary mapping keys to arrays of elements
 extension Sequence {
     public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U:
         [Iterator.Element]]
@@ -71,9 +79,16 @@ extension Sequence {
     }
 }
 
+/// Custom modulo operator that handles negative numbers correctly
+/// Unlike Swift's default %, this always returns a positive result
 infix operator %%
 
 extension Int {
+    /// Modulo operation that always returns positive result
+    /// - Parameters:
+    ///   - left: Dividend
+    ///   - right: Divisor
+    /// - Returns: Positive remainder
     static func %% (_ left: Int, _ right: Int) -> Int {
         if left >= 0 { return left % right }
         if left >= -right { return (left + right) }
@@ -81,26 +96,10 @@ extension Int {
     }
 }
 
+/// Automatic Equatable implementation for Identifiable types
+/// Uses id for equality comparison
 extension Equatable where Self: Identifiable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
-    }
-}
-
-extension AppStorage where Value: ExpressibleByNilLiteral {
-    public init(wrappedValue: Value, _ key: String, store: UserDefaults? = nil) where Value == Bool? {
-        self.init(key, store: store)
-        if let _ = (store ?? UserDefaults.standard).object(forKey: key) {
-            return
-        }
-        self.wrappedValue = wrappedValue
-    }
-
-    public init(wrappedValue: Value, _ key: String, store: UserDefaults? = nil) where Value == Int? {
-        self.init(key, store: store)
-        if let _ = (store ?? UserDefaults.standard).object(forKey: key) {
-            return
-        }
-        self.wrappedValue = wrappedValue
     }
 }
