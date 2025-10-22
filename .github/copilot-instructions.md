@@ -1,3 +1,5 @@
+## Instructions when 85
+
 ## Instructions for SwiftUI code:
 
 - Be declarative, write logic (serach, filter) in computed properties, NOT in the body:
@@ -18,7 +20,7 @@
 - Use `NavigationStack` and `NavigationLink` for navigation.
 - Use `.searchable(text:)` for search bars.
 - Use `.sheet(isPresented:)` for modals.
-  - Always pass in a dismiss action to the sheet view
+  - Always pass in a dismiss action (on the top-left) to the sheet view
 - Use `.toolbar` for toolbar items.
 - Use `.navigationTitle` for titles, avoid `.navigationBarTitleDisplayMode(.large)`
 
@@ -31,7 +33,6 @@
 - Use `if let` or `guard let` for optional unwrapping.
 - Use `switch` statements for multiple conditions instead of multiple `if-else`.
 - Use `map`, `filter`, `reduce` for array transformations instead of loops.
-- Use `forEach` for iterating over collections in SwiftUI views.
 - Use `@ViewBuilder` for complex view compositions.
 - Use `LazyVStack` or `LazyHStack` for large lists of views.
 - Sort imports alphabetically and remove unused imports.
@@ -40,4 +41,5 @@
 - Remove unnecessary `self.`.
 - Expand $0 and $1 to meaningful names in closures.
 - Run `xcodegen --spec project.yml && xcodebuild -project "Life-USTC.xcodeproj" -scheme "Life-USTC" -configuration Debug -quiet build && echo "BUILD SUCCEEDED" || echo "BUILD FAILED"` to see if the code compiles.
+- If `xcodegen` is not installed, run `brew install xcodegen` to install it, likewise, install the tools with homebrew if you don't have them.
 - Run `swift-format format -i $filePath` to format the code.

@@ -20,7 +20,6 @@ struct Life_USTCApp: App {
 
 struct ContentView: View {
     @AppStorage("firstLogin_2") var firstLogin = true
-    @AppStorage("Life-USTC") var lifeUstc = false
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 

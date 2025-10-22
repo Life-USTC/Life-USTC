@@ -11,10 +11,10 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink("App Settings", destination: AppSettingPage())
+                NavigationLink("App Settings", destination: AppSettingsPage())
                 NavigationLink("Home Page Settings", destination: HomeSettingPage())
-                NavigationLink("Feed Source Settings", destination: FeedSettingView())
-                NavigationLink("Exam Settings", destination: ExamSettingView())
+                NavigationLink("Feed Source Settings", destination: FeedSetingsPage())
+                NavigationLink("Exam Settings", destination: ExamSettingsPage())
             } header: {
                 Text("General")
                     .textCase(.none)
@@ -32,8 +32,8 @@ struct SettingsView: View {
             }
 
             Section {
-                NavigationLink("About Life@USTC", destination: AboutApp())
-                NavigationLink("Legal Info", destination: LegalInfoView())
+                NavigationLink("About Life@USTC", destination: AboutPage())
+                NavigationLink("Legal Info", destination: LegalPage())
             } header: {
                 Text("More")
                     .textCase(.none)

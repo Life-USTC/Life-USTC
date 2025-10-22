@@ -122,11 +122,6 @@ targets:
       - path: "Models/"
       - path: "Schools/"
       - path: "Views/General/"
-        excludes:
-          - "PushNotification/**"
-      - path: "Views/Extensions/"
-        excludes:
-          - "ContentViewTab.swift"
     entitlements:
       path: Widget/Widget.entitlements
       properties:
