@@ -35,6 +35,7 @@ struct USTCCASLoginView: View {
 
     var title: LocalizedStringKey = "CAS Settings"
     var isInSheet = false
+    var onSuccess: (() -> Void)? = nil
 
     var iconView: some View {
         HStack(spacing: 50) {
@@ -157,24 +158,7 @@ struct USTCCASLoginView: View {
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 10)
-                    .padding(.bottom, 10)
-
-                if isInSheet {
-                    VStack(spacing: 10) {
-                        Text("welcomeAdditionalCourseHint")
-                            .font(.system(.caption, design: .rounded, weight: .bold))
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 10)
-                        
-                        Text("welcomeWidgetHint")
-                            .font(.system(.caption, design: .rounded, weight: .bold))
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 10)
-                    }
-                    .padding(.bottom, 20)
-                }
+                    .padding(.bottom, 30)
 
                 formView
 
@@ -224,7 +208,11 @@ struct USTCCASLoginView: View {
                         deadline: .now() + .seconds(1)
                     ) {
                         showSuccessAlert = false
-                        casLoginSheet = false
+                        if let onSuccess = onSuccess {
+                            onSuccess()
+                        } else {
+                            casLoginSheet = false
+                        }
                     }
                     return
                 } else if result {
@@ -243,12 +231,13 @@ struct USTCCASLoginView: View {
 }
 
 extension USTCCASLoginView {
-    static func sheet(isPresented: Binding<Bool>) -> USTCCASLoginView {
+    static func sheet(isPresented: Binding<Bool>, onSuccess: (() -> Void)? = nil) -> USTCCASLoginView {
         USTCCASLoginView(
             casLoginSheet: isPresented,
             presenterInjected: false,
             title: "One more step...",
-            isInSheet: true
+            isInSheet: true,
+            onSuccess: onSuccess
         )
     }
 
