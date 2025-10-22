@@ -5,6 +5,13 @@
 ## ChangeLog
 
 * `6c40582161e22b832a63e947d09d811880504805` 更新了部分过时内容。
+* 最新更新: 重新组织文件夹结构，详见 [FolderStructure.md](./FolderStructure.md)
+
+## 文档索引
+
+* [FolderStructure.md](./FolderStructure.md) - 项目文件夹结构和组织原则
+* [MVC.md](./MVC.md) - MVC 架构和 AsyncDataDelegate 设计模式
+* [Rules.md](./Rules.md) - 开发规范和最佳实践
 
 ## USTC CAS认证问题
 

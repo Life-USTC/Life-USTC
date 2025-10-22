@@ -31,3 +31,9 @@ Life@USTC 是一个非官方的应用，旨在帮助科大学生获取日常学�
 - Xcode 15.0+
 - Swift 5.7+
 - iOS 16.0+
+
+## 开发文档
+
+- [Folder Structure](./Docs/FolderStructure.md) - 项目文件夹结构说明
+- [MVC Architecture](./Docs/MVC.md) - MVC 架构和 AsyncDataDelegate 设计
+- [Development Rules](./Docs/Rules.md) - 开发规范
