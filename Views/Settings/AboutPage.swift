@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AboutApp: View {
+struct AboutPage: View {
     @State var contributorList: [(name: String, avatar: URL?)] = [
         (
             "tiankaima",
@@ -83,6 +83,6 @@ struct AboutApp: View {
 
 struct AboutPage_Previews: PreviewProvider {
     static var previews: some View {
-        AboutApp()
+        AboutPage()
     }
 }

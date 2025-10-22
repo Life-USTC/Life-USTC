@@ -7,27 +7,19 @@
 
 import SwiftUI
 
-struct FeedVStackView: View {
-    var feeds: [Feed]
+struct FeedSourceView: View {
+    var feedSource: FeedSource
 
     var body: some View {
         List {
             ForEach(
-                feeds.sorted(by: { $0.datePosted > $1.datePosted }),
+                feedSource.feed.sorted(by: { $0.datePosted > $1.datePosted }),
                 id: \.id
             ) {
                 FeedView(feed: $0)
             }
         }
         .scrollContentBackground(.hidden)
-    }
-}
-
-struct FeedSourceView: View {
-    var feedSource: FeedSource
-
-    var body: some View {
-        FeedVStackView(feeds: feedSource.feed)
-            .navigationTitle(feedSource.name)
+        .navigationTitle(feedSource.name)
     }
 }

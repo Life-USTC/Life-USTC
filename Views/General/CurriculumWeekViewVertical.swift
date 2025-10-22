@@ -7,6 +7,62 @@
 
 import SwiftUI
 
+private struct LectureView: View {
+    var lecture: Lecture
+
+    var length: Int {
+        (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
+    }
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(lecture.course?.color().opacity(0.1) ?? Color.blue.opacity(0.1))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
+                }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(lecture.startDate.clockTime)
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+
+                Group {
+                    Text(lecture.name)
+                        .font(.system(size: 15, weight: .light))
+                        .lineLimit(2, reservesSpace: false)
+                        .multilineTextAlignment(.leading)
+                        .minimumScaleFactor(0.01)
+                    Text(lecture.location)
+                        .font(.system(size: 13, weight: .light, design: .monospaced))
+                        .lineLimit(2, reservesSpace: false)
+                        .multilineTextAlignment(.leading)
+                        .minimumScaleFactor(0.01)
+                }
+
+                Spacer()
+
+                if length > 1 {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(lecture.teacherName)
+                            .font(.system(size: 10))
+                            .lineLimit(2, reservesSpace: false)
+                            .multilineTextAlignment(.trailing)
+                            .minimumScaleFactor(0.01)
+
+                        Text(lecture.endDate.clockTime)
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    }
+                    .hStackTrailing()
+                }
+            }
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+        }
+        .lectureSheet(lecture: lecture)
+    }
+}
+
 private let daysOfWeek: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 struct CurriculumWeekViewVerticalNew: View {
@@ -34,7 +90,7 @@ struct CurriculumWeekViewVerticalNew: View {
 
                 ForEach(lectures.filter { (date.add(day: index) ... date.add(day: index + 1)).contains($0.startDate) })
                 { lecture in
-                    LectureCardView(lecture: lecture)
+                    LectureView(lecture: lecture)
                         .frame(
                             width: .infinity,
                             height: heightPerClass * Double((lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1) - 4

@@ -5,8 +5,69 @@
 //  Created by TiankaiMa on 2023/1/11.
 //
 
-import Combine
 import SwiftUI
+
+private struct ExamView: View {
+    var exam: Exam
+    var color: Color = .blue
+
+    var examColor: Color {
+        exam.daysLeft <= 7 ? .red.opacity(0.8) : color.opacity(0.8)
+    }
+
+    var isFinished: Bool {
+        exam.isFinished
+    }
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(exam.courseName)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Text("\(exam.startDate, format: .dateTime.day().month()) @ **\(exam.classRoomName)**")
+                    .font(.footnote)
+                    .foregroundColor(.gray.opacity(0.8))
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing) {
+                if isFinished {
+                    Text("Finished")
+                        .foregroundColor(.gray)
+                        .font(.subheadline)
+                        .fontWeight(.heavy)
+                } else {
+                    Text(RelativeDateTimeFormatter().localizedString(for: exam.startDate, relativeTo: Date()))
+                        .foregroundColor(examColor)
+                        .font(.subheadline)
+                        .fontWeight(.heavy)
+                }
+                Text(exam.startDate ... exam.endDate)
+                    .font(.caption)
+                    .foregroundColor(.gray.opacity(0.8))
+            }
+        }
+        .padding(.leading, 15)
+        .padding(.trailing, 10)
+        .padding(.vertical, 5)
+        .background {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(examColor)
+                    .frame(width: 5)
+                RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
+                    .fill(examColor.opacity(0.05))
+            }
+        }
+        .if(isFinished) {
+            $0
+                .strikethrough()
+                .grayscale(1.0)
+        }
+    }
+}
 
 struct ExamPreview: View {
     var exams: [Exam] = []
@@ -15,7 +76,7 @@ struct ExamPreview: View {
     @ViewBuilder
     var noExamView: some View {
         ZStack {
-            ExamItemView(exam: .example)
+            ExamView(exam: .example)
                 .redacted(reason: .placeholder)
 
             VStack {
@@ -35,7 +96,7 @@ struct ExamPreview: View {
     var body: some View {
         VStack(spacing: 10) {
             ForEach(exams) { exam in
-                ExamItemView(exam: exam, color: color)
+                ExamView(exam: exam, color: color)
             }
 
             if exams.isEmpty {
@@ -81,7 +142,7 @@ extension ExamPreview {
             ZStack {
                 VStack(alignment: .leading, spacing: 5) {
                     ForEach(Array(exams.prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
-                        ExamItemView(exam: exam, color: color)
+                        ExamView(exam: exam, color: color)
                     }
                 }
                 .if(exams_.isEmpty) {

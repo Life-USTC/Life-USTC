@@ -10,7 +10,7 @@ import SwiftUI
 let credit =
     "Credit to FeedKit, Fuzi, Introspect, Reeeed, SwiftFormat, SwiftSoup, SwiftyJSON, which all makes this app possible.😘"
 
-struct LegalInfoView: View {
+struct LegalPage: View {
     var body: some View {
         VStack {
             List {
@@ -30,6 +30,6 @@ struct LegalInfoView: View {
 
 struct LegalPage_Previews: PreviewProvider {
     static var previews: some View {
-        LegalInfoView()
+        LegalPage()
     }
 }

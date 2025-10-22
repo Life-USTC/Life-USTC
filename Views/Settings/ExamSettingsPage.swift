@@ -1,5 +1,5 @@
 //
-//  ExamPage.swift
+//  ExamSettingsPage.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/2/1.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ExamSettingView: View {
+struct ExamSettingsPage: View {
     @AppStorage("hiddenExamName", store: UserDefaults.appGroup)
     var hiddenExamName: [String] = []
 
@@ -43,6 +43,6 @@ struct ExamSettingView: View {
     }
 }
 
-struct ExamSettingView_Previews: PreviewProvider {
-    static var previews: some View { ExamSettingView() }
+struct ExamSettingsPage_Previews: PreviewProvider {
+    static var previews: some View { ExamSettingsPage() }
 }

@@ -93,19 +93,19 @@ struct CurriculumPreviewWidgetEntryView: View {
     var body: some View {
         VStack {
             if widgetFamily == .systemLarge {
-                CurriculumTodayView
+                CurriculumPreview
                     .makeListWidget(
                         with: entry.todayLectures,
                         numberToShow: 4
                     )
             } else if widgetFamily == .systemMedium {
-                CurriculumTodayView
+                CurriculumPreview
                     .makeListWidget(
                         with: entry.todayLectures,
                         numberToShow: 2
                     )
             } else if widgetFamily == .systemSmall {
-                CurriculumTodayView
+                CurriculumPreview
                     .makeDayWidget(
                         with: entry.todayLectures.first
                     )

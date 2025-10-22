@@ -1,5 +1,5 @@
 //
-//  AppPage.swift
+//  AppSettingsPage.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/3/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AppSettingPage: View {
+struct AppSettingsPage: View {
     @AppStorage("scoreViewPreventScreenShot") var preventScreenShot = false
     @AppStorage("appShouldNOTUpdateAnything", store: .appGroup) var appShouldNOTUpdateAnything = false
     @AppStorage("curriculumChartShouldHideEvening", store: .appGroup) var curriculumChartShouldHideEvening = false
@@ -48,8 +48,8 @@ struct AppSettingPage: View {
     }
 }
 
-struct AppSettingPage_Previews: PreviewProvider {
+struct AppSettingsPage_Previews: PreviewProvider {
     static var previews: some View {
-        AppSettingPage()
+        AppSettingsPage()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CurriculumTodayCard.swift
+//  CurriculumPreviewCard.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/8/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CurriculumTodayCard: View {
+struct CurriculumPreviewCard: View {
     @ManagedData(.curriculum) var curriculum: Curriculum
 
     var referenceDate: Date = .now
@@ -38,7 +38,7 @@ struct CurriculumTodayCard: View {
                 .font(.system(.title2, weight: .medium))
                 .hStackLeading()
 
-            CurriculumTodayView(
+            CurriculumPreview(
                 lectureListA: todayLectures,
                 lectureListB: tomorrowLectures
             )

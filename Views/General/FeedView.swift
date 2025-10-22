@@ -8,30 +8,7 @@
 import Reeeed
 import SwiftUI
 
-struct FeedView: View {
-    let feed: Feed
-
-    var body: some View {
-        NavigationLink {
-            Browser(
-                url: feed.url,
-                title: LocalizedStringKey(stringLiteral: feed.title)
-            )
-        } label: {
-            FeedViewPreview(feed: feed)
-                .contextMenu {
-                    ShareLink(item: feed.url) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                } preview: {
-                    ReeeederView(url: feed.url)
-                        .frame(width: 350, height: 600)
-                }
-        }
-    }
-}
-
-struct FeedViewPreview: View {
+private struct FeedViewPreview: View {
     let feed: Feed
     var color: Color {
         Color(hex: feed.colorHex ?? "#FFFFFF")
@@ -77,12 +54,25 @@ struct FeedViewPreview: View {
     }
 }
 
-struct FeedView_Previews: PreviewProvider {
-    static var previews: some View {
-        List {
-            FeedView(feed: .example)
+struct FeedView: View {
+    let feed: Feed
+
+    var body: some View {
+        NavigationLink {
+            Browser(
+                url: feed.url,
+                title: LocalizedStringKey(stringLiteral: feed.title)
+            )
+        } label: {
+            FeedViewPreview(feed: feed)
+                .contextMenu {
+                    ShareLink(item: feed.url) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                } preview: {
+                    ReeeederView(url: feed.url)
+                        .frame(width: 350, height: 600)
+                }
         }
-        .frame(height: 500)
-        .padding()
     }
 }

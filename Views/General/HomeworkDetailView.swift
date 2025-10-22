@@ -7,6 +7,50 @@
 
 import SwiftUI
 
+private struct HomeworkView: View {
+    let homework: Homework
+
+    var body: some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading) {
+                Text(homework.title)
+                    .font(.system(.title2, weight: .bold))
+                    .strikethrough(homework.isFinished)
+                    .foregroundColor(homework.isFinished ? .gray : .primary)
+
+                Text(homework.courseName)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+
+                Spacer(minLength: 25)
+
+                HStack {
+                    Image(systemName: "calendar.badge.clock")
+                    Text(homework.dueDate, style: .date)
+                    Text(homework.dueDate, style: .time)
+                }
+                .font(.callout)
+            }
+
+            Spacer()
+
+            if homework.isFinished {
+                Text("Finished")
+                    .fontWeight(.bold)
+                    .foregroundColor(.gray)
+
+            } else {
+                Text(homework.dueDate, style: .relative)
+                    .fontWeight(.bold)
+                    .foregroundColor(
+                        homework.daysLeft <= 1 ? .red : .accentColor
+                    )
+            }
+        }
+        .padding(.vertical, 2)
+    }
+}
+
 struct HomeworkDetailView: View {
     @ManagedData(.homework) var homeworks: [Homework]
 
@@ -22,7 +66,7 @@ struct HomeworkDetailView: View {
         List {
             Section {
                 if homeworks.isEmpty {
-                    SingleHomeWorkView(homework: .example)
+                    HomeworkView(homework: .example)
                         .redacted(reason: .placeholder)
                         .overlay(
                             Text("No More Homework!")
@@ -31,11 +75,11 @@ struct HomeworkDetailView: View {
                         )
                 } else {
                     ForEach(newHomework) { homework in
-                        SingleHomeWorkView(homework: homework)
+                        HomeworkView(homework: homework)
                     }
 
                     ForEach(archivedHomework) { homework in
-                        SingleHomeWorkView(homework: homework)
+                        HomeworkView(homework: homework)
                     }
                 }
             } header: {

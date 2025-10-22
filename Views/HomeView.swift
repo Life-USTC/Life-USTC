@@ -18,7 +18,7 @@ extension HomeViewCardType {
         Group {
             switch self {
             case .curriculumToday:
-                CurriculumTodayCard()
+                CurriculumPreviewCard()
             case .examPreview:
                 ExamPreviewCard()
             case .featurePreview:

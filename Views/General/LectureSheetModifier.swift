@@ -1,5 +1,5 @@
 //
-//  LectureCardView.swift
+//  LectureSheetModifier.swift
 //  Life@USTC
 //
 //  Created by TianKai Ma on 2024/4/15.
@@ -99,61 +99,5 @@ struct LectureSheetModifier: ViewModifier {
 extension View {
     func lectureSheet(lecture: Lecture) -> some View {
         modifier(LectureSheetModifier(lecture: lecture))
-    }
-}
-
-struct LectureCardView: View {
-    var lecture: Lecture
-
-    var length: Int {
-        (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
-    }
-
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(lecture.course?.color().opacity(0.1) ?? Color.blue.opacity(0.1))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
-                }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(lecture.startDate.clockTime)
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-
-                Group {
-                    Text(lecture.name)
-                        .font(.system(size: 15, weight: .light))
-                        .lineLimit(2, reservesSpace: false)
-                        .multilineTextAlignment(.leading)
-                        .minimumScaleFactor(0.01)
-                    Text(lecture.location)
-                        .font(.system(size: 13, weight: .light, design: .monospaced))
-                        .lineLimit(2, reservesSpace: false)
-                        .multilineTextAlignment(.leading)
-                        .minimumScaleFactor(0.01)
-                }
-
-                Spacer()
-
-                if length > 1 {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(lecture.teacherName)
-                            .font(.system(size: 10))
-                            .lineLimit(2, reservesSpace: false)
-                            .multilineTextAlignment(.trailing)
-                            .minimumScaleFactor(0.01)
-
-                        Text(lecture.endDate.clockTime)
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    }
-                    .hStackTrailing()
-                }
-            }
-            .padding(.horizontal, 5)
-            .padding(.vertical, 2)
-        }
-        .lectureSheet(lecture: lecture)
     }
 }

@@ -72,7 +72,7 @@ struct AllSourceView: View {
         }
         .sheet(isPresented: $showingFeedSettings) {
             NavigationStack {
-                FeedSettingView(dismissAction: {
+                FeedSetingsPage(dismissAction: {
                     showingFeedSettings = false
                 })
             }

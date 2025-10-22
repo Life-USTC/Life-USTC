@@ -1,5 +1,5 @@
 //
-//  FeedPage.swift
+//  FeedSetingsPage.swift
 //  Life@USTC
 //
 //  Created by Tiankai Ma on 2023/2/1.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FeedSettingView: View {
+struct FeedSetingsPage: View {
     @ManagedData(.feedSources) var feedSources: [FeedSource]
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     var dismissAction: (() -> Void)? = nil
@@ -68,6 +68,6 @@ struct FeedSettingView: View {
     }
 }
 
-struct FeedSettingView_Previews: PreviewProvider {
-    static var previews: some View { NavigationStack { FeedSettingView() } }
+struct FeedSettingsPage_Previews: PreviewProvider {
+    static var previews: some View { NavigationStack { FeedSetingsPage() } }
 }

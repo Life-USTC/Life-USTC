@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate,
     UNUserNotificationCenterDelegate, ObservableObject
