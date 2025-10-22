@@ -38,7 +38,7 @@ var userAgent: String {
 }
 
 var staticURLPrefix: String {
-    return "https://static.xzkd.online"
+    return "https://static.life-ustc.tiankaima.dev/"
 }
 
 let exampleURL = URL(string: "https://example.com")!
