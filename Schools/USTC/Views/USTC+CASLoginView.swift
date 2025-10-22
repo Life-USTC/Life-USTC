@@ -157,7 +157,24 @@ struct USTCCASLoginView: View {
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 10)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 10)
+
+                if isInSheet {
+                    VStack(spacing: 10) {
+                        Text("welcomeAdditionalCourseHint")
+                            .font(.system(.caption, design: .rounded, weight: .bold))
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 10)
+                        
+                        Text("welcomeWidgetHint")
+                            .font(.system(.caption, design: .rounded, weight: .bold))
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 10)
+                    }
+                    .padding(.bottom, 20)
+                }
 
                 formView
 

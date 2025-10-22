@@ -25,6 +25,8 @@
 "Input USTC CAS username & password" = "输入统一身份认证账户&密码";
 
 "casHint" = "此功能由 USTC 统一身份认证向您提供，并非我们.\n如需了解更多信息，打开 设置 > 法律信息 > 声明";
+"welcomeAdditionalCourseHint" = "💡 小提示：您可以在 设置 > 添加额外课程 中添加额外的课程，适用于旁听或助教课程。";
+"welcomeWidgetHint" = "📱 别忘了将小组件添加到主屏幕！长按主屏幕 > 点击「+」> 搜索「Life@USTC」即可添加课表和考试小组件。";
 "Username:" = "用户名：";
 "Password:" = "密码：";
 "Check & Login" = "确认 & 登录";
