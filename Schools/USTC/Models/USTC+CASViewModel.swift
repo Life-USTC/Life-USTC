@@ -35,6 +35,11 @@ class UstcCasViewModel: ObservableObject {
         username = inputUsername
         password = inputPassword
 
-        return try await _casClient.requireLogin()
+        _casClient.clearLoginStatus()
+        return try await casClient.login(
+            shouldAutoLogin: true,
+            username: inputUsername,
+            password: inputPassword
+        )
     }
 }

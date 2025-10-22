@@ -8,17 +8,18 @@
 import WebKit
 
 class CASWebViewController: UIViewController, WKNavigationDelegate {
-    @AppSecureStorage("passportUsername") private var username: String
-    @AppSecureStorage("passportPassword") private var password: String
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
 
-    private var webView: WKWebView!
+    var webView: WKWebView!
     var onLoginSuccess: (() -> Void)?
     var shouldAutoLogin: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         let config = WKWebViewConfiguration()
         let contentController = WKUserContentController()
@@ -33,7 +34,7 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
         }
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(webView)
-        webView.load(URLRequest(url: URL(string: "https://id.ustc.edu.cn/")!))
+        webView.load(URLRequest(url: URL(string: "https://id.ustc.edu.cn/cas/logout")!))
 
         let fillButton = UIBarButtonItem(
             title: "Fill",
@@ -76,9 +77,22 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // Inject username and password after page loads
         Task {
+            await checkForLoginErrors()
             await injectCredentials()
+        }
+    }
+
+    private func checkForLoginErrors() async {
+        let errorCheckScript = """
+            (function() {
+                const content = document.body.textContent || '';
+                return content.includes('用户名或密码错误') || content.includes('Incorrect user name or password');
+            })()
+            """
+
+        if let hasError = try? await webView.evaluateJavaScript(errorCheckScript) as? Bool, hasError {
+            UstcCasClient.shared.loginFailed()
         }
     }
 
@@ -90,7 +104,9 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
                 if (document.readyState === 'complete') {
                     setTimeout(fillForm, 1000);
                 } else {
-                    window.addEventListener('load', setTimeout(fillForm, 1000));
+                    window.addEventListener('load', function() {
+                        setTimeout(fillForm, 1000);
+                    });
                 }
 
                 function fillForm() {
@@ -124,8 +140,10 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
                     if (\(shouldAutoLogin ? "true" : "false")) {
                         setTimeout(function() {
                             submitBtn.click();
-                        }, 500);
+                        }, 100);
                     }
+
+                    setTimeout(fillForm, 1000);
                 }
             })();
             """
@@ -154,7 +172,6 @@ extension CASWebViewController: WKScriptMessageHandler {
             // Store the credentials before form submission
             self.username = usernameValue
             self.password = passwordValue
-            debugPrint("Credentials stored before form submission")
         }
     }
 }
