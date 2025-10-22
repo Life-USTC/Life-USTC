@@ -123,8 +123,13 @@ struct ExamDetailView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        try await $saveToCalendarStatus.exec {
+                        saveToCalendarStatus = .waiting
+                        do {
                             try await exams.saveToCalendar()
+                            saveToCalendarStatus = .success
+                        } catch {
+                            print(error.localizedDescription)
+                            saveToCalendarStatus = .error(error.localizedDescription)
                         }
                     }
                 } label: {
@@ -137,11 +142,5 @@ struct ExamDetailView: View {
             }
         }
         .navigationTitle("Exam")
-    }
-}
-
-struct ExamView_Previews: PreviewProvider {
-    static var previews: some View {
-        ExamDetailView()
     }
 }

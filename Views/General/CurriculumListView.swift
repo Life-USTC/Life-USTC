@@ -77,8 +77,13 @@ struct CurriculumListView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        try await $saveToCalendarStatus.exec {
+                        saveToCalendarStatus = .waiting
+                        do {
                             try await curriculum.saveToCalendar()
+                            saveToCalendarStatus = .success
+                        } catch {
+                            print(error.localizedDescription)
+                            saveToCalendarStatus = .error(error.localizedDescription)
                         }
                     }
                 } label: {

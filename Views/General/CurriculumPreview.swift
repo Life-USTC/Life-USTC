@@ -247,35 +247,3 @@ extension CurriculumPreview {
         .dynamicTypeSize(.medium)
     }
 }
-
-#Preview {
-    TabView {
-        ForEach(0 ..< 10) { count in
-            NavigationStack {
-                CurriculumPreview
-                    .makeListWidget(
-                        with: Array(repeating: .example, count: count),
-                        color: .mint,
-                        numberToShow: 4
-                    )
-                    .card()
-                    .border(.blue)
-                    .frame(height: 400)
-            }
-        }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        VStack {
-            CurriculumPreview
-                .makeDayWidget(with: nil)
-                .frame(width: 200, height: 200)
-
-            CurriculumPreview
-                .makeDayWidget(with: .example)
-                .frame(width: 200, height: 200)
-        }
-    }
-}

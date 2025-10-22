@@ -131,10 +131,3 @@ struct CurriculumWeekWidget: Widget {
         .description("Show this week's curriculum")
     }
 }
-
-struct CurriculumWeekWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        CurriculumWeekWidgetEntryView(entry: .example)
-            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
-    }
-}
