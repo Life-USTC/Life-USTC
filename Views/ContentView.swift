@@ -19,7 +19,7 @@ struct Life_USTCApp: App {
 }
 
 struct ContentView: View {
-    @AppStorage("firstLogin_2") var firstLogin = true
+    @AppStorage("firstLogin_3") var firstLogin = true
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -106,17 +106,17 @@ struct ContentView: View {
     }
 
     var body: some View {
-        if firstLogin {
-            AnyView(SchoolExport.shared.firstLoginView($firstLogin))
-        } else {
-            Group {
+        Group {
+            if firstLogin {
+                AnyView(SchoolExport.shared.firstLoginView($firstLogin))
+            } else {
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView
                 } else {
                     iPhoneView
                 }
             }
-            .modifier(USTCBaseModifier())
         }
+        .modifier(USTCBaseModifier())
     }
 }

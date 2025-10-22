@@ -38,7 +38,7 @@ class USTCExports: SchoolExport {
         [
             .init(
                 name: "CAS Settings",
-                destinationView: { USTCCASLoginView.newPage }
+                destinationView: { USTCCASLoginView() }
             ),
             .init(
                 name: "Select Additional Course",
@@ -90,7 +90,7 @@ class USTCExports: SchoolExport {
     //    }
 
     override var firstLoginView: (Binding<Bool>) -> any View {
-        { USTCCASLoginView.sheet(isPresented: $0) }
+        { USTCOnboardingCoordinator(isPresented: $0) }
     }
 
     override var features: [LocalizedStringKey: [FeatureWithView]] {

@@ -56,9 +56,7 @@ class SchoolExport {
     //        USTCBaseModifier()
     //    }
 
-    var firstLoginView: (Binding<Bool>) -> any View {
-        { USTCCASLoginView.sheet(isPresented: $0) }
-    }
+    var firstLoginView: (Binding<Bool>) -> any View {{_ in EmptyView()}}
 
     var features: [LocalizedStringKey: [FeatureWithView]] { [:] }
 
