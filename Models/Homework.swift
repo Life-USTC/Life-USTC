@@ -17,7 +17,7 @@ struct Homework: Codable, Identifiable, Equatable, ExampleDataProtocol {
 
     static let example: Homework = .init(
         title: "第一次作业",
-        courseName: "数学分析B1",
+        courseName: "数学分析 B1",
         dueDate: .now
     )
 }

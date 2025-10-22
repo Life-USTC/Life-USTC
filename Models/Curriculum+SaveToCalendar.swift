@@ -7,7 +7,6 @@
 
 import CoreLocation
 import EventKit
-import Foundation
 import SwiftUI
 
 /// Factory for creating calendar events from lectures with geographic location data

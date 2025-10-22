@@ -5,7 +5,6 @@
 //  Created by Tiankai Ma on 2023/8/24.
 //
 
-import Foundation
 import SwiftUI
 
 /// Protocol for curriculum delegates that fetch semesters by ID
@@ -17,7 +16,7 @@ class CurriculumProtocolA<T>: ManagedRemoteUpdateProtocol<Curriculum> {
         assert(true)
         return []
     }
-    
+
     /// Fetches complete semester data by ID
     /// - Parameter id: Semester identifier
     /// - Returns: Complete semester with courses

@@ -6,7 +6,6 @@
 //
 
 import EventKit
-import Foundation
 import SwiftUI
 
 extension Exam {
