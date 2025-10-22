@@ -27,20 +27,28 @@ class UstcCasClient: LoginClientProtocol {
 
     // Default login keeps previous behavior for API compatibility but requires presenter to be set beforehand.
     override func login() async throws -> Bool {
-        guard let presenterViewController else {
-            throw BaseError.runtimeError("Login presenter not set. Call login(presentingFrom:) from UI.")
-        }
-        return try await login(presentingFrom: presenterViewController, shouldAutoLogin: true)
+        return try await login(shouldAutoLogin: true)
     }
 
     // New API that accepts a presenter VC, suitable for app extensions and clearer control from UI layer.
-    func login(presentingFrom presenterViewController: UIViewController, shouldAutoLogin: Bool = false) async throws
-        -> Bool
-    {
+    func login(
+        shouldAutoLogin: Bool = false,
+        username: String? = nil,
+        password: String? = nil,
+    ) async throws -> Bool {
+        guard let presenterViewController else {
+            throw BaseError.runtimeError("Login presenter not set. Call login(presentingFrom:) from UI.")
+        }
+
         return try await withCheckedThrowingContinuation { continuation in
             self.loginContinuation = continuation
             Task.detached { @MainActor in
-                self.presentLoginWebView(presentingFrom: presenterViewController, shouldAutoLogin: shouldAutoLogin)
+                self.presentLoginWebView(
+                    presentingFrom: presenterViewController,
+                    shouldAutoLogin: shouldAutoLogin,
+                    username: username,
+                    password: password
+                )
             }
         }
     }
@@ -50,12 +58,21 @@ class UstcCasClient: LoginClientProtocol {
         self.presenterViewController = presenter
     }
 
-    @MainActor private func presentLoginWebView(
+    @MainActor
+    private func presentLoginWebView(
         presentingFrom presenterViewController: UIViewController,
-        shouldAutoLogin: Bool = false
+        shouldAutoLogin: Bool = false,
+        username: String? = nil,
+        password: String? = nil
     ) {
         let webViewController = CASWebViewController()
         webViewController.shouldAutoLogin = shouldAutoLogin
+        if let username {
+            webViewController.username = username
+        }
+        if let password {
+            webViewController.password = password
+        }
 
         let navigationController = UINavigationController(rootViewController: webViewController)
         navigationController.modalPresentationStyle = .fullScreen

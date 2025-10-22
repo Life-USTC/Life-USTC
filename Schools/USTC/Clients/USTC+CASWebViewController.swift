@@ -8,11 +8,11 @@
 import WebKit
 
 class CASWebViewController: UIViewController, WKNavigationDelegate {
-    @AppSecureStorage("passportUsername") private var username: String
-    @AppSecureStorage("passportPassword") private var password: String
-    @LoginClient(.ustcCAS) private var casClient: UstcCasClient
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
 
-    private var webView: WKWebView!
+    var webView: WKWebView!
     var onLoginSuccess: (() -> Void)?
     var shouldAutoLogin: Bool = false
 
@@ -78,7 +78,21 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         Task {
+            await checkForLoginErrors()
             await injectCredentials()
+        }
+    }
+
+    private func checkForLoginErrors() async {
+        let errorCheckScript = """
+            (function() {
+                const content = document.body.textContent || '';
+                return content.includes('用户名或密码错误') || content.includes('Incorrect user name or password');
+            })()
+            """
+
+        if let hasError = try? await webView.evaluateJavaScript(errorCheckScript) as? Bool, hasError {
+            UstcCasClient.shared.loginFailed()
         }
     }
 
@@ -126,7 +140,7 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
                     if (\(shouldAutoLogin ? "true" : "false")) {
                         setTimeout(function() {
                             submitBtn.click();
-                        }, 500);
+                        }, 100);
                     }
 
                     setTimeout(fillForm, 1000);
