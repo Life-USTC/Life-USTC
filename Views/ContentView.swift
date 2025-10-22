@@ -59,7 +59,7 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image(lifeUstc ? "OldIcon" : "Icon")
+            Image("Icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
