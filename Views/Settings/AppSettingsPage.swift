@@ -47,9 +47,3 @@ struct AppSettingsPage: View {
         .navigationTitle("App Settings")
     }
 }
-
-struct AppSettingsPage_Previews: PreviewProvider {
-    static var previews: some View {
-        AppSettingsPage()
-    }
-}

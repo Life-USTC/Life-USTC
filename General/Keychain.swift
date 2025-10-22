@@ -8,17 +8,17 @@
 import KeychainAccess
 import SwiftUI
 
-@propertyWrapper public struct AppSecureStorage: DynamicProperty {
-    private let key: String
-    private let keychain = Keychain(
+@propertyWrapper struct AppSecureStorage: DynamicProperty {
+    let key: String
+    let keychain = Keychain(
         service: "dev.tiankaima.Life-USTC",
         accessGroup: "group.dev.tiankaima.Life-USTC"
     )
 
-    public var wrappedValue: String {
+    var wrappedValue: String {
         get { try! keychain.getString(key) ?? "" }
         nonmutating set { keychain[key] = newValue }
     }
 
-    public init(_ key: String) { self.key = key }
+    init(_ key: String) { self.key = key }
 }

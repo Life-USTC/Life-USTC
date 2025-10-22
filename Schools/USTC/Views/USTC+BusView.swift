@@ -22,8 +22,8 @@ struct USTC_SchoolBusView: View {
         return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
     }()
 
-    @State private var showingSettings = false
-    @State private var currentRouteIndex = 0
+    @State var showingSettings = false
+    @State var currentRouteIndex = 0
 
     var allScheduleList: [USTCRouteSchedule] {
         switch selection {
@@ -366,8 +366,4 @@ struct USTC_SchoolBusView: View {
             }
         }
     }
-}
-
-#Preview {
-    USTC_SchoolBusView()
 }

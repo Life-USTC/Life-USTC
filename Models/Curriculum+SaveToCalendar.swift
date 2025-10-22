@@ -60,7 +60,7 @@ extension Curriculum {
     /// - Throws: Calendar access errors or event creation errors
     func saveToCalendar() async throws {
         let eventStore = EKEventStore()
-        
+
         // Request calendar access
         if #available(iOS 17.0, *) {
             if EKEventStore.authorizationStatus(for: .event) != .fullAccess {

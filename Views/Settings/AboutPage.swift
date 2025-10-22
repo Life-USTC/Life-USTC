@@ -71,18 +71,4 @@ struct AboutPage: View {
         .padding()
         .navigationTitle("About Life@USTC")
     }
-
-    private func changeAppIcon(to iconName: String) {
-        UIApplication.shared.setAlternateIconName(iconName) { error in
-            if let error = error {
-                print("Error setting alternate icon \(error.localizedDescription)")
-            }
-        }
-    }
-}
-
-struct AboutPage_Previews: PreviewProvider {
-    static var previews: some View {
-        AboutPage()
-    }
 }

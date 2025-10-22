@@ -21,9 +21,9 @@ class UstcCasClient: LoginClientProtocol {
         return URLSession(configuration: config)
     }()
 
-    private var loginContinuation: CheckedContinuation<Bool, Error>?
-    private var loginWebViewController: UIViewController?
-    private weak var presenterViewController: UIViewController?
+    var loginContinuation: CheckedContinuation<Bool, Error>?
+    var loginWebViewController: UIViewController?
+    weak var presenterViewController: UIViewController?
 
     // Default login keeps previous behavior for API compatibility but requires presenter to be set beforehand.
     override func login() async throws -> Bool {
@@ -59,7 +59,7 @@ class UstcCasClient: LoginClientProtocol {
     }
 
     @MainActor
-    private func presentLoginWebView(
+    func presentLoginWebView(
         presentingFrom presenterViewController: UIViewController,
         shouldAutoLogin: Bool = false,
         username: String? = nil,
@@ -120,7 +120,7 @@ class UstcCasClient: LoginClientProtocol {
         dismissLoginWebView()
     }
 
-    private func dismissLoginWebView() {
+    func dismissLoginWebView() {
         loginWebViewController?.dismiss(animated: true)
         loginWebViewController = nil
     }

@@ -22,7 +22,7 @@ extension UUID {
     }
 
     /// Creates a UUIDv5 (name-based UUID using SHA-1)
-    /// 
+    ///
     /// UUIDv5 generates deterministic UUIDs from a namespace and name.
     /// Same name in same namespace always produces the same UUID.
     ///

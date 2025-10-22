@@ -176,7 +176,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         return vc
     }
 
-    private func createToolbarItems(for coordinator: Coordinator) -> (
+    func createToolbarItems(for coordinator: Coordinator) -> (
         back: UIBarButtonItem, forward: UIBarButtonItem, reload: UIBarButtonItem, share: UIBarButtonItem,
         flexible: UIBarButtonItem, reader: UIBarButtonItem
     ) {
@@ -223,7 +223,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         return (back, forward, reload, share, flexible, reader)
     }
 
-    private func setupConstraints(
+    func setupConstraints(
         webView: WKWebView,
         toolbar: UIToolbar,
         viewController vc: UIViewController,
@@ -268,7 +268,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
 struct Browser: View {
     @State var useReeed = false
     @State var prepared = false
-    @State private var reeedMode: ReeedEnabledMode = .userDefined
+    @State var reeedMode: ReeedEnabledMode = .userDefined
 
     var url: URL
     var title: LocalizedStringKey = "Detail"

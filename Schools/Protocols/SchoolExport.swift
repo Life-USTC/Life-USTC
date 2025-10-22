@@ -56,7 +56,7 @@ class SchoolExport {
     //        USTCBaseModifier()
     //    }
 
-    var firstLoginView: (Binding<Bool>) -> any View {{_ in EmptyView()}}
+    var firstLoginView: (Binding<Bool>) -> any View { { _ in EmptyView() } }
 
     var features: [LocalizedStringKey: [FeatureWithView]] { [:] }
 

@@ -164,22 +164,3 @@ struct RectangleProgressBar: View {
         }
     }
 }
-
-@available(*, deprecated, message: "")
-struct RectangleProgressBar_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            RectangleProgressBar(
-                startDate: Date().addingTimeInterval(-15 * 60),
-                endDate: Date().addingTimeInterval(10 * 60),
-                text: "Example TEXT"
-            )
-            RectangleProgressBar(
-                startDate: Date().addingTimeInterval(-15 * 60),
-                endDate: Date().addingTimeInterval(5 * 60),
-                colors: [.black],
-                text: "!!!!!!"
-            )
-        }
-    }
-}

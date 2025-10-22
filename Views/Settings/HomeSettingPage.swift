@@ -38,7 +38,3 @@ struct HomeSettingPage: View {
         .navigationTitle("Home Page Settings")
     }
 }
-
-#Preview {
-    HomeSettingPage()
-}

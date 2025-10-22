@@ -42,7 +42,3 @@ struct ExamSettingsPage: View {
         .navigationTitle("Exam Settings")
     }
 }
-
-struct ExamSettingsPage_Previews: PreviewProvider {
-    static var previews: some View { ExamSettingsPage() }
-}

@@ -276,9 +276,3 @@ extension ScoreDetailView {
         }
     }
 }
-
-struct ScoreView_Previews: PreviewProvider {
-    static var previews: some View {
-        ScoreDetailView()
-    }
-}

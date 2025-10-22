@@ -61,11 +61,3 @@ struct HomeView: View {
         .background(Color(.systemGroupedBackground))
     }
 }
-
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            HomeView()
-        }
-    }
-}

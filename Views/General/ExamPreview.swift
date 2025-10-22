@@ -233,35 +233,3 @@ extension ExamPreview {
         .dynamicTypeSize(.medium)
     }
 }
-
-#Preview {
-    TabView {
-        ForEach(0 ..< 10) { count in
-            NavigationStack {
-                ExamPreview
-                    .makeListWidget(
-                        with: Array(repeating: .example, count: count),
-                        color: .blue,
-                        numberToShow: 4
-                    )
-                    .card()
-                    .border(.blue)
-                    .frame(height: 400)
-            }
-        }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        VStack {
-            ExamPreview
-                .makeDayWidget(with: nil)
-                .frame(width: 200, height: 200)
-
-            ExamPreview
-                .makeDayWidget(with: .example)
-                .frame(width: 200, height: 200)
-        }
-    }
-}

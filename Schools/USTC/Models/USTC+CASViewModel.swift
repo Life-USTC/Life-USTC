@@ -11,8 +11,8 @@ class UstcCasViewModel: ObservableObject {
     static let shared = UstcCasViewModel()
 
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
-    @AppSecureStorage("passportUsername") private var username: String
-    @AppSecureStorage("passportPassword") private var password: String
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
     @Published public var inputUsername: String = ""
     @Published public var inputPassword: String = ""
 

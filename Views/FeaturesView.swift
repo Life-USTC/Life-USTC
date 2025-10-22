@@ -207,11 +207,3 @@ extension FeaturesView {
         return results
     }
 }
-
-struct FeaturesView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            FeaturesView()
-        }
-    }
-}

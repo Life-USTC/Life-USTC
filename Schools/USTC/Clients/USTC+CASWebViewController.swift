@@ -83,7 +83,7 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
         }
     }
 
-    private func checkForLoginErrors() async {
+    func checkForLoginErrors() async {
         let errorCheckScript = """
             (function() {
                 const content = document.body.textContent || '';
@@ -96,7 +96,7 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
         }
     }
 
-    private func injectCredentials() async {
+    func injectCredentials() async {
         try? await Task.sleep(nanoseconds: 500_000_000)
 
         let combinedScript = """
@@ -151,13 +151,13 @@ class CASWebViewController: UIViewController, WKNavigationDelegate {
         _ = try? await webView.evaluateJavaScript(combinedScript)
     }
 
-    @objc private func manualFillForm() {
+    @objc func manualFillForm() {
         Task {
             await injectCredentials()
         }
     }
 
-    @objc private func cancelLogin() {
+    @objc func cancelLogin() {
         UstcCasClient.shared.loginFailed()
     }
 }

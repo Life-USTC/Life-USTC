@@ -27,9 +27,3 @@ struct LegalPage: View {
         .navigationTitle("Legal")
     }
 }
-
-struct LegalPage_Previews: PreviewProvider {
-    static var previews: some View {
-        LegalPage()
-    }
-}

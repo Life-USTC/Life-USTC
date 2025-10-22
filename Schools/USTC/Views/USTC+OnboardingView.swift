@@ -80,7 +80,7 @@ struct USTCOnboardingCoordinator: View {
 struct USTCAdditionalCoursesWelcomeView: View {
     var onNext: () -> Void
     var onSkip: () -> Void
-    @State private var showingAddCourseSheet = false
+    @State var showingAddCourseSheet = false
 
     var body: some View {
         VStack(spacing: 30) {

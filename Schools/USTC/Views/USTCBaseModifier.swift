@@ -10,7 +10,7 @@ import SwiftUI
 struct USTCBaseModifier: ViewModifier {
     @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
 
-    @State private var presenterInjected = false
+    @State var presenterInjected = false
 
     func body(content: Content) -> some View {
         content
@@ -36,7 +36,7 @@ struct PresenterInjectorView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 
-    private final class Resolver: UIViewController {
+    final class Resolver: UIViewController {
         let onResolve: (UIViewController) -> Void
 
         init(onResolve: @escaping (UIViewController) -> Void) {

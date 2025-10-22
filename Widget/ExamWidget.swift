@@ -104,19 +104,3 @@ struct ExamWidget: Widget {
         .description("Show upcoming exam")
     }
 }
-
-struct ExamWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            ExamWidgetEntryView(entry: .example)
-                .previewContext(WidgetPreviewContext(family: family))
-                .previewDisplayName(family.description)
-        }
-
-        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            ExamWidgetEntryView(entry: .init(exams: []))
-                .previewContext(WidgetPreviewContext(family: family))
-                .previewDisplayName("\(family.description) [EMPTY]")
-        }
-    }
-}

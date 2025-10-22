@@ -67,7 +67,3 @@ struct FeedSetingsPage: View {
         .navigationTitle("Feed Source Settings")
     }
 }
-
-struct FeedSettingsPage_Previews: PreviewProvider {
-    static var previews: some View { NavigationStack { FeedSetingsPage() } }
-}
