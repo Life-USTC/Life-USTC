@@ -88,26 +88,6 @@ class UstcCasClient: LoginClientProtocol {
         loginWebViewController = navigationController
     }
 
-    @available(*, deprecated, message: "Request these URLs yourself")
-    func loginToCAS(_ url: URL) async throws {
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (_, response) = try await session.data(for: request)
-
-        guard let redirectURL = response.url else {
-            throw BaseError.runtimeError("No redirect URL after CAS login.")
-        }
-
-        debugPrint(session.configuration.httpCookieStorage!.cookies.map({ $0.map { "\($0.name) = \($0.value)" } })!)
-
-        // Follow redirect to service URL
-        var serviceRequest = URLRequest(url: redirectURL)
-        serviceRequest.httpMethod = "GET"
-        serviceRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        _ = try await session.data(for: serviceRequest)
-    }
-
     func loginSuccess() {
         loginContinuation?.resume(returning: true)
         loginContinuation = nil
