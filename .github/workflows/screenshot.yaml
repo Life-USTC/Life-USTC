@@ -69,63 +69,17 @@ jobs:
         if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
         uses: actions/deploy-pages@v4
 
-      - name: Build markdown summary and comment body
+      - name: Build markdown summary and comment body (script)
         id: build_md
         if: always()
-        shell: bash
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
-          RUN_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "# iOS UI Screenshots" > screenshots_comment.md
-          echo >> screenshots_comment.md
-          echo "- Workflow run: ${RUN_URL}" >> screenshots_comment.md
-          echo "- Artifact: ios-screenshots-${GITHUB_RUN_ID}" >> screenshots_comment.md
-          echo >> screenshots_comment.md
-          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
-          if [ -n "$PAGES_URL" ]; then
-            BASE_URL="${PAGES_URL}run-${GITHUB_RUN_ID}/screenshots"
-            echo "- Public preview: ${BASE_URL}" >> screenshots_comment.md
-            echo >> screenshots_comment.md
-          fi
-          if [ -d screenshots ]; then
-            for lang in $(ls -1d screenshots/*/ 2>/dev/null | sed 's#screenshots/##;s#/$##'); do
-              echo "## ${lang}" >> screenshots_comment.md
-              echo >> screenshots_comment.md
-              if ls screenshots/${lang}/*.png >/dev/null 2>&1; then
-                if [ -n "$PAGES_URL" ]; then
-                  # Inline image gallery (public)
-                  for img in $(ls -1 screenshots/${lang}/*.png | sed 's#screenshots/##'); do
-                    echo "![${img}](${BASE_URL}/${img})" >> screenshots_comment.md
-                    echo >> screenshots_comment.md
-                  done
-                else
-                  # Fall back to listing files when no public URL
-                  echo "| File |" >> screenshots_comment.md
-                  echo "|---|" >> screenshots_comment.md
-                  for img in $(ls -1 screenshots/${lang}/*.png | sed 's#screenshots/##'); do
-                    echo "| \\"$img\\" |" >> screenshots_comment.md
-                  done
-                  echo >> screenshots_comment.md
-                fi
-              else
-                echo "_No PNG screenshots found for ${lang}._" >> screenshots_comment.md
-                echo >> screenshots_comment.md
-              fi
-            done
-            if [ -f screenshots/screenshots.html ]; then
-              echo "## HTML Overview" >> screenshots_comment.md
-              echo >> screenshots_comment.md
-              if [ -n "$PAGES_URL" ]; then
-                echo "Open the HTML index: ${BASE_URL}/screenshots.html" >> screenshots_comment.md
-              else
-                echo "The generated HTML index (screenshots/screenshots.html) is included in the artifact above." >> screenshots_comment.md
-              fi
-              echo >> screenshots_comment.md
-            fi
-          else
-            echo "_No screenshots directory found. Check the run logs for details._" >> screenshots_comment.md
-          fi
+          bash scripts/simulate_screenshot_comment.sh
 
-          # Publish to Job Summary
+      - name: Publish summary
+        if: always()
+        run: |
           cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on Pull Request (sticky)
