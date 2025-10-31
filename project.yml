@@ -156,24 +156,26 @@ targets:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
 
-  Life-USTCUITests:
+  Life-USTC-UITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "16.0"
     sources:
-      - path: "Tests/Life-USTCUITests"
+      - path: "Tests/Life-USTC-UITests"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.tiankaima.Life-USTCUITests
-    info:
-      path: Tests/Life-USTCUITests/Info.plist
-      properties:
-        CFBundleShortVersionString: "$(MARKETING_VERSION)"
-        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        PRODUCT_BUNDLE_IDENTIFIER: dev.tiankaima.Life-USTC.UITests
+        PRODUCT_NAME: "Life-USTC UITests"
+        PROVISIONING_PROFILE_SPECIFIER: "match Development dev.tiankaima.Life-USTC.UITests"
     dependencies:
       - sdk: XCTest.framework
       - target: Life-USTC
       - target: Widget iOS
+    info:
+      path: Tests/Life-USTC-UITests/Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
 
 packages:
   FeedKit:
@@ -243,10 +245,10 @@ schemes:
         _XCWidgetDefaultView: timeline
         _XCWidgetFamily: systemExtraLarge
 
-  "Life-USTCUITests":
+  "Life-USTC-UITests":
     build:
       targets:
-        Life-USTCUITests: all
+        Life-USTC-UITests: all
         Life-USTC: all
     run:
       config: Debug
@@ -257,6 +259,6 @@ schemes:
       config: Debug
       executable: Life-USTC
       coverageTargets:
-        - Life-USTCUITests
+        - Life-USTC-UITests
       targets:
-        - Life-USTCUITests
+        - Life-USTC-UITests
