@@ -8,7 +8,7 @@ options:
   groupSortPosition: top
   fileTypes:
     "icon":
-      file: true 
+      file: true
 
 settings:
   base:
@@ -36,7 +36,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.tiankaima.Life-USTC
-        PRODUCT_NAME: Life@USTC
+        PRODUCT_NAME: Life-USTC
         PROVISIONING_PROFILE_SPECIFIER: "match Development dev.tiankaima.Life-USTC"
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
         INFOPLIST_KEY_NSCalendarsUsageDescription: "向日历中添加课表/考试信息"
@@ -156,6 +156,25 @@ targets:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
 
+  Life-USTCUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: "Tests/Life-USTCUITests"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.tiankaima.Life-USTCUITests
+    info:
+      path: Tests/Life-USTCUITests/Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+    dependencies:
+      - sdk: XCTest.framework
+      - target: Life-USTC
+      - target: Widget iOS
+
 packages:
   FeedKit:
     url: https://github.com/nmdias/FeedKit
@@ -187,23 +206,11 @@ schemes:
     build:
       targets:
         Life-USTC: all
-      preActions:
-        - script: "# Type a script or drag a script file from your workspace to insert its path."
-          name: Run Script
-    run:
-      config: Debug
-    profile:
-      config: Release
-    analyze:
-      config: Debug
-    archive:
-      config: Release
 
   "Widget (Exam)":
     build:
       targets:
-        "Widget iOS": [run, build]
-        Life-USTC: [build]
+        "Widget iOS": all
     run:
       config: Debug
       commandLineArguments: {}
@@ -215,8 +222,7 @@ schemes:
   "Widget (Curriculum)":
     build:
       targets:
-        "Widget iOS": [run, build]
-        Life-USTC: [build]
+        "Widget iOS": all
     run:
       config: Debug
       commandLineArguments: {}
@@ -228,8 +234,7 @@ schemes:
   "Widget (CurriculumWeekWidget)":
     build:
       targets:
-        "Widget iOS": [run, build]
-        Life-USTC: [build]
+        "Widget iOS": all
     run:
       config: Debug
       commandLineArguments: {}
@@ -237,3 +242,21 @@ schemes:
         _XCWidgetKind: CurriculumWeekWidget
         _XCWidgetDefaultView: timeline
         _XCWidgetFamily: systemExtraLarge
+
+  "Life-USTCUITests":
+    build:
+      targets:
+        Life-USTCUITests: all
+        Life-USTC: all
+    run:
+      config: Debug
+      executable: Life-USTC
+      targets:
+        - Life-USTC
+    test:
+      config: Debug
+      executable: Life-USTC
+      coverageTargets:
+        - Life-USTCUITests
+      targets:
+        - Life-USTCUITests

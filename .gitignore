@@ -1,6 +1,5 @@
 .DS_Store
 .env
-buildServer.json
 
 *.app.dSYM.zip
 *.ipa
@@ -8,7 +7,9 @@ buildServer.json
 *.plist
 
 **/*.xcodeproj/
-
 **/xcuserdata/
 **/xcdebugger/
+
 **/build/
+**/screenshots/
+buildServer.json
