@@ -83,13 +83,14 @@ class Lecture: Codable, Identifiable, Equatable {
     }
 
     static let example = Lecture(
-        startDate: Date().stripTime() + DateComponents(hour: 7, minute: 50),
-        endDate: Date().stripTime() + DateComponents(hour: 12, minute: 10),
+        startDate: Date().stripTime() + DateComponents(hour: 8, minute: 0),
+        endDate: Date().stripTime() + DateComponents(hour: 9, minute: 50),
         name: "数学分析B1",
         location: "5104",
-        teacherName: "EXAMPLE",
+        teacherName: "程艺",
+        periods: 2,
         startIndex: 1,
-        endIndex: 5
+        endIndex: 2
     )
 }
 

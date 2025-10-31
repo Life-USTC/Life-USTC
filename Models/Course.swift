@@ -105,11 +105,43 @@ class Course: Codable, Identifiable, Equatable {
     }
 
     static let example = Course(
+        id: 1,
         name: "数学分析 B1",
-        courseCode: "MATH10001",
-        lessonCode: "MATH10001.01",
+        courseCode: "MATH1001",
+        lessonCode: "MATH1001-01",
         teacherName: "程艺",
-        lectures: [.example],
+        lectures: [
+            Lecture(
+                startDate: Date().stripTime().add(day: 0) + DateComponents(hour: 8, minute: 0),
+                endDate: Date().stripTime().add(day: 0) + DateComponents(hour: 9, minute: 50),
+                name: "数学分析 B1",
+                location: "5104",
+                teacherName: "程艺",
+                periods: 2,
+                startIndex: 1,
+                endIndex: 2
+            ),
+            Lecture(
+                startDate: Date().stripTime().add(day: 2) + DateComponents(hour: 10, minute: 0),
+                endDate: Date().stripTime().add(day: 2) + DateComponents(hour: 11, minute: 50),
+                name: "数学分析 B1",
+                location: "5104",
+                teacherName: "程艺",
+                periods: 2,
+                startIndex: 3,
+                endIndex: 4
+            ),
+            Lecture(
+                startDate: Date().stripTime().add(day: 4) + DateComponents(hour: 8, minute: 0),
+                endDate: Date().stripTime().add(day: 4) + DateComponents(hour: 9, minute: 50),
+                name: "数学分析 B1",
+                location: "5104",
+                teacherName: "程艺",
+                periods: 2,
+                startIndex: 1,
+                endIndex: 2
+            ),
+        ],
         credit: 6
     )
 }
