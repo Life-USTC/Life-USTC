@@ -1,0 +1,150 @@
+name: Screenshots
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - "*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  pages: write
+  id-token: write
+
+jobs:
+  snapshot:
+    name: Generate iOS UI Screenshots
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install XcodeGen
+        run: |
+          brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen --spec project.yml
+
+      - name: Run Fastlane Snapshot
+        env:
+          TZ: Asia/Shanghai
+        run: |
+          fastlane snapshot
+
+      - name: Upload screenshots artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-screenshots-${{ github.run_id }}
+          path: |
+            screenshots/**
+          if-no-files-found: warn
+
+      # Prepare and publish screenshots to GitHub Pages for inline images in comments (skips forks)
+      - name: Configure Pages
+        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: actions/configure-pages@v5
+
+      - name: Prepare Pages artifact
+        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
+        run: |
+          mkdir -p public/run-${{ github.run_id }}/
+          if [ -d screenshots ]; then
+            cp -R screenshots public/run-${{ github.run_id }}/
+          fi
+
+      - name: Upload Pages artifact
+        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: actions/deploy-pages@v4
+
+      - name: Build markdown summary and comment body
+        id: build_md
+        if: always()
+        shell: bash
+        run: |
+          RUN_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          echo "# iOS UI Screenshots" > screenshots_comment.md
+          echo >> screenshots_comment.md
+          echo "- Workflow run: ${RUN_URL}" >> screenshots_comment.md
+          echo "- Artifact: ios-screenshots-${GITHUB_RUN_ID}" >> screenshots_comment.md
+          echo >> screenshots_comment.md
+          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
+          if [ -n "$PAGES_URL" ]; then
+            BASE_URL="${PAGES_URL}run-${GITHUB_RUN_ID}/screenshots"
+            echo "- Public preview: ${BASE_URL}" >> screenshots_comment.md
+            echo >> screenshots_comment.md
+          fi
+          if [ -d screenshots ]; then
+            for lang in $(ls -1d screenshots/*/ 2>/dev/null | sed 's#screenshots/##;s#/$##'); do
+              echo "## ${lang}" >> screenshots_comment.md
+              echo >> screenshots_comment.md
+              if ls screenshots/${lang}/*.png >/dev/null 2>&1; then
+                if [ -n "$PAGES_URL" ]; then
+                  # Inline image gallery (public)
+                  for img in $(ls -1 screenshots/${lang}/*.png | sed 's#screenshots/##'); do
+                    echo "![${img}](${BASE_URL}/${img})" >> screenshots_comment.md
+                    echo >> screenshots_comment.md
+                  done
+                else
+                  # Fall back to listing files when no public URL
+                  echo "| File |" >> screenshots_comment.md
+                  echo "|---|" >> screenshots_comment.md
+                  for img in $(ls -1 screenshots/${lang}/*.png | sed 's#screenshots/##'); do
+                    echo "| \\"$img\\" |" >> screenshots_comment.md
+                  done
+                  echo >> screenshots_comment.md
+                fi
+              else
+                echo "_No PNG screenshots found for ${lang}._" >> screenshots_comment.md
+                echo >> screenshots_comment.md
+              fi
+            done
+            if [ -f screenshots/screenshots.html ]; then
+              echo "## HTML Overview" >> screenshots_comment.md
+              echo >> screenshots_comment.md
+              if [ -n "$PAGES_URL" ]; then
+                echo "Open the HTML index: ${BASE_URL}/screenshots.html" >> screenshots_comment.md
+              else
+                echo "The generated HTML index (screenshots/screenshots.html) is included in the artifact above." >> screenshots_comment.md
+              fi
+              echo >> screenshots_comment.md
+            fi
+          else
+            echo "_No screenshots directory found. Check the run logs for details._" >> screenshots_comment.md
+          fi
+
+          # Publish to Job Summary
+          cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on Pull Request (sticky)
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: screenshots_comment.md
+
+      - name: Comment on Commit
+        if: github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('screenshots_comment.md', 'utf8');
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body
+            });
