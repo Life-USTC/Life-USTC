@@ -71,6 +71,7 @@ struct USTCOnboardingCoordinator: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
+                    .accessibilityIdentifier("onboarding_close_button")
                 }
             }
         }
@@ -117,6 +118,7 @@ struct USTCAdditionalCoursesWelcomeView: View {
                                 .fill(Color.accentColor)
                         }
                 }
+                .accessibilityIdentifier("onboarding_add_button")
 
                 Button {
                     onNext()
@@ -142,6 +144,7 @@ struct USTCAdditionalCoursesWelcomeView: View {
                             } label: {
                                 Label("Close", systemImage: "xmark")
                             }
+                            .accessibilityIdentifier("additional_course_close")
                         }
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
@@ -149,6 +152,7 @@ struct USTCAdditionalCoursesWelcomeView: View {
                             } label: {
                                 Label("Done", systemImage: "checkmark")
                             }
+                            .accessibilityIdentifier("additional_course_done")
                         }
                     }
             }
@@ -200,6 +204,7 @@ struct USTCWidgetsWelcomeView: View {
                             .fill(Color.accentColor)
                     }
             }
+            .accessibilityIdentifier("onboarding_done_button")
         }
         .padding(.horizontal, 30)
     }
