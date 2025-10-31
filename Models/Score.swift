@@ -131,11 +131,82 @@ struct Score: Codable, ExampleDataProtocol {
     }
 
     static let example = Score(
-        courses: [.example],
-        gpa: 4.3,
-        majorRank: 1,
-        majorStdCount: 100,
-        majorName: "废理兴工"
+        courses: [
+            CourseScore(
+                courseName: "数学分析 B1",
+                courseCode: "MATH1001",
+                lessonCode: "MATH1001-01",
+                semesterID: "241",
+                semesterName: "2024 春季学期",
+                credit: 6.0,
+                gpa: 4.3,
+                score: "95"
+            ),
+            CourseScore(
+                courseName: "线性代数 A",
+                courseCode: "MATH1002",
+                lessonCode: "MATH1002-02",
+                semesterID: "241",
+                semesterName: "2024 春季学期",
+                credit: 4.0,
+                gpa: 4.0,
+                score: "90"
+            ),
+            CourseScore(
+                courseName: "大学物理 B1",
+                courseCode: "PHYS1001",
+                lessonCode: "PHYS1001-03",
+                semesterID: "241",
+                semesterName: "2024 春季学期",
+                credit: 4.0,
+                gpa: 3.7,
+                score: "85"
+            ),
+            CourseScore(
+                courseName: "程序设计 II",
+                courseCode: "CS1002",
+                lessonCode: "CS1002-01",
+                semesterID: "241",
+                semesterName: "2024 春季学期",
+                credit: 3.0,
+                gpa: 4.3,
+                score: "96"
+            ),
+            CourseScore(
+                courseName: "英语写作",
+                courseCode: "ENGL1001",
+                lessonCode: "ENGL1001-05",
+                semesterID: "241",
+                semesterName: "2024 春季学期",
+                credit: 2.0,
+                gpa: 3.3,
+                score: "80"
+            ),
+            CourseScore(
+                courseName: "思想道德与法治",
+                courseCode: "POLI1001",
+                lessonCode: "POLI1001-02",
+                semesterID: "221",
+                semesterName: "2023 秋季学期",
+                credit: 3.0,
+                gpa: 4.0,
+                score: "90"
+            ),
+            CourseScore(
+                courseName: "体育 I",
+                courseCode: "PE1001",
+                lessonCode: "PE1001-08",
+                semesterID: "221",
+                semesterName: "2023 秋季学期",
+                credit: 1.0,
+                gpa: nil,
+                score: "通过"
+            ),
+        ],
+        gpa: 3.94,
+        majorRank: 15,
+        majorStdCount: 180,
+        majorName: "计算机科学与技术"
     )
 }
 
