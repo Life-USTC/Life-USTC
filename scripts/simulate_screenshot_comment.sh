@@ -15,7 +15,7 @@ BASE_URL=""
 if [[ -n "${PAGES_URL}" ]]; then
   BASE_URL="${PAGES_URL}run-${GITHUB_RUN_ID}/screenshots"
 fi
-COLS=${COLS:-2}
+COLS=${COLS:-4}
 
 # Start markdown
 {

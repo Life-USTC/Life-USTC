@@ -45,35 +45,21 @@ jobs:
             screenshots/**
           if-no-files-found: warn
 
-      # Prepare and publish screenshots to GitHub Pages for inline images in comments (skips forks)
-      - name: Configure Pages
-        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: actions/configure-pages@v5
-
-      - name: Prepare Pages artifact
-        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
-        run: |
-          mkdir -p public/run-${{ github.run_id }}/
-          if [ -d screenshots ]; then
-            cp -R screenshots public/run-${{ github.run_id }}/
-          fi
-
-      - name: Upload Pages artifact
-        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: actions/upload-pages-artifact@v3
+      # Publish screenshots to gh-pages (append-only) so past runs are preserved
+      - name: Publish screenshots to gh-pages (append-only)
+        if: ${{ ((github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository)) && (hashFiles('screenshots/**') != '') }}
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: public
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./screenshots
+          destination_dir: run-${{ github.run_id }}/screenshots
+          keep_files: true
 
       - name: Build markdown summary and comment body (script)
         id: build_md
         if: always()
         env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+          PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: |
           bash scripts/simulate_screenshot_comment.sh
 
