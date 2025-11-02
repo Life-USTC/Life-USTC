@@ -9,16 +9,20 @@ import Foundation
 import SwiftyJSON
 
 /// Geographic location data for campus buildings/locations
-struct GeoLocationData: Codable, Equatable, ExampleDataProtocol {
+struct GeoLocationData: Codable, Equatable {
     var name: String
     var latitude: Double
     var longitude: Double
+}
 
-    static let example = GeoLocationData(
-        name: "东区体育中心",
-        latitude: 31.835946350451458,
-        longitude: 117.2660348207498
-    )
+extension GeoLocationData: ExampleArrayDataProtocol, ExampleDataProtocol {
+    static let examples: [GeoLocationData] = [
+        .init(
+            name: "东区体育中心",
+            latitude: 31.835946350451458,
+            longitude: 117.2660348207498
+        )
+    ]
 }
 
 /// Delegate for fetching geographic location data

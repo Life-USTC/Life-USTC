@@ -7,19 +7,13 @@
 
 import Foundation
 
-struct Homework: Codable, Identifiable, Equatable, ExampleDataProtocol {
+struct Homework: Codable, Identifiable, Equatable {
     var id = UUID()
 
     var title: String
     var courseName: String
 
     var dueDate: Date
-
-    static let example: Homework = .init(
-        title: "第一次作业",
-        courseName: "数学分析 B1",
-        dueDate: .now
-    )
 }
 
 extension Homework {
@@ -32,9 +26,19 @@ extension Homework {
     }
 }
 
+extension Homework: ExampleArrayDataProtocol, ExampleDataProtocol {
+    static let examples: [Homework] = [
+        .init(
+            title: "第一次作业",
+            courseName: "数学分析 B1",
+            dueDate: .now
+        )
+    ]
+}
+
 typealias HomeworkDelegateProtocol = ManagedRemoteUpdateProtocol<[Homework]>
 
-extension ManagedDataSource<[Homework]> {
+extension ManagedDataSource where D == [Homework] {
     static let homework = ManagedDataSource(
         local: ManagedLocalStorage("Homework"),
         remote: SchoolExport.shared.homeworkDelegate

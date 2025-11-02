@@ -9,16 +9,12 @@ import Foundation
 import SwiftyJSON
 
 /// Mapping from building names to image paths using regex patterns
-struct BuildingImgMappingData: Codable, ExampleDataProtocol {
+struct BuildingImgMappingData: Codable {
     struct Mapping: Codable {
         var regex: String
         var path: String
     }
     var data: [Mapping]
-
-    static let example = BuildingImgMappingData(data: [
-        Mapping(regex: ".*", path: "https://example.com/default.png")
-    ])
 
     /// Get image URL for a building name
     /// - Parameters:
@@ -35,6 +31,12 @@ struct BuildingImgMappingData: Codable, ExampleDataProtocol {
         }
         return nil
     }
+}
+
+extension BuildingImgMappingData: ExampleDataProtocol {
+    static let example = BuildingImgMappingData(data: [
+        Mapping(regex: ".*", path: "./imgs/五教_01.png")
+    ])
 }
 
 /// Delegate for fetching building image mapping data

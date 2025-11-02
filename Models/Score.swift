@@ -134,8 +134,8 @@ struct Score: Codable, ExampleDataProtocol {
         courses: [
             CourseScore(
                 courseName: "数学分析 B1",
-                courseCode: "MATH1001",
-                lessonCode: "MATH1001-01",
+                courseCode: "MATH1006",
+                lessonCode: "MATH1006.02",
                 semesterID: "241",
                 semesterName: "2024 春季学期",
                 credit: 6.0,
