@@ -15,10 +15,15 @@ struct Semester: Codable, Identifiable, Equatable {
     var endDate: Date
 
     static let example = Semester(
-        id: "241",
-        courses: [.example],
-        name: "2021 Spring",
-        startDate: Date(),
-        endDate: Date().add(day: 10)
+        id: "251",
+        courses: [
+            .example,
+            .example2,
+            .example3,
+            .example4,
+        ],
+        name: "2025 秋季学期",
+        startDate: Date().stripTime().add(day: -30),
+        endDate: Date().stripTime().add(day: 120)
     )
 }

@@ -21,13 +21,13 @@ struct Feed: Codable, Identifiable, Equatable {
     var colorHex: String?
 
     static let example = Feed(
-        title: Lorem.sentence,
+        title: "我校成功举办2025年度教师教学能力提升营",
         source: Lorem.word,
-        keywords: [Lorem.word, Lorem.word],
+        keywords: ["信息"],
         description: Lorem.sentences(2),
         datePosted: Date(),
         url: exampleURL,
-        imageURL: URL(string: "https://picsum.photos/300/300")!,
+        imageURL: URL(string: "https://www.teach.ustc.edu.cn/wp-content/uploads/2025/10/202510302.jpg")!,
         colorHex: "ff0000"
     )
 }

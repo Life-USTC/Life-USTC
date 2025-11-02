@@ -71,6 +71,7 @@ struct USTCCASLoginView: View {
                             "Username",
                             text: $ustcCASViewModel.inputUsername
                         )
+                        .accessibilityIdentifier("login_username_field")
                         .focused($focusField, equals: .username)
                         .onSubmit {
                             DispatchQueue.main.asyncAfter(
@@ -96,6 +97,7 @@ struct USTCCASLoginView: View {
                             "Password",
                             text: $ustcCASViewModel.inputPassword
                         )
+                        .accessibilityIdentifier("login_password_field")
                         .focused($focusField, equals: .password)
                         .onSubmit {
                             focusField = .studentType
@@ -137,6 +139,7 @@ struct USTCCASLoginView: View {
                             .fill(Color.accentColor)
                     }
             }
+            .accessibilityIdentifier("login_submit_button")
             .keyboardShortcut(.defaultAction)
         }
         .padding(.horizontal, 30)
@@ -151,7 +154,12 @@ struct USTCCASLoginView: View {
         .alert(
             "Login Success",
             isPresented: $showSuccessAlert,
-            actions: {},
+            actions: {
+                Button("OK") {
+                    showSuccessAlert = false
+                    onSuccess?()
+                }
+            },
             message: {
                 Text("You're good to go")
             }
@@ -163,6 +171,8 @@ struct USTCCASLoginView: View {
     }
 
     func checkAndLogin() {
+        focusField = nil
+
         Task {
             do {
                 let result = try await ustcCASViewModel.checkAndLogin()
@@ -174,9 +184,7 @@ struct USTCCASLoginView: View {
                         deadline: .now() + .seconds(1)
                     ) {
                         showSuccessAlert = false
-                        if let onSuccess = onSuccess {
-                            onSuccess()
-                        }
+                        onSuccess?()
                     }
                     return
                 }

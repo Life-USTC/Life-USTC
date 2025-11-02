@@ -12,9 +12,13 @@ struct SettingsView: View {
         List {
             Section {
                 NavigationLink("App Settings", destination: AppSettingsPage())
+                    .accessibilityIdentifier("settings_app_settings")
                 NavigationLink("Home Page Settings", destination: HomeSettingPage())
+                    .accessibilityIdentifier("settings_home_settings")
                 NavigationLink("Feed Source Settings", destination: FeedSetingsPage())
+                    .accessibilityIdentifier("settings_feed_settings")
                 NavigationLink("Exam Settings", destination: ExamSettingsPage())
+                    .accessibilityIdentifier("settings_exam_settings")
             } header: {
                 Text("General")
                     .textCase(.none)
@@ -33,7 +37,9 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink("About Life@USTC", destination: AboutPage())
+                    .accessibilityIdentifier("settings_about")
                 NavigationLink("Legal Info", destination: LegalPage())
+                    .accessibilityIdentifier("settings_legal")
             } header: {
                 Text("More")
                     .textCase(.none)

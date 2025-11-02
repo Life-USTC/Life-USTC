@@ -53,7 +53,7 @@ struct ExamEntry: TimelineEntry {
     let date = Date()
     let exams: [Exam]
 
-    static let example = ExamEntry(exams: [Exam.example])
+    static let example = ExamEntry(exams: .example)
 }
 
 struct ExamWidgetEntryView: View {

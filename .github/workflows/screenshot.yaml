@@ -1,0 +1,90 @@
+name: Screenshots
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - "*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+jobs:
+  snapshot:
+    name: Generate iOS UI Screenshots
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install XcodeGen
+        run: |
+          brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen --spec project.yml
+
+      - name: Run Fastlane Snapshot
+        env:
+          TZ: Asia/Shanghai
+        run: |
+          fastlane snapshot
+
+      - name: Upload screenshots artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-screenshots-${{ github.run_id }}
+          path: |
+            screenshots/**
+          if-no-files-found: warn
+
+      # Publish screenshots to gh-pages (append-only) so past runs are preserved
+      - name: Publish screenshots to gh-pages (append-only)
+        if: ${{ ((github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository)) && (hashFiles('screenshots/**') != '') }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./screenshots
+          destination_dir: run-${{ github.run_id }}/screenshots
+          keep_files: true
+
+      - name: Build markdown summary and comment body (script)
+        id: build_md
+        if: always()
+        env:
+          PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          bash scripts/simulate_screenshot_comment.sh
+
+      - name: Publish summary
+        if: always()
+        run: |
+          cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on Pull Request (sticky)
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: screenshots_comment.md
+
+      - name: Comment on Commit
+        if: github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('screenshots_comment.md', 'utf8');
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body
+            });

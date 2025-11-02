@@ -89,6 +89,7 @@ struct FeaturesView: View {
                             } label: {
                                 Label(feature.title, systemImage: feature.image)
                                     .labelStyle(FeatureLabelStyle())
+                                    .accessibilityIdentifier(feature.identifier ?? "")
                             }
                         }
                     }
@@ -117,6 +118,7 @@ struct FeaturesView: View {
                         } label: {
                             Label(feature.title, systemImage: feature.image)
                                 .symbolRenderingMode(.hierarchical)
+                                .accessibilityIdentifier(feature.identifier ?? "")
                         }
                     }
                 } header: {
@@ -168,19 +170,22 @@ extension FeaturesView {
                 image: "book",
                 title: "Curriculum",
                 subTitle: "",
-                destinationView: { CurriculumDetailView() }
+                destinationView: { CurriculumDetailView() },
+                identifier: "feature_curriculum"
             ),
             .init(
                 image: "calendar.badge.clock",
                 title: "Exam",
                 subTitle: "",
-                destinationView: { ExamDetailView() }
+                destinationView: { ExamDetailView() },
+                identifier: "feature_exam"
             ),
             .init(
                 image: "graduationcap",
                 title: "Score",
                 subTitle: "",
-                destinationView: { ScoreDetailView() }
+                destinationView: { ScoreDetailView() },
+                identifier: "feature_score"
             ),
         ]
 
@@ -192,7 +197,8 @@ extension FeaturesView {
                     subTitle: "",
                     destinationView: {
                         AllSourceView()
-                    }
+                    },
+                    identifier: "feature_feed"
                 )
             ] + feedSources.map { FeatureWithView($0) }
 

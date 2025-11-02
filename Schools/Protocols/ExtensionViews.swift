@@ -17,6 +17,7 @@ struct FeatureWithView: Identifiable, Hashable {
     var title: LocalizedStringKey
     var subTitle: LocalizedStringKey
     var destinationView: () -> any View
+    var identifier: String? = nil
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

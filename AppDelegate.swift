@@ -16,6 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
     func startup() {
         _ustcCasClient.clearLoginStatus()
         _ustcAASClient.clearLoginStatus()
+
+        #if DEBUG
+        // Ensure onboarding (welcome) can be shown during UI tests when requested
+        if ProcessInfo.processInfo.arguments.contains("UI_TEST_RESET_ONBOARDING") {
+            UserDefaults.standard.set(true, forKey: "firstLogin_3")
+        }
+        #endif
     }
 
     func application(
