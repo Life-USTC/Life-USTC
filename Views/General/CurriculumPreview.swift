@@ -25,9 +25,14 @@ private struct LectureView: View {
                 Text(lecture.name)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text("\(lecture.teacherName) @ **\(lecture.location)**")
-                    .font(.footnote)
-                    .foregroundColor(.gray.opacity(0.8))
+                HStack {
+                    Text("\(lecture.teacherName)")
+                        .lineLimit(1)
+                    Text("@ **\(lecture.location)**")
+                        .lineLimit(1)
+                }
+                .font(.footnote)
+                .foregroundColor(.gray.opacity(0.8))
             }
 
             Spacer()

@@ -13,9 +13,25 @@ protocol ExampleDataProtocol {
 }
 
 /// Avoid writing `extension [D] { static var example }`, just implement ExampleDataProtocol for D instead.
-extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
+// extension Array: ExampleDataProtocol where Element: ExampleDataProtocol {
+//     static var example: Self {
+//         [Element.example]
+//     }
+// }
+
+protocol ExampleArrayDataProtocol {
+    static var examples: [Self] { get }
+}
+
+extension ExampleDataProtocol where Self: ExampleArrayDataProtocol {
     static var example: Self {
-        [Element.example]
+        Self.examples.first!
+    }
+}
+
+extension Array: ExampleDataProtocol where Element: ExampleArrayDataProtocol {
+    static var example: [Element] {
+        Element.examples
     }
 }
 

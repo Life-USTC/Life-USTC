@@ -57,6 +57,7 @@ struct LectureSheetModifier: ViewModifier {
                                     Text("Teacher: ")
                                         .foregroundStyle(.secondary)
                                     Text(lecture.teacherName)
+                                        .lineLimit(1)
                                 }
                                 if let credit = lecture.course?.credit {
                                     HStack(alignment: .bottom) {
