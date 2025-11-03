@@ -30,6 +30,16 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen --spec project.yml
 
+      - name: Setup Simulators
+        run: |
+          xcrun simctl create "iPhone 14" "iPhone 14"
+          xcrun simctl create "iPhone 14 Plus" "iPhone 14 Plus"
+          xcrun simctl create "iPhone 14 Pro" "iPhone 14 Pro"
+          xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
+          xcrun simctl create "iPad Pro (12.9-inch) (3rd generation)" "iPad Pro (12.9-inch) (3rd generation)"
+          xcrun simctl create "iPad Air (3rd generation)" "iPad Air (3rd generation)"
+          xcrun simctl create "iPad mini (5th generation)" "iPad mini (5th generation)"
+
       - name: Run Fastlane Snapshot
         env:
           TZ: Asia/Shanghai
