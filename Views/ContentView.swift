@@ -23,7 +23,8 @@ struct ContentView: View {
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    @State var columnVisibility: NavigationSplitViewVisibility = .all
+//    @State var columnVisibility: NavigationSplitViewVisibility = .all
+    let columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
 
     var iPhoneView: some View {
@@ -70,17 +71,18 @@ struct ContentView: View {
 
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 Button {
-                    if tabSelection == tab, columnVisibility == .all {
-                        columnVisibility = .detailOnly
-                    } else {
-                        columnVisibility = .all
+//                    if tabSelection == tab, columnVisibility == .all {
+//                        columnVisibility = .detailOnly
+//                    } else {
+//                        columnVisibility = .all
                         tabSelection = tab
-                    }
+//                    }
                 } label: {
                     tab.label.foregroundColor(
                         tab == tabSelection ? tab.color : .primary
                     )
                 }
+                .accessibilityIdentifier("Tab." + tab.name)
                 .keyboardShortcut(
                     KeyEquivalent(Character(String(tab.rawValue))),
                     modifiers: .command
@@ -92,7 +94,8 @@ struct ContentView: View {
     }
 
     var iPadView: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+//        NavigationSplitView(columnVisibility: $columnVisibility) {
+        NavigationSplitView(columnVisibility: .constant(.all)) {
             sideBarView
                 .navigationSplitViewColumnWidth(80)
                 .navigationBarHidden(true)
@@ -102,7 +105,7 @@ struct ContentView: View {
         } detail: {
             EmptyView()
         }
-        .navigationSplitViewStyle(.balanced)
+        .navigationSplitViewStyle(.automatic)
     }
 
     var body: some View {

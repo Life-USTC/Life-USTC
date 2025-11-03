@@ -34,12 +34,29 @@ enum ContentViewTab: Int, CaseIterable {
         }
     }
 
+    var name: String {
+        switch self {
+        case .position_1:
+            "Home"
+        case .position_2:
+            "Features"
+        case .position_3:
+            "Feed"
+        case .position_4:
+            "Settings"
+        }
+    }
+
     var label: some View {
         switch self {
-        case .position_1: Label("Home", systemImage: "square.stack.3d.up")
-        case .position_2: Label("Features", systemImage: "square.grid.2x2")
-        case .position_3: Label("Feed", systemImage: "doc.richtext.fill")
-        case .position_4: Label("Settings", systemImage: "gearshape.fill")
+        case .position_1:
+            Label("Home", systemImage: "square.stack.3d.up")
+        case .position_2:
+            Label("Features", systemImage: "square.grid.2x2")
+        case .position_3:
+            Label("Feed", systemImage: "doc.richtext.fill")
+        case .position_4:
+            Label("Settings", systemImage: "gearshape.fill")
         }
     }
 }
