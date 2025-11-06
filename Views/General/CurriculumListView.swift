@@ -93,6 +93,7 @@ struct CurriculumListView: View {
                             ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
                     )
                 }
+                .disabled(saveToCalendarStatus == .waiting)
 
                 Button {
                     _curriculum.triggerRefresh()

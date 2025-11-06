@@ -13,48 +13,50 @@ extension [Exam] {
     /// Creates a dedicated "Exam Arrangements" calendar and adds all exams as events
     /// - Throws: Calendar access errors or event creation errors
     func saveToCalendar() async throws {
-        let eventStore = EKEventStore()
+        try await CalendarSaveManager.shared.executeSave {
+            let eventStore = EKEventStore()
 
-        // Request calendar access
-        if #available(iOS 17.0, *) {
-            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
-                try await eventStore.requestFullAccessToEvents()
-            }
-        } else {
-            if try await !eventStore.requestAccess(to: .event) {
-                throw BaseError.runtimeError("Calendar access problem")
-            }
-        }
-
-        let calendarName = "Exam Arrangements".localized
-        let calendars = eventStore.calendars(for: .event)
-            .filter {
-                $0.title == calendarName.localized
+            // Request calendar access
+            if #available(iOS 17.0, *) {
+                if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
+                    try await eventStore.requestFullAccessToEvents()
+                }
+            } else {
+                if try await !eventStore.requestAccess(to: .event) {
+                    throw BaseError.runtimeError("Calendar access problem")
+                }
             }
 
-        // Remove existing calendar with same name
-        for calendar in calendars {
-            try eventStore.removeCalendar(calendar, commit: true)
-        }
+            let calendarName = "Exam Arrangements".localized
+            let calendars = eventStore.calendars(for: .event)
+                .filter {
+                    $0.title == calendarName.localized
+                }
 
-        // Create new calendar
-        let calendar = EKCalendar(for: .event, eventStore: eventStore)
-        calendar.title = calendarName
-        calendar.cgColor = Color.accentColor.cgColor
-        calendar.source = eventStore.defaultCalendarForNewEvents?.source
-        try eventStore.saveCalendar(calendar, commit: true)
+            // Remove existing calendar with same name
+            for calendar in calendars {
+                try eventStore.removeCalendar(calendar, commit: true)
+            }
 
-        // Add all exams as events
-        for exam in self {
-            let event = EKEvent(exam, in: eventStore)
-            event.calendar = calendar
-            try eventStore.save(
-                event,
-                span: .thisEvent,
-                commit: false
-            )
+            // Create new calendar
+            let calendar = EKCalendar(for: .event, eventStore: eventStore)
+            calendar.title = calendarName
+            calendar.cgColor = Color.accentColor.cgColor
+            calendar.source = eventStore.defaultCalendarForNewEvents?.source
+            try eventStore.saveCalendar(calendar, commit: true)
+
+            // Add all exams as events
+            for exam in self {
+                let event = EKEvent(exam, in: eventStore)
+                event.calendar = calendar
+                try eventStore.save(
+                    event,
+                    span: .thisEvent,
+                    commit: false
+                )
+            }
+            try eventStore.commit()
         }
-        try eventStore.commit()
     }
 }
 

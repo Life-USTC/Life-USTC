@@ -145,6 +145,7 @@ struct CurriculumDetailView: View {
                             ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
                     )
                 }
+                .disabled(saveToCalendarStatus == .waiting)
             }
 
             ToolbarItemGroup(placement: .bottomBar) {

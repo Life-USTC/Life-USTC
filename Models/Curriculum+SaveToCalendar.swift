@@ -59,50 +59,52 @@ extension Curriculum {
     /// Creates a dedicated "Curriculum" calendar and adds all lectures as events with location data
     /// - Throws: Calendar access errors or event creation errors
     func saveToCalendar() async throws {
-        let eventStore = EKEventStore()
+        try await CalendarSaveManager.shared.executeSave {
+            let eventStore = EKEventStore()
 
-        // Request calendar access
-        if #available(iOS 17.0, *) {
-            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
-                try await eventStore.requestFullAccessToEvents()
-            }
-        } else {
-            if try await !eventStore.requestAccess(to: .event) {
-                throw BaseError.runtimeError("Calendar access problem")
-            }
-        }
-
-        let calendarName = "Curriculum".localized
-        let calendars = eventStore.calendars(for: .event)
-            .filter {
-                $0.title == calendarName.localized
+            // Request calendar access
+            if #available(iOS 17.0, *) {
+                if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
+                    try await eventStore.requestFullAccessToEvents()
+                }
+            } else {
+                if try await !eventStore.requestAccess(to: .event) {
+                    throw BaseError.runtimeError("Calendar access problem")
+                }
             }
 
-        // Remove existing calendar with same name
-        for calendar in calendars {
-            try eventStore.removeCalendar(calendar, commit: true)
+            let calendarName = "Curriculum".localized
+            let calendars = eventStore.calendars(for: .event)
+                .filter {
+                    $0.title == calendarName.localized
+                }
+
+            // Remove existing calendar with same name
+            for calendar in calendars {
+                try eventStore.removeCalendar(calendar, commit: true)
+            }
+
+            // Create new calendar
+            let calendar = EKCalendar(for: .event, eventStore: eventStore)
+            calendar.title = calendarName
+            calendar.cgColor = Color.accentColor.cgColor
+            calendar.source = eventStore.defaultCalendarForNewEvents?.source
+            try eventStore.saveCalendar(calendar, commit: true)
+
+            // Get all unique lectures and create events with location data
+            let lectures = self.semesters.flatMap(\.courses).flatMap(\.lectures).union()
+            let events = try await LectureLocationFactory().makeEventWithLocation(from: lectures, in: eventStore)
+
+            // Save all events
+            for event in events {
+                event.calendar = calendar
+                try eventStore.save(
+                    event,
+                    span: .thisEvent,
+                    commit: false
+                )
+            }
+            try eventStore.commit()
         }
-
-        // Create new calendar
-        let calendar = EKCalendar(for: .event, eventStore: eventStore)
-        calendar.title = calendarName
-        calendar.cgColor = Color.accentColor.cgColor
-        calendar.source = eventStore.defaultCalendarForNewEvents?.source
-        try eventStore.saveCalendar(calendar, commit: true)
-
-        // Get all unique lectures and create events with location data
-        let lectures = semesters.flatMap(\.courses).flatMap(\.lectures).union()
-        let events = try await LectureLocationFactory().makeEventWithLocation(from: lectures, in: eventStore)
-
-        // Save all events
-        for event in events {
-            event.calendar = calendar
-            try eventStore.save(
-                event,
-                span: .thisEvent,
-                commit: false
-            )
-        }
-        try eventStore.commit()
     }
 }

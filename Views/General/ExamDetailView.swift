@@ -139,6 +139,7 @@ struct ExamDetailView: View {
                             ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
                     )
                 }
+                .disabled(saveToCalendarStatus == .waiting)
             }
         }
         .navigationTitle("Exam")
