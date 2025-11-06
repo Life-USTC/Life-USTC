@@ -12,12 +12,13 @@ import WebKit
 
 struct BrowserUIKitView: UIViewControllerRepresentable {
     let url: URL
-    @Binding var useReeed: Bool
     var reeedMode: ReeedEnabledMode
+
+    @Binding var useReeed: Bool
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
-    class Coordinator: NSObject, WKNavigationDelegate, UIScrollViewDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate {
         var parent: BrowserUIKitView
         weak var viewController: UIViewController?
         var webView: WKWebView?
@@ -27,11 +28,6 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         var readerItem: UIBarButtonItem?
         var canGoBackObs: NSKeyValueObservation?
         var canGoForwardObs: NSKeyValueObservation?
-
-        // Toolbar auto-hide properties
-        var lastContentOffset: CGFloat = 0
-        var isToolbarHidden = false
-        var toolbarBottomConstraint: NSLayoutConstraint?
 
         init(_ parent: BrowserUIKitView) {
             self.parent = parent
@@ -44,9 +40,6 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
             canGoForwardObs = webView.observe(\.canGoForward, options: [.initial, .new]) { [weak self] webView, _ in
                 self?.forwardItem?.isEnabled = webView.canGoForward
             }
-
-            // Set up scroll view delegate for toolbar hiding
-            webView.scrollView.delegate = self
         }
 
         @objc func goBack() {
@@ -62,8 +55,8 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         }
 
         @objc func share() {
-            guard let vc = viewController else { return }
-            let activity = UIActivityViewController(activityItems: [parent.url], applicationActivities: nil)
+            guard let vc = viewController, let url = webView?.url else { return }
+            let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
             vc.present(activity, animated: true)
         }
 
@@ -76,100 +69,49 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
             let symbol = parent.useReeed ? "doc.plaintext.fill" : "doc.plaintext"
             readerItem?.image = UIImage(systemName: symbol)
         }
-
-        func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            guard let toolbar = toolbar, let constraint = toolbarBottomConstraint else { return }
-
-            if scrollView.contentOffset.y < 0
-                || scrollView.contentOffset.y > (scrollView.contentSize.height - scrollView.frame.size.height)
-            {
-                return
-            }
-            let currentOffset = scrollView.contentOffset.y
-            let diff = currentOffset - lastContentOffset
-            lastContentOffset = currentOffset
-
-            if diff < -4 && isToolbarHidden {
-                showToolbar(toolbar: toolbar, constraint: constraint)
-            } else if diff > 8 && !isToolbarHidden && currentOffset > 20 {
-                hideToolbar(toolbar: toolbar, constraint: constraint)
-            }
-        }
-
-        func hideToolbar(toolbar: UIToolbar, constraint: NSLayoutConstraint) {
-            guard !isToolbarHidden else { return }
-
-            let safeAreaInsets = self.viewController?.view.safeAreaInsets.bottom ?? 0
-            let toolbarHeight = toolbar.frame.height + safeAreaInsets
-            UIView.animate(
-                withDuration: 0.3,
-                animations: {
-                    constraint.constant = toolbarHeight
-                    toolbar.alpha = 0.0
-                    self.viewController?.view.layoutIfNeeded()
-                }
-            ) { _ in
-                self.isToolbarHidden = true
-            }
-        }
-
-        func showToolbar(toolbar: UIToolbar, constraint: NSLayoutConstraint) {
-            guard isToolbarHidden else { return }
-
-            UIView.animate(
-                withDuration: 0.3,
-                animations: {
-                    constraint.constant = 0
-                    toolbar.alpha = 1.0
-                    self.viewController?.view.layoutIfNeeded()
-                }
-            ) { _ in
-                self.isToolbarHidden = false
-            }
-        }
     }
 
     func makeUIViewController(context: Context) -> UIViewController {
         let vc = UIViewController()
         vc.view.backgroundColor = .systemBackground
 
-        // Setup web view
         let webView = WKWebView(frame: .zero)
         webView.navigationDelegate = context.coordinator
         webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.allowsBackForwardNavigationGestures = true
 
-        // Setup toolbar
         let toolbar = UIToolbar()
+        let toolbarItems = createToolbarItems(for: context.coordinator)
         toolbar.translatesAutoresizingMaskIntoConstraints = false
 
-        // Create toolbar items
-        let toolbarItems = createToolbarItems(for: context.coordinator)
-
-        // Store references
         context.coordinator.viewController = vc
         context.coordinator.webView = webView
         context.coordinator.toolbar = toolbar
 
-        // Assign toolbar items based on mode
         toolbar.items =
             reeedMode == .never
             ? [
-                toolbarItems.back, toolbarItems.forward, toolbarItems.flexible, toolbarItems.reload,
-                toolbarItems.flexible, toolbarItems.share,
+                toolbarItems.back,
+                toolbarItems.forward,
+                toolbarItems.flexible,
+                toolbarItems.reload,
+                toolbarItems.flexible,
+                toolbarItems.share,
             ]
             : [
-                toolbarItems.back, toolbarItems.forward, toolbarItems.flexible, toolbarItems.reload,
-                toolbarItems.flexible, toolbarItems.reader, toolbarItems.share,
+                toolbarItems.back,
+                toolbarItems.forward,
+                toolbarItems.flexible,
+                toolbarItems.reload,
+                toolbarItems.flexible,
+                toolbarItems.reader,
+                toolbarItems.share,
             ]
-
-        // Add subviews
         vc.view.addSubview(webView)
         vc.view.addSubview(toolbar)
 
-        // Setup constraints
         setupConstraints(webView: webView, toolbar: toolbar, viewController: vc, coordinator: context.coordinator)
 
-        // Setup observers and load URL
         context.coordinator.setupObservers(for: webView)
         webView.load(URLRequest(url: url))
 
@@ -229,30 +171,23 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         viewController vc: UIViewController,
         coordinator: Coordinator
     ) {
-        let toolbarBottomConstraint = toolbar.bottomAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.bottomAnchor)
-        coordinator.toolbarBottomConstraint = toolbarBottomConstraint
-
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: vc.view.topAnchor),
             webView.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-            webView.bottomAnchor.constraint(equalTo: vc.view.bottomAnchor),
+            webView.bottomAnchor.constraint(equalTo: toolbar.topAnchor, constant: -8),
 
             toolbar.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
             toolbar.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-            toolbarBottomConstraint,
+            toolbar.bottomAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.bottomAnchor),
         ])
+
+        webView.scrollView.scrollIndicatorInsets = webView.scrollView.contentInset
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
         if context.coordinator.webView?.url != url {
             context.coordinator.webView?.load(URLRequest(url: url))
-            if let toolbar = context.coordinator.toolbar, let constraint = context.coordinator.toolbarBottomConstraint,
-                context.coordinator.isToolbarHidden
-            {
-                context.coordinator.showToolbar(toolbar: toolbar, constraint: constraint)
-                context.coordinator.lastContentOffset = 0
-            }
         }
         context.coordinator.refreshReaderAppearance()
     }
@@ -260,12 +195,12 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
     static func dismantleUIViewController(_ uiViewController: UIViewController, coordinator: Coordinator) {
         coordinator.canGoBackObs?.invalidate()
         coordinator.canGoForwardObs?.invalidate()
-        coordinator.webView?.scrollView.delegate = nil
         coordinator.webView?.navigationDelegate = nil
     }
 }
 
 struct Browser: View {
+    @Environment(\.dismiss) var dismiss
     @State var useReeed = false
     @State var prepared = false
     @State var reeedMode: ReeedEnabledMode = .userDefined
@@ -278,25 +213,24 @@ struct Browser: View {
             if prepared {
                 if useReeed {
                     ReeeederView(url: url, options: .init(includeExitReaderButton: false))
+                        .toolbar {
+                            ToolbarItemGroup(placement: .bottomBar) {
+                                Spacer()
+                                Button {
+                                    useReeed.toggle()
+                                } label: {
+                                    Label("Exit Reader", systemImage: "doc.plaintext")
+                                }
+                                ShareLink(item: url) {
+                                    Label("Share", systemImage: "square.and.arrow.up")
+                                }
+                            }
+                        }
                 } else {
-                    BrowserUIKitView(url: url, useReeed: $useReeed, reeedMode: reeedMode)
+                    BrowserUIKitView(url: url, reeedMode: reeedMode, useReeed: $useReeed)
                 }
             } else {
                 ProgressView("Loading...")
-            }
-        }
-    }
-
-    var readerToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .bottomBar) {
-            Spacer()
-            Button {
-                useReeed.toggle()
-            } label: {
-                Label("Exit Reader", systemImage: "doc.plaintext")
-            }
-            ShareLink(item: url) {
-                Label("Share", systemImage: "square.and.arrow.up")
             }
         }
     }
@@ -305,12 +239,20 @@ struct Browser: View {
         contentView
             .ignoresSafeArea()
             .toolbar(.hidden, for: .tabBar)
+            .navigationBarBackButtonHidden(true)
             .toolbar {
-                if useReeed {
-                    readerToolbar
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label("Back", systemImage: "chevron.left")
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
             .id(url)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
             .task {
                 // Set cookies before allowing web view to load
                 if !prepared {
@@ -323,9 +265,7 @@ struct Browser: View {
                             useReeed = true
                         }
 
-                        if let setCookiesBeforeWebView = SchoolExport.shared.setCookiesBeforeWebView {
-                            try await setCookiesBeforeWebView(url)
-                        }
+                        try await SchoolExport.shared.setCookiesBeforeWebView?(url)
                     } catch {
                         debugPrint(error)
                     }
