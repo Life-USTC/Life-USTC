@@ -47,7 +47,7 @@ jobs:
           fastlane snapshot
 
       - name: Upload screenshots artifact
-        if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: ios-screenshots-${{ github.run_id }}
@@ -57,7 +57,7 @@ jobs:
 
       # Publish screenshots to gh-pages (append-only) so past runs are preserved
       - name: Publish screenshots to gh-pages (append-only)
-        if: ${{ ((github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event.pull_request.head.repo.full_name == github.repository)) && (hashFiles('screenshots/**') != '') }}
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,25 +67,27 @@ jobs:
 
       - name: Build markdown summary and comment body (script)
         id: build_md
-        if: always()
+        continue-on-error: true
         env:
           PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: |
           bash scripts/simulate_screenshot_comment.sh
 
       - name: Publish summary
-        if: always()
+        continue-on-error: true
         run: |
           cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on Pull Request (sticky)
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: screenshots_comment.md
 
       - name: Comment on Commit
         if: github.event_name == 'push'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
