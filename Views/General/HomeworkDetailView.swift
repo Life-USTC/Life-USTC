@@ -91,11 +91,10 @@ struct HomeworkDetailView: View {
             }
         }
         .asyncStatusOverlay(_homeworks.status)
-        .padding(.horizontal)
         .refreshable {
             _homeworks.triggerRefresh()
         }
-        .navigationTitle("Homework (Blackboard)")
+        .navigationTitle("Homework (BB)")
     }
 
 }

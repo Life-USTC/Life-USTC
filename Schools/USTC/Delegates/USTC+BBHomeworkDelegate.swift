@@ -22,18 +22,16 @@ class USTCBBHomeworkDelegate: ManagedRemoteUpdateProtocol<[Homework]> {
     var session: URLSession = .shared
 
     override func refresh() async throws -> [Homework] {
-        let homeworkURL = URL(
-            string:
-                "https://www.bb.ustc.edu.cn/webapps/calendar/calendarData/selectedCalendarEvents?start=&end=&course_id=&mode=personal?start=&end=&course_id=&mode=personal"
-        )!
         if try await !_blackboardClient.requireLogin() {
             throw BaseError.runtimeError("UstcBlackboard Not logined")
         }
 
-        var request = URLRequest(url: homeworkURL)
-        request.httpMethod = "GET"
-
-        let (data, _) = try await session.data(for: request)
+        let (data, _) = try await session.data(
+            from: URL(
+                string:
+                    "https://www.bb.ustc.edu.cn/webapps/calendar/calendarData/selectedCalendarEvents?start=&end=&course_id=&mode=personal?start=&end=&course_id=&mode=personal"
+            )!
+        )
         let cache = try JSON(data: data)
 
         return

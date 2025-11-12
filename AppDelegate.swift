@@ -10,13 +10,7 @@ import SwiftUI
 class AppDelegate: UIResponder, UIApplicationDelegate,
     UNUserNotificationCenterDelegate, ObservableObject
 {
-    @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
-    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
-
     func startup() {
-        _ustcCasClient.clearLoginStatus()
-        _ustcAASClient.clearLoginStatus()
-
         #if DEBUG
         // Ensure onboarding (welcome) can be shown during UI tests when requested
         if ProcessInfo.processInfo.arguments.contains("UI_TEST_RESET_ONBOARDING") {

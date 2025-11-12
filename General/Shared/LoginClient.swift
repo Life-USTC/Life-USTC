@@ -5,7 +5,13 @@
 //  Created by Tiankai Ma on 2023/8/18.
 //
 
+import Foundation
 import SwiftUI
+
+private var loginClientClearedTypeIdentifiers = Set<ObjectIdentifier>()
+private let loginClientClearedQueue = DispatchQueue(
+    label: "life.ustc.loginclient.clear"
+)
 
 class LoginClientProtocol {
     /// Return True if login success
@@ -15,13 +21,29 @@ class LoginClientProtocol {
     }
 }
 
-@propertyWrapper class LoginClient<T: LoginClientProtocol> {
+@propertyWrapper
+class LoginClient<T: LoginClientProtocol> {
     var wrappedValue: T
 
     @AppStorage(
         "\(T.self)_lastLogined",
         store: .appGroup
     ) var lastLogined: Date?
+
+    private func clearIfNeededOnLaunch() {
+        let identifier = ObjectIdentifier(T.self)
+        var shouldClear = false
+        loginClientClearedQueue.sync {
+            if !loginClientClearedTypeIdentifiers.contains(identifier) {
+                loginClientClearedTypeIdentifiers.insert(identifier)
+                shouldClear = true
+            }
+        }
+
+        if shouldClear {
+            lastLogined = nil
+        }
+    }
 
     var loginTask: Task<Bool, Error>?
 
@@ -62,6 +84,7 @@ class LoginClientProtocol {
 
     init(_ wrappedValue: T) {
         self.wrappedValue = wrappedValue
+        clearIfNeededOnLaunch()
     }
 }
 
