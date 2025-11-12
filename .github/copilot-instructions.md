@@ -1,6 +1,6 @@
-## Instructions when 85
+## Instructions
 
-## Instructions for SwiftUI code:
+## SwiftUI
 
 - Be declarative, write logic (serach, filter) in computed properties, NOT in the body:
   - Good: `var filteredItems: [Item] { items.filter { $0.isActive } }`
@@ -23,23 +23,32 @@
   - Always pass in a dismiss action (on the top-left) to the sheet view
 - Use `.toolbar` for toolbar items.
 - Use `.navigationTitle` for titles, avoid `.navigationBarTitleDisplayMode(.large)`
+- Use `@ViewBuilder` for complex view compositions.
+- Use `LazyVStack` or `LazyHStack` for large lists of views.
 
-## Others
+## Swift
 
-- You can also optimize namings and structure for better readability and SwiftUI conventions. But remember to rename variables and functions consistently across the project.
+- You should optimize namings and structure for better readability and SwiftUI conventions
+  - remember to rename variables and functions consistently across the project.
   - for special namings like life_ustc, keep them as is.
 - Use `guard` statements to reduce nesting.
   - Early return is always preferred.
 - Use `if let` or `guard let` for optional unwrapping.
 - Use `switch` statements for multiple conditions instead of multiple `if-else`.
 - Use `map`, `filter`, `reduce` for array transformations instead of loops.
-- Use `@ViewBuilder` for complex view compositions.
-- Use `LazyVStack` or `LazyHStack` for large lists of views.
 - Sort imports alphabetically and remove unused imports.
 - Remove unnecessary comments and I don't suggest you add one.
   - But you should always keep the file header comments.
 - Remove unnecessary `self.`.
-- Expand $0 and $1 to meaningful names in closures.
-- Run `xcodegen --spec project.yml && xcodebuild -project "Life-USTC.xcodeproj" -scheme "Life-USTC" -configuration Debug -quiet build && echo "BUILD SUCCEEDED" || echo "BUILD FAILED"` to see if the code compiles.
-- If `xcodegen` is not installed, run `brew install xcodegen` to install it, likewise, install the tools with homebrew if you don't have them.
-- Run `swift-format format -i $filePath` to format the code.
+- Expand $0 and $1 to meaningful names in closures if it improves readability.
+
+## Project Maintenance
+
+- Run XcodeGen if you add new files, or edit project.yml:
+  - `xcodegen --spec project.yml`
+- Make sure the project builds successfully after your changes:
+  - `xcodebuild -project "Life-USTC.xcodeproj" -scheme "Life-USTC" -configuration Debug -quiet build`
+- Format the code using swift-format:
+  - `swift-format format -i <file-path>`
+- Commit changes with clear messages, use conventional commit style if possible.
+  - e.g., `feat: add search functionality to item list`, make the commit message short but informative.
