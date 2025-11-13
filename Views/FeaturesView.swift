@@ -44,10 +44,11 @@ struct FeaturesView: View {
     ]
 
     let sectionPriority: [LocalizedStringKey: Int] = [
-        "AAS": 2,
-        "Feed": 4,
         "Public": 1,
-        "Web": 3,
+        "AAS": 2,
+        "Meeting Rooms": 3,
+        "Web": 4,
+        "Feed": 5,
     ]
 
     var features: [LocalizedStringKey: [FeatureWithView]] {

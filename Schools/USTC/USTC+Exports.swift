@@ -21,7 +21,10 @@ let ustcGeoLocationDataURL = URL(
 )!
 
 class USTCExports: SchoolExport {
-    @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
+    @AppStorage(
+        "ustcStudentType",
+        store: .appGroup
+    ) var ustcStudentType: USTCStudentType = .graduate
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
 
     override var abbrName: String { "USTC" }
@@ -97,41 +100,17 @@ class USTCExports: SchoolExport {
         if appShouldPresentDemo {
             return [:]
         }
+
         return [
-            "Web": ustcWebFeatures.map { FeatureWithView($0) },
-            "Public": [
-                .init(
-                    image: "doc.text.magnifyingglass",
-                    title: "Classroom Status",
-                    subTitle: "",
-                    destinationView: {
-                        Browser(
-                            url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!,
-                            title: "Classroom Status"
-                        )
-                    }
-                ),
-                .init(
-                    image: "bus",
-                    title: "Bus Timetable",
-                    subTitle: "",
-                    destinationView: { USTC_SchoolBusView() }
-                ),
-            ],
-            "AAS": [
-                .init(
-                    image: "rectangle.stack",
-                    title: "Homework (BB)",
-                    subTitle: "",
-                    destinationView: { HomeworkDetailView() }
-                )
-            ],
+            "Web": ustcWebFeatures,
+            "Meeting Rooms": ustcMeetingRoomFeatures,
+            "Public": ustcPublicFeatures,
+            "AAS": ustcAASFeatures,
         ]
     }
 
     override var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? {
         return { url in
-            // url should start with *.ustc.edu.cn
             guard url.host?.hasSuffix("ustc.edu.cn") == true else {
                 return
             }
@@ -166,4 +145,6 @@ class USTCExports: SchoolExport {
     }
 }
 
-extension SchoolExport { static let ustc = USTCExports() }
+extension SchoolExport {
+    static let ustc = USTCExports()
+}

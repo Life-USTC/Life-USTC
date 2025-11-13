@@ -23,7 +23,6 @@ struct ContentView: View {
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    //    @State var columnVisibility: NavigationSplitViewVisibility = .all
     let columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
 
@@ -71,12 +70,7 @@ struct ContentView: View {
 
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 Button {
-                    //                    if tabSelection == tab, columnVisibility == .all {
-                    //                        columnVisibility = .detailOnly
-                    //                    } else {
-                    //                        columnVisibility = .all
                     tabSelection = tab
-                    //                    }
                 } label: {
                     tab.label.foregroundColor(
                         tab == tabSelection ? tab.color : .primary
@@ -94,7 +88,6 @@ struct ContentView: View {
     }
 
     var iPadView: some View {
-        //        NavigationSplitView(columnVisibility: $columnVisibility) {
         NavigationSplitView(columnVisibility: .constant(.all)) {
             sideBarView
                 .navigationSplitViewColumnWidth(80)

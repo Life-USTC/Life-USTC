@@ -210,57 +210,57 @@ struct Browser: View {
 
     var contentView: some View {
         Group {
-            if prepared {
-                if useReeed {
-                    ReeeederView(url: url, options: .init(includeExitReaderButton: false))
+            if useReeed {
+                ReeeederView(url: url, options: .init(includeExitReaderButton: false))
+                    .toolbar {
+                        ToolbarItemGroup(placement: .bottomBar) {
+                            Spacer()
+                            Button {
+                                useReeed.toggle()
+                            } label: {
+                                Label("Exit Reader", systemImage: "doc.plaintext")
+                            }
+                            ShareLink(item: url) {
+                                Label("Share", systemImage: "square.and.arrow.up")
+                            }
+                        }
+                    }
+            } else {
+                if #available(iOS 26, *) {
+                    WebView(url: url)
+                } else {
+                    BrowserUIKitView(url: url, reeedMode: reeedMode, useReeed: $useReeed)
+                        .ignoresSafeArea()
+                        .navigationBarBackButtonHidden(true)
                         .toolbar {
-                            ToolbarItemGroup(placement: .bottomBar) {
-                                Spacer()
+                            ToolbarItem(placement: .navigationBarLeading) {
                                 Button {
-                                    useReeed.toggle()
+                                    dismiss()
                                 } label: {
-                                    Label("Exit Reader", systemImage: "doc.plaintext")
-                                }
-                                ShareLink(item: url) {
-                                    Label("Share", systemImage: "square.and.arrow.up")
+                                    Label("Back", systemImage: "chevron.left")
+                                        .labelStyle(.iconOnly)
                                 }
                             }
                         }
-                } else {
-                    BrowserUIKitView(url: url, reeedMode: reeedMode, useReeed: $useReeed)
                 }
-            } else {
-                ProgressView("Loading...")
             }
+        }
+        .if(!prepared) { _ in
+            ProgressView()
         }
     }
 
     var body: some View {
         contentView
-            .ignoresSafeArea()
             .toolbar(.hidden, for: .tabBar)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Label("Back", systemImage: "chevron.left")
-                            .labelStyle(.iconOnly)
-                    }
-                }
-            }
             .id(url)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .task {
-                // Set cookies before allowing web view to load
                 if !prepared {
                     do {
-                        // Determine reed mode for this URL
                         reeedMode = SchoolExport.shared.reeedEnabledMode(for: url)
 
-                        // Auto-enable Reed if mode is .always
                         if reeedMode == .always {
                             useReeed = true
                         }
@@ -272,7 +272,5 @@ struct Browser: View {
                     prepared = true
                 }
             }
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)  // avoid size change
     }
 }

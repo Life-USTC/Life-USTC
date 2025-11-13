@@ -45,50 +45,11 @@ struct FeaturePreview: View {
             destinationView: { ScoreDetailView() }
         ),
         .init(
-            image: "doc.text.magnifyingglass",
-            title: "Classroom Status",
-            subTitle: "",
-            destinationView: {
-                Browser(
-                    url: URL(string: "https://catalog.ustc.edu.cn/query/classroom")!,
-                    title: "Classroom Status"
-                )
-            }
-        ),
-        .init(
             image: "bus",
             title: "Bus Timetable",
             subTitle: "",
             destinationView: { USTC_SchoolBusView() }
         ),
-        FeatureWithView(
-            .init(
-                name: "Email",
-                image: "mail.stack",
-                description: "科大邮箱",
-                url: "https://mail.ustc.edu.cn",
-                markUp: false
-            )
-        ),
-        FeatureWithView(
-            .init(
-                name: "AAS",
-                image: "person.2",
-                description: "本科生教务系统",
-                url: "https://jw.ustc.edu.cn/ucas-sso/login",
-                markUp: true
-            )
-        ),
-        FeatureWithView(
-            .init(
-                name: "Library",
-                image: "book",
-                description: "图书馆",
-                url: "https://lib.ustc.edu.cn",
-                markUp: false
-            )
-        ),
-
     ]
     var body: some View {
         LazyVGrid(
