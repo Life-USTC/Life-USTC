@@ -105,7 +105,7 @@ jobs:
           ASC_KEY: ${{ secrets.ASC_KEY }}
 
       - name: Add to TestFlight group
-        run: fastlane ios testflight_add_build_to_group build_number:${{ needs.build.outputs.build_number }}
+        run: fastlane ios testflight_add_to_group
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
