@@ -1,4 +1,3 @@
 #!/bin/bash
 echo "[!] Running swift-format";
 swift-format -i -r .
-git add .
