@@ -97,10 +97,6 @@ class USTCExports: SchoolExport {
     }
 
     override var features: [LocalizedStringKey: [FeatureWithView]] {
-        if appShouldPresentDemo {
-            return [:]
-        }
-
         return [
             "Web": ustcWebFeatures,
             "Meeting Rooms": ustcMeetingRoomFeatures,
