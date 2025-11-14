@@ -26,4 +26,9 @@ struct Semester: Codable, Identifiable, Equatable {
         startDate: Date().stripTime().add(day: -30),
         endDate: Date().stripTime().add(day: 120)
     )
+
+    var isCurrent: Bool {
+        let today = Date().stripTime()
+        return (startDate ... endDate).contains(today)
+    }
 }

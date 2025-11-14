@@ -10,177 +10,205 @@ import SwiftUI
 import SwiftyJSON
 import WidgetKit
 
-private func convertYYMMDD(_ date: String) -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd"
-    return dateFormatter.date(from: date)!
-}
-
-class USTCUndergraduateCurriculumDelegate: CurriculumProtocolB {
-    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
+class USTCUndergraduateCurriculumDelegate: CurriculumProtocolBySemeter {
     static let shared = USTCUndergraduateCurriculumDelegate()
+
+    @AppStorage("USTCAdditionalCourseIDList") var additionalCourseIDList: [String: [Int]] = [:]
 
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
-    override func refreshSemesterBase() async throws -> [Semester] {
-        let request = URLRequest(url: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!)
-        let (data, _) = try await URLSession.shared.data(for: request)
+    let session = URLSession.shared
+
+    override func refreshIncompleteSemesterList() async throws -> [Semester] {
+        let (data, _) = try await session.data(
+            from: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!
+        )
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         let result = try decoder.decode([Semester].self, from: data)
+
         return result
     }
 
     override func refreshSemester(inComplete: Semester) async throws -> Semester {
-        let queryURL = URL(
-            string: "https://jw.ustc.edu.cn/for-std/course-table"
-        )!
-        // Step 0: Check login
         if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
-        // Step 1: Get tableID, (usually 353802)
-        var request = URLRequest(url: queryURL)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let studentID = try await {
+            let (_, response) = try await session.data(
+                from: URL(
+                    string: "https://jw.ustc.edu.cn/for-std/course-table"
+                )!
+            )
 
-        guard
-            let tableID = response.url?.absoluteString
+            return response.url?.absoluteString
                 .matches(of: try! Regex(#"\d+"#))
                 .first
                 .map({ String($0.0) })
-        else {
-            throw BaseError.runtimeError("No tableID found in response URL")
+        }()
+
+        guard let studentID else {
+            throw BaseError.runtimeError("Cannot get student ID")
         }
 
-        // Step 2: Get lessonIDs
-        let url = URL(
-            string:
-                "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(inComplete.id)&dataId=\(tableID)"
-        )!
-        request = URLRequest(url: url)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (baseData, _) = try await URLSession.shared.data(for: request)
-        let baseJSON = try JSON(data: baseData)
-        var lessonIDs = baseJSON["lessonIds"].arrayValue.map(\.stringValue)
-        if additioanlCourseIDList.keys.contains(inComplete.id) {
-            lessonIDs = lessonIDs + additioanlCourseIDList[inComplete.id]!.map { String($0) }
-        }
-        if lessonIDs.isEmpty { return inComplete }
+        let courseIDs = try await {
+            let (data, _) = try await session.data(
+                from: URL(
+                    string:
+                        "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(inComplete.id)&dataId=\(studentID)"
+                )!
+            )
+            let json = try JSON(data: data)
+            var courseIDs = json["lessonIds"].arrayValue.map(\.stringValue)
 
-        var courseList: [Course] = []
-        for lessonID in lessonIDs {
-            do {
-                let lessonURL = URL(
-                    string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
-                )
-                let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .secondsSince1970
-                let course = try decoder.decode(Course.self, from: courseJSONData)
-                courseList.append(course)
-            } catch {
-                continue
+            if additionalCourseIDList.keys.contains(inComplete.id) {
+                let additionalIDs = additionalCourseIDList[inComplete.id]!.map { String($0) }
+                courseIDs = Array(Set(courseIDs + additionalIDs))
+            }
+
+            return courseIDs
+        }()
+
+        let courses = try? await withThrowingTaskGroup(of: Course.self) { group in
+            for courseID in courseIDs {
+                group.addTask {
+                    let (data, _) = try await self.session.data(
+                        from: URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(courseID).json")!
+                    )
+
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .secondsSince1970
+                    return try decoder.decode(Course.self, from: data)
+                }
+            }
+
+            return try await group.reduce(into: [Course]()) { partialResult, course in
+                partialResult.append(course)
             }
         }
 
-        var returnSemester = inComplete
-        returnSemester.courses = courseList
-        return returnSemester
+        guard let courses else {
+            throw BaseError.runtimeError("No course data")
+        }
+
+        var result = inComplete
+        result.courses = courses
+        return result
     }
 }
 
-class USTCGraduateCurriculumDelegate: CurriculumProtocolA<(semesterId: String, studentId: String, semester: Semester)> {
-    @AppStorage("USTCAdditionalCourseIDList") var additioanlCourseIDList: [String: [Int]] = [:]
-
+class USTCGraduateCurriculumDelegate: CurriculumProtocolBySemeter {
     static let shared = USTCGraduateCurriculumDelegate()
 
-    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+    @AppStorage("USTCAdditionalCourseIDList") var additionalCourseIDList: [String: [Int]] = [:]
 
-    override func refreshSemesterList() async throws -> [(semesterId: String, studentId: String, semester: Semester)] {
-        var request = URLRequest(url: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!)
-        var (data, _) = try await URLSession.shared.data(for: request)
+    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+
+    let session = URLSession.shared
+
+    override func refreshIncompleteSemesterList() async throws -> [Semester] {
+        let (data, _) = try await URLSession.shared.data(
+            from: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!
+        )
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         let result = try decoder.decode([Semester].self, from: data)
 
-        if try await !_ustcAASClient.requireLogin() {
-            throw BaseError.runtimeError("UstcUgAAS Not logined")
-        }
-
-        request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/for-std/course-select/")!)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        var (_, response) = try await URLSession.shared.data(for: request)
-        let studentId = String(
-            response.url?.absoluteString
-                .matches(of: try! Regex(#"\d+"#))
-                .first?
-                .0 ?? "0"
-        )
-
-        request = URLRequest(
-            url: URL(
-                string: "https://jw.ustc.edu.cn/ws/for-std/course-select/open-turns?bizTypeId=3&studentId=\(studentId)"
-            )!
-        )
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.httpMethod = "POST"
-        (data, response) = try await URLSession.shared.data(for: request)
-        let json = try JSON(data: data)
-        debugPrint(json)
-
-        // if empty json, raise error
-        if json.arrayValue.isEmpty {
-            throw BaseError.runtimeError("No semester data")
-        }
-
-        let semesterId = json[0]["id"].stringValue
-        let semesterName = json[0]["semesterName"].stringValue
-        let semester = result.first { $0.name == semesterName }
-        if semester == nil {
-            throw BaseError.runtimeError("No semester data")
-        }
-
-        return [(semesterId, studentId, semester!)]
+        return result
     }
 
-    override func refreshSemester(id: (semesterId: String, studentId: String, semester: Semester)) async throws
-        -> Semester
-    {
-        let url = URL(
-            string:
-                "https://jw.ustc.edu.cn/ws/for-std/course-select/selected-lessons?studentId=\(id.studentId)&turnId=\(id.semesterId)"
-        )!
-        var request = URLRequest(url: url)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.httpMethod = "POST"
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let json = try JSON(data: data)
+    override func refreshSemester(inComplete: Semester) async throws -> Semester {
+        if !inComplete.isCurrent {
+            throw BaseError.runtimeError("Graduate curriculum only supports current semester")
+        }
 
-        let lessonIDs = json.arrayValue.map { $0["id"].stringValue }
+        if !(try await _casClient.requireLogin()) {
+            throw BaseError.runtimeError("UstcCAS Not logined")
+        }
 
-        let inComplete = id.semester
+        _ = try await session.data(
+            from: URL(
+                string:
+                    "https://app.ustc.edu.cn/a_ustc/api/cas/index?redirect=https://app.ustc.edu.cn/site/examManage/index&from=wap"
+            )!
+        )
 
-        var courseList: [Course] = []
-        for lessonID in lessonIDs {
-            do {
-                let lessonURL = URL(
-                    string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(lessonID).json"
-                )
-                let (courseJSONData, _) = try await URLSession.shared.data(from: lessonURL!)
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .secondsSince1970
-                let course = try decoder.decode(Course.self, from: courseJSONData)
-                courseList.append(course)
-            } catch {
-                continue
+        _ = try await session.data(
+            from: URL(
+                string:
+                    "https://id.ustc.edu.cn/cas/login?service=https://app.ustc.edu.cn/a_ustc/api/cas/index?redirect=https%3A%2F%2Fapp.ustc.edu.cn%2Fsite%2FtimeTableQuery%2Findex&from=wap"
+            )!
+        )
+
+        let course_names = try await {
+            let (data, _) = try await session.data(
+                from: URL(
+                    string:
+                        "https://app.ustc.edu.cn/xkjg/wap/default/get-index"
+                )!
+            )
+            let json = try JSON(data: data)
+            return json["d"]["lists"].arrayValue.map { $0["course_name"].stringValue }
+        }()
+
+        let courseCodeRegex = /\((.*?)\)/
+
+        let courseCodes = course_names.compactMap { name -> String? in
+            let match = try? courseCodeRegex.firstMatch(in: name)
+            return match.map { String($0.1) }
+        }
+
+        let courseIDs = try await {
+            let (semester_data, _) = try await session.data(
+                from:
+                    URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/courses.json")!
+            )
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .secondsSince1970
+            let all_courses = try decoder.decode([Course].self, from: semester_data)
+
+            var courseIDs =
+                all_courses.filter { course in
+                    courseCodes.contains(course.lessonCode)
+                }
+                .map { String($0.id) }
+
+            if additionalCourseIDList.keys.contains(inComplete.id) {
+                let additionalIDs = additionalCourseIDList[inComplete.id]!.map { String($0) }
+                courseIDs = Array(Set(courseIDs + additionalIDs))
+            }
+
+            return courseIDs
+        }()
+
+        let courses = try? await withThrowingTaskGroup(of: Course.self) { group in
+            for courseID in courseIDs {
+                group.addTask {
+                    let (data, _) = try await self.session.data(
+                        from: URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(courseID).json")!
+                    )
+
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .secondsSince1970
+                    return try decoder.decode(Course.self, from: data)
+                }
+            }
+
+            return try await group.reduce(into: [Course]()) { partialResult, course in
+                partialResult.append(course)
             }
         }
 
-        var returnSemester = inComplete
-        returnSemester.courses = courseList
-        return returnSemester
+        guard let courses else {
+            throw BaseError.runtimeError("No course data")
+        }
+
+        var result = inComplete
+        result.courses = courses
+        return result
     }
 }
 

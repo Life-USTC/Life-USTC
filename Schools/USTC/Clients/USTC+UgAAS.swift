@@ -22,25 +22,19 @@ class UstcAASClient: LoginClientProtocol {
             throw BaseError.runtimeError("UstcCAS Not logined")
         }
 
-        // jw.ustc.edu.cn login.
         _ = try await session.data(from: URL(string: "https://jw.ustc.edu.cn/ucas-sso/login")!)
 
-        // Request the CAS login URL (URLSession automatically follows redirects)
-        let casURL = URL(
-            string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin"
-        )!
-        var casRequest = URLRequest(url: casURL)
-        casRequest.httpMethod = "GET"
-        casRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        _ = try await session.data(for: casRequest)
+        _ = try await session.data(
+            from: URL(
+                string: "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fjw.ustc.edu.cn%2Fucas-sso%2Flogin"
+            )!
+        )
 
-        // Verify login by visiting the home page
-        var request = URLRequest(url: URL(string: "https://jw.ustc.edu.cn/")!)
-        request.httpMethod = "GET"
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (_, response) = try await session.data(for: request)
+        let (_, response) = try await session.data(
+            from: URL(string: "https://jw.ustc.edu.cn/")!
+        )
 
-        return response.url == URL(string: "https://jw.ustc.edu.cn/home")!
+        return response.url?.absoluteString == "https://jw.ustc.edu.cn/home"
     }
 }
 

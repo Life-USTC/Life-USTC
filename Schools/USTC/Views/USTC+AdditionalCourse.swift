@@ -24,7 +24,7 @@ struct USTCAdditionalCourseView: View {
                     } label: {
                         VStack(alignment: .leading) {
                             Text(semester.name)
-                                .if((semester.startDate ... semester.endDate).contains(Date())) {
+                                .if(semester.isCurrent) {
                                     $0.foregroundColor(.accentColor)
                                 }
                             HStack {
@@ -45,7 +45,7 @@ struct USTCAdditionalCourseView: View {
                                 )
                             }
                             .font(.system(.caption, design: .monospaced))
-                            .bold((semester.startDate ... semester.endDate).contains(Date()))
+                            .bold(semester.isCurrent)
                             .foregroundStyle(.secondary)
                         }
                     }
@@ -143,8 +143,9 @@ struct USTCAdditionalCourseSemesterView: View {
         }
         .task {
             Task {
-                let url = URL(string: "\(staticURLPrefix)/curriculum/\(semester.id)/courses.json")
-                let (data, _) = try await URLSession.shared.data(from: url!)
+                let (data, _) = try await URLSession.shared.data(
+                    from: URL(string: "\(staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
+                )
 
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .secondsSince1970
