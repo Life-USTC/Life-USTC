@@ -85,7 +85,9 @@ struct USTC_SchoolBusView: View {
 
     // Card view for a route - main component of the UI
     @ViewBuilder
-    func RouteCardView(_ schedule: USTCRouteSchedule) -> some View {
+    func RouteCardView(_ schedule: USTCRouteSchedule, geometry: GeometryProxy) -> some View {
+        let cardWidth = min(geometry.size.width - 40, 600)
+
         VStack {
             // Route header with campus names
             HStack {
@@ -190,7 +192,8 @@ struct USTC_SchoolBusView: View {
             }
         }
         .padding(20)
-        .frame(width: UIScreen.main.bounds.width - 40, height: 500)
+        .frame(width: cardWidth)
+        .frame(minHeight: 500, maxHeight: 550)
         .background(
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
@@ -319,34 +322,39 @@ struct USTC_SchoolBusView: View {
             .padding(.bottom)
 
             // Main content - horizontal scrolling cards
-            if calculatedScheduleList.isEmpty {
-                VStack(spacing: 20) {
-                    Image(systemName: "bus.doubledecker")
-                        .font(.system(size: 60))
-                        .foregroundColor(.secondary.opacity(0.5))
+            GeometryReader { geometry in
+                if calculatedScheduleList.isEmpty {
+                    VStack(spacing: 20) {
+                        Image(systemName: "bus.doubledecker")
+                            .font(.system(size: 60))
+                            .foregroundColor(.secondary.opacity(0.5))
 
-                    Text("No Routes Available")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
+                        Text("No Routes Available")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
 
-                    Button("Configure Routes") {
-                        showingSettings = true
+                        Button("Configure Routes") {
+                            showingSettings = true
+                        }
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.bordered)
-                }
-                .padding(40)
-            } else {
-                TabView(selection: $currentRouteIndex) {
-                    ForEach(Array(calculatedScheduleList.enumerated()), id: \.element.id) { index, schedule in
-                        RouteCardView(schedule)
-                            .tag(index)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(40)
+                } else {
+                    VStack {
+                        TabView(selection: $currentRouteIndex) {
+                            ForEach(Array(calculatedScheduleList.enumerated()), id: \.element.id) { index, schedule in
+                                RouteCardView(schedule, geometry: geometry)
+                                    .tag(index)
+                            }
+                        }
+                        .tabViewStyle(.page(indexDisplayMode: .never))
 
-                // Page indicator
-                if calculatedScheduleList.count > 1 {
-                    PageIndicator(currentPage: currentRouteIndex, pageCount: calculatedScheduleList.count)
+                        // Page indicator
+                        if calculatedScheduleList.count > 1 {
+                            PageIndicator(currentPage: currentRouteIndex, pageCount: calculatedScheduleList.count)
+                        }
+                    }
                 }
             }
 
