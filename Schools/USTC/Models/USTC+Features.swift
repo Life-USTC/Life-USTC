@@ -216,12 +216,6 @@ extension USTCExports {
                 url: "https://vista.ustc.edu.cn/",
             ),
             .init(
-                name: "Mental Health Education and Counseling Center",
-                image: "heart.text.square",
-                description: "微笑在线",
-                url: "https://smile.ustc.edu.cn",
-            ),
-            .init(
                 name: "Work-integrated Learning",
                 image: "desktopcomputer",
                 description: "奖学金、助学金、勤工助学等",
