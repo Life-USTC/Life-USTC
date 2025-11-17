@@ -31,6 +31,7 @@ jobs:
         run: xcodegen --spec project.yml
 
       - name: Setup Simulators
+        continue-on-error: true
         run: |
           xcrun simctl create "iPhone 14" "iPhone 14"
           xcrun simctl create "iPhone 14 Plus" "iPhone 14 Plus"
@@ -47,7 +48,6 @@ jobs:
           fastlane snapshot
 
       - name: Upload screenshots artifact
-        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: ios-screenshots-${{ github.run_id }}
@@ -55,9 +55,7 @@ jobs:
             screenshots/**
           if-no-files-found: warn
 
-      # Publish screenshots to gh-pages (append-only) so past runs are preserved
       - name: Publish screenshots to gh-pages (append-only)
-        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,27 +65,23 @@ jobs:
 
       - name: Build markdown summary and comment body (script)
         id: build_md
-        continue-on-error: true
         env:
           PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: |
           bash scripts/simulate_screenshot_comment.sh
 
       - name: Publish summary
-        continue-on-error: true
         run: |
           cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on Pull Request (sticky)
         if: github.event_name == 'pull_request'
-        continue-on-error: true
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: screenshots_comment.md
 
       - name: Comment on Commit
         if: github.event_name == 'push'
-        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
