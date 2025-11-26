@@ -48,15 +48,19 @@ extension View {
         }
     }
 
-    func hStackLeading() -> some View {
+    func hStackCenter() -> some View {
         HStack {
+            Spacer()
             self
             Spacer()
         }
     }
 
-    func edgesIgnoringHorizontal(_: Edge.Set) -> some View {
-        self
+    func hStackLeading() -> some View {
+        HStack {
+            self
+            Spacer()
+        }
     }
 
     /// Applies the given transform if the given condition evaluates to `true`.

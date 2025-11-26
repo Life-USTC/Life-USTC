@@ -23,6 +23,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        URLCache.shared = URLCache(
+            memoryCapacity: 50_000_000,
+            diskCapacity: 10_000_000_000,
+            directory: nil
+        )
         startup()
         return true
     }

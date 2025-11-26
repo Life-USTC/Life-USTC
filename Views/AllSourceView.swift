@@ -49,57 +49,64 @@ struct AllSourceView: View {
         }
     }
 
+    var feedsSorted: [Feed] {
+        feedsSearched.sorted(by: { feed1, feed2 in feed1.datePosted > feed2.datePosted })
+    }
+
     var body: some View {
-        List {
-            Section {
-                ForEach(
-                    feedsSearched.sorted(by: { feed1, feed2 in feed1.datePosted > feed2.datePosted })
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 12) {
+                if _feedSources.status.refresh == .waiting {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(0.8)
+                        .hStackCenter()
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .top, spacing: 8) {
+                        ForEach(Array(feedSources.enumerated()), id: \.1.id) { i, source in
+                            Button {
+                                if selectedIndex == i + 1 {
+                                    selectedIndex = 0
+                                } else {
+                                    selectedIndex = i + 1
+                                }
+                            } label: {
+                                Label(source.name, systemImage: source.image ?? "doc.richtext")
+                                    .labelStyle(
+                                        FeedSourceLabelStyle(
+                                            dimmed: selectedIndex != 0 && selectedIndex != i + 1
+                                        )
+                                    )
+                            }
+                            .buttonStyle(
+                                FeedSourceButtonStyle(
+                                    selected: selectedIndex == i + 1,
+                                    color: Color(hex: source.colorHex ?? "#767676")
+                                )
+                            )
+                        }
+                    }
+                    .padding(.vertical, 6)
+                }
+
+                MasonryTwoColumnView(
+                    items: feedsSorted,
+                    estimatedHeight: { feed in
+                        feed.imageURL == nil ? 92 : 260
+                    }
                 ) { feed in
                     FeedView(feed: feed)
                 }
-                .asyncStatusOverlay(_feedSources.status)
 
                 if feedsSearched.isEmpty {
                     Text("No feeds found.")
                         .foregroundStyle(.secondary)
-                }
-            } header: {
-                VStack(alignment: .leading) {
-                    AsyncStatusLight(status: _feedSources.status)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            // Button {
-                            //     selectedIndex = 0
-                            // } label: {
-                            //     Label("All", systemImage: "doc.richtext")
-                            //         .labelStyle(FeedSourceLabelStyle())
-                            // }
-                            // .buttonStyle(FeedSourceButtonStyle(selected: selectedIndex == 0, color: Color.accentColor))
-
-                            ForEach(Array(feedSources.enumerated()), id: \.1.id) { i, source in
-                                Button {
-                                    if selectedIndex == i + 1 {
-                                        selectedIndex = 0
-                                    } else {
-                                        selectedIndex = i + 1
-                                    }
-                                } label: {
-                                    Label(source.name, systemImage: source.image ?? "doc.richtext")
-                                        .labelStyle(FeedSourceLabelStyle())
-                                }
-                                .buttonStyle(
-                                    FeedSourceButtonStyle(
-                                        selected: selectedIndex == i + 1,
-                                        color: Color(hex: source.colorHex ?? "#767676")
-                                    )
-                                )
-                            }
-                        }
-                        .padding(.vertical, 6)
-                    }
+                        .hStackCenter()
                 }
             }
+            .padding(.horizontal, 12)
+            .padding(.top, 8)
         }
         .refreshable {
             _feedSources.triggerRefresh()
@@ -111,7 +118,7 @@ struct AllSourceView: View {
                 Button {
                     showingFeedSettings = true
                 } label: {
-                    Label("Feed Settings", systemImage: "gear")
+                    Label("Feed Settings", systemImage: "gearshape")
                 }
             }
         }
@@ -126,12 +133,14 @@ struct AllSourceView: View {
 }
 
 struct FeedSourceLabelStyle: LabelStyle {
+    var dimmed: Bool = false
+
     func makeBody(configuration: Configuration) -> some View {
         VStack(spacing: 6) {
             configuration.icon
                 .symbolRenderingMode(.hierarchical)
-                .font(.title3)
-                .frame(width: 36, height: 36)
+                .font(.title2)
+                .frame(width: 50, height: 50)
                 .background(
                     Circle()
                         .fill(Color(.systemGray6))
@@ -142,8 +151,11 @@ struct FeedSourceLabelStyle: LabelStyle {
                 .font(.caption)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
+
+            Spacer()
         }
-        .frame(width: 72, height: 72)
+        .frame(width: 64, height: 100)
+        .opacity(dimmed ? 0.35 : 1.0)
     }
 }
 
@@ -154,16 +166,44 @@ struct FeedSourceButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(color)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(selected ? color.opacity(0.15) : Color(.systemGray6))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(selected ? color : Color(.separator), lineWidth: 1)
-            )
-            .opacity(configuration.isPressed ? 0.85 : 1.0)
+    }
+}
+
+private struct MasonryTwoColumnView<Data: Identifiable, Content: View>: View {
+    let items: [Data]
+    let estimatedHeight: (Data) -> CGFloat
+    @ViewBuilder let content: (Data) -> Content
+
+    private var splitted: (left: [Data], right: [Data]) {
+        var left: [Data] = []
+        var right: [Data] = []
+        var hl: CGFloat = 0
+        var hr: CGFloat = 0
+        for item in items {
+            let h = estimatedHeight(item)
+            if hl <= hr {
+                left.append(item)
+                hl += h
+            } else {
+                right.append(item)
+                hr += h
+            }
+        }
+        return (left, right)
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            LazyVStack(spacing: 12) {
+                ForEach(splitted.left) { item in
+                    content(item)
+                }
+            }
+            LazyVStack(spacing: 12) {
+                ForEach(splitted.right) { item in
+                    content(item)
+                }
+            }
+        }
     }
 }

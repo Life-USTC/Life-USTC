@@ -13,46 +13,102 @@ private struct FeedViewPreview: View {
     var color: Color {
         Color(hex: feed.colorHex ?? "#FFFFFF")
     }
+    var hasImage: Bool { feed.imageURL != nil }
+    private let imageHeight: CGFloat = 180
 
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(feed.source)
-                    .font(.system(.caption2, weight: .heavy))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .foregroundColor(.white)
-                    .background {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(color.opacity(0.9))
-                    }
-
-                Text(feed.datePosted.formatted(.relative(presentation: .named)))
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            if let imageURL = feed.imageURL {
+                RetryAsyncImage(url: imageURL, height: imageHeight)
             }
 
-            if let imageURL = feed.imageURL {
-                AsyncImage(url: imageURL) {
-                    if let image = $0.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 5))
+            VStack(alignment: .leading, spacing: 8) {
+                Text(feed.title)
+                    .font(.system(.headline, weight: .semibold))
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(3)
+
+                HStack(spacing: 6) {
+                    Text(feed.source)
+                        .font(.system(.caption2, weight: .heavy))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(color.opacity(0.9))
+                        }
+
+                    Text(feed.datePosted.formatted(.relative(presentation: .named)))
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
+        }
+    }
+}
+
+private struct RetryAsyncImage: View {
+    let url: URL
+    let height: CGFloat
+
+    let cornerRadius: CGFloat = 8
+    let maxRetries: Int = 2
+    @State var attempt: Int = 0
+    @State var scheduling: Bool = false
+
+    var body: some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .frame(maxHeight: height)
+                    .clipped()
+            case .failure(_):
+                if attempt < maxRetries {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(Color(.systemGray5))
+                    }
+                    .frame(height: height)
+                    .onAppear {
+                        if !scheduling {
+                            scheduling = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                                attempt += 1
+                                scheduling = false
+                            }
+                        }
+                    }
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(Color(.systemGray5))
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 24, weight: .bold))
+                    }
+                    .frame(height: height)
+                    .onTapGesture {
+                        attempt = 0
                     }
                 }
-            } else {
-                Spacer(minLength: 2)
+            default:
+                ZStack {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color(.systemGray6))
+                    ProgressView()
+                }
+                .frame(height: height)
             }
-
-            Text(feed.title)
-                .font(.system(.title3, weight: .bold))
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.leading)
-                .lineLimit(2)
         }
-        .padding(.vertical, 5)
+        .id(attempt)
     }
 }
 
@@ -67,6 +123,17 @@ struct FeedView: View {
             )
         } label: {
             FeedViewPreview(feed: feed)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // .background(
+                //     RoundedRectangle(cornerRadius: 10)
+                //         .fill(Color(.systemBackground))
+                // )
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color(.separator), lineWidth: 0.5)
+                )
                 .contextMenu {
                     ShareLink(item: feed.url) {
                         Label("Share", systemImage: "square.and.arrow.up")
