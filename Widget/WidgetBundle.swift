@@ -8,7 +8,12 @@
 import SwiftUI
 import WidgetKit
 
-@main struct ExamWidgetBundle: WidgetBundle {
+var sharedSchoolExport: (any SchoolExport)! {
+    nil
+}
+
+@main
+struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {
         CurriculumWeekWidget()
         CurriculumPreviewWidget()

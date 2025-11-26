@@ -15,9 +15,8 @@ class FeedDelegate: ManagedRemoteUpdateProtocol<[FeedSource]> {
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
 
     override func refresh() async throws -> [FeedSource] {
-
         let (data, _) = try await URLSession.shared.data(
-            from: SchoolExport.shared.remoteFeedURL
+            from: sharedSchoolExport.remoteFeedURL
         )
         let json = try JSON(data: data)
 

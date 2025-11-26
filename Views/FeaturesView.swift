@@ -190,7 +190,7 @@ extension FeaturesView {
             ),
         ]
 
-        for (key, features) in SchoolExport.shared.features {
+        for (key, features) in sharedSchoolExport.features {
             if results.keys.contains(key) {
                 results[key]! += features
             } else {

@@ -30,7 +30,7 @@ class GeoLocationDelegate: ManagedRemoteUpdateProtocol<[GeoLocationData]> {
     static let shared = GeoLocationDelegate()
 
     override func refresh() async throws -> [GeoLocationData] {
-        let url = SchoolExport.shared.geoLocationDataURL
+        let url = sharedSchoolExport.geoLocationDataURL
 
         let (data, _) = try await URLSession.shared.data(from: url)
         let json = try JSON(data: data)

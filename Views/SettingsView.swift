@@ -25,7 +25,7 @@ struct SettingsView: View {
             }
 
             Section {
-                ForEach(SchoolExport.shared.settings) { setting in
+                ForEach(sharedSchoolExport.settings) { setting in
                     NavigationLink(setting.name) {
                         AnyView(setting.destinationView())
                     }

@@ -41,6 +41,6 @@ typealias HomeworkDelegateProtocol = ManagedRemoteUpdateProtocol<[Homework]>
 extension ManagedDataSource where D == [Homework] {
     static let homework = ManagedDataSource(
         local: ManagedLocalStorage("Homework"),
-        remote: SchoolExport.shared.homeworkDelegate
+        remote: sharedSchoolExport.homeworkDelegate
     )
 }

@@ -12,32 +12,26 @@ enum USTCStudentType: String {
     case graduate = "Graduate"
 }
 
-let ustcFeedListURL = URL(
-    string: "\(staticURLPrefix)/feed_source.json"
-)!
-
-let ustcGeoLocationDataURL = URL(
-    string: "\(staticURLPrefix)/geo_data.json"
-)!
-
 class USTCExports: SchoolExport {
+    static let shared = USTCExports()
+
     @AppStorage(
         "ustcStudentType",
         store: .appGroup
     ) var ustcStudentType: USTCStudentType = .graduate
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
 
-    override var abbrName: String { "USTC" }
+    var abbrName: String { "USTC" }
 
-    override var fullName: String {
+    var fullName: String {
         "The University of Science and Technology of China"
     }
 
-    override var fullChineseName: String { "中国科学技术大学" }
+    var fullChineseName: String { "中国科学技术大学" }
 
-    override var commonNames: [String] { ["中科大"] }
+    var commonNames: [String] { ["中科大"] }
 
-    override var settings: [SettingWithView] {
+    var settings: [SettingWithView] {
         [
             .init(
                 name: "CAS Settings",
@@ -50,13 +44,15 @@ class USTCExports: SchoolExport {
         ]
     }
 
-    override var remoteFeedURL: URL { ustcFeedListURL }
+    var remoteFeedURL: URL {
+        URL(string: "\(staticURLPrefix)/feed_source.json")!
+    }
 
-    override var examDelegate: ExamDelegateProtocol {
+    var examDelegate: ExamDelegateProtocol {
         USTCExamDelegate.shared
     }
 
-    override var curriculumDelegate: CurriculumProtocol {
+    var curriculumDelegate: CurriculumProtocol {
         if ustcStudentType == .graduate {
             USTCGraduateCurriculumDelegate.shared
         } else {
@@ -64,40 +60,38 @@ class USTCExports: SchoolExport {
         }
     }
 
-    override var curriculumBehavior: CurriculumBehavior {
+    var curriculumBehavior: CurriculumBehavior {
         ustcCurriculumBehavior
     }
 
-    override var geoLocationDataURL: URL {
-        ustcGeoLocationDataURL
+    var geoLocationDataURL: URL {
+        URL(string: "\(staticURLPrefix)/geo_data.json")!
     }
 
-    override var buildingimgMappingURL: URL {
+    var buildingimgMappingURL: URL {
         URL(string: "\(staticURLPrefix)/building_img_rules.json")!
     }
 
-    override var buildingimgBaseURL: URL {
+    var buildingimgBaseURL: URL {
         URL(string: "\(staticURLPrefix)/")!
     }
 
-    override var scoreDelegate: ScoreDelegateProtocol {
+    var scoreDelegate: ScoreDelegateProtocol {
         USTCScoreDelegate.shared
     }
 
-    override var homeworkDelegate: HomeworkDelegateProtocol {
+    var homeworkDelegate: HomeworkDelegateProtocol {
         USTCBBHomeworkDelegate.shared
     }
 
-    //    override var baseModifier: some ViewModifier {
-    //        USTCBaseModifier()
-    //    }
+    var baseModifier = USTCBaseModifier()
 
-    override var firstLoginView: (Binding<Bool>) -> any View {
-        { USTCOnboardingCoordinator(isPresented: $0) }
+    var firstLoginView: (Binding<Bool>) -> AnyView {
+        { AnyView(USTCOnboardingCoordinator(isPresented: $0)) }
     }
 
-    override var features: [LocalizedStringKey: [FeatureWithView]] {
-        return [
+    var features: [LocalizedStringKey: [FeatureWithView]] {
+        [
             "Web": ustcWebFeatures,
             "Meeting Rooms": ustcMeetingRoomFeatures,
             "Public": ustcPublicFeatures,
@@ -105,7 +99,7 @@ class USTCExports: SchoolExport {
         ]
     }
 
-    override var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? {
+    var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? {
         return { url in
             guard url.host?.hasSuffix("ustc.edu.cn") == true else {
                 return
@@ -114,7 +108,7 @@ class USTCExports: SchoolExport {
         }
     }
 
-    override func reeedEnabledMode(for url: URL) -> ReeedEnabledMode {
+    var reeedEnabledMode: ((_: URL) -> ReeedEnabledMode) = { url in
         guard let host = url.host?.lowercased() else {
             return .never
         }
@@ -139,8 +133,4 @@ class USTCExports: SchoolExport {
         // Default to user choice
         return .userDefined
     }
-}
-
-extension SchoolExport {
-    static let ustc = USTCExports()
 }

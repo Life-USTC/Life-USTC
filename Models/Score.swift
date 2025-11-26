@@ -215,6 +215,6 @@ typealias ScoreDelegateProtocol = ManagedRemoteUpdateProtocol<Score>
 extension ManagedDataSource<Score> {
     static let score = ManagedDataSource(
         local: ManagedLocalStorage("Score"),
-        remote: SchoolExport.shared.scoreDelegate
+        remote: sharedSchoolExport.scoreDelegate
     )
 }

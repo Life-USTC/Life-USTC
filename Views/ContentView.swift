@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+var sharedSchoolExport: any SchoolExport {
+    USTCExports.shared
+}
+
 @main
 struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -104,7 +108,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if firstLogin {
-                AnyView(SchoolExport.shared.firstLoginView($firstLogin))
+                sharedSchoolExport.firstLoginView($firstLogin)
             } else {
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView

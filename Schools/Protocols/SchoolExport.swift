@@ -13,54 +13,44 @@ enum ReeedEnabledMode {
     case never
 }
 
-class SchoolExport {
-    static var shared: SchoolExport { USTCExports() }
+protocol SchoolExport {
+    associatedtype VM: ViewModifier
 
-    var abbrName: String { "" }
+    var abbrName: String { get }
 
-    var fullName: String { "" }
+    var fullName: String { get }
 
-    var fullChineseName: String { "" }
+    var fullChineseName: String { get }
 
-    var commonNames: [String] { [] }
+    var commonNames: [String] { get }
 
-    var settings: [SettingWithView] { [] }
+    var settings: [SettingWithView] { get }
 
-    var remoteFeedURL: URL { exampleURL }
+    var remoteFeedURL: URL { get }
 
-    var examDelegate: ExamDelegateProtocol {
-        USTCExamDelegate.shared
-    }
+    var examDelegate: ExamDelegateProtocol { get }
 
-    var curriculumDelegate: CurriculumProtocol {
-        USTCExports.shared.curriculumDelegate
-    }
+    var curriculumDelegate: CurriculumProtocol { get }
 
-    var curriculumBehavior: CurriculumBehavior { CurriculumBehavior() }
+    var curriculumBehavior: CurriculumBehavior { get }
 
-    var geoLocationDataURL: URL { exampleURL }
+    var geoLocationDataURL: URL { get }
 
-    var buildingimgMappingURL: URL { exampleURL }
+    var buildingimgMappingURL: URL { get }
 
-    var buildingimgBaseURL: URL { exampleURL }
+    var buildingimgBaseURL: URL { get }
 
-    var scoreDelegate: ScoreDelegateProtocol {
-        USTCScoreDelegate.shared
-    }
+    var scoreDelegate: ScoreDelegateProtocol { get }
 
-    var homeworkDelegate: HomeworkDelegateProtocol {
-        USTCBBHomeworkDelegate.shared
-    }
+    var homeworkDelegate: HomeworkDelegateProtocol { get }
 
-    //    var baseModifier: some ViewModifier {
-    //        USTCBaseModifier()
-    //    }
+    var baseModifier: VM { get }
 
-    var firstLoginView: (Binding<Bool>) -> any View { { _ in EmptyView() } }
+    var firstLoginView: (Binding<Bool>) -> AnyView { get }
 
-    var features: [LocalizedStringKey: [FeatureWithView]] { [:] }
+    var features: [LocalizedStringKey: [FeatureWithView]] { get }
 
-    var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? { nil }
+    var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? { get }
 
-    func reeedEnabledMode(for url: URL) -> ReeedEnabledMode { .userDefined }
+    var reeedEnabledMode: ((_ url: URL) -> ReeedEnabledMode) { get }
 }

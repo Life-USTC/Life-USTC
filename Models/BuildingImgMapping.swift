@@ -21,7 +21,7 @@ struct BuildingImgMappingData: Codable {
     ///   - baseURL: Base URL for images (defaults to school's building image base URL)
     ///   - buildingName: Name of the building to find image for
     /// - Returns: Full URL to building image, or nil if no match found
-    func getURL(baseURL: URL = SchoolExport.shared.buildingimgBaseURL, buildingName: String) -> URL? {
+    func getURL(baseURL: URL = sharedSchoolExport.buildingimgBaseURL, buildingName: String) -> URL? {
         if let mapping =
             (data.first {
                 buildingName.range(of: $0.regex, options: .regularExpression) != nil
@@ -44,7 +44,7 @@ class BuildingImgMappingDelegate: ManagedRemoteUpdateProtocol<BuildingImgMapping
     static let shared = BuildingImgMappingDelegate()
 
     override func refresh() async throws -> BuildingImgMappingData {
-        let url = SchoolExport.shared.buildingimgMappingURL
+        let url = sharedSchoolExport.buildingimgMappingURL
 
         let (data, _) = try await URLSession.shared.data(from: url)
         let json = try JSON(data: data)

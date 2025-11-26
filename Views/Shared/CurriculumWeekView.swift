@@ -18,7 +18,7 @@ struct CurriculumWeekView: View {
         _date.startOfWeek()
     }
     var behavior: CurriculumBehavior {
-        SchoolExport.shared.curriculumBehavior
+        sharedSchoolExport.curriculumBehavior
     }
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()

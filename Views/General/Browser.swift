@@ -22,15 +22,22 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         let webView = WKWebView(frame: .zero)
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.allowsBackForwardNavigationGestures = true
+        webView.navigationDelegate = context.coordinator
 
         vc.view.addSubview(webView)
 
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
+
+        let guide = vc.view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: vc.view.topAnchor),
-            webView.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: guide.topAnchor),
+            webView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: vc.view.bottomAnchor),
         ])
+        webView.scrollView.contentInsetAdjustmentBehavior = .always
         webView.scrollView.scrollIndicatorInsets = webView.scrollView.contentInset
 
         webView.load(URLRequest(url: url))
@@ -39,10 +46,40 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+}
+
+final class Coordinator: NSObject, WKNavigationDelegate {
+    private let parent: BrowserUIKitView
+    init(_ parent: BrowserUIKitView) { self.parent = parent }
+
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        guard let url = navigationAction.request.url, let scheme = url.scheme?.lowercased() else {
+            decisionHandler(.allow)
+            return
+        }
+
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            decisionHandler(.cancel)
+            return
+        }
+
+        decisionHandler(.allow)
+    }
 }
 
 @available(iOS 26, *)
 struct NewBroserView: View {
+    @Environment(\.pixelLength) var onePixel
+
     @Binding var url: URL
     @Binding var useReeed: Bool
     @Binding var reeedMode: ReeedEnabledMode
@@ -53,8 +90,10 @@ struct NewBroserView: View {
         WebView(page)
             .onAppear {
                 page.load(url)
+                page.isInspectable = true
             }
-            .padding(.top, 0.1)
+            .padding(.top, onePixel)
+            .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 
@@ -76,6 +115,7 @@ struct Browser: View {
                     NewBroserView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
                 } else {
                     BrowserUIKitView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
+                        .ignoresSafeArea(.container, edges: .bottom)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
@@ -97,8 +137,8 @@ struct Browser: View {
 
     var body: some View {
         contentView
-            .toolbar(.hidden, for: .tabBar)
             .id(url)
+            .toolbar(.hidden, for: .tabBar)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -117,13 +157,13 @@ struct Browser: View {
             .task {
                 if !prepared {
                     do {
-                        reeedMode = SchoolExport.shared.reeedEnabledMode(for: url)
+                        reeedMode = sharedSchoolExport.reeedEnabledMode(url)
 
                         if reeedMode == .always {
                             useReeed = true
                         }
 
-                        try await SchoolExport.shared.setCookiesBeforeWebView?(url)
+                        try await sharedSchoolExport.setCookiesBeforeWebView?(url)
                     } catch {
                         debugPrint(error)
                     }

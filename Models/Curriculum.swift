@@ -21,6 +21,6 @@ extension ManagedDataSource<Curriculum> {
             "Curriculum",
             validDuration: TimeInterval(60 * 60 * 24 * 7)
         ),
-        remote: SchoolExport.shared.curriculumDelegate
+        remote: sharedSchoolExport.curriculumDelegate
     )
 }

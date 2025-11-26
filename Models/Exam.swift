@@ -67,6 +67,6 @@ typealias ExamDelegateProtocol = ManagedRemoteUpdateProtocol<[Exam]>
 extension ManagedDataSource<[Exam]> {
     static let exam = ManagedDataSource(
         local: ManagedLocalStorage("Exam"),
-        remote: SchoolExport.shared.examDelegate
+        remote: sharedSchoolExport.examDelegate
     )
 }

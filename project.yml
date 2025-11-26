@@ -123,8 +123,8 @@ targets:
       - path: "Assets/"
       - path: "General/"
       - path: "Models/"
-      - path: "Schools/"
-      - path: "Views/General/"
+      - path: "Schools/Protocols/"
+      - path: "Views/Shared/"
     entitlements:
       path: Widget/Widget.entitlements
       properties:
