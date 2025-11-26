@@ -9,10 +9,39 @@ import SwiftUI
 
 struct AllSourceView: View {
     @ManagedData(.feedSources) var feedSources: [FeedSource]
+    @AppStorage("readFeedURLList", store: .appGroup) var readFeedURLList: [String] = []
+    @AppStorage("feedReadCutoffDate", store: .appGroup) var feedReadCutoffDate: Date?
 
     @State var searchText = ""
     @State var showingFeedSettings = false
     @State var selectedIndex = 0
+
+    private var defaultCutoffDate: Date {
+        Calendar.current.date(from: DateComponents(year: 2025, month: 11, day: 26)) ?? .distantPast
+    }
+
+    private var cutoffDate: Date {
+        if let d = feedReadCutoffDate { return d }
+        feedReadCutoffDate = defaultCutoffDate
+        return defaultCutoffDate
+    }
+
+    private func isRead(_ feed: Feed) -> Bool {
+        if feed.datePosted < cutoffDate { return true }
+        return readFeedURLList.contains(feed.url.absoluteString)
+    }
+
+    private func hasUnread(_ source: FeedSource) -> Bool {
+        source.feed.contains { !isRead($0) }
+    }
+
+    private func markAllRead(for source: FeedSource) {
+        let urls = source.feed
+            .filter { $0.datePosted >= cutoffDate }
+            .map { $0.url.absoluteString }
+        let union = Set(readFeedURLList).union(urls)
+        readFeedURLList = Array(union)
+    }
 
     var feedsSearched: [Feed] {
         let feeds: [Feed]
@@ -71,13 +100,21 @@ struct AllSourceView: View {
                                 } else {
                                     selectedIndex = i + 1
                                 }
+                                markAllRead(for: source)
                             } label: {
-                                Label(source.name, systemImage: source.image ?? "doc.richtext")
-                                    .labelStyle(
-                                        FeedSourceLabelStyle(
-                                            dimmed: selectedIndex != 0 && selectedIndex != i + 1
-                                        )
+                                Label {
+                                    Text(source.name)
+                                } icon: {
+                                    FeedSourceUnreadIcon(
+                                        imageName: source.image ?? "doc.richtext",
+                                        hasUnread: hasUnread(source)
                                     )
+                                }
+                                .labelStyle(
+                                    FeedSourceLabelStyle(
+                                        dimmed: selectedIndex != 0 && selectedIndex != i + 1
+                                    )
+                                )
                             }
                             .buttonStyle(
                                 FeedSourceButtonStyle(
@@ -166,6 +203,22 @@ struct FeedSourceButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(color)
+    }
+}
+
+private struct FeedSourceUnreadIcon: View {
+    var imageName: String
+    var hasUnread: Bool
+
+    var body: some View {
+        Image(systemName: imageName)
+            .overlay(alignment: .topTrailing) {
+                if hasUnread {
+                    Circle()
+                        .fill(.blue)
+                        .frame(width: 8, height: 8)
+                }
+            }
     }
 }
 
