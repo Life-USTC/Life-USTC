@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import WebKit
 
 class UstcCasClient: LoginClientProtocol {
     static let shared = UstcCasClient()
@@ -15,6 +16,13 @@ class UstcCasClient: LoginClientProtocol {
 
     var loginContinuation: CheckedContinuation<Bool, Error>?
     var loginWebViewController: UIViewController?
+    private var hiddenHostingController: UIHostingController<Browser>?
+    private var backgroundLoginTriggered = false
+    private var backgroundLoginCompleted = false
+    private var backgroundLoginStartTime: Date?
+    private var hiddenHostView: UIView?
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
 
     override func login() async throws -> Bool {
         return try await login(shouldAutoLogin: true)
@@ -28,11 +36,26 @@ class UstcCasClient: LoginClientProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             self.loginContinuation = continuation
             Task.detached { @MainActor in
-                self.presentLoginWebView(
-                    shouldAutoLogin: shouldAutoLogin,
-                    username: username,
-                    password: password
-                )
+                if !self.backgroundLoginTriggered {
+                    self.backgroundLoginTriggered = true
+                    self.startBackgroundLogin()
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 10_000_000_000)
+                        if !self.backgroundLoginCompleted {
+                            self.presentLoginWebView(
+                                shouldAutoLogin: shouldAutoLogin,
+                                username: username,
+                                password: password
+                            )
+                        }
+                    }
+                } else {
+                    self.presentLoginWebView(
+                        shouldAutoLogin: shouldAutoLogin,
+                        username: username,
+                        password: password
+                    )
+                }
             }
         }
     }
@@ -72,16 +95,52 @@ class UstcCasClient: LoginClientProtocol {
         loginWebViewController = nil
     }
 
+    private func startBackgroundLogin() {
+        backgroundLoginStartTime = Date()
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let keyWindow = scenes.flatMap { $0.windows }.first { $0.isKeyWindow } ?? scenes.first?.windows.first
+        guard let window = keyWindow else { return }
+
+        let browser = Browser(
+            useReeed: false,
+            prepared: true,
+            reeedMode: .userDefined,
+            url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
+            title: LocalizedStringKey("CAS Login")
+        )
+        let hosting = UIHostingController(rootView: browser)
+        hosting.view.isUserInteractionEnabled = false
+        hosting.view.alpha = 0.001
+        hosting.view.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+
+        let host = UIView(frame: hosting.view.frame)
+        host.isUserInteractionEnabled = false
+        host.alpha = 0.001
+        window.addSubview(host)
+        host.addSubview(hosting.view)
+        hiddenHostingController = hosting
+        hiddenHostView = host
+    }
+
     func loginSuccess() {
         loginContinuation?.resume(returning: true)
         loginContinuation = nil
         dismissLoginWebView()
+        backgroundLoginCompleted = true
+        hiddenHostingController?.view.removeFromSuperview()
+        hiddenHostingController = nil
+        hiddenHostView?.removeFromSuperview()
+        hiddenHostView = nil
     }
 
     func loginFailed() {
         loginContinuation?.resume(returning: false)
         loginContinuation = nil
         dismissLoginWebView()
+        hiddenHostingController?.view.removeFromSuperview()
+        hiddenHostingController = nil
+        hiddenHostView?.removeFromSuperview()
+        hiddenHostView = nil
     }
 
 }
