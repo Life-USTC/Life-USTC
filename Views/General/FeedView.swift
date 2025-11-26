@@ -10,6 +10,7 @@ import SwiftUI
 
 private struct FeedViewPreview: View {
     let feed: Feed
+    let isRead: Bool
     var color: Color {
         Color(hex: feed.colorHex ?? "#FFFFFF")
     }
@@ -25,7 +26,7 @@ private struct FeedViewPreview: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(feed.title)
                     .font(.system(.headline, weight: .semibold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(isRead ? Color(.tertiaryLabel) : .primary)
                     .multilineTextAlignment(.leading)
                     .lineLimit(3)
 
@@ -43,6 +44,12 @@ private struct FeedViewPreview: View {
                     Text(feed.datePosted.formatted(.relative(presentation: .named)))
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundColor(.secondary)
+
+                    if !isRead {
+                        Circle()
+                            .fill(.blue)
+                            .frame(width: 6, height: 6)
+                    }
                 }
             }
             .padding(.horizontal, 8)
@@ -114,6 +121,30 @@ private struct RetryAsyncImage: View {
 
 struct FeedView: View {
     let feed: Feed
+    @AppStorage("readFeedURLList", store: .appGroup) var readFeedURLList: [String] = []
+    @AppStorage("feedReadCutoffDate", store: .appGroup) var feedReadCutoffDate: Date?
+
+    private var defaultCutoffDate: Date {
+        Calendar.current.date(from: DateComponents(year: 2025, month: 11, day: 26)) ?? .distantPast
+    }
+
+    private var cutoffDate: Date {
+        if let d = feedReadCutoffDate { return d }
+        feedReadCutoffDate = defaultCutoffDate
+        return defaultCutoffDate
+    }
+
+    private var isRead: Bool {
+        if feed.datePosted < cutoffDate { return true }
+        return readFeedURLList.contains(feed.url.absoluteString)
+    }
+
+    private func markRead() {
+        let key = feed.url.absoluteString
+        if !readFeedURLList.contains(key) {
+            readFeedURLList.append(key)
+        }
+    }
 
     var body: some View {
         NavigationLink {
@@ -122,7 +153,7 @@ struct FeedView: View {
                 title: LocalizedStringKey(stringLiteral: feed.title)
             )
         } label: {
-            FeedViewPreview(feed: feed)
+            FeedViewPreview(feed: feed, isRead: isRead)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 // .background(
                 //     RoundedRectangle(cornerRadius: 10)
@@ -143,5 +174,6 @@ struct FeedView: View {
                         .frame(width: 350, height: 600)
                 }
         }
+        .simultaneousGesture(TapGesture().onEnded { markRead() })
     }
 }
