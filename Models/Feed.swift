@@ -41,6 +41,12 @@ extension Feed {
         datePosted = item.pubDate ?? Date()
         url = URL(string: item.link!)!
         colorHex = source.colorHex
+
+        if let enclosure = item.enclosure, enclosure.attributes?.type == "image/jpeg",
+            let urlString = enclosure.attributes?.url
+        {
+            imageURL = URL(string: urlString)
+        }
     }
 
     init(entry: AtomFeedEntry, source: FeedSource) {
