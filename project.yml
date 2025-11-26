@@ -51,6 +51,7 @@ targets:
         aps-environment: development
         com.apple.developer.associated-domains:
           - webcredentials:passport.ustc.edu.cn
+          - webcredentials:id.ustc.edu.cn
         com.apple.security.app-sandbox: true
         com.apple.security.application-groups:
           - group.dev.tiankaima.Life-USTC

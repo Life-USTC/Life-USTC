@@ -19,7 +19,9 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
         let vc = UIViewController()
         vc.view.backgroundColor = .systemBackground
 
-        let webView = WKWebView(frame: .zero)
+        let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = .default()
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.allowsBackForwardNavigationGestures = true
         webView.navigationDelegate = context.coordinator
@@ -37,6 +39,7 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
             webView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: vc.view.bottomAnchor),
         ])
+
         webView.scrollView.contentInsetAdjustmentBehavior = .always
         webView.scrollView.scrollIndicatorInsets = webView.scrollView.contentInset
 
@@ -56,6 +59,9 @@ final class Coordinator: NSObject, WKNavigationDelegate {
     private let parent: BrowserUIKitView
     init(_ parent: BrowserUIKitView) { self.parent = parent }
 
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
+
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -66,42 +72,118 @@ final class Coordinator: NSObject, WKNavigationDelegate {
             return
         }
 
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            decisionHandler(.cancel)
+        if ["http", "https"].contains(scheme) {
+            if url.host == "id.ustc.edu.cn" && url.absoluteString.hasPrefix("https://id.ustc.edu.cn/gate/cas-success") {
+                webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                    HTTPCookieStorage.shared.setCookies(
+                        cookies,
+                        for: URL(string: "https://id.ustc.edu.cn"),
+                        mainDocumentURL: nil
+                    )
+                    UstcCasClient.shared.loginSuccess()
+                }
+                decisionHandler(.cancel)
+                return
+            }
+            decisionHandler(.allow)
             return
         }
 
+        UIApplication.shared.open(
+            url,
+            options: [:],
+            completionHandler: { success in
+                if success {
+                    decisionHandler(.cancel)
+                    return
+                }
+            }
+        )
+
         decisionHandler(.allow)
     }
-}
 
-@available(iOS 26, *)
-struct NewBroserView: View {
-    @Environment(\.pixelLength) var onePixel
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard let currentURL = webView.url else { return }
+        if currentURL.host == "id.ustc.edu.cn" && currentURL.path.hasPrefix("/cas/login") {
+            injectCASCredentials(into: webView)
+        }
+    }
 
-    @Binding var url: URL
-    @Binding var useReeed: Bool
-    @Binding var reeedMode: ReeedEnabledMode
+    func injectCASCredentials(into webView: WKWebView) {
+        let escapedUsername = username.replacingOccurrences(of: "'", with: "\\'")
+        let escapedPassword = password.replacingOccurrences(of: "'", with: "\\'")
+        let script = """
+            (function() {
+                function fillForm() {
+                    const usernameInput = document.querySelector('input[id="nameInput"]') || document.querySelector('input[name="username"], input[name="user"]');
+                    const passwordInput = document.querySelector('input[type="password"]');
+                    const submitBtn = document.querySelector('button[id="submitBtn"], button[type="submit"], input[type="submit"]');
 
-    @State var page = WebPage()
+                    if (!(usernameInput && passwordInput)) {
+                        setTimeout(fillForm, 500);
+                        return;
+                    }
 
-    var body: some View {
-        WebView(page)
-            .onAppear {
-                page.load(url)
-                page.isInspectable = true
-            }
-            .padding(.top, onePixel)
-            .ignoresSafeArea(.container, edges: .bottom)
+                    usernameInput.value = '\(escapedUsername)';
+                    passwordInput.value = '\(escapedPassword)';
+
+                    usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    (function() {
+                        if (document.getElementById('life-ustc-autofill-banner')) return;
+                        const banner = document.createElement('div');
+                        banner.id = 'life-ustc-autofill-banner';
+                        banner.textContent = 'Life@USTC Autofill Active';
+                        banner.setAttribute('role', 'status');
+                        banner.style.background = '#0B7285';
+                        banner.style.color = 'white';
+                        banner.style.fontFamily = 'system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif';
+                        banner.style.fontSize = '12px';
+                        banner.style.padding = '6px 10px';
+                        banner.style.borderRadius = '6px';
+                        banner.style.display = 'inline-block';
+                        banner.style.margin = '8px 0';
+                        const container = (usernameInput && usernameInput.closest('form')) || document.querySelector('form') || document.body;
+                        container.prepend(banner);
+                    })();
+
+                    if (!window.LIFE_USTC_AUTOSUBMIT_TRIGGERED && usernameInput.value && passwordInput.value) {
+                        window.LIFE_USTC_AUTOSUBMIT_TRIGGERED = true;
+                        const formEl = (usernameInput && usernameInput.closest('form')) || document.querySelector('form');
+                        setTimeout(function() {
+                            if (submitBtn) {
+                                submitBtn.click();
+                            } else if (formEl && typeof formEl.requestSubmit === 'function') {
+                                formEl.requestSubmit();
+                            } else if (formEl) {
+                                formEl.submit();
+                            }
+                        }, 200);
+                    }
+                }
+
+                if (document.readyState === 'complete') {
+                    setTimeout(fillForm, 300);
+                } else {
+                    window.addEventListener('load', function() { setTimeout(fillForm, 300); });
+                }
+            })();
+            """
+
+        webView.evaluateJavaScript(script, completionHandler: nil)
     }
 }
 
 struct Browser: View {
     @Environment(\.dismiss) var dismiss
+
     @State var useReeed = false
     @State var prepared = false
-    @State var reeedMode: ReeedEnabledMode = .userDefined
+    @State var reeedMode: ReeedEnabledMode = .never
     @State var url: URL
 
     var title: LocalizedStringKey = "Detail"
@@ -109,25 +191,10 @@ struct Browser: View {
     var contentView: some View {
         Group {
             if useReeed {
-                ReeeederView(url: url, options: .init(includeExitReaderButton: false))
+                ReeeederView(url: url, options: .init(includeExitReaderButton: false), useReeeder: $useReeed)
             } else {
-                if #available(iOS 26, *) {
-                    NewBroserView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
-                } else {
-                    BrowserUIKitView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
-                        .ignoresSafeArea(.container, edges: .bottom)
-                        .navigationBarBackButtonHidden(true)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button {
-                                    dismiss()
-                                } label: {
-                                    Label("Back", systemImage: "chevron.left")
-                                        .labelStyle(.iconOnly)
-                                }
-                            }
-                        }
-                }
+                BrowserUIKitView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
+                    .ignoresSafeArea(.container, edges: .bottom)
             }
         }
         .if(!prepared) { _ in
@@ -142,13 +209,15 @@ struct Browser: View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                Button {
-                    useReeed.toggle()
-                } label: {
-                    Label(
-                        useReeed ? "Exit Reeeder" : "Reeeder",
-                        systemImage: useReeed ? "doc.plaintext.fill" : "doc.plaintext"
-                    )
+                if reeedMode == .userDefined {
+                    Button {
+                        useReeed.toggle()
+                    } label: {
+                        Label(
+                            useReeed ? "Exit Reeeder" : "Reeeder",
+                            systemImage: useReeed ? "doc.plaintext.fill" : "doc.plaintext"
+                        )
+                    }
                 }
                 ShareLink(item: url) {
                     Label("Share", systemImage: "square.and.arrow.up")

@@ -11,18 +11,13 @@ import WidgetKit
 
 struct ExamProvider: TimelineProvider {
     @ManagedData(.exam) var exams: [Exam]
-    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
-
-    var canRefresh: Bool {
-        _widgetCanRefreshNewData ?? false
-    }
 
     func placeholder(in _: Context) -> ExamEntry {
         ExamEntry.example
     }
 
     func makeEntry(for _date: Date = Date()) async throws -> ExamEntry {
-        guard let exams = try await canRefresh ? _exams.retrive() : _exams.retriveLocal() else {
+        guard let exams = _exams.retriveLocal() else {
             throw BaseError.runtimeError("Failed to retrive exams")
         }
 

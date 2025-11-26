@@ -101,10 +101,11 @@ class USTCExports: SchoolExport {
 
     var setCookiesBeforeWebView: ((_ url: URL) async throws -> Void)? {
         return { url in
-            guard url.host?.hasSuffix("ustc.edu.cn") == true else {
-                return
-            }
-            _ = try await self._casClient.requireLogin()
+            // hook no longer needed as autofill is app-wide:
+            // guard url.host?.hasSuffix("ustc.edu.cn") == true else {
+            //     return
+            // }
+            // _ = try await self._casClient.requireLogin()
         }
     }
 

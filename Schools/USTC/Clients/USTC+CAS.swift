@@ -11,40 +11,24 @@ import UIKit
 class UstcCasClient: LoginClientProtocol {
     static let shared = UstcCasClient()
 
-    @AppStorage("widgetCanRefreshNewData", store: .appGroup) var _widgetCanRefreshNewData: Bool? = nil
-
-    var session: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.httpCookieStorage = HTTPCookieStorage.shared
-        config.httpShouldSetCookies = true
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        return URLSession(configuration: config)
-    }()
+    var session: URLSession = .shared
 
     var loginContinuation: CheckedContinuation<Bool, Error>?
     var loginWebViewController: UIViewController?
-    weak var presenterViewController: UIViewController?
 
-    // Default login keeps previous behavior for API compatibility but requires presenter to be set beforehand.
     override func login() async throws -> Bool {
         return try await login(shouldAutoLogin: true)
     }
 
-    // New API that accepts a presenter VC, suitable for app extensions and clearer control from UI layer.
     func login(
         shouldAutoLogin: Bool = false,
         username: String? = nil,
-        password: String? = nil,
+        password: String? = nil
     ) async throws -> Bool {
-        guard let presenterViewController else {
-            throw BaseError.runtimeError("Login presenter not set. Call login(presentingFrom:) from UI.")
-        }
-
         return try await withCheckedThrowingContinuation { continuation in
             self.loginContinuation = continuation
             Task.detached { @MainActor in
                 self.presentLoginWebView(
-                    presentingFrom: presenterViewController,
                     shouldAutoLogin: shouldAutoLogin,
                     username: username,
                     password: password
@@ -53,39 +37,39 @@ class UstcCasClient: LoginClientProtocol {
         }
     }
 
-    // Allow UI to inject a presenter ahead of time so requireLogin()->login() can work
-    func setPresenter(_ presenter: UIViewController) {
-        self.presenterViewController = presenter
-    }
-
     @MainActor
     func presentLoginWebView(
-        presentingFrom presenterViewController: UIViewController,
         shouldAutoLogin: Bool = false,
         username: String? = nil,
         password: String? = nil
     ) {
-        let webViewController = CASWebViewController()
-        webViewController.shouldAutoLogin = shouldAutoLogin
-        if let username {
-            webViewController.username = username
-        }
-        if let password {
-            webViewController.password = password
-        }
-
-        let navigationController = UINavigationController(rootViewController: webViewController)
+        let hosting = UIHostingController(
+            rootView: Browser(
+                useReeed: false,
+                prepared: true,
+                reeedMode: .userDefined,
+                url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
+                title: LocalizedStringKey("CAS Login")
+            )
+        )
+        let navigationController = UINavigationController(rootViewController: hosting)
         navigationController.modalPresentationStyle = .fullScreen
 
-        // Find the topmost presented view controller to ensure presentation works
-        var topController = presenterViewController
-        while let presented = topController.presentedViewController {
-            topController = presented
-        }
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let keyWindow = scenes.flatMap { $0.windows }.first { $0.isKeyWindow } ?? scenes.first?.windows.first
+        guard var topController = keyWindow?.rootViewController else { return }
+        while let presented = topController.presentedViewController { topController = presented }
+        if let nav = topController as? UINavigationController { topController = nav.visibleViewController ?? nav }
+        if let tab = topController as? UITabBarController { topController = tab.selectedViewController ?? tab }
 
         topController.present(navigationController, animated: true)
 
         loginWebViewController = navigationController
+    }
+
+    func dismissLoginWebView() {
+        loginWebViewController?.dismiss(animated: true)
+        loginWebViewController = nil
     }
 
     func loginSuccess() {
@@ -100,10 +84,6 @@ class UstcCasClient: LoginClientProtocol {
         dismissLoginWebView()
     }
 
-    func dismissLoginWebView() {
-        loginWebViewController?.dismiss(animated: true)
-        loginWebViewController = nil
-    }
 }
 
 extension LoginClientProtocol {
