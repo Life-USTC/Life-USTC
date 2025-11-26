@@ -190,19 +190,6 @@ extension FeaturesView {
             ),
         ]
 
-        results["Feed"] =
-            [
-                .init(
-                    image: "doc.richtext",
-                    title: "Feed",
-                    subTitle: "",
-                    destinationView: {
-                        AllSourceView()
-                    },
-                    identifier: "feature_feed"
-                )
-            ] + feedSources.map { FeatureWithView($0) }
-
         for (key, features) in SchoolExport.shared.features {
             if results.keys.contains(key) {
                 results[key]! += features
