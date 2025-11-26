@@ -12,9 +12,20 @@ struct AllSourceView: View {
 
     @State var searchText = ""
     @State var showingFeedSettings = false
+    @State var selectedIndex = 0
 
     var feedsSearched: [Feed] {
-        let feeds = feedSources.flatMap(\.feed)
+        let feeds: [Feed]
+        if selectedIndex == 0 {
+            feeds = feedSources.flatMap(\.feed)
+        } else {
+            let idx = selectedIndex - 1
+            if feedSources.indices.contains(idx) {
+                feeds = feedSources[idx].feed
+            } else {
+                feeds = []
+            }
+        }
 
         guard !searchText.isEmpty else {
             return feeds
@@ -53,7 +64,41 @@ struct AllSourceView: View {
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                AsyncStatusLight(status: _feedSources.status)
+                VStack(alignment: .leading) {
+                    AsyncStatusLight(status: _feedSources.status)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            // Button {
+                            //     selectedIndex = 0
+                            // } label: {
+                            //     Label("All", systemImage: "doc.richtext")
+                            //         .labelStyle(FeedSourceLabelStyle())
+                            // }
+                            // .buttonStyle(FeedSourceButtonStyle(selected: selectedIndex == 0, color: Color.accentColor))
+
+                            ForEach(Array(feedSources.enumerated()), id: \.1.id) { i, source in
+                                Button {
+                                    if selectedIndex == i + 1 {
+                                        selectedIndex = 0
+                                    } else {
+                                        selectedIndex = i + 1
+                                    }
+                                } label: {
+                                    Label(source.name, systemImage: source.image ?? "doc.richtext")
+                                        .labelStyle(FeedSourceLabelStyle())
+                                }
+                                .buttonStyle(
+                                    FeedSourceButtonStyle(
+                                        selected: selectedIndex == i + 1,
+                                        color: Color(hex: source.colorHex ?? "#767676")
+                                    )
+                                )
+                            }
+                        }
+                        .padding(.vertical, 6)
+                    }
+                }
             }
         }
         .refreshable {
@@ -77,5 +122,48 @@ struct AllSourceView: View {
                 })
             }
         }
+    }
+}
+
+struct FeedSourceLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(spacing: 6) {
+            configuration.icon
+                .symbolRenderingMode(.hierarchical)
+                .font(.title3)
+                .frame(width: 36, height: 36)
+                .background(
+                    Circle()
+                        .fill(Color(.systemGray6))
+                )
+                .clipShape(Circle())
+
+            configuration.title
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+        }
+        .frame(width: 72, height: 72)
+    }
+}
+
+struct FeedSourceButtonStyle: ButtonStyle {
+    var selected: Bool
+    var color: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(color)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(selected ? color.opacity(0.15) : Color(.systemGray6))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(selected ? color : Color(.separator), lineWidth: 1)
+            )
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
     }
 }
