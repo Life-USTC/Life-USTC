@@ -2,7 +2,7 @@ name: Life-USTC
 options:
   bundleIdPrefix: com.linzihan
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
   xcodeVersion: "15.0"
   createIntermediateGroups: true
   groupSortPosition: top
@@ -24,7 +24,7 @@ targets:
   Life-USTC:
     type: application
     platform: iOS
-    deploymentTarget: "16.0"
+    deploymentTarget: "17.0"
     sources:
       - path: "Assets/"
       - path: "General/"
@@ -118,7 +118,7 @@ targets:
   Widget iOS:
     type: app-extension
     platform: iOS
-    deploymentTarget: "16.0"
+    deploymentTarget: "17.0"
     sources:
       - path: "Widget/"
       - path: "Assets/"
