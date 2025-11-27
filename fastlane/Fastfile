@@ -88,7 +88,7 @@ platform :ios do
       app_identifier: "dev.tiankaima.Life-USTC",
       distribute_only: true,
       distribute_external: true,
-      beta_app_description: "Automated upload via Fastlane",
+      beta_app_description: "Automatically uploaded via Fastlane",
       groups: ["Beta"],
     )
   end
