@@ -226,13 +226,13 @@ struct Browser: View {
             .task {
                 if !prepared {
                     do {
-                        reeedMode = sharedSchoolExport.reeedEnabledMode(url)
+                        reeedMode = SchoolSystem.current.reeedEnabledMode(url)
 
                         if reeedMode == .always {
                             useReeed = true
                         }
 
-                        try await sharedSchoolExport.setCookiesBeforeWebView?(url)
+                        try await SchoolSystem.current.setCookiesBeforeWebView?(url)
                     } catch {
                         debugPrint(error)
                     }

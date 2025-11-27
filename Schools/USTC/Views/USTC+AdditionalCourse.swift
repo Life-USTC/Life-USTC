@@ -61,9 +61,18 @@ struct USTCAdditionalCourseView: View {
                 let url = URL(string: "\(staticURLPrefix)/curriculum/semesters.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .secondsSince1970
-                semesters = try decoder.decode([Semester].self, from: data).sorted(by: { $0.startDate > $1.startDate })
+                let json = try JSON(data: data)
+                semesters = json.arrayValue
+                    .map { item in
+                        Semester(
+                            id: item["id"].stringValue,
+                            courses: [],
+                            name: item["name"].stringValue,
+                            startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
+                            endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
+                        )
+                    }
+                    .sorted(by: { $0.startDate > $1.startDate })
             }
         }
         .navigationTitle("Select Additional Course")
@@ -147,9 +156,17 @@ struct USTCAdditionalCourseSemesterView: View {
                     from: URL(string: "\(staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
                 )
 
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .secondsSince1970
-                courses = try! decoder.decode([Course].self, from: data)
+                let json = try JSON(data: data)
+                courses = json.arrayValue.map { item in
+                    Course(
+                        id: item["id"].intValue,
+                        name: item["name"].stringValue,
+                        courseCode: item["courseCode"].stringValue,
+                        lessonCode: item["lessonCode"].stringValue,
+                        teacherName: item["teacherName"].stringValue,
+                        lectures: []
+                    )
+                }
             }
         }
         .searchable(text: $searchKeyword)

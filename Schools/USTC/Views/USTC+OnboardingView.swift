@@ -157,8 +157,8 @@ struct USTCAdditionalCoursesWelcomeView: View {
                     }
             }
         }
-        .onChange(of: showingAddCourseSheet) { newValue in
-            if !newValue {
+        .onChange(of: showingAddCourseSheet) {
+            if !showingAddCourseSheet {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     onNext()
                 }

@@ -5,17 +5,18 @@
 //  Created by Tiankai Ma on 2023/2/1.
 //
 
+import SwiftData
 import SwiftUI
 
 struct FeedSetingsPage: View {
-    @ManagedData(.feedSources) var feedSources: [FeedSource]
+    @Query(sort: \FeedSource.name, order: .forward) var sourceEntities: [FeedSource]
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
     var dismissAction: (() -> Void)? = nil
 
     var body: some View {
         List {
             Section {
-                ForEach(feedSources.map(\.name), id: \.self) { name in
+                ForEach(sourceEntities.map(\.name), id: \.self) { name in
                     Button {
                         if removedNameList.contains(name) {
                             removedNameList.removeAll(where: { $0 == name })
@@ -37,7 +38,6 @@ struct FeedSetingsPage: View {
                 HStack {
                     Text("Feed source to show")
                         .textCase(.none)
-                    AsyncStatusLight(status: _feedSources.status)
                 }
             } footer: {
                 Text("A reload may be required for this to take effect.")
@@ -46,7 +46,7 @@ struct FeedSetingsPage: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    _feedSources.triggerRefresh()
+                    Task { try? await FeedRepository.refresh() }
                 } label: {
                     Label("Refresh List", systemImage: "arrow.clockwise")
                 }
@@ -63,7 +63,7 @@ struct FeedSetingsPage: View {
                 }
             }
         }
-        .asyncStatusOverlay(_feedSources.status)
         .navigationTitle("Feed Source Settings")
+        .task { try? await FeedRepository.refresh() }
     }
 }

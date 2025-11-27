@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2023/1/12.
 //
 
+import SwiftData
 import SwiftUI
 
 private struct ScoreView: View {
@@ -92,7 +93,7 @@ private enum SortPreference: String, CaseIterable {
 }
 
 struct ScoreDetailView: View {
-    @ManagedData(.score) var score: Score
+    @Query(sort: \Score.gpa, order: .forward) var summaries: [Score]
 
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
@@ -101,27 +102,27 @@ struct ScoreDetailView: View {
         Section {
             VStack(alignment: .leading) {
                 HStack {
-                    Text(score.majorName)
+                    Text(summaries.first?.majorName ?? "")
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
 
                     Spacer()
 
-                    Text(
-                        "\("Ranking:".localized) \(score.majorRank) / \(score.majorStdCount)"
-                    )
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    if let s = summaries.first {
+                        Text("\("Ranking:".localized) \(s.majorRank) / \(s.majorStdCount)")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                    }
                 }
-                Text("GPA: \(String(format: "%.2f", score.gpa))")
-                    .font(.title2).bold()
+                if let s = summaries.first {
+                    Text("GPA: \(String(format: "%.2f", s.gpa))")
+                        .font(.title2)
+                        .bold()
+                }
             }
         } header: {
             HStack(alignment: .bottom) {
-                AsyncStatusLight(status: _score.status)
-
                 Spacer()
-
                 HStack {
                     semesterButton
                     sortButton
@@ -135,7 +136,7 @@ struct ScoreDetailView: View {
             ScoreView(
                 courseScore: course,
                 color: ((course.gpa ?? 0.0) >= 1.0
-                    ? (course.gpa! >= score.gpa
+                    ? (course.gpa! >= (summaries.first?.gpa ?? 0.0)
                         ? .cyan.opacity(0.6) : .orange.opacity(0.6))
                     : .red.opacity(0.6))
             )
@@ -159,17 +160,19 @@ struct ScoreDetailView: View {
             rankingView
             scoreListView
         }
-        .asyncStatusOverlay(_score.status)
-        .refreshable {
-            _score.triggerRefresh()
-        }
+        .refreshable { await refresh() }
         .navigationTitle("Score")
+        .task { await refresh() }
     }
 }
 
 extension ScoreDetailView {
+    private func refresh() async {
+        try? await ScoreRepository.refresh()
+    }
     private var filteredCourses: [CourseScore] {
-        score.courses.filter { course in
+        let courses = summaries.first?.courses ?? []
+        return courses.filter { course in
             !semesterNameToRemove.contains(course.semesterName)
         }
     }
@@ -203,13 +206,11 @@ extension ScoreDetailView {
     }
 
     var semesterNameList: [String] {
-        score.courses
-            .categorise { course in
-                course.semesterName
-            }
-            .sorted(by: { lhs, rhs in
-                lhs.value[0].semesterID > rhs.value[0].semesterID
-            })
+        let courses = summaries.first?.courses ?? []
+        return
+            courses
+            .categorise { $0.semesterName }
+            .sorted(by: { lhs, rhs in lhs.value[0].semesterID > rhs.value[0].semesterID })
             .map { $0.key }
     }
 }

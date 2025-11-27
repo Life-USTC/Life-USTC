@@ -5,10 +5,11 @@
 //  Created by Tiankai Ma on 2023/8/26.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ExamPreviewCard: View {
-    @ManagedData(.exam) var exams: [Exam]
+    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
 
     var body: some View {
         VStack {
@@ -18,8 +19,12 @@ struct ExamPreviewCard: View {
                 Spacer()
             }
             ExamPreview(exams: exams)
-                .asyncStatusOverlay(_exams.status)
         }
         .card()
+        .task { await refresh() }
+    }
+
+    private func refresh() async {
+        try? await ExamRepository.refresh()
     }
 }

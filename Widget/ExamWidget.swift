@@ -6,20 +6,20 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
 struct ExamProvider: TimelineProvider {
-    @ManagedData(.exam) var exams: [Exam]
 
     func placeholder(in _: Context) -> ExamEntry {
         ExamEntry.example
     }
 
     func makeEntry(for _date: Date = Date()) async throws -> ExamEntry {
-        guard let exams = _exams.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive exams")
-        }
+        let context = SwiftDataStack.context
+        let descriptor = FetchDescriptor<Exam>(sortBy: [SortDescriptor(\Exam.startDate, order: .forward)])
+        let exams = try context.fetch(descriptor)
 
         return ExamEntry(exams: exams.clean())
     }

@@ -5,12 +5,14 @@
 //  Created by TianKai Ma on 2024/4/15.
 //
 
+import SwiftData
 import SwiftUI
+import SwiftyJSON
 
 struct LectureSheetModifier: ViewModifier {
     var lecture: Lecture
     @State var showPopUp: Bool = false
-    @ManagedData(.buildingImgMapping) var buildingImgMapping
+    @Query(filter: #Predicate<KVStore> { $0.key == "buildingImgMapping" }) var mappingKV: [KVStore]
 
     func body(content: Content) -> some View {
         content
@@ -30,7 +32,7 @@ struct LectureSheetModifier: ViewModifier {
                                         .background {
                                             GeometryReader { geo in
                                                 Rectangle()
-                                                    .fill((lecture.course?.color() ?? .accentColor).opacity(0.2))
+                                                    .fill((lecture.course?.color ?? .accentColor).opacity(0.2))
                                                     .frame(width: geo.size.width + 10, height: geo.size.height / 2)
                                                     .offset(x: -5, y: geo.size.height / 2)
                                             }
@@ -77,7 +79,7 @@ struct LectureSheetModifier: ViewModifier {
                         }
                         .padding([.top, .horizontal])
 
-                        if let url = buildingImgMapping.getURL(buildingName: lecture.location) {
+                        if let url = buildingImageURL {
                             AsyncImage(url: url) { image in
                                 image
                                     .resizable()
@@ -93,6 +95,9 @@ struct LectureSheetModifier: ViewModifier {
                     }
                 }
                 .presentationDetents([.fraction(0.45)])
+                .task {
+                    if mappingKV.first?.blob == nil { try? await BuildingImgMappingRepository.refresh() }
+                }
             }
     }
 }
@@ -100,5 +105,19 @@ struct LectureSheetModifier: ViewModifier {
 extension View {
     func lectureSheet(lecture: Lecture) -> some View {
         modifier(LectureSheetModifier(lecture: lecture))
+    }
+}
+
+extension LectureSheetModifier {
+    fileprivate var buildingImageURL: URL? {
+        guard let blob = mappingKV.first?.blob else { return nil }
+        guard let json = try? JSON(data: blob) else { return nil }
+        let rules = json.arrayValue.map {
+            BuildingImgRule(regex: $0["regex"].stringValue, path: $0["path"].stringValue)
+        }
+        if let rule = rules.first(where: { lecture.location.range(of: $0.regex, options: .regularExpression) != nil }) {
+            return SchoolSystem.current.buildingimgBaseURL.appendingPathComponent(rule.path)
+        }
+        return nil
     }
 }

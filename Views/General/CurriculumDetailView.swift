@@ -6,6 +6,8 @@
 //
 
 import Charts
+import EventKit
+import SwiftData
 import SwiftUI
 
 struct CurriculumDetailView: View {
@@ -18,7 +20,7 @@ struct CurriculumDetailView: View {
     ) var curriculumChartShouldHideEvening: Bool = false
     @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
 
-    @ManagedData(.curriculum) var curriculum: Curriculum
+    @Query(sort: \Semester.startDate, order: .forward) var semesters: [Semester]
 
     @State var showLandscape: Bool = {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -31,7 +33,6 @@ struct CurriculumDetailView: View {
     @State var currentSemester: Semester?
     @State var weekNumber: Int?
     @State var showCurriculumDetails = false
-    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
 
     @ViewBuilder
     var detailBarView: some View {
@@ -64,7 +65,6 @@ struct CurriculumDetailView: View {
         VStack {
             if !showLandscape {
                 HStack(alignment: .bottom) {
-                    AsyncStatusLight(status: _curriculum.status)
                     Spacer()
                 }
                 .padding(.horizontal, 20)
@@ -88,7 +88,7 @@ struct CurriculumDetailView: View {
                 )
             }
         }
-        .asyncStatusOverlay(_curriculum.status)
+
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
@@ -114,7 +114,7 @@ struct CurriculumDetailView: View {
                 }
 
                 Button {
-                    _curriculum.triggerRefresh()
+                    Task { await refresh() }
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
@@ -129,23 +129,42 @@ struct CurriculumDetailView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        saveToCalendarStatus = .waiting
-                        do {
-                            try await curriculum.saveToCalendar()
-                            saveToCalendarStatus = .success
-                        } catch {
-                            print(error.localizedDescription)
-                            saveToCalendarStatus = .error(error.localizedDescription)
+                        let eventStore = EKEventStore()
+                        if #available(iOS 17.0, *) {
+                            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
+                                try? await eventStore.requestFullAccessToEvents()
+                            }
+                        } else {
+                            _ = try? await eventStore.requestAccess(to: .event)
                         }
+
+                        let calendarName = "Curriculum".localized
+                        let calendars = eventStore.calendars(for: .event)
+                            .filter { $0.title == calendarName.localized }
+                        for calendar in calendars { try? eventStore.removeCalendar(calendar, commit: true) }
+
+                        let calendar = EKCalendar(for: .event, eventStore: eventStore)
+                        calendar.title = calendarName
+                        calendar.cgColor = Color.accentColor.cgColor
+                        calendar.source = eventStore.defaultCalendarForNewEvents?.source
+                        try? eventStore.saveCalendar(calendar, commit: true)
+
+                        let lectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
+                            .union()
+                        for lecture in lectures {
+                            let event = EKEvent(eventStore: eventStore)
+                            event.title = lecture.name
+                            event.startDate = lecture.startDate
+                            event.endDate = lecture.endDate
+                            event.location = lecture.location
+                            event.calendar = calendar
+                            try? eventStore.save(event, span: .thisEvent, commit: false)
+                        }
+                        try? eventStore.commit()
                     }
                 } label: {
-                    Label(
-                        "Save to Calendar",
-                        systemImage: saveToCalendarStatus == nil
-                            ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
-                    )
+                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
                 }
-                .disabled(saveToCalendarStatus == .waiting)
             }
 
             ToolbarItemGroup(placement: .bottomBar) {
@@ -170,9 +189,7 @@ struct CurriculumDetailView: View {
             }
         }
         .navigationTitle("Curriculum")
-        .refreshable {
-            _curriculum.triggerRefresh()
-        }
+        .refreshable { await refresh() }
         .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
@@ -189,13 +206,13 @@ struct CurriculumDetailView: View {
                 }
         )
         .onChange(of: currentSemester) {
-            _ in updateLecturesAndWeekNumber()
+            updateLecturesAndWeekNumber()
         }
-        .onChange(of: curriculum) { _ in
+        .onChange(of: semesters) {
             updateLecturesAndWeekNumber()
             updateSemester()
         }
-        .onChange(of: _date) { _ in
+        .onChange(of: _date) {
             updateLecturesAndWeekNumber()
             updateSemester()
         }
@@ -224,13 +241,14 @@ struct CurriculumDetailView: View {
                 )
             }
         }
+        .task { await refresh() }
     }
 
     func updateLecturesAndWeekNumber() {
+        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
+        let semesterLectures = (currentSemester == nil ? allLectures : currentSemester!.courses.flatMap { $0.lectures })
         lectures =
-            (currentSemester == nil
-            ? curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            : currentSemester!.courses.flatMap(\.lectures))
+            semesterLectures
             .filter {
                 (0.0 ..< 3600.0 * 24 * 7)
                     .contains($0.startDate.stripTime().timeIntervalSince(weekStartDate))
@@ -258,11 +276,10 @@ struct CurriculumDetailView: View {
     }
 
     func updateSemester() {
-        currentSemester =
-            curriculum.semesters
-            .filter {
-                ($0.startDate ... $0.endDate).contains(_date)
-            }
-            .first
+        currentSemester = semesters.filter { ($0.startDate ... $0.endDate).contains(_date) }.first
+    }
+
+    private func refresh() async {
+        try? await CurriculumRepository.refresh()
     }
 }

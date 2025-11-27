@@ -8,12 +8,12 @@
 import Foundation
 import SwiftyJSON
 
-class USTCScoreDelegate: ManagedRemoteUpdateProtocol<Score> {
+class USTCScoreDelegate {
     static let shared = USTCScoreDelegate()
 
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
-    override func refresh() async throws -> Score {
+    func refresh() async throws -> Score {
         let scoreURL = URL(
             string:
                 "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds"

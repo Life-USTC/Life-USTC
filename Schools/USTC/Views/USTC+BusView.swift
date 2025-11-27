@@ -5,6 +5,7 @@
 //  Created by Ode on 2023/9/14.
 //
 
+import SwiftData
 import SwiftUI
 import SwiftyJSON
 
@@ -14,7 +15,7 @@ struct USTC_SchoolBusView: View {
         case weekend
     }
 
-    @ManagedData(.ustcBus) var data: USTCBusData
+    @Query(filter: #Predicate<KVStore> { $0.key == "ustc_bus_v2" }) var busKV: [KVStore]
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
     @AppStorage("ustcbusview_selected_routes") var selectedRouteIds: [Int] = []
     @State var selection: Selection = {
@@ -218,7 +219,7 @@ struct USTC_SchoolBusView: View {
                     }
                     Toggle("Show Departed Buses", isOn: $showPassBus)
                 } header: {
-                    AsyncStatusLight(status: _data.status)
+                    EmptyView()
                 } footer: {
                     if let message = data.message?.message, let _url = data.message?.url, let url = URL(string: _url) {
                         Link(message, destination: url)
@@ -305,7 +306,7 @@ struct USTC_SchoolBusView: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 180)
-                .onChange(of: selection) { _ in
+                .onChange(of: selection) {
                     currentRouteIndex = 0  // Reset route index when changing schedule type
                 }
 
@@ -366,12 +367,21 @@ struct USTC_SchoolBusView: View {
         }
         .navigationTitle("Bus Timetable")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        .asyncStatusOverlay(_data.status)
         .onAppear {
             // Make sure currentRouteIndex is valid
             if !calculatedScheduleList.isEmpty && currentRouteIndex >= calculatedScheduleList.count {
                 currentRouteIndex = 0
             }
         }
+
+    }
+}
+
+extension USTC_SchoolBusView {
+    fileprivate var data: USTCBusData {
+        guard let blob = busKV.first?.blob, let decoded = try? JSONDecoder().decode(USTCBusData.self, from: blob) else {
+            return USTCBusData(campuses: [], routes: [], weekday_routes: [], weekend_routes: [], message: nil)
+        }
+        return decoded
     }
 }

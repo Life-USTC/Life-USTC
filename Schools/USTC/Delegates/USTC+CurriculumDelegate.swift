@@ -24,11 +24,17 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolBySemeter {
             from: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!
         )
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .secondsSince1970
-        let result = try decoder.decode([Semester].self, from: data)
-
-        return result
+        let json = try JSON(data: data)
+        let semesters = json.arrayValue.map { item in
+            Semester(
+                id: item["id"].stringValue,
+                courses: [],
+                name: item["name"].stringValue,
+                startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
+                endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
+            )
+        }
+        return semesters
     }
 
     override func refreshSemester(inComplete: Semester) async throws -> Semester {
@@ -78,9 +84,35 @@ class USTCUndergraduateCurriculumDelegate: CurriculumProtocolBySemeter {
                         from: URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(courseID).json")!
                     )
 
-                    let decoder = JSONDecoder()
-                    decoder.dateDecodingStrategy = .secondsSince1970
-                    return try decoder.decode(Course.self, from: data)
+                    let json = try JSON(data: data)
+                    let lectures = json["lectures"].arrayValue
+                        .map { l in
+                            Lecture(
+                                startDate: Date(timeIntervalSince1970: l["startDate"].doubleValue),
+                                endDate: Date(timeIntervalSince1970: l["endDate"].doubleValue),
+                                name: l["name"].stringValue,
+                                location: l["location"].stringValue,
+                                teacherName: l["teacherName"].stringValue,
+                                periods: l["periods"].doubleValue,
+                                additionalInfo: [:],
+                                startIndex: l["startIndex"].int,
+                                endIndex: l["endIndex"].int
+                            )
+                        }
+
+                    let course = Course(
+                        id: Int(json["id"].intValue),
+                        name: json["name"].stringValue,
+                        courseCode: json["courseCode"].stringValue,
+                        lessonCode: json["lessonCode"].stringValue,
+                        teacherName: json["teacherName"].stringValue,
+                        lectures: lectures,
+                        description: json["detailText"].string,
+                        credit: json["credit"].doubleValue,
+                        additionalInfo: [:],
+                        dateTimePlacePersonText: json["dateTimePlacePersonText"].string
+                    )
+                    return course
                 }
             }
 
@@ -113,11 +145,17 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolBySemeter {
             from: URL(string: "\(staticURLPrefix)/curriculum/semesters.json")!
         )
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .secondsSince1970
-        let result = try decoder.decode([Semester].self, from: data)
-
-        return result
+        let json = try JSON(data: data)
+        let semesters = json.arrayValue.map { item in
+            Semester(
+                id: item["id"].stringValue,
+                courses: [],
+                name: item["name"].stringValue,
+                startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
+                endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
+            )
+        }
+        return semesters
     }
 
     override func refreshSemester(inComplete: Semester) async throws -> Semester {
@@ -166,15 +204,15 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolBySemeter {
                 from:
                     URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/courses.json")!
             )
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            let all_courses = try decoder.decode([Course].self, from: semester_data)
-
+            let json = try JSON(data: semester_data)
+            let allCourses = json.arrayValue
             var courseIDs =
-                all_courses.filter { course in
-                    courseCodes.contains(course.lessonCode)
+                allCourses
+                .filter {
+                    courseCodes.contains($0["lessonCode"].stringValue)
+                        || courseCodes.contains($0["lesson_code"].stringValue)
                 }
-                .map { String($0.id) }
+                .map { String($0["id"].intValue) }
 
             if additionalCourseIDList.keys.contains(inComplete.id) {
                 let additionalIDs = additionalCourseIDList[inComplete.id]!.map { String($0) }
@@ -191,9 +229,35 @@ class USTCGraduateCurriculumDelegate: CurriculumProtocolBySemeter {
                         from: URL(string: "\(staticURLPrefix)/curriculum/\(inComplete.id)/\(courseID).json")!
                     )
 
-                    let decoder = JSONDecoder()
-                    decoder.dateDecodingStrategy = .secondsSince1970
-                    return try decoder.decode(Course.self, from: data)
+                    let json = try JSON(data: data)
+                    let lectures = json["lectures"].arrayValue
+                        .map { l in
+                            Lecture(
+                                startDate: Date(timeIntervalSince1970: l["startDate"].doubleValue),
+                                endDate: Date(timeIntervalSince1970: l["endDate"].doubleValue),
+                                name: l["name"].stringValue,
+                                location: l["location"].stringValue,
+                                teacherName: l["teacherName"].stringValue,
+                                periods: l["periods"].doubleValue,
+                                additionalInfo: [:],
+                                startIndex: l["startIndex"].int,
+                                endIndex: l["endIndex"].int
+                            )
+                        }
+
+                    let course = Course(
+                        id: Int(json["id"].intValue),
+                        name: json["name"].stringValue,
+                        courseCode: json["courseCode"].stringValue,
+                        lessonCode: json["lessonCode"].stringValue,
+                        teacherName: json["teacherName"].stringValue,
+                        lectures: lectures,
+                        description: json["detailText"].string,
+                        credit: json["credit"].doubleValue,
+                        additionalInfo: [:],
+                        dateTimePlacePersonText: json["dateTimePlacePersonText"].string
+                    )
+                    return course
                 }
             }
 

@@ -5,11 +5,8 @@
 //  Created by TiankaiMa on 2022/12/14.
 //
 
+import SwiftData
 import SwiftUI
-
-var sharedSchoolExport: any SchoolExport {
-    USTCExports.shared
-}
 
 @main
 struct Life_USTCApp: App {
@@ -19,6 +16,7 @@ struct Life_USTCApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(SwiftDataStack.container)
     }
 }
 
@@ -108,7 +106,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if firstLogin {
-                sharedSchoolExport.firstLoginView($firstLogin)
+                SchoolSystem.current.firstLoginView($firstLogin)
             } else {
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView

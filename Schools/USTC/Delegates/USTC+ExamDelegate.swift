@@ -8,12 +8,12 @@
 import Foundation
 import SwiftSoup
 
-class USTCExamDelegate: ManagedRemoteUpdateProtocol<[Exam]> {
+class USTCExamDelegate {
     static let shared = USTCExamDelegate()
 
     @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
-    override func refresh() async throws -> [Exam] {
+    func refresh() async throws -> [Exam] {
         let examURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/exam-arrange"
         )!

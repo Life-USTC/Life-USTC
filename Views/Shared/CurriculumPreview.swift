@@ -12,7 +12,7 @@ private struct LectureView: View {
     var color: Color = .red
 
     var lectureColor: Color {
-        (lecture.course?.color() ?? color).opacity(0.8)
+        (lecture.course?.color ?? color).opacity(0.8)
     }
 
     var isCompleted: Bool {
