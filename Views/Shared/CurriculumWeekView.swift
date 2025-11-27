@@ -18,7 +18,7 @@ struct CurriculumWeekView: View {
         _date.startOfWeek()
     }
     var behavior: CurriculumBehavior {
-        sharedSchoolExport.curriculumBehavior
+        SchoolSystem.current.curriculumBehavior
     }
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()
@@ -60,7 +60,7 @@ struct CurriculumWeekView: View {
                     ),
                     y: .value("Date", lecture.startDate.stripTime(), unit: .day)
                 )
-                .foregroundStyle((lecture.course?.color() ?? .mint).opacity(0.4))
+                .foregroundStyle((lecture.course?.color ?? .mint).opacity(0.4))
                 .annotation(position: .overlay) {
                     HStack {
                         Text(lecture.name.truncated(length: length(lecture) > 2 ? 6 : 4))

@@ -30,8 +30,6 @@ struct FeaturesView: View {
         }
     }
 
-    @ManagedData(.feedSources) var feedSources: [FeedSource]
-
     @AppStorage("featureViewStyle") var style: Style = .grid
 
     @State var searchText = ""
@@ -190,7 +188,7 @@ extension FeaturesView {
             ),
         ]
 
-        for (key, features) in sharedSchoolExport.features {
+        for (key, features) in SchoolSystem.current.features {
             if results.keys.contains(key) {
                 results[key]! += features
             } else {

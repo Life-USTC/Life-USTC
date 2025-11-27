@@ -5,17 +5,18 @@
 //  Created by Tiankai Ma on 2023/8/26.
 //
 
+import SwiftData
 import SwiftUI
 
 struct CurriculumPreviewCard: View {
-    @ManagedData(.curriculum) var curriculum: Curriculum
+    @Query(sort: \Semester.startDate, order: .forward) var semesters: [Semester]
 
     var referenceDate: Date = .now
 
     var date: Date { referenceDate.stripTime() }
 
     var allLectures: [Lecture] {
-        curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
+        semesters.flatMap { $0.courses }.flatMap { $0.lectures }
     }
 
     var todayLectures: [Lecture] {
@@ -42,8 +43,12 @@ struct CurriculumPreviewCard: View {
                 lectureListA: todayLectures,
                 lectureListB: tomorrowLectures
             )
-            .asyncStatusOverlay(_curriculum.status)
         }
         .card()
+        .task { await refresh() }
+    }
+
+    private func refresh() async {
+        try? await CurriculumRepository.refresh()
     }
 }

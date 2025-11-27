@@ -5,10 +5,11 @@
 //  Created by Tiankai Ma on 2023/8/25.
 //
 
+import SwiftData
 import SwiftUI
 
 struct AllSourceView: View {
-    @ManagedData(.feedSources) var feedSources: [FeedSource]
+    @Query var sourceEntities: [FeedSource]
     @AppStorage("readFeedURLList", store: .appGroup) var readFeedURLList: [String] = []
     @AppStorage("feedReadCutoffDate", store: .appGroup) var feedReadCutoffDate: Date?
 
@@ -46,11 +47,11 @@ struct AllSourceView: View {
     var feedsSearched: [Feed] {
         let feeds: [Feed]
         if selectedIndex == 0 {
-            feeds = feedSources.flatMap(\.feed)
+            feeds = sourceEntities.flatMap { $0.feed }
         } else {
             let idx = selectedIndex - 1
-            if feedSources.indices.contains(idx) {
-                feeds = feedSources[idx].feed
+            if sourceEntities.indices.contains(idx) {
+                feeds = sourceEntities[idx].feed
             } else {
                 feeds = []
             }
@@ -85,15 +86,10 @@ struct AllSourceView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 12) {
-                if _feedSources.status.refresh == .waiting {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(0.8)
-                        .hStackCenter()
-                }
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment: .top, spacing: 8) {
-                        ForEach(Array(feedSources.enumerated()), id: \.1.id) { i, source in
+                        ForEach(Array(sourceEntities.enumerated()), id: \.1.id) { i, source in
                             Button {
                                 if selectedIndex == i + 1 {
                                     selectedIndex = 0
@@ -146,7 +142,7 @@ struct AllSourceView: View {
             .padding(.top, 8)
         }
         .refreshable {
-            _feedSources.triggerRefresh()
+            Task { try? await FeedRepository.refresh() }
         }
         .searchable(text: $searchText)
         .navigationTitle("Feed")
@@ -166,8 +162,11 @@ struct AllSourceView: View {
                 })
             }
         }
+        .task { try? await FeedRepository.refresh() }
     }
 }
+
+// no mapping needed; Feed is now the persisted model
 
 struct FeedSourceLabelStyle: LabelStyle {
     var dimmed: Bool = false

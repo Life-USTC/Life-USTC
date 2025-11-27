@@ -84,14 +84,11 @@ struct Message: Codable, Equatable {
     var url: String
 }
 
-struct USTCBusData: ExampleDataProtocol, Codable, Equatable {
+struct USTCBusData: Codable, Equatable {
     var campuses: [USTCCampus]
-
     var routes: [USTCRoute]
-
     var weekday_routes: [USTCRouteSchedule]
     var weekend_routes: [USTCRouteSchedule]
-
     var message: Message?
 
     static let example = USTCBusData(
@@ -102,19 +99,12 @@ struct USTCBusData: ExampleDataProtocol, Codable, Equatable {
     )
 }
 
-class USTCBusDataDelegate: ManagedRemoteUpdateProtocol<USTCBusData> {
+class USTCBusDataDelegate {
     static let shared = USTCBusDataDelegate()
 
-    override func refresh() async throws -> USTCBusData {
+    func refresh() async throws -> USTCBusData {
         let url = URL(string: "\(staticURLPrefix)/bus_data_v3.json")
         let (data, _) = try await URLSession.shared.data(from: url!)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
-}
-
-extension ManagedDataSource<USTCBusData> {
-    static let ustcBus = ManagedDataSource(
-        local: ManagedLocalStorage("ustc_bus_v2"),
-        remote: USTCBusDataDelegate.shared
-    )
 }

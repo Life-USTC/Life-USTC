@@ -28,7 +28,6 @@ targets:
     sources:
       - path: "Assets/"
       - path: "General/"
-      - path: "Models/"
       - path: "Schools/"
       - path: "Views/"
       - path: "AppDelegate.swift"
@@ -120,12 +119,11 @@ targets:
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: "Widget/"
       - path: "Assets/"
       - path: "General/"
-      - path: "Models/"
       - path: "Schools/Protocols/"
       - path: "Views/Shared/"
+      - path: "Widget/"
     entitlements:
       path: Widget/Widget.entitlements
       properties:

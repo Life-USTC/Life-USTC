@@ -6,36 +6,24 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
 struct CurriculumPreviewProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum
-
     func placeholder(in _: Context) -> CurriculumPreviewEntry {
         CurriculumPreviewEntry.example
     }
 
-    func makeEntry(for _date: Date = Date()) async throws
-        -> CurriculumPreviewEntry
-    {
+    func makeEntry(for _date: Date = Date()) async throws -> CurriculumPreviewEntry {
         let date = _date.stripTime()
-        guard let curriculum = _curriculum.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive curriculum data")
-        }
-
-        let todayLectures =
-            curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date ..< date.add(day: 1)).contains($0.startDate)
-            }
-            .sort()
-
-        let tomorrowLectures =
-            curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date.add(day: 1) ..< date.add(day: 2)).contains($0.startDate)
-            }
+        let context = SwiftDataStack.context
+        let semesters = try context.fetch(
+            FetchDescriptor<Semester>(sortBy: [SortDescriptor(\Semester.startDate, order: .forward)])
+        )
+        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
+        let todayLectures = allLectures.filter { (date ..< date.add(day: 1)).contains($0.startDate) }.sort()
+        let tomorrowLectures = allLectures.filter { (date.add(day: 1) ..< date.add(day: 2)).contains($0.startDate) }
             .sort()
 
         return .init(

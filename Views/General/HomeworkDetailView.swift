@@ -5,6 +5,7 @@
 //  Created by TianKai Ma on 2023/12/1.
 //
 
+import SwiftData
 import SwiftUI
 
 private struct HomeworkView: View {
@@ -52,7 +53,7 @@ private struct HomeworkView: View {
 }
 
 struct HomeworkDetailView: View {
-    @ManagedData(.homework) var homeworks: [Homework]
+    @Query(sort: \Homework.dueDate, order: .forward) var homeworks: [Homework]
 
     var archivedHomework: [Homework] {
         homeworks.filter { $0.dueDate < Date() }.sorted { $0.dueDate > $1.dueDate }
@@ -83,18 +84,24 @@ struct HomeworkDetailView: View {
                     }
                 }
             } header: {
-                AsyncStatusLight(status: _homeworks.status)
+                EmptyView()
             } footer: {
                 Text("disclaimer")
                     .font(.system(.caption, weight: .semibold))
                     .foregroundColor(.secondary)
             }
         }
-        .asyncStatusOverlay(_homeworks.status)
+
         .refreshable {
-            _homeworks.triggerRefresh()
+            await refresh()
         }
         .navigationTitle("Homework (BB)")
+        .task {
+            await refresh()
+        }
     }
 
+    private func refresh() async {
+        try? await HomeworkRepository.refresh()
+    }
 }

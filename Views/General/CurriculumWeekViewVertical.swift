@@ -17,7 +17,7 @@ private struct LectureView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 5)
-                .fill(lecture.course?.color().opacity(0.1) ?? Color.blue.opacity(0.1))
+                .fill(lecture.course?.color.opacity(0.1) ?? Color.blue.opacity(0.1))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)

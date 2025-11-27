@@ -6,11 +6,11 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
 struct CurriculumWeekProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum
 
     func placeholder(in _: Context) -> CurriculumWeekEntry {
         CurriculumWeekEntry.example
@@ -18,26 +18,18 @@ struct CurriculumWeekProvider: TimelineProvider {
 
     func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
         let date = _date.startOfWeek()
-        guard let curriculum = _curriculum.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive curriculum data")
-        }
-        let currentSemester: Semester? =
-            curriculum.semesters
-            .filter { ($0.startDate ... $0.endDate).contains(date) }
-            .first
-
+        let context = SwiftDataStack.context
+        let semesters = try context.fetch(FetchDescriptor<Semester>())
+        let currentSemesterEntity = semesters.first { ($0.startDate ... $0.endDate).contains(date) }
+        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
         let lectures: [Lecture] =
-            (currentSemester == nil
-            ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
-            : currentSemester!.courses.flatMap(\.lectures))
-            .filter {
-                (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(date))
-            }
+            (currentSemesterEntity == nil
+            ? allLectures : currentSemesterEntity!.courses.flatMap { $0.lectures })
+            .filter { (0.0 ..< 3600.0 * 24 * 7).contains($0.startDate.stripTime().timeIntervalSince(date)) }
 
         var weekNumber: Int? = nil
 
-        if let currentSemester {
+        if let currentSemester = currentSemesterEntity {
             weekNumber =
                 (Calendar(identifier: .gregorian)
                     .dateComponents(
@@ -53,7 +45,7 @@ struct CurriculumWeekProvider: TimelineProvider {
         return .init(
             lectures: lectures,
             date: date,
-            currentSemesterName: currentSemester?.name ?? "All",
+            currentSemesterName: currentSemesterEntity?.name ?? "All",
             weekNumber: weekNumber
         )
     }

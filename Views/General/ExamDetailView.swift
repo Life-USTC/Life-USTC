@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2023/1/11.
 //
 
+import SwiftData
 import SwiftUI
 
 private struct ExamView: View {
@@ -87,9 +88,7 @@ private struct ExamView: View {
 }
 
 struct ExamDetailView: View {
-    @ManagedData(.exam) var exams: [Exam]
-
-    @State var saveToCalendarStatus: RefreshAsyncStatus? = nil
+    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
 
     var body: some View {
         List {
@@ -108,40 +107,35 @@ struct ExamDetailView: View {
                     }
                 }
             } header: {
-                AsyncStatusLight(status: _exams.status)
+                EmptyView()
             } footer: {
                 Text("disclaimer")
                     .font(.system(.caption, weight: .semibold))
                     .foregroundColor(.secondary)
             }
         }
-        .asyncStatusOverlay(_exams.status)
+
         .refreshable {
-            _exams.triggerRefresh()
+            await refresh()
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        saveToCalendarStatus = .waiting
-                        do {
-                            try await exams.saveToCalendar()
-                            saveToCalendarStatus = .success
-                        } catch {
-                            print(error.localizedDescription)
-                            saveToCalendarStatus = .error(error.localizedDescription)
-                        }
+                        try? await exams.saveToCalendar()
                     }
                 } label: {
-                    Label(
-                        "Save to Calendar",
-                        systemImage: saveToCalendarStatus == nil
-                            ? "calendar.badge.plus" : saveToCalendarStatus!.iconName
-                    )
+                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
                 }
-                .disabled(saveToCalendarStatus == .waiting)
             }
         }
         .navigationTitle("Exam")
+        .task {
+            await refresh()
+        }
+    }
+
+    private func refresh() async {
+        try? await ExamRepository.refresh()
     }
 }

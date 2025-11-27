@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
             UserDefaults.standard.set(true, forKey: "firstLogin_3")
         }
         #endif
+        SchoolSystem.current = USTCSchool.make()
     }
 
     func application(

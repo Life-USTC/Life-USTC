@@ -15,13 +15,13 @@ private func decodeDate(from raw: String) -> Date? {
     return dateFormatter.date(from: raw)
 }
 
-class USTCBBHomeworkDelegate: ManagedRemoteUpdateProtocol<[Homework]> {
+class USTCBBHomeworkDelegate {
     static let shared = USTCBBHomeworkDelegate()
 
     @LoginClient(.ustcBlackboard) var blackboardClient
     var session: URLSession = .shared
 
-    override func refresh() async throws -> [Homework] {
+    func refresh() async throws -> [Homework] {
         if try await !_blackboardClient.requireLogin() {
             throw BaseError.runtimeError("UstcBlackboard Not logined")
         }
