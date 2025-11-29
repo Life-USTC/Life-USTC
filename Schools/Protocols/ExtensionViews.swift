@@ -8,10 +8,6 @@
 import SwiftUI
 
 struct FeatureWithView: Identifiable, Hashable {
-    static func == (lhs: FeatureWithView, rhs: FeatureWithView) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     var id = UUID()
     var image: String
     var title: LocalizedStringKey

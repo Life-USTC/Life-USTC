@@ -12,22 +12,20 @@ struct School {
     let fullChineseName: String
     let commonNames: [String]
 
-    let settings: [SettingWithView]
-
     let remoteFeedURL: URL
+    let geoLocationURL: URL
+    let buildingimgBaseURL: URL
+    let buildingimgMappingURL: URL
 
-    let examFetch: () async throws -> [Exam]
-    let curriculumFetch: () async throws -> Curriculum
     let curriculumBehavior: CurriculumBehavior
 
-    let geoLocationDataURL: URL
-    let buildingimgMappingURL: URL
-    let buildingimgBaseURL: URL
-
-    let scoreFetch: () async throws -> Score
-    let homeworkFetch: () async throws -> [Homework]
+    let updateCurriculum: () async throws -> Void
+    let updateExam: () async throws -> Void
+    let updateScore: () async throws -> Void
+    let updateHomework: () async throws -> Void
 
     let firstLoginView: (Binding<Bool>) -> AnyView
+    let settings: [SettingWithView]
     let features: [LocalizedStringKey: [FeatureWithView]]
 
     let setCookiesBeforeWebView: ((URL) async throws -> Void)?

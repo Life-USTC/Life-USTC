@@ -15,14 +15,14 @@ struct USTC_SchoolBusView: View {
         case weekend
     }
 
-    @Query(filter: #Predicate<KVStore> { $0.key == "ustc_bus_v2" }) var busKV: [KVStore]
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
     @AppStorage("ustcbusview_selected_routes") var selectedRouteIds: [Int] = []
+
+    @State var data: USTCBusData! = nil
     @State var selection: Selection = {
         let dayOfWeek = Calendar.current.component(.weekday, from: Date())
         return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
     }()
-
     @State var showingSettings = false
     @State var currentRouteIndex = 0
 
@@ -296,7 +296,7 @@ struct USTC_SchoolBusView: View {
         .padding(.vertical, 20)
     }
 
-    var body: some View {
+    var mainView: some View {
         VStack {
             HStack {
                 Picker("", selection: $selection) {
@@ -373,15 +373,20 @@ struct USTC_SchoolBusView: View {
                 currentRouteIndex = 0
             }
         }
-
     }
-}
 
-extension USTC_SchoolBusView {
-    fileprivate var data: USTCBusData {
-        guard let blob = busKV.first?.blob, let decoded = try? JSONDecoder().decode(USTCBusData.self, from: blob) else {
-            return USTCBusData(campuses: [], routes: [], weekday_routes: [], weekend_routes: [], message: nil)
+    var body: some View {
+        Group {
+            if data != nil {
+                mainView
+            } else {
+                ProgressView("Loading...")
+            }
         }
-        return decoded
+        .task {
+            Task {
+                data = try await USTCBusData.fetch()
+            }
+        }
     }
 }

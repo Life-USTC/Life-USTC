@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 
 private struct ScoreView: View {
-    var courseScore: CourseScore
+    var ScoreEntry: ScoreEntry
     var color: Color
 
     var cornerRadius: CGFloat = {
@@ -22,13 +22,13 @@ private struct ScoreView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(courseScore.courseName)
+                Text(ScoreEntry.courseName)
                     .fontWeight(.bold)
                 HStack {
-                    Text(String(courseScore.credit))
+                    Text(String(ScoreEntry.credit))
                         .fontWeight(.bold)
                         .foregroundColor(.gray)
-                    Text(courseScore.courseCode)
+                    Text(ScoreEntry.courseCode)
                         .foregroundColor(.gray)
                 }
                 .font(.subheadline)
@@ -37,8 +37,8 @@ private struct ScoreView: View {
             Spacer()
 
             Group {
-                if courseScore.gpa == nil {
-                    if courseScore.score.isEmpty {
+                if ScoreEntry.gpa == nil {
+                    if ScoreEntry.score.isEmpty {
                         Image(systemName: "xmark")
                             .frame(width: 85, height: 30)
                             .background(
@@ -51,7 +51,7 @@ private struct ScoreView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                             )
                     } else {
-                        Text("\(String(courseScore.score))")
+                        Text("\(String(ScoreEntry.score))")
                             .frame(width: 85, height: 30)
                             .background(
                                 Stripes(
@@ -65,11 +65,11 @@ private struct ScoreView: View {
                     }
                 } else {
                     HStack(alignment: .center, spacing: 0) {
-                        Text("\(courseScore.score)")
+                        Text("\(ScoreEntry.score)")
                             .frame(width: 35)
                             .padding(.horizontal, 4)
                         Divider()
-                        Text("\(String(courseScore.gpa!))")
+                        Text("\(String(ScoreEntry.gpa!))")
                             .frame(width: 35)
                             .padding(.horizontal, 4)
                     }
@@ -131,10 +131,10 @@ struct ScoreDetailView: View {
         }
     }
 
-    func makeView(with courses: [CourseScore]) -> some View {
+    func makeView(with courses: [ScoreEntry]) -> some View {
         ForEach(courses, id: \.lessonCode) { course in
             ScoreView(
-                courseScore: course,
+                ScoreEntry: course,
                 color: ((course.gpa ?? 0.0) >= 1.0
                     ? (course.gpa! >= (summaries.first?.gpa ?? 0.0)
                         ? .cyan.opacity(0.6) : .orange.opacity(0.6))
@@ -160,24 +160,29 @@ struct ScoreDetailView: View {
             rankingView
             scoreListView
         }
-        .refreshable { await refresh() }
+        .refreshable {
+            Task {
+                try await Score.update()
+            }
+        }
         .navigationTitle("Score")
-        .task { await refresh() }
+        .task {
+            Task {
+                try await Score.update()
+            }
+        }
     }
 }
 
 extension ScoreDetailView {
-    private func refresh() async {
-        try? await ScoreRepository.refresh()
-    }
-    private var filteredCourses: [CourseScore] {
+    private var filteredCourses: [ScoreEntry] {
         let courses = summaries.first?.courses ?? []
         return courses.filter { course in
             !semesterNameToRemove.contains(course.semesterName)
         }
     }
 
-    private var sortedCourses: [CourseScore] {
+    private var sortedCourses: [ScoreEntry] {
         filteredCourses.sorted { lhs, rhs in
             guard let preference = sortPreference else { return true }
 
@@ -190,7 +195,7 @@ extension ScoreDetailView {
         }
     }
 
-    var sortedScore: [(name: String, courses: [CourseScore])] {
+    var sortedScore: [(name: String, courses: [ScoreEntry])] {
         // Group courses by semester
         let groupedBySemester = sortedCourses.categorise { course in
             course.semesterName

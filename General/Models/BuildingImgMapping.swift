@@ -1,20 +1,28 @@
-//
-//  BuildingImgMapping.swift
-//  Life@USTC
-//
-//  Created by Tiankai Ma on 2023/8/24.
-//
-
 import Foundation
-import SwiftData
+import SwiftyJSON
 
-@Model
-final class BuildingImgRule {
+struct BuildingImgRule {
     var regex: String
     var path: String
 
     init(regex: String, path: String) {
         self.regex = regex
         self.path = path
+    }
+}
+
+typealias BuildingImgMapping = [BuildingImgRule]
+
+extension BuildingImgMapping {
+    static func fetch() async throws -> Self {
+        let (data, _) = try await URLSession.shared.data(from: SchoolSystem.current.buildingimgMappingURL)
+        let json = try JSON(data: data)
+
+        return json.arrayValue.map { item in
+            BuildingImgRule(
+                regex: item["regex"].stringValue,
+                path: item["path"].stringValue
+            )
+        }
     }
 }

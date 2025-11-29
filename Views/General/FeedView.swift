@@ -31,7 +31,7 @@ private struct FeedViewPreview: View {
                     .lineLimit(3)
 
                 HStack(spacing: 6) {
-                    Text(feed.source)
+                    Text(feed.source?.name ?? "Unknown")
                         .font(.system(.caption2, weight: .heavy))
                         .foregroundColor(.white)
                         .padding(.horizontal, 6)

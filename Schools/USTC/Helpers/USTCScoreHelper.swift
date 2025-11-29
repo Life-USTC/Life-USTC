@@ -8,12 +8,10 @@
 import Foundation
 import SwiftyJSON
 
-class USTCScoreDelegate {
-    static let shared = USTCScoreDelegate()
+extension USTCSchool {
+    static func updateScore() async throws {
+        @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
 
-    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
-
-    func refresh() async throws -> Score {
         let scoreURL = URL(
             string:
                 "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=1&semesterIds"
@@ -23,7 +21,6 @@ class USTCScoreDelegate {
         }
 
         var request = URLRequest(url: scoreURL)
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
 
         let (data, _) = try await URLSession.shared.data(for: request)
         let cache = try JSON(data: data)
@@ -34,11 +31,12 @@ class USTCScoreDelegate {
         result.majorName = subJson["majorName"].string ?? "Error"
         result.majorRank = subJson["majorRank"].int ?? 0
         result.majorStdCount = subJson["majorStdCount"].int ?? 0
+
         result.courses = cache["semesters"]
             .flatMap { _, semesterJSON in
                 semesterJSON["scores"]
                     .map { _, courseJSON in
-                        CourseScore(
+                        ScoreEntry(
                             courseName: courseJSON["courseNameCh"].stringValue,
                             courseCode: courseJSON["courseCode"].stringValue,
                             lessonCode: courseJSON["lessonCode"].stringValue,
@@ -50,6 +48,5 @@ class USTCScoreDelegate {
                         )
                     }
             }
-        return result
     }
 }

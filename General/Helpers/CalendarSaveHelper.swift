@@ -3,36 +3,32 @@ import EventKit
 import SwiftData
 import SwiftUI
 
-struct CalendarSaveHelper {
-    static let shared = CalendarSaveHelper()
-
-    let calendarEventfactory: CalendarEventFactory = .shared
-    private let saveLock = SaveLock()
-
-    @Query var lectures: [Lecture]
-    @Query var exams: [Exam]
-
-    func saveCurriculum() async throws {
-        let events = calendarEventfactory.fromLectures(lectures)
+enum CalendarSaveHelper {
+    @MainActor
+    static func saveCurriculum() async throws {
+        let lectures = try SwiftDataStack.modelContext.fetch(FetchDescriptor<Lecture>())
+        let events = try await CalendarEventFactory.fromLectures(lectures)
         try await saveEvents(
             events,
             calendarName: "Curriculum".localized
         )
     }
 
-    func saveExams() async throws {
-        let events = calendarEventfactory.fromExams(exams)
+    @MainActor
+    static func saveExams() async throws {
+        let exams = try SwiftDataStack.modelContext.fetch(FetchDescriptor<Exam>())
+        let events = try await CalendarEventFactory.fromExams(exams)
         try await saveEvents(
             events,
             calendarName: "Exams".localized
         )
     }
 
-    private func saveEvents(
+    private static func saveEvents(
         _ events: [EKEvent],
         calendarName: String
     ) async throws {
-        try await saveLock.withCriticalRegion {
+        try await calendarSaveLock.withCriticalRegion {
             let eventStore = EKEventStore()
 
             if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
@@ -69,6 +65,8 @@ struct CalendarSaveHelper {
         }
     }
 }
+
+private let calendarSaveLock = SaveLock()
 
 private actor SaveLock {
     func withCriticalRegion<T>(

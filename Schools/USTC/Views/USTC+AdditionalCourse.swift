@@ -8,10 +8,6 @@
 import SwiftUI
 import SwiftyJSON
 
-private let curriculumDataURL = URL(
-    string: "\(staticURLPrefix)/curriculum/"
-)
-
 struct USTCAdditionalCourseView: View {
     @State var semesters: [Semester] = []
 
@@ -58,15 +54,15 @@ struct USTCAdditionalCourseView: View {
         }
         .task {
             Task {
-                let url = URL(string: "\(staticURLPrefix)/curriculum/semesters.json")
+                let url = URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
                 let json = try JSON(data: data)
                 semesters = json.arrayValue
                     .map { item in
                         Semester(
+                            curriculum: nil,
                             id: item["id"].stringValue,
-                            courses: [],
                             name: item["name"].stringValue,
                             startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
                             endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
@@ -153,18 +149,18 @@ struct USTCAdditionalCourseSemesterView: View {
         .task {
             Task {
                 let (data, _) = try await URLSession.shared.data(
-                    from: URL(string: "\(staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
+                    from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
                 )
 
                 let json = try JSON(data: data)
                 courses = json.arrayValue.map { item in
                     Course(
+                        semester: nil,
                         id: item["id"].intValue,
                         name: item["name"].stringValue,
                         courseCode: item["courseCode"].stringValue,
                         lessonCode: item["lessonCode"].stringValue,
                         teacherName: item["teacherName"].stringValue,
-                        lectures: []
                     )
                 }
             }

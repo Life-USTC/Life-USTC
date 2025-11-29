@@ -6,13 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
 
 class UstcCasViewModel: ObservableObject {
     static let shared = UstcCasViewModel()
 
     @LoginClient(.ustcCAS) var casClient: UstcCasClient
+
     @AppSecureStorage("passportUsername") var username: String
     @AppSecureStorage("passportPassword") var password: String
+    @AppStorage("appShouldPresentDemo", store: .appGroup) var appShouldPresentDemo: Bool = false
+
     @Published public var inputUsername: String = ""
     @Published public var inputPassword: String = ""
 
@@ -26,7 +30,7 @@ class UstcCasViewModel: ObservableObject {
             return false
         }
 
-        if inputUsername == demoUserName && inputPassword == demoPassword {
+        if inputUsername == Constants.demoUserName && inputPassword == Constants.demoPassword {
             appShouldPresentDemo = true
             return true
         }

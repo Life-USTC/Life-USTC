@@ -18,7 +18,7 @@ struct CurriculumListView: View {
     @ViewBuilder
     func section(for semester: Semester) -> some View {
         Section {
-            ForEach(semester.coursesQuery, id: \.lessonCode) { course in
+            ForEach(semester.courses ?? [], id: \.lessonCode) { course in
                 VStack(alignment: .leading) {
                     HStack(alignment: .bottom) {
                         Text(course.name)
@@ -82,55 +82,26 @@ struct CurriculumListView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        let eventStore = EKEventStore()
-                        if #available(iOS 17.0, *) {
-                            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
-                                try? await eventStore.requestFullAccessToEvents()
-                            }
-                        } else {
-                            _ = try? await eventStore.requestAccess(to: .event)
-                        }
-
-                        let calendarName = "Curriculum".localized
-                        let calendars = eventStore.calendars(for: .event)
-                            .filter { $0.title == calendarName.localized }
-                        for calendar in calendars { try? eventStore.removeCalendar(calendar, commit: true) }
-
-                        let calendar = EKCalendar(for: .event, eventStore: eventStore)
-                        calendar.title = calendarName
-                        calendar.cgColor = Color.accentColor.cgColor
-                        calendar.source = eventStore.defaultCalendarForNewEvents?.source
-                        try? eventStore.saveCalendar(calendar, commit: true)
-
-                        let lectures = semesters.flatMap { $0.coursesQuery }.flatMap { $0.lecturesQuery }
-                            .union()
-                        for lecture in lectures {
-                            let event = EKEvent(eventStore: eventStore)
-                            event.title = lecture.name
-                            event.startDate = lecture.startDate
-                            event.endDate = lecture.endDate
-                            event.location = lecture.location
-                            event.calendar = calendar
-                            try? eventStore.save(event, span: .thisEvent, commit: false)
-                        }
-                        try? eventStore.commit()
+                        try await CalendarSaveHelper.saveCurriculum()
                     }
                 } label: {
                     Label("Save to Calendar", systemImage: "calendar.badge.plus")
                 }
 
                 Button {
-                    Task { await refresh() }
+                    Task {
+                        try await SchoolSystem.current.updateCurriculum()
+                    }
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
             }
         }
         .navigationTitle("Curriculum")
-        .task { await refresh() }
-    }
-
-    private func refresh() async {
-        try? await CurriculumRepository.refresh()
+        .task {
+            Task {
+                try await SchoolSystem.current.updateCurriculum()
+            }
+        }
     }
 }

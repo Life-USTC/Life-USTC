@@ -1,40 +1,60 @@
 import SwiftUI
 
+enum USTCStudentType: String {
+    case undergraduate = "Undergraduate"
+    case graduate = "Graduate"
+}
+
 enum USTCSchool {
-    @AppStorage("ustcStudentType", store: .appGroup) static var studentType: USTCStudentType = .graduate
     static func make() -> School {
         return School(
             abbrName: "USTC",
             fullName: "The University of Science and Technology of China",
             fullChineseName: "中国科学技术大学",
             commonNames: ["中科大"],
+
+            remoteFeedURL: URL(string: "\(Constants.staticURLPrefix)/feed_source.json")!,
+            geoLocationURL: URL(string: "\(Constants.staticURLPrefix)/geo_data.json")!,
+            buildingimgBaseURL: URL(string: "\(Constants.staticURLPrefix)/")!,
+            buildingimgMappingURL: URL(string: "\(Constants.staticURLPrefix)/building_img_rules.json")!,
+
+            curriculumBehavior: ustcCurriculumBehavior,
+
+            updateCurriculum: updateCurriculum,
+            updateExam: updateExam,
+            updateScore: updateScore,
+            updateHomework: updateHomework,
+
+            firstLoginView: { AnyView(USTCOnboardingCoordinator(isPresented: $0)) },
             settings: [
                 .init(name: "CAS Settings", destinationView: { USTCCASLoginView() }),
                 .init(name: "Select Additional Course", destinationView: { USTCAdditionalCourseView() }),
             ],
-            remoteFeedURL: URL(string: "\(staticURLPrefix)/feed_source.json")!,
-            examFetch: { try await USTCExamDelegate.shared.refresh() },
-            curriculumFetch: {
-                guard studentType == .graduate else {
-                    return try await USTCUndergraduateCurriculumDelegate.shared.refresh()
-                }
-                return try await USTCGraduateCurriculumDelegate.shared.refresh()
-            },
-            curriculumBehavior: USTCExports().ustcCurriculumBehavior,
-            geoLocationDataURL: URL(string: "\(staticURLPrefix)/geo_data.json")!,
-            buildingimgMappingURL: URL(string: "\(staticURLPrefix)/building_img_rules.json")!,
-            buildingimgBaseURL: URL(string: "\(staticURLPrefix)/")!,
-            scoreFetch: { try await USTCScoreDelegate.shared.refresh() },
-            homeworkFetch: { try await USTCBBHomeworkDelegate.shared.refresh() },
-            firstLoginView: { AnyView(USTCOnboardingCoordinator(isPresented: $0)) },
-            features: [
-                "Web": USTCExports().ustcWebFeatures,
-                "Meeting Rooms": USTCExports().ustcMeetingRoomFeatures,
-                "Public": USTCExports().ustcPublicFeatures,
-                "AAS": USTCExports().ustcAASFeatures,
-            ],
+            features: ustcFeatures,
+
             setCookiesBeforeWebView: { _ in },
-            reeedEnabledMode: USTCExports().reeedEnabledMode
+            reeedEnabledMode: { url in
+                guard let host = url.host?.lowercased() else {
+                    return .never
+                }
+
+                if host.hasSuffix("ustc.edu.cn") {
+                    if host == "ustc.edu.cn"
+                        || host == "www.ustc.edu.cn"
+                        || host == "teach.ustc.edu.cn"
+                        || host == "www.teach.ustc.edu.cn"
+                    {
+                        return .always
+                    }
+
+                    return .never
+                }
+
+                if host == "mp.weixin.qq.com" || host == "icourse.club" {
+                    return .never
+                }
+                return .userDefined
+            }
         )
     }
 }

@@ -34,9 +34,7 @@ final class Homework {
 }
 
 extension Homework {
-    static let example = Homework(
-        title: "Example Assignment",
-        courseName: "Example Course",
-        dueDate: Date().addingTimeInterval(2 * 24 * 3600)
-    )
+    static func update() async throws {
+        try await SchoolSystem.current.updateHomework()
+    }
 }

@@ -67,13 +67,7 @@ struct HomeworkDetailView: View {
         List {
             Section {
                 if homeworks.isEmpty {
-                    HomeworkView(homework: .example)
-                        .redacted(reason: .placeholder)
-                        .overlay(
-                            Text("No More Homework!")
-                                .font(.system(.body, design: .monospaced))
-                                .padding(.vertical, 10)
-                        )
+                    ContentUnavailableView("No Homework", image: "checkmark.seal")
                 } else {
                     ForEach(newHomework) { homework in
                         HomeworkView(homework: homework)
@@ -91,17 +85,16 @@ struct HomeworkDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
-
         .refreshable {
-            await refresh()
+            Task {
+                try await Homework.update()
+            }
         }
         .navigationTitle("Homework (BB)")
         .task {
-            await refresh()
+            Task {
+                try await Homework.update()
+            }
         }
-    }
-
-    private func refresh() async {
-        try? await HomeworkRepository.refresh()
     }
 }

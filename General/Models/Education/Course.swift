@@ -11,26 +11,27 @@ import SwiftUI
 
 @Model
 final class Course {
-    @Attribute(.unique) var id: Int = 0
+    var semester: Semester?
+    @Relationship(deleteRule: .cascade, inverse: \Lecture.course) var lectures: [Lecture]?
 
-    @Relationship var semester: Semester?
-
+    @Attribute(.unique) var id: Int
     var name: String
     var courseCode: String
     var lessonCode: String
     var teacherName: String
-    var detailText: String? = ""
-    var credit: Double = 0
-    var additionalInfo: [String: String] = [:]
-    var dateTimePlacePersonText: String? = ""
+    var detailText: String?
+    var credit: Double
+    var additionalInfo: [String: String]
+    var dateTimePlacePersonText: String?
 
     var color: Color {
         let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
-        return courseColors[id.hashValue % courseColors.count]
+        return courseColors[id % courseColors.count]
     }
 
     init(
-        id: Int = 0,
+        semester: Semester?,
+        id: Int,
         name: String,
         courseCode: String,
         lessonCode: String,
@@ -40,6 +41,7 @@ final class Course {
         additionalInfo: [String: String] = [:],
         dateTimePlacePersonText: String? = nil
     ) {
+        self.semester = semester
         self.id = id
         self.name = name
         self.courseCode = courseCode

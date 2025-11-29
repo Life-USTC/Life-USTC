@@ -64,9 +64,9 @@ private struct LectureView: View {
                 .strikethrough()
                 .grayscale(1.0)
         }
-        .if(lecture != Lecture.example) {
-            $0.lectureSheet(lecture: lecture)
-        }
+        // .if(lecture != Lecture.example) {
+        //     $0.lectureSheet(lecture: lecture)
+        // }
     }
 }
 
@@ -79,8 +79,8 @@ struct CurriculumPreview: View {
     @ViewBuilder
     var noLectureView: some View {
         ZStack {
-            LectureView(lecture: .example)
-                .redacted(reason: .placeholder)
+            // LectureView(lecture: .example)
+            //     .redacted(reason: .placeholder)
 
             VStack {
                 Text("Nothing here")
@@ -159,7 +159,8 @@ extension CurriculumPreview {
             }
             .padding(.bottom, 10)
 
-            let lectures = lectures_.isEmpty ? Array(repeating: .example, count: 6) : lectures_
+            // let lectures = lectures_.isEmpty ? Array(repeating: .example, count: 6) : lectures_
+            let lectures = lectures_
 
             ZStack {
                 VStack(alignment: .leading, spacing: 5) {
@@ -193,7 +194,8 @@ extension CurriculumPreview {
     static func makeDayWidget(
         with lecture_: Lecture?
     ) -> some View {
-        let lecture = lecture_ ?? .example
+        // let lecture = lecture_ ?? .example
+        let lecture = lecture_!
 
         ZStack {
             VStack(alignment: .leading) {

@@ -114,7 +114,9 @@ struct CurriculumDetailView: View {
                 }
 
                 Button {
-                    Task { await refresh() }
+                    Task {
+                        try await Curriculum.update()
+                    }
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
@@ -129,38 +131,7 @@ struct CurriculumDetailView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        let eventStore = EKEventStore()
-                        if #available(iOS 17.0, *) {
-                            if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
-                                try? await eventStore.requestFullAccessToEvents()
-                            }
-                        } else {
-                            _ = try? await eventStore.requestAccess(to: .event)
-                        }
-
-                        let calendarName = "Curriculum".localized
-                        let calendars = eventStore.calendars(for: .event)
-                            .filter { $0.title == calendarName.localized }
-                        for calendar in calendars { try? eventStore.removeCalendar(calendar, commit: true) }
-
-                        let calendar = EKCalendar(for: .event, eventStore: eventStore)
-                        calendar.title = calendarName
-                        calendar.cgColor = Color.accentColor.cgColor
-                        calendar.source = eventStore.defaultCalendarForNewEvents?.source
-                        try? eventStore.saveCalendar(calendar, commit: true)
-
-                        let lectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
-                            .union()
-                        for lecture in lectures {
-                            let event = EKEvent(eventStore: eventStore)
-                            event.title = lecture.name
-                            event.startDate = lecture.startDate
-                            event.endDate = lecture.endDate
-                            event.location = lecture.location
-                            event.calendar = calendar
-                            try? eventStore.save(event, span: .thisEvent, commit: false)
-                        }
-                        try? eventStore.commit()
+                        try await CalendarSaveHelper.saveCurriculum()
                     }
                 } label: {
                     Label("Save to Calendar", systemImage: "calendar.badge.plus")
@@ -189,7 +160,11 @@ struct CurriculumDetailView: View {
             }
         }
         .navigationTitle("Curriculum")
-        .refreshable { await refresh() }
+        .refreshable {
+            Task {
+                try await Curriculum.update()
+            }
+        }
         .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
@@ -241,12 +216,17 @@ struct CurriculumDetailView: View {
                 )
             }
         }
-        .task { await refresh() }
+        .task {
+            Task {
+                try await Curriculum.update()
+            }
+        }
     }
 
     func updateLecturesAndWeekNumber() {
-        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
-        let semesterLectures = (currentSemester == nil ? allLectures : currentSemester!.courses.flatMap { $0.lectures })
+        let allLectures = semesters.flatMap { $0.courses ?? [] }.flatMap { $0.lectures ?? [] }
+        let semesterLectures =
+            (currentSemester == nil ? allLectures : (currentSemester!.courses ?? []).flatMap { $0.lectures ?? [] })
         lectures =
             semesterLectures
             .filter {
@@ -277,9 +257,5 @@ struct CurriculumDetailView: View {
 
     func updateSemester() {
         currentSemester = semesters.filter { ($0.startDate ... $0.endDate).contains(_date) }.first
-    }
-
-    private func refresh() async {
-        try? await CurriculumRepository.refresh()
     }
 }

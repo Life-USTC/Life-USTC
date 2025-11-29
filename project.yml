@@ -122,6 +122,7 @@ targets:
       - path: "Assets/"
       - path: "General/"
       - path: "Schools/Protocols/"
+      - path: "Views/Extensions/"
       - path: "Views/Shared/"
       - path: "Widget/"
     entitlements:

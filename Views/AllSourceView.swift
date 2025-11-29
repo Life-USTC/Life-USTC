@@ -33,11 +33,11 @@ struct AllSourceView: View {
     }
 
     private func hasUnread(_ source: FeedSource) -> Bool {
-        source.feed.contains { !isRead($0) }
+        source.feeds.contains { !isRead($0) }
     }
 
     private func markAllRead(for source: FeedSource) {
-        let urls = source.feed
+        let urls = source.feeds
             .filter { $0.datePosted >= cutoffDate }
             .map { $0.url.absoluteString }
         let union = Set(readFeedURLList).union(urls)
@@ -47,11 +47,11 @@ struct AllSourceView: View {
     var feedsSearched: [Feed] {
         let feeds: [Feed]
         if selectedIndex == 0 {
-            feeds = sourceEntities.flatMap { $0.feed }
+            feeds = sourceEntities.flatMap { $0.feeds }
         } else {
             let idx = selectedIndex - 1
             if sourceEntities.indices.contains(idx) {
-                feeds = sourceEntities[idx].feed
+                feeds = sourceEntities[idx].feeds
             } else {
                 feeds = []
             }
@@ -74,7 +74,7 @@ struct AllSourceView: View {
 
         return feeds.filter { feed in
             keywords.allSatisfy { keyword in
-                feed.title.lowercased().contains(keyword) || feed.source.lowercased().contains(keyword)
+                feed.title.lowercased().contains(keyword) || (feed.source?.name.lowercased() ?? "").contains(keyword)
             }
         }
     }
@@ -142,7 +142,9 @@ struct AllSourceView: View {
             .padding(.top, 8)
         }
         .refreshable {
-            Task { try? await FeedRepository.refresh() }
+            Task {
+                try await Feed.update()
+            }
         }
         .searchable(text: $searchText)
         .navigationTitle("Feed")
@@ -162,7 +164,11 @@ struct AllSourceView: View {
                 })
             }
         }
-        .task { try? await FeedRepository.refresh() }
+        .task {
+            Task {
+                try await Feed.update()
+            }
+        }
     }
 }
 

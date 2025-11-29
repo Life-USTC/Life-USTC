@@ -12,7 +12,7 @@ import SwiftyJSON
 struct LectureSheetModifier: ViewModifier {
     var lecture: Lecture
     @State var showPopUp: Bool = false
-    @Query(filter: #Predicate<KVStore> { $0.key == "buildingImgMapping" }) var mappingKV: [KVStore]
+    //    @Query(filter: #Predicate<KVStore> { $0.key == "buildingImgMapping" }) var mappingKV: [KVStore]
 
     func body(content: Content) -> some View {
         content
@@ -96,7 +96,7 @@ struct LectureSheetModifier: ViewModifier {
                 }
                 .presentationDetents([.fraction(0.45)])
                 .task {
-                    if mappingKV.first?.blob == nil { try? await BuildingImgMappingRepository.refresh() }
+                    //                    if mappingKV.first?.blob == nil { try? await BuildingImgMappingRepository.refresh() }
                 }
             }
     }
@@ -110,14 +110,14 @@ extension View {
 
 extension LectureSheetModifier {
     fileprivate var buildingImageURL: URL? {
-        guard let blob = mappingKV.first?.blob else { return nil }
-        guard let json = try? JSON(data: blob) else { return nil }
-        let rules = json.arrayValue.map {
-            BuildingImgRule(regex: $0["regex"].stringValue, path: $0["path"].stringValue)
-        }
-        if let rule = rules.first(where: { lecture.location.range(of: $0.regex, options: .regularExpression) != nil }) {
-            return SchoolSystem.current.buildingimgBaseURL.appendingPathComponent(rule.path)
-        }
+        //        guard let blob = mappingKV.first?.blob else { return nil }
+        //        guard let json = try? JSON(data: blob) else { return nil }
+        //        let rules = json.arrayValue.map {
+        //            BuildingImgRule(regex: $0["regex"].stringValue, path: $0["path"].stringValue)
+        //        }
+        //        if let rule = rules.first(where: { lecture.location.range(of: $0.regex, options: .regularExpression) != nil }) {
+        //            return SchoolSystem.current.buildingimgBaseURL.appendingPathComponent(rule.path)
+        //        }
         return nil
     }
 }

@@ -21,10 +21,10 @@ struct ExamPreviewCard: View {
             ExamPreview(exams: exams)
         }
         .card()
-        .task { await refresh() }
-    }
-
-    private func refresh() async {
-        try? await ExamRepository.refresh()
+        .task {
+            Task {
+                try await Exam.update()
+            }
+        }
     }
 }

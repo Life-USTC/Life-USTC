@@ -33,8 +33,8 @@ extension FeatureWithView {
     }
 }
 
-extension USTCExports {
-    var ustcPublicFeatures: [FeatureWithView] {
+enum USTCFeatures {
+    static var ustcPublicFeatures: [FeatureWithView] {
         [
             .init(
                 image: "bus",
@@ -63,7 +63,7 @@ extension USTCExports {
         ]
     }
 
-    var ustcAASFeatures: [FeatureWithView] {
+    static var ustcAASFeatures: [FeatureWithView] {
         [
             .init(
                 image: "rectangle.stack",
@@ -72,6 +72,8 @@ extension USTCExports {
                 destinationView: { HomeworkDetailView() }
             ),
             {
+                @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
+
                 switch ustcStudentType {
                 case .undergraduate:
                     return FeatureWithView(
@@ -113,7 +115,7 @@ extension USTCExports {
         ]
     }
 
-    var ustcMeetingRoomFeatures: [FeatureWithView] {
+    static var ustcMeetingRoomFeatures: [FeatureWithView] {
         [
             .init(
                 name: "Meeting Room Appointment for Central Campus",
@@ -145,7 +147,7 @@ extension USTCExports {
         ]
     }
 
-    var ustcWebFeatures: [FeatureWithView] {
+    static var ustcWebFeatures: [FeatureWithView] {
         [
             .init(
                 name: "Visitor Entry",
@@ -228,6 +230,17 @@ extension USTCExports {
                 description: "评课社区",
                 url: "https://icourse.club",
             ),
+        ]
+    }
+}
+
+extension USTCSchool {
+    static var ustcFeatures: [LocalizedStringKey: [FeatureWithView]] {
+        [
+            "Web": USTCFeatures.ustcWebFeatures,
+            "Meeting Rooms": USTCFeatures.ustcMeetingRoomFeatures,
+            "Public": USTCFeatures.ustcPublicFeatures,
+            "AAS": USTCFeatures.ustcAASFeatures,
         ]
     }
 }

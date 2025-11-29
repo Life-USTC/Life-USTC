@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Store score for one course
 @Model
-final class CourseScore {
+final class ScoreEntry {
     // MARK: - Information about the course itself
 
     /// - Important:
@@ -92,7 +92,7 @@ final class CourseScore {
 @Model
 final class Score {
     /// List of course, default order matters for UI.
-    var courses: [CourseScore]
+    var courses: [ScoreEntry]
 
     /// Total GPA
     var gpa: Double
@@ -106,7 +106,7 @@ final class Score {
     var additionalMessage: String?
 
     init(
-        courses: [CourseScore] = [],
+        courses: [ScoreEntry] = [],
         gpa: Double = 0.0,
         majorRank: Int = 0,
         majorStdCount: Int = 0,
@@ -119,5 +119,11 @@ final class Score {
         self.majorStdCount = majorStdCount
         self.majorName = majorName
         self.additionalMessage = additionalMessage
+    }
+}
+
+extension Score {
+    static func update() async throws {
+        try await SchoolSystem.current.updateScore()
     }
 }

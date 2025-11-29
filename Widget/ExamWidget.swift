@@ -11,22 +11,17 @@ import SwiftUI
 import WidgetKit
 
 struct ExamProvider: TimelineProvider {
-
-    func placeholder(in _: Context) -> ExamEntry {
-        ExamEntry.example
+    func makeEntry(for _date: Date = Date()) -> ExamEntry {
+        return ExamEntry()
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> ExamEntry {
-        let context = SwiftDataStack.context
-        let descriptor = FetchDescriptor<Exam>(sortBy: [SortDescriptor(\Exam.startDate, order: .forward)])
-        let exams = try context.fetch(descriptor)
-
-        return ExamEntry(exams: exams.clean())
+    func placeholder(in _: Context) -> ExamEntry {
+        return makeEntry()
     }
 
     func getSnapshot(in _: Context, completion: @escaping (ExamEntry) -> Void) {
         Task {
-            let entry = try await makeEntry()
+            let entry = makeEntry()
             completion(entry)
         }
     }
@@ -36,7 +31,7 @@ struct ExamProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            let entry = try await makeEntry()
+            let entry = makeEntry()
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -46,9 +41,7 @@ struct ExamProvider: TimelineProvider {
 
 struct ExamEntry: TimelineEntry {
     let date = Date()
-    let exams: [Exam]
-
-    static let example = ExamEntry(exams: .example)
+    @Query var exams: [Exam]
 }
 
 struct ExamWidgetEntryView: View {

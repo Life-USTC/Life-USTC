@@ -16,7 +16,7 @@ struct Life_USTCApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(SwiftDataStack.container)
+        .modelContainer(SwiftDataStack.modelContainer)
     }
 }
 

@@ -10,26 +10,38 @@ import SwiftData
 import SwiftUI
 import WidgetKit
 
+@MainActor
 struct CurriculumWeekProvider: TimelineProvider {
 
+    @MainActor
     func placeholder(in _: Context) -> CurriculumWeekEntry {
-        CurriculumWeekEntry.example
+        makeEntry()
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
-        let date = _date.startOfWeek()
-        let context = SwiftDataStack.context
-        let semesters = try context.fetch(FetchDescriptor<Semester>())
-        let currentSemesterEntity = semesters.first { ($0.startDate ... $0.endDate).contains(date) }
-        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
-        let lectures: [Lecture] =
-            (currentSemesterEntity == nil
-            ? allLectures : currentSemesterEntity!.courses.flatMap { $0.lectures })
-            .filter { (0.0 ..< 3600.0 * 24 * 7).contains($0.startDate.stripTime().timeIntervalSince(date)) }
+    @MainActor
+    func makeEntry(for date: Date = Date()) -> CurriculumWeekEntry {
+        //        let date = _date.startOfWeek()
+        //        let context = SwiftDataStack.modelContext
+        //        let semesters = try context.fetch(FetchDescriptor<Semester>())
+        //        let currentSemesterEntity = semesters.first { ($0.startDate ... $0.endDate).contains(date) }
+        //        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
+        //        let lectures: [Lecture] =
+        //            (currentSemesterEntity == nil
+        //            ? allLectures : currentSemesterEntity!.courses.flatMap { $0.lectures })
+        //            .filter { (0.0 ..< 3600.0 * 24 * 7).contains($0.startDate.stripTime().timeIntervalSince(date)) }
+
+        let lectures = try! SwiftDataStack.modelContext.fetch(
+            FetchDescriptor<Lecture>(
+                predicate: #Predicate { $0.isInthisWeek },
+            )
+        )
+
+        let currentSemester = try! SwiftDataStack.modelContext.fetch(FetchDescriptor<Semester>())
+            .first { ($0.isCurrent) }
 
         var weekNumber: Int? = nil
 
-        if let currentSemester = currentSemesterEntity {
+        if let currentSemester {
             weekNumber =
                 (Calendar(identifier: .gregorian)
                     .dateComponents(
@@ -45,7 +57,7 @@ struct CurriculumWeekProvider: TimelineProvider {
         return .init(
             lectures: lectures,
             date: date,
-            currentSemesterName: currentSemesterEntity?.name ?? "All",
+            currentSemesterName: currentSemester?.name ?? "All",
             weekNumber: weekNumber
         )
     }
@@ -56,7 +68,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
             completion(entry)
         }
     }
@@ -67,7 +79,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -80,13 +92,6 @@ struct CurriculumWeekEntry: TimelineEntry {
     var date: Date
     var currentSemesterName: String
     var weekNumber: Int?
-
-    static let example = CurriculumWeekEntry(
-        lectures: [.example],
-        date: .now,
-        currentSemesterName: Semester.example.name,
-        weekNumber: nil
-    )
 }
 
 struct CurriculumWeekWidgetEntryView: View {

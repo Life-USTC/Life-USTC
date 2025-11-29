@@ -1,12 +1,49 @@
 //
-//  ExamExtensions.swift
-//  Life@USTC
+//  Exam.swift
+//  Life@USTC (iOS)
 //
-//  Created by Tiankai Ma on 2023/8/24.
+//  Created by TiankaiMa on 2023/1/11.
 //
 
 import EventKit
+import SwiftData
 import SwiftUI
+
+@Model
+final class Exam {
+    var lessonCode: String
+    var courseName: String
+
+    var typeName: String
+    var startDate: Date
+    var endDate: Date
+    var classRoomName: String
+    var classRoomBuildingName: String
+    var classRoomDistrict: String
+    var detailText: String
+
+    init(
+        lessonCode: String,
+        courseName: String,
+        typeName: String,
+        startDate: Date,
+        endDate: Date,
+        classRoomName: String,
+        classRoomBuildingName: String,
+        classRoomDistrict: String,
+        description: String
+    ) {
+        self.lessonCode = lessonCode
+        self.courseName = courseName
+        self.typeName = typeName
+        self.startDate = startDate
+        self.endDate = endDate
+        self.classRoomName = classRoomName
+        self.classRoomBuildingName = classRoomBuildingName
+        self.classRoomDistrict = classRoomDistrict
+        self.detailText = description
+    }
+}
 
 extension Exam {
     /// Full location string combining district, building, and room
@@ -29,7 +66,9 @@ extension [Exam] {
     /// Uses AppStorage to track which exam names should be hidden
     /// - Returns: Array with visible exams first, hidden exams last
     func clean() -> [Exam] {
-        @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
+        // @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
+        var hiddenExamName: [String] = UserDefaults.appGroup.stringArray(forKey: "hiddenExamName") ?? []
+
         hiddenExamName = hiddenExamName.filter { !$0.isEmpty }
         var result = self.sorted()
         var hiddenResult = [Exam]()
@@ -68,5 +107,11 @@ extension [Exam] {
             result.append(exam)
         }
         return result
+    }
+}
+
+extension Exam {
+    static func update() async throws {
+        try await SchoolSystem.current.updateExam()
     }
 }

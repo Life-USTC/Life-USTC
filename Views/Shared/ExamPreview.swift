@@ -76,8 +76,8 @@ struct ExamPreview: View {
     @ViewBuilder
     var noExamView: some View {
         ZStack {
-            ExamView(exam: .example)
-                .redacted(reason: .placeholder)
+            // ExamView(exam: .example)
+            //     .redacted(reason: .placeholder)
 
             VStack {
                 Text("No More Exam!")
@@ -137,7 +137,8 @@ extension ExamPreview {
             }
             .padding(.bottom, 10)
 
-            let exams = exams_.isEmpty ? Array(repeating: .example, count: 4) : exams_
+            // let exams = exams_.isEmpty ? Array(repeating: .example, count: 4) : exams_
+            let exams = exams_
 
             ZStack {
                 VStack(alignment: .leading, spacing: 5) {
@@ -171,7 +172,7 @@ extension ExamPreview {
     static func makeDayWidget(
         with exam_: Exam?
     ) -> some View {
-        let exam = exam_ ?? .example
+        let exam = exam_!
 
         ZStack {
             VStack(alignment: .leading) {

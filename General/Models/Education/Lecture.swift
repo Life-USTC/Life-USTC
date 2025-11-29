@@ -11,6 +11,8 @@ import SwiftUI
 
 @Model
 final class Lecture {
+    var course: Course?
+
     var startDate: Date
     var endDate: Date
     var name: String
@@ -20,9 +22,11 @@ final class Lecture {
     var additionalInfo: [String: String] = [:]
     var startIndex: Int?
     var endIndex: Int?
-    @Relationship var course: Course?
+
+    var color: Color { course?.color ?? .accentColor }
 
     init(
+        course: Course?,
         startDate: Date,
         endDate: Date,
         name: String,
@@ -33,6 +37,7 @@ final class Lecture {
         startIndex: Int? = nil,
         endIndex: Int? = nil
     ) {
+        self.course = course
         self.startDate = startDate
         self.endDate = endDate
         self.name = name
@@ -65,11 +70,15 @@ extension Lecture: Comparable {
     }
 }
 
-extension [Lecture] {
-    func sort() -> [Lecture] {
-        sorted { $0.startDate < $1.startDate }
+extension Lecture {
+    var isInthisWeek: Bool {
+        let startOfWeek = Date().startOfWeek()
+        let endOfWeek = startOfWeek.add(day: 6)
+        return startOfWeek ... endOfWeek ~= startDate.stripTime()
     }
+}
 
+extension [Lecture] {
     func union() -> [Lecture] {
         var unionedLectures: [Lecture] = []
         for lecture in self {
@@ -92,27 +101,10 @@ extension [Lecture] {
         return unionedLectures
     }
 
-    func clean() -> [Lecture] {
-        let lectures = self.union()
-        return
-            (lectures.filter { $0.startDate > Date() }
-            + lectures.filter { $0.startDate <= Date() })
-    }
+    // func clean() -> [Lecture] {
+    //     let lectures = self.union()
+    //     return
+    //         (lectures.filter { $0.startDate > Date() }
+    //         + lectures.filter { $0.startDate <= Date() })
+    // }
 }
-
-extension Lecture {
-    static let example = Lecture(
-        startDate: Date(),
-        endDate: Date().addingTimeInterval(3600),
-        name: "Example Lecture",
-        location: "Example Building",
-        teacherName: "Example Teacher",
-        periods: 1
-    )
-}
-
-extension Lecture {
-    var color: Color { course?.color ?? .accentColor }
-}
-
-//

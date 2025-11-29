@@ -94,13 +94,7 @@ struct ExamDetailView: View {
         List {
             Section {
                 if exams.isEmpty {
-                    ExamView(exam: .example)
-                        .redacted(reason: .placeholder)
-                        .overlay {
-                            Text("No More Exam!")
-                                .font(.system(.body, design: .monospaced))
-                                .padding(.vertical, 10)
-                        }
+                    ContentUnavailableView("No Exam", image: "calendar")
                 } else {
                     ForEach(exams.clean()) { exam in
                         ExamView(exam: exam)
@@ -114,15 +108,16 @@ struct ExamDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
-
         .refreshable {
-            await refresh()
+            Task {
+                try await Exam.update()
+            }
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     Task {
-                        try? await exams.saveToCalendar()
+                        try? await CalendarSaveHelper.saveExams()
                     }
                 } label: {
                     Label("Save to Calendar", systemImage: "calendar.badge.plus")
@@ -131,11 +126,9 @@ struct ExamDetailView: View {
         }
         .navigationTitle("Exam")
         .task {
-            await refresh()
+            Task {
+                try await Exam.update()
+            }
         }
-    }
-
-    private func refresh() async {
-        try? await ExamRepository.refresh()
     }
 }

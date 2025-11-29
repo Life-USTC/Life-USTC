@@ -46,7 +46,9 @@ struct FeedSetingsPage: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    Task { try? await FeedRepository.refresh() }
+                    Task {
+                        try await Feed.update()
+                    }
                 } label: {
                     Label("Refresh List", systemImage: "arrow.clockwise")
                 }
@@ -64,6 +66,10 @@ struct FeedSetingsPage: View {
             }
         }
         .navigationTitle("Feed Source Settings")
-        .task { try? await FeedRepository.refresh() }
+        .task {
+            Task {
+                try await Feed.update()
+            }
+        }
     }
 }

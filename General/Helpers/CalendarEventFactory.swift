@@ -3,72 +3,82 @@ import EventKit
 import SwiftData
 import SwiftUI
 
-struct CalendarEventFactory {
-    static let shared = CalendarEventFactory()
-
-    @Query var geoLocationData: [GeoLocationData]
-
-    func fromLecture(
+enum CalendarEventFactory {
+    static func fromLecture(
         _ lecture: Lecture,
         in store: EKEventStore = EKEventStore()
-    ) -> EKEvent {
+    ) async throws -> EKEvent {
         let event = EKEvent(eventStore: store)
         event.title = lecture.name
         event.startDate = lecture.startDate
         event.endDate = lecture.endDate
 
-        applyLocation(lecture.location, to: event)
+        try await applyLocation(lecture.location, to: event)
 
         return event
     }
 
-    func fromExam(
+    static func fromExam(
         _ exam: Exam,
         in store: EKEventStore = EKEventStore()
-    ) -> EKEvent {
+    ) async throws -> EKEvent {
         let event = EKEvent(eventStore: store)
         event.title = exam.courseName + " " + exam.typeName
         event.notes = exam.detailText
         event.startDate = exam.startDate
         event.endDate = exam.endDate
 
-        applyLocation(exam.detailLocation, to: event)
+        try await applyLocation(exam.detailLocation, to: event)
 
         return event
     }
 
-    func fromLectures(
+    static func fromLectures(
         _ lectures: [Lecture],
         in store: EKEventStore = EKEventStore()
-    ) -> [EKEvent] {
-        return lectures.map {
-            fromLecture($0, in: store)
+    ) async throws -> [EKEvent] {
+        return try await lectures.asyncMap {
+            try await fromLecture($0, in: store)
         }
     }
 
-    func fromExams(
+    static func fromExams(
         _ exams: [Exam],
         in store: EKEventStore = EKEventStore()
-    ) -> [EKEvent] {
-        return exams.map {
-            fromExam($0, in: store)
+    ) async throws -> [EKEvent] {
+        return try await exams.asyncMap {
+            try await fromExam($0, in: store)
         }
     }
 
-    private func applyLocation(_ locationName: String, to event: EKEvent) {
-        let location = geoLocationData.first {
+    private static func applyLocation(_ locationName: String, to event: EKEvent) async throws {
+        let geoLocations: [GeoLocation] = try await [GeoLocation].refresh()
+
+        let geoLocation = geoLocations.first {
             locationName.hasPrefix($0.name)
         }
 
-        if let location {
+        if let geoLocation {
             let ekLocation = EKStructuredLocation(title: locationName)
             ekLocation.geoLocation = CLLocation(
-                latitude: location.latitude,
-                longitude: location.longitude
+                latitude: geoLocation.latitude,
+                longitude: geoLocation.longitude
             )
             event.structuredLocation = ekLocation
         } else {
             event.location = locationName
         }
+    }
+}
+
+extension Sequence {
+    func asyncMap<T>(
+        _ transform: (Element) async throws -> T
+    ) async rethrows -> [T] {
+        var values = [T]()
+        for element in self {
+            try await values.append(transform(element))
+        }
+        return values
     }
 }

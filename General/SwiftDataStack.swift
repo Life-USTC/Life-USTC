@@ -1,31 +1,26 @@
-import Foundation
 import SwiftData
+import SwiftUI
 
 enum SwiftDataStack {
-    static let container: ModelContainer = {
+    static let modelContainer: ModelContainer = {
         let schema = Schema([
+            Course.self,
+            Curriculum.self,
             Exam.self,
             Homework.self,
-            Semester.self,
-            Course.self,
             Lecture.self,
             Score.self,
-            CourseScore.self,
-            FeedSource.self,
-            Feed.self,
+            Semester.self,
         ])
 
-        let config = ModelConfiguration(
-            groupContainer: .identifier("group.life.ustc.Life-USTC")
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            groupContainer: .identifier("group.dev.tiankaima.Life-USTC")
         )
 
-        return try! ModelContainer(
-            for: schema,
-            configurations: config
-        )
+        return try! ModelContainer(for: schema, configurations: [modelConfiguration])
     }()
 
-    static var context: ModelContext = {
-        ModelContext(container)
-    }()
+    @MainActor static let modelContext = modelContainer.mainContext
 }

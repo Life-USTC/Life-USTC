@@ -99,11 +99,9 @@ struct USTCBusData: Codable, Equatable {
     )
 }
 
-class USTCBusDataDelegate {
-    static let shared = USTCBusDataDelegate()
-
-    func refresh() async throws -> USTCBusData {
-        let url = URL(string: "\(staticURLPrefix)/bus_data_v3.json")
+extension USTCBusData {
+    static func fetch() async throws -> USTCBusData {
+        let url = URL(string: "\(Constants.staticURLPrefix)/bus_data_v3.json")
         let (data, _) = try await URLSession.shared.data(from: url!)
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }

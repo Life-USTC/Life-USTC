@@ -13,7 +13,7 @@ struct FeedSourceView: View {
     var body: some View {
         List {
             ForEach(
-                feedSource.feed.sorted(by: { $0.datePosted > $1.datePosted }),
+                feedSource.feeds.sorted(by: { $0.datePosted > $1.datePosted }),
                 id: \.id
             ) {
                 FeedView(feed: $0)
