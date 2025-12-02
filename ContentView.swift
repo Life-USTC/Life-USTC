@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-var sharedSchoolExport: any SchoolExport {
-    USTCExports.shared
-}
-
 @main
 struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
