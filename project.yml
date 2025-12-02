@@ -125,11 +125,7 @@ targets:
       - path: "General/"
       - path: "Models/"
       - path: "Schools/"
-        compilerFlags:
-          - "-D APP_EXTENSION"
       - path: "Views/"
-        compilerFlags:
-          - "-D APP_EXTENSION"
       - path: "Widget/"
     entitlements:
       path: Widget/Widget.entitlements
