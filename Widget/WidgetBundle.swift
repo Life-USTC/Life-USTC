@@ -8,10 +8,6 @@
 import SwiftUI
 import WidgetKit
 
-var sharedSchoolExport: (any SchoolExport)! {
-    nil
-}
-
 @main
 struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {

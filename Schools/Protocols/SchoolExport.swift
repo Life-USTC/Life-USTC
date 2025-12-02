@@ -54,3 +54,7 @@ protocol SchoolExport {
 
     var reeedEnabledMode: ((_ url: URL) -> ReeedEnabledMode) { get }
 }
+
+var sharedSchoolExport: any SchoolExport {
+    USTCExports.shared
+}

@@ -32,6 +32,7 @@ targets:
       - path: "Schools/"
       - path: "Views/"
       - path: "AppDelegate.swift"
+      - path: "ContentView.swift"
       - path: "LaunchScreen.storyboard"
     settings:
       base:
@@ -120,12 +121,16 @@ targets:
     platform: iOS
     deploymentTarget: "16.0"
     sources:
-      - path: "Widget/"
       - path: "Assets/"
       - path: "General/"
       - path: "Models/"
-      - path: "Schools/Protocols/"
-      - path: "Views/Shared/"
+      - path: "Schools/"
+        compilerFlags:
+          - "-D APP_EXTENSION"
+      - path: "Views/"
+        compilerFlags:
+          - "-D APP_EXTENSION"
+      - path: "Widget/"
     entitlements:
       path: Widget/Widget.entitlements
       properties:
