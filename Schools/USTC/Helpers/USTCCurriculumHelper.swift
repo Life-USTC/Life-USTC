@@ -7,16 +7,12 @@ import SwiftyJSON
 func updateCouse(semsester: Semester, courseIDs: [Int]) async throws {
     for courseID in courseIDs {
         let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semsester.id)/\(courseID).json")!
+            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semsester.jw_id)/\(courseID).json")!
         )
         let json = try JSON(data: data)
 
-        //        try! SwiftDataStack.modelContext.delete(model: Course.self, where: #Predicate<Course> { $0.id == courseID })
-        //        try! SwiftDataStack.modelContext.delete(model: Lecture.self)
-
         let course = Course(
-            semester: semsester,
-            id: Int(json["id"].intValue),
+            jw_id: Int(json["id"].intValue),
             name: json["name"].stringValue,
             courseCode: json["courseCode"].stringValue,
             lessonCode: json["lessonCode"].stringValue,
@@ -27,15 +23,12 @@ func updateCouse(semsester: Semester, courseIDs: [Int]) async throws {
             dateTimePlacePersonText: json["dateTimePlacePersonText"].string
         )
         SwiftDataStack.modelContext.insert(course)
-        try SwiftDataStack.modelContext.save()
-
-        for lecture in course.lectures ?? [] {
-            debugPrint(lecture)
-        }
+        try! SwiftDataStack.modelContext.save()
+        course.semester = semsester
+        course.lectures = []
 
         for lectureJSON in json["lectures"].arrayValue {
             let lecture = Lecture(
-                course: course,
                 startDate: Date(timeIntervalSince1970: lectureJSON["startDate"].doubleValue),
                 endDate: Date(timeIntervalSince1970: lectureJSON["endDate"].doubleValue),
                 name: lectureJSON["name"].stringValue,
@@ -48,9 +41,9 @@ func updateCouse(semsester: Semester, courseIDs: [Int]) async throws {
             )
 
             SwiftDataStack.modelContext.insert(lecture)
+            try! SwiftDataStack.modelContext.save()
+            lecture.course = course
         }
-
-        try SwiftDataStack.modelContext.save()
     }
 }
 
@@ -84,14 +77,14 @@ func updateUnderGraduateCurriculum(semester: Semester) async throws {
         let (data, _) = try await URLSession.shared.data(
             from: URL(
                 string:
-                    "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(semester.id)&dataId=\(studentID)"
+                    "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(semester.jw_id)&dataId=\(studentID)"
             )!
         )
         let json = try JSON(data: data)
         var courseIDs = json["lessonIds"].arrayValue.map(\.intValue)
 
-        if additionalCourseIDList.keys.contains(semester.id) {
-            courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.id]!))
+        if additionalCourseIDList.keys.contains(semester.jw_id) {
+            courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.jw_id]!))
         }
 
         return courseIDs
@@ -144,7 +137,7 @@ func updateGraduateCurriculum(semester: Semester) async throws {
     let courseIDs = try await {
         let (semester_data, _) = try await URLSession.shared.data(
             from:
-                URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
+                URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
         )
         let json = try JSON(data: semester_data)
         let allCourses = json.arrayValue
@@ -156,8 +149,8 @@ func updateGraduateCurriculum(semester: Semester) async throws {
             }
             .map { $0["id"].intValue }
 
-        if additionalCourseIDList.keys.contains(semester.id) {
-            courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.id]!))
+        if additionalCourseIDList.keys.contains(semester.jw_id) {
+            courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.jw_id]!))
         }
 
         return courseIDs
@@ -166,35 +159,60 @@ func updateGraduateCurriculum(semester: Semester) async throws {
     try await updateCouse(semsester: semester, courseIDs: courseIDs)
 }
 
+@MainActor
+func debug() {
+    // Query all curriculum, semester, course, lecture, debug print:
+    for curriculum in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Curriculum>()
+    ) {
+        debugPrint(curriculum.uniqueID)
+    }
+    for semester in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Semester>()
+    ) {
+        debugPrint(semester.name)
+        debugPrint(semester.courses?.count)
+    }
+    for course in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Course>()
+    ) {
+        debugPrint(course.name)
+        debugPrint(course.lectures?.count)
+    }
+    for lecture in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Lecture>()
+    ) {
+        //        debugPrint(lecture.name, lecture.course?.name ?? "No Course")
+    }
+
+    debugPrint("----- End of Debug -----")
+}
+
 extension USTCSchool {
     @MainActor
     static func updateCurriculum() async throws {
         @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-
         let curriculum = Curriculum()
-        try! SwiftDataStack.modelContext.delete(model: Curriculum.self)
         SwiftDataStack.modelContext.insert(curriculum)
+        try! SwiftDataStack.modelContext.save()
 
         let (data, _) = try await URLSession.shared.data(
             from: URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")!
         )
 
         let json = try JSON(data: data)
-        var semesters: [Semester] = []
         for semesterJSON in json.arrayValue {
             let semester = Semester(
-                curriculum: curriculum,
-                id: semesterJSON["id"].stringValue,
+                jw_id: semesterJSON["id"].stringValue,
                 name: semesterJSON["name"].stringValue,
                 startDate: Date(timeIntervalSince1970: semesterJSON["startDate"].doubleValue),
                 endDate: Date(timeIntervalSince1970: semesterJSON["endDate"].doubleValue)
             )
-
             SwiftDataStack.modelContext.insert(semester)
-            try SwiftDataStack.modelContext.save()
-            semesters.append(semester)
-        }
-        for semester in semesters {
+            try! SwiftDataStack.modelContext.save()
+            semester.curriculum = curriculum
+            try! SwiftDataStack.modelContext.save()
+
             switch ustcStudentType {
             case .undergraduate:
                 try await updateUnderGraduateCurriculum(semester: semester)
@@ -204,5 +222,7 @@ extension USTCSchool {
                 }
             }
         }
+
+        debug()
     }
 }

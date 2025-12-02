@@ -1,134 +1,6 @@
-//
-//  CurriculumPreview.swift
-//  Life@USTC (iOS)
-//
-//  Created by TiankaiMa on 2023/1/5.
-//
-
 import SwiftUI
 
-private struct LectureView: View {
-    var lecture: Lecture
-    var color: Color = .red
-
-    var lectureColor: Color {
-        (lecture.course?.color ?? color).opacity(0.8)
-    }
-
-    var isCompleted: Bool {
-        lecture.endDate < Date()
-    }
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(lecture.name)
-                    .font(.headline)
-                    .fontWeight(.bold)
-                HStack {
-                    Text("\(lecture.teacherName)")
-                        .lineLimit(1)
-                    Text("@ **\(lecture.location)**")
-                        .lineLimit(1)
-                }
-                .font(.footnote)
-                .foregroundColor(.gray.opacity(0.8))
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing) {
-                Text(lecture.startDate.stripHMwithTimezone())
-                    .font(.subheadline)
-                    .fontWeight(.heavy)
-                    .foregroundColor(.mint)
-                Text(lecture.endDate.stripHMwithTimezone())
-                    .font(.caption)
-                    .foregroundColor(.gray.opacity(0.8))
-            }
-        }
-        .padding(.leading, 15)
-        .padding(.trailing, 10)
-        .padding(.vertical, 5)
-        .background {
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(lectureColor)
-                    .frame(width: 5)
-                RoundedCornersShape(corners: [.topRight, .bottomRight], radius: 5)
-                    .fill(lectureColor.opacity(0.05))
-            }
-        }
-        .if(isCompleted) {
-            $0
-                .strikethrough()
-                .grayscale(1.0)
-        }
-        // .if(lecture != Lecture.example) {
-        //     $0.lectureSheet(lecture: lecture)
-        // }
-    }
-}
-
-struct CurriculumPreview: View {
-    var lectureListA: [Lecture] = []
-    var lectureListB: [Lecture] = []
-    var listAText: LocalizedStringKey? = "Today"
-    var listBText: LocalizedStringKey? = "Tomorrow"
-
-    @ViewBuilder
-    var noLectureView: some View {
-        ZStack {
-            // LectureView(lecture: .example)
-            //     .redacted(reason: .placeholder)
-
-            VStack {
-                Text("Nothing here")
-                    .lineLimit(1)
-                    .font(.system(.body, weight: .semibold))
-
-                Text("Enjoy!")
-                    .lineLimit(1)
-                    .font(.caption)
-                    .font(.system(.caption, design: .monospaced, weight: .medium))
-                    .foregroundColor(.gray)
-            }
-        }
-    }
-
-    @ViewBuilder
-    func makeView(
-        with lectures: [Lecture],
-        text: LocalizedStringKey? = nil,
-        color: Color = Color.accentColor
-    ) -> some View {
-        VStack(spacing: 10) {
-            if let text {
-                Text(text)
-                    .foregroundColor(.gray)
-                    .font(.system(.subheadline, design: .monospaced, weight: .bold))
-                    .hStackLeading()
-            }
-
-            ForEach(lectures) { lecture in
-                LectureView(lecture: lecture, color: color)
-            }
-
-            if lectures.isEmpty {
-                noLectureView
-            }
-        }
-    }
-
-    var body: some View {
-        VStack(spacing: 30) {
-            makeView(with: lectureListA, text: listAText, color: .mint)
-            makeView(with: lectureListB, text: listBText, color: .orange)
-        }
-    }
-}
-
-extension CurriculumPreview {
+enum CurriculumPreview {
     @ViewBuilder
     static var titleView: some View {
         Text("Class")
@@ -165,7 +37,7 @@ extension CurriculumPreview {
             ZStack {
                 VStack(alignment: .leading, spacing: 5) {
                     ForEach(Array(lectures.prefix(numberToShow).enumerated()), id: \.1.id) { index, lecture in
-                        LectureView(lecture: lecture, color: color)
+                        LectureView(lecture: lecture)
                     }
                 }
                 .if(lectures_.isEmpty) {

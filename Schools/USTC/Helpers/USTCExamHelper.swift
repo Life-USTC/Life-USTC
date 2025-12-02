@@ -9,6 +9,7 @@ import Foundation
 import SwiftSoup
 
 extension USTCSchool {
+    @MainActor
     static func updateExam() async throws {
         func parseDate(from: String) -> (startTime: Date, endTime: Date)? {
             let dateFormatter = DateFormatter()

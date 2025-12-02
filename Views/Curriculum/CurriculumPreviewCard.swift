@@ -19,22 +19,14 @@ struct CurriculumPreviewCard: View {
             todayStart <= lecture.startDate && lecture.startDate < tomorrowStart
         },
         sort: [SortDescriptor(\Lecture.startDate, order: .forward)]
-    ) var todayLecturesRaw: [Lecture]
+    ) var todayLectures: [Lecture]
 
     @Query(
         filter: #Predicate<Lecture> { lecture in
             tomorrowStart <= lecture.startDate && lecture.startDate < dayAfterTomorrowStart
         },
         sort: [SortDescriptor(\Lecture.startDate, order: .forward)]
-    ) var tomorrowLecturesRaw: [Lecture]
-
-    var todayLectures: [Lecture] {
-        todayLecturesRaw.union()
-    }
-
-    var tomorrowLectures: [Lecture] {
-        tomorrowLecturesRaw.union()
-    }
+    ) var tomorrowLectures: [Lecture]
 
     var body: some View {
         VStack(spacing: 15) {
@@ -43,8 +35,8 @@ struct CurriculumPreviewCard: View {
                 .hStackLeading()
 
             CurriculumPreview(
-                lectureListA: todayLecturesRaw,
-                lectureListB: tomorrowLecturesRaw
+                todayLectures: todayLectures,
+                tomorrowLectures: tomorrowLectures
             )
         }
         .card()

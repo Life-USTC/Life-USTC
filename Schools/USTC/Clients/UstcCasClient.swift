@@ -12,44 +12,36 @@ import WebKit
 class UstcCasClient: LoginClientProtocol {
     static let shared = UstcCasClient()
 
-    var session: URLSession = .shared
+    @AppSecureStorage("passportUsername") var username: String
+    @AppSecureStorage("passportPassword") var password: String
 
     var loginContinuation: CheckedContinuation<Bool, Error>?
     var loginWebViewController: UIViewController?
     private var hiddenHostingController: UIHostingController<Browser>?
-    private var backgroundLoginTriggered = false
     private var backgroundLoginCompleted = false
-    private var backgroundLoginStartTime: Date?
     private var hiddenHostView: UIView?
-    @AppSecureStorage("passportUsername") var username: String
-    @AppSecureStorage("passportPassword") var password: String
 
     override func login() async throws -> Bool {
         return try await login(shouldAutoLogin: true)
     }
 
     func login(
-        shouldAutoLogin: Bool = false,
+        shouldAutoLogin: Bool = true,
         username: String? = nil,
         password: String? = nil
     ) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.loginContinuation = continuation
-            Task.detached { @MainActor in
-                if !self.backgroundLoginTriggered {
-                    self.backgroundLoginTriggered = true
-                    self.startBackgroundLogin()
-                    Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 10_000_000_000)
-                        if !self.backgroundLoginCompleted {
-                            self.presentLoginWebView(
-                                shouldAutoLogin: shouldAutoLogin,
-                                username: username,
-                                password: password
-                            )
-                        }
-                    }
-                } else {
+        let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+            Task { @MainActor [weak self] in
+                guard let self else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+
+                self.loginContinuation = continuation
+                self.startBackgroundLogin()
+                //                try? await Task.sleep(nanoseconds: 10_000_000_000)
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                if !self.backgroundLoginCompleted {
                     self.presentLoginWebView(
                         shouldAutoLogin: shouldAutoLogin,
                         username: username,
@@ -58,11 +50,12 @@ class UstcCasClient: LoginClientProtocol {
                 }
             }
         }
+        return result
     }
 
     @MainActor
     func presentLoginWebView(
-        shouldAutoLogin: Bool = false,
+        shouldAutoLogin: Bool = true,
         username: String? = nil,
         password: String? = nil
     ) {
@@ -96,7 +89,6 @@ class UstcCasClient: LoginClientProtocol {
     }
 
     private func startBackgroundLogin() {
-        backgroundLoginStartTime = Date()
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         let keyWindow = scenes.flatMap { $0.windows }.first { $0.isKeyWindow } ?? scenes.first?.windows.first
         guard let window = keyWindow else { return }

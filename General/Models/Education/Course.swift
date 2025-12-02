@@ -14,7 +14,7 @@ final class Course {
     var semester: Semester?
     @Relationship(deleteRule: .cascade, inverse: \Lecture.course) var lectures: [Lecture]?
 
-    @Attribute(.unique) var id: Int
+    @Attribute(.unique) var jw_id: Int
     var name: String
     var courseCode: String
     var lessonCode: String
@@ -26,12 +26,11 @@ final class Course {
 
     var color: Color {
         let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
-        return courseColors[id % courseColors.count]
+        return courseColors[jw_id % courseColors.count]
     }
 
     init(
-        semester: Semester?,
-        id: Int,
+        jw_id: Int,
         name: String,
         courseCode: String,
         lessonCode: String,
@@ -41,8 +40,7 @@ final class Course {
         additionalInfo: [String: String] = [:],
         dateTimePlacePersonText: String? = nil
     ) {
-        self.semester = semester
-        self.id = id
+        self.jw_id = jw_id
         self.name = name
         self.courseCode = courseCode
         self.lessonCode = lessonCode

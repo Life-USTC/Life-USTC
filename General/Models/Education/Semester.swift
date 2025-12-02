@@ -14,7 +14,7 @@ final class Semester {
     var curriculum: Curriculum?
     @Relationship(deleteRule: .cascade, inverse: \Course.semester) var courses: [Course]?
 
-    @Attribute(.unique) var id: String
+    @Attribute(.unique) var jw_id: String
     var name: String
     var startDate: Date
     var endDate: Date
@@ -24,14 +24,12 @@ final class Semester {
     }
 
     init(
-        curriculum: Curriculum?,
-        id: String,
+        jw_id: String,
         name: String,
         startDate: Date,
         endDate: Date
     ) {
-        self.curriculum = curriculum
-        self.id = id
+        self.jw_id = jw_id
         self.name = name
         self.startDate = startDate
         self.endDate = endDate

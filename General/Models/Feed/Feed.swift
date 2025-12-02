@@ -17,7 +17,7 @@ final class Feed {
     var keywords: Set<String>
     var detailText: String?
     var datePosted: Date
-    var url: URL
+    @Attribute(.unique) var url: URL
     var imageURL: URL?
     var colorHex: String?
 

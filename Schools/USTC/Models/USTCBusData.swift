@@ -36,23 +36,11 @@ struct USTCCampus: Identifiable, Codable, Hashable {
 
     var latitude: Double
     var longitude: Double
-
-    static let example = USTCCampus(
-        id: 1,
-        name: "东区",
-        latitude: 100,
-        longitude: 30
-    )
 }
 
 struct USTCRoute: Identifiable, Codable, Hashable {
     var id: Int
     var campuses: [USTCCampus]
-
-    static let example = USTCRoute(
-        id: 1,
-        campuses: [.example, .example]
-    )
 
     var description: String {
         let start = campuses.first?.name ?? ""
@@ -65,14 +53,6 @@ struct USTCRouteSchedule: Identifiable, Codable, Equatable {
     var id: Int
     var route: USTCRoute
     var time: [[TimeString?]]
-
-    static let example = USTCRouteSchedule(
-        id: 1,
-        route: .example,
-        time: [
-            ["07:50", "08:10"]
-        ]
-    )
 
     var nextDeparture: [TimeString?]? {
         return time.filter { !$0.passed() }.first
@@ -90,13 +70,6 @@ struct USTCBusData: Codable, Equatable {
     var weekday_routes: [USTCRouteSchedule]
     var weekend_routes: [USTCRouteSchedule]
     var message: Message?
-
-    static let example = USTCBusData(
-        campuses: [.example],
-        routes: [.example],
-        weekday_routes: [.example],
-        weekend_routes: [.example]
-    )
 }
 
 extension USTCBusData {

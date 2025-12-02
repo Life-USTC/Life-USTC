@@ -40,7 +40,7 @@ enum USTCFeatures {
                 image: "bus",
                 title: "Bus Timetable",
                 subTitle: "",
-                destinationView: { USTC_SchoolBusView() }
+                destinationView: { USTCBusView() }
             ),
             .init(
                 name: "Teaching Secretary",

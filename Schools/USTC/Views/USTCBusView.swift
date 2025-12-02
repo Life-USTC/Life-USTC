@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 import SwiftyJSON
 
-struct USTC_SchoolBusView: View {
+struct USTCBusView: View {
     enum Selection: String, CaseIterable {
         case weekday
         case weekend

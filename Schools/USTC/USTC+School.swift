@@ -25,7 +25,7 @@ enum USTCSchool {
             updateScore: updateScore,
             updateHomework: updateHomework,
 
-            firstLoginView: { AnyView(USTCOnboardingCoordinator(isPresented: $0)) },
+            firstLoginView: { AnyView(USTCOnboardingView(isPresented: $0)) },
             settings: [
                 .init(name: "CAS Settings", destinationView: { USTCCASLoginView() }),
                 .init(name: "Select Additional Course", destinationView: { USTCAdditionalCourseView() }),

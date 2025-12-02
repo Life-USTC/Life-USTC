@@ -22,5 +22,5 @@ enum SwiftDataStack {
         return try! ModelContainer(for: schema, configurations: [modelConfiguration])
     }()
 
-    @MainActor static let modelContext = modelContainer.mainContext
+    @MainActor static var modelContext: ModelContext { modelContainer.mainContext }
 }

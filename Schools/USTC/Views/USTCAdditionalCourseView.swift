@@ -61,8 +61,7 @@ struct USTCAdditionalCourseView: View {
                 semesters = json.arrayValue
                     .map { item in
                         Semester(
-                            curriculum: nil,
-                            id: item["id"].stringValue,
+                            jw_id: item["id"].stringValue,
                             name: item["name"].stringValue,
                             startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
                             endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
@@ -82,10 +81,10 @@ struct USTCAdditionalCourseSemesterView: View {
 
     var additionalCourseIDListForThisSemester: [Int] {
         get {
-            additioanlCourseIDList[semester.id] ?? []
+            additioanlCourseIDList[semester.jw_id] ?? []
         }
         set {
-            additioanlCourseIDList[semester.id] = newValue
+            additioanlCourseIDList[semester.jw_id] = newValue
         }
     }
 
@@ -108,12 +107,12 @@ struct USTCAdditionalCourseSemesterView: View {
         List {
             ForEach(coursesToShow) { course in
                 Button {
-                    if additionalCourseIDListForThisSemester.contains(course.id) {
-                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester.filter({
-                            $0 != course.id
+                    if additionalCourseIDListForThisSemester.contains(course.jw_id) {
+                        additioanlCourseIDList[semester.jw_id] = additionalCourseIDListForThisSemester.filter({
+                            $0 != course.jw_id
                         })
                     } else {
-                        additioanlCourseIDList[semester.id] = additionalCourseIDListForThisSemester + [course.id]
+                        additioanlCourseIDList[semester.jw_id] = additionalCourseIDListForThisSemester + [course.jw_id]
                     }
                 } label: {
                     HStack {
@@ -132,7 +131,7 @@ struct USTCAdditionalCourseSemesterView: View {
 
                         Spacer()
 
-                        if additionalCourseIDListForThisSemester.contains(course.id) {
+                        if additionalCourseIDListForThisSemester.contains(course.jw_id) {
                             Spacer()
                             Image(systemName: "checkmark")
                                 .foregroundColor(.accentColor)
@@ -155,8 +154,7 @@ struct USTCAdditionalCourseSemesterView: View {
                 let json = try JSON(data: data)
                 courses = json.arrayValue.map { item in
                     Course(
-                        semester: nil,
-                        id: item["id"].intValue,
+                        jw_id: item["id"].intValue,
                         name: item["name"].stringValue,
                         courseCode: item["courseCode"].stringValue,
                         lessonCode: item["lessonCode"].stringValue,

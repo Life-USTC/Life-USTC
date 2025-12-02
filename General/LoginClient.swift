@@ -14,6 +14,8 @@ private let loginClientClearedQueue = DispatchQueue(
 )
 
 class LoginClientProtocol {
+    let state = LoginStateActor()
+
     /// Return True if login success
     func login() async throws -> Bool {
         assert(true)
@@ -28,7 +30,24 @@ class LoginClient<T: LoginClientProtocol> {
     @AppStorage(
         "\(T.self)_lastLogined",
         store: .appGroup
-    ) var lastLogined: Date?
+    ) private var lastLogined: Date?
+
+    init(_ wrappedValue: T) {
+        self.wrappedValue = wrappedValue
+        clearIfNeededOnLaunch()
+    }
+
+    func requireLogin() async throws -> Bool {
+        return try await wrappedValue.state.requireLogin(
+            lastLogined: { self.lastLogined },
+            setLastLogined: { self.lastLogined = $0 },
+            performLogin: { try await self.wrappedValue.login() }
+        )
+    }
+
+    func clearLoginStatus() {
+        lastLogined = nil
+    }
 
     private func clearIfNeededOnLaunch() {
         let identifier = ObjectIdentifier(T.self)
@@ -39,52 +58,48 @@ class LoginClient<T: LoginClientProtocol> {
                 shouldClear = true
             }
         }
-
         if shouldClear {
             lastLogined = nil
         }
     }
+}
 
-    var loginTask: Task<Bool, Error>?
+actor LoginStateActor {
+    private var loginTask: Task<Bool, Error>? = nil
 
-    func requireLogin() async throws -> Bool {
-        if let lastLogined, Date().timeIntervalSince(lastLogined) < 5 * 60 {
+    func requireLogin(
+        lastLogined: () -> Date?,
+        setLastLogined: @escaping (Date?) -> Void,
+        performLogin: @escaping () async throws -> Bool
+    ) async throws -> Bool {
+        // Fresh enough → nothing to do
+        if let ts = lastLogined(),
+            Date().timeIntervalSince(ts) < 5 * 60
+        {
             return true
         }
 
-        // Waiting random time to avoid racing condition
-        try await Task.sleep(
-            nanoseconds: UInt64.random(in: 0 ..< 1_000_000_000)
-        )
-
-        if let loginTask {
-            return try await loginTask.value
+        // If a login is already going on, wait for it.
+        if let task = loginTask {
+            return try await task.value
         }
 
-        loginTask = Task {
+        // Start one login for all callers.
+        self.loginTask = Task {
             do {
-                if try await self.wrappedValue.login() {
-                    lastLogined = Date()
-                    loginTask = nil
-                    return true
+                let ok = try await performLogin()
+                if ok {
+                    setLastLogined(Date())
                 }
-                loginTask = nil
-                return false
+                return ok
             } catch {
-                loginTask = nil
-                throw (error)
+                throw error
             }
         }
+
+        defer { loginTask = nil }
+
         return try await loginTask!.value
-    }
-
-    func clearLoginStatus() {
-        lastLogined = nil
-    }
-
-    init(_ wrappedValue: T) {
-        self.wrappedValue = wrappedValue
-        clearIfNeededOnLaunch()
     }
 }
 

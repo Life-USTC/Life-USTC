@@ -48,7 +48,7 @@ struct FeaturePreview: View {
             image: "bus",
             title: "Bus Timetable",
             subTitle: "",
-            destinationView: { USTC_SchoolBusView() }
+            destinationView: { USTCBusView() }
         ),
     ]
     var body: some View {

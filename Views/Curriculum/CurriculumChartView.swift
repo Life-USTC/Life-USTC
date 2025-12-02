@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct CurriculumWeekView: View {
+struct CurriculumChartView: View {
     var lectures: [Lecture]
     var _date: Date
     var weekNumber: Int?

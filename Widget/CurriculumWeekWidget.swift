@@ -99,7 +99,7 @@ struct CurriculumWeekWidgetEntryView: View {
     var entry: CurriculumWeekProvider.Entry
 
     var body: some View {
-        CurriculumWeekView(
+        CurriculumChartView(
             lectures: entry.lectures,
             _date: entry.date,
             weekNumber: entry.weekNumber,

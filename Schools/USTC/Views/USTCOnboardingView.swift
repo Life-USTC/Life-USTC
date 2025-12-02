@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct USTCOnboardingCoordinator: View {
+struct USTCOnboardingView: View {
     @Binding var isPresented: Bool
     @State var currentStep: OnboardingStep = .casLogin
     @State var casLoginCompleted = false

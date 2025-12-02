@@ -1,14 +1,6 @@
-//
-//  ExamDetailView.swift
-//  Life@USTC (iOS)
-//
-//  Created by TiankaiMa on 2023/1/11.
-//
-
-import SwiftData
 import SwiftUI
 
-private struct ExamView: View {
+struct ExamCardView: View {
     let exam: Exam
 
     var basicInfoView: some View {
@@ -83,52 +75,6 @@ private struct ExamView: View {
         VStack(alignment: .leading, spacing: 25) {
             basicInfoView
             detailView
-        }
-    }
-}
-
-struct ExamDetailView: View {
-    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
-
-    var body: some View {
-        List {
-            Section {
-                if exams.isEmpty {
-                    ContentUnavailableView("No Exam", image: "calendar")
-                } else {
-                    ForEach(exams.clean()) { exam in
-                        ExamView(exam: exam)
-                    }
-                }
-            } header: {
-                EmptyView()
-            } footer: {
-                Text("disclaimer")
-                    .font(.system(.caption, weight: .semibold))
-                    .foregroundColor(.secondary)
-            }
-        }
-        .refreshable {
-            Task {
-                try await Exam.update()
-            }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    Task {
-                        try? await CalendarSaveHelper.saveExams()
-                    }
-                } label: {
-                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
-                }
-            }
-        }
-        .navigationTitle("Exam")
-        .task {
-            Task {
-                try await Exam.update()
-            }
         }
     }
 }

@@ -14,8 +14,7 @@ import SwiftyJSON
 final class FeedSource {
     var feeds: [Feed] = []
 
-    @Attribute(.unique) var id = UUID()
-    var url: URL
+    @Attribute(.unique) var url: URL
     var name: String
     var detailText: String?
     var image: String?  // sf symbol

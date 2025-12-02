@@ -26,7 +26,6 @@ final class Lecture {
     var color: Color { course?.color ?? .accentColor }
 
     init(
-        course: Course?,
         startDate: Date,
         endDate: Date,
         name: String,
@@ -37,7 +36,6 @@ final class Lecture {
         startIndex: Int? = nil,
         endIndex: Int? = nil
     ) {
-        self.course = course
         self.startDate = startDate
         self.endDate = endDate
         self.name = name
@@ -75,6 +73,10 @@ extension Lecture {
         let startOfWeek = Date().startOfWeek()
         let endOfWeek = startOfWeek.add(day: 6)
         return startOfWeek ... endOfWeek ~= startDate.stripTime()
+    }
+
+    var isFinished: Bool {
+        endDate < Date()
     }
 }
 

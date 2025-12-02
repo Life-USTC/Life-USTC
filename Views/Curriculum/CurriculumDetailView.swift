@@ -12,7 +12,6 @@ import SwiftUI
 
 struct CurriculumDetailView: View {
     var heightPerClass = 10
-    var weekStartDate: Date { _date.startOfWeek() }
 
     @AppStorage(
         "curriculumChartShouldHideEvening",
@@ -21,6 +20,7 @@ struct CurriculumDetailView: View {
     @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
 
     @Query(sort: \Semester.startDate, order: .forward) var semesters: [Semester]
+    @Query(sort: \Lecture.startDate, order: .forward) var lecturesQuery: [Lecture]
 
     @State var showLandscape: Bool = {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -28,11 +28,42 @@ struct CurriculumDetailView: View {
         }
         return UIDevice.current.orientation.isLandscape
     }()
-    @State var _date: Date = .now
-    @State var lectures: [Lecture] = []
-    @State var currentSemester: Semester?
-    @State var weekNumber: Int?
     @State var showCurriculumDetails = false
+
+    @State var referenceDate: Date = Date()
+    var todayStart: Date { referenceDate.stripTime() }
+    var weekStart: Date { todayStart.startOfWeek() }
+    var weekEnd: Date { weekStart.add(day: 7) }
+
+    var isCurrentWeek: Bool {
+        (weekStart ... weekEnd).contains(Date().stripTime())
+    }
+
+    var currentSemester: Semester? {
+        semesters.filter { ($0.startDate ... $0.endDate).contains(referenceDate) }.first
+    }
+
+    var weekNumber: Int? {
+        guard let currentSemester else {
+            return nil
+        }
+        return
+            (Calendar(identifier: .gregorian)
+            .dateComponents(
+                [.weekOfYear],
+                from: currentSemester.startDate,
+                to: weekStart
+            )
+            .weekOfYear ?? 0) + 1
+    }
+
+    var lectures: [Lecture] {
+        lecturesQuery
+            .filter {
+                (weekStart ... weekEnd)
+                    .contains($0.startDate.stripTime())
+            }
+    }
 
     @ViewBuilder
     var detailBarView: some View {
@@ -42,12 +73,12 @@ struct CurriculumDetailView: View {
             if let weekNumber {
                 Spacer()
 
-                if (weekStartDate ... weekStartDate.add(day: 6)).contains(Date().stripTime()) {
+                if isCurrentWeek {
                     Text(String(format: "Week %@".localized, String(weekNumber)))
                 } else {
                     Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
                 }
-            } else if !(weekStartDate ... weekStartDate.add(day: 6)).contains(Date().stripTime()) {
+            } else if !isCurrentWeek {
                 Spacer()
 
                 Text("[NOT CURRENT]")
@@ -55,7 +86,7 @@ struct CurriculumDetailView: View {
 
             Spacer()
 
-            Text(weekStartDate ... weekStartDate.add(day: 6))
+            Text(weekStart ... weekStart.add(day: 6))
         }
         .font(.system(.caption2, design: .monospaced, weight: .light))
         .padding(.horizontal, 20)
@@ -73,22 +104,24 @@ struct CurriculumDetailView: View {
             detailBarView
 
             if showLandscape {
-                CurriculumWeekView(
+                CurriculumChartView(
                     lectures: lectures,
-                    _date: _date,
+                    _date: referenceDate,
                     weekNumber: weekNumber
                 )
-                .id(curriculumChartShouldHideEvening)  // so that a forced refresh would happen if the user toggles the setting
+                .id(curriculumChartShouldHideEvening)
             } else {
                 CurriculumWeekViewVerticalNew(
                     lectures: lectures,
-                    _date: _date,
+                    _date: referenceDate,
                     weekNumber: weekNumber,
                     hideWeekend: hideWeekend
                 )
             }
         }
-
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: 50)
+        }
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItemGroup(placement: .secondaryAction) {
@@ -140,20 +173,20 @@ struct CurriculumDetailView: View {
 
             ToolbarItemGroup(placement: .bottomBar) {
                 Button {
-                    _date = _date.add(day: -7)
+                    referenceDate = referenceDate.add(day: -7)
                 } label: {
                     Image(systemName: "chevron.left")
                 }
 
                 Spacer()
 
-                DatePicker("Pick Date", selection: $_date, displayedComponents: .date)
+                DatePicker("Pick Date", selection: $referenceDate, displayedComponents: .date)
                     .labelsHidden()
 
                 Spacer()
 
                 Button {
-                    _date = _date.add(day: 7)
+                    referenceDate = referenceDate.add(day: 7)
                 } label: {
                     Image(systemName: "chevron.right")
                 }
@@ -174,27 +207,12 @@ struct CurriculumDetailView: View {
                     }
 
                     if value.translation.width < 0 {
-                        _date = _date.add(day: 7)
+                        referenceDate = referenceDate.add(day: 7)
                     } else {
-                        _date = _date.add(day: -7)
+                        referenceDate = referenceDate.add(day: -7)
                     }
                 }
         )
-        .onChange(of: currentSemester) {
-            updateLecturesAndWeekNumber()
-        }
-        .onChange(of: semesters) {
-            updateLecturesAndWeekNumber()
-            updateSemester()
-        }
-        .onChange(of: _date) {
-            updateLecturesAndWeekNumber()
-            updateSemester()
-        }
-        .onAppear {
-            updateLecturesAndWeekNumber()
-            updateSemester()
-        }
         .onRotate { newOrientation in
             if UIDevice.current.userInterfaceIdiom == .pad {
                 showLandscape = false
@@ -221,41 +239,5 @@ struct CurriculumDetailView: View {
                 try await Curriculum.update()
             }
         }
-    }
-
-    func updateLecturesAndWeekNumber() {
-        let allLectures = semesters.flatMap { $0.courses ?? [] }.flatMap { $0.lectures ?? [] }
-        let semesterLectures =
-            (currentSemester == nil ? allLectures : (currentSemester!.courses ?? []).flatMap { $0.lectures ?? [] })
-        lectures =
-            semesterLectures
-            .filter {
-                (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(weekStartDate))
-            }
-
-        if let currentSemester {
-            weekNumber =
-                (Calendar(identifier: .gregorian)
-                    .dateComponents(
-                        [.weekOfYear],
-                        from: currentSemester.startDate,
-                        to: weekStartDate
-                    )
-                    .weekOfYear ?? 0) + 1
-        } else {
-            weekNumber = nil
-        }
-
-        if lectures.contains(where: { lecture in
-            let weekday = Calendar.current.component(.weekday, from: lecture.startDate)
-            return weekday == 7 || weekday == 1  // Saturday (7) or Sunday (1)
-        }) {
-            hideWeekend = false
-        }
-    }
-
-    func updateSemester() {
-        currentSemester = semesters.filter { ($0.startDate ... $0.endDate).contains(_date) }.first
     }
 }

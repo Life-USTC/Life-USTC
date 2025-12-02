@@ -122,8 +122,10 @@ targets:
       - path: "Assets/"
       - path: "General/"
       - path: "Schools/Protocols/"
+      - path: "Views/Lecture/LectureView.swift"
+      - path: "Views/Curriculum/CurriculumChartView.swift"
+      - path: "Views/Exam/ExamView.swift"
       - path: "Views/Extensions/"
-      - path: "Views/Shared/"
       - path: "Widget/"
     entitlements:
       path: Widget/Widget.entitlements
