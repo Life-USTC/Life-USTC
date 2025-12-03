@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/14.
 //
 
+import SwiftData
 import SwiftUI
 
 @main
@@ -15,6 +16,7 @@ struct Life_USTCApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(SwiftDataStack.modelContainer)
     }
 }
 
@@ -104,7 +106,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if firstLogin {
-                sharedSchoolExport.firstLoginView($firstLogin)
+                SchoolSystem.current.firstLoginView($firstLogin)
             } else {
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView

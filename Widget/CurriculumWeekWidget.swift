@@ -6,34 +6,38 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
+@MainActor
 struct CurriculumWeekProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum
 
+    @MainActor
     func placeholder(in _: Context) -> CurriculumWeekEntry {
-        CurriculumWeekEntry.example
+        makeEntry()
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
-        let date = _date.startOfWeek()
-        guard let curriculum = _curriculum.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive curriculum data")
-        }
-        let currentSemester: Semester? =
-            curriculum.semesters
-            .filter { ($0.startDate ... $0.endDate).contains(date) }
-            .first
+    @MainActor
+    func makeEntry(for date: Date = Date()) -> CurriculumWeekEntry {
+        //        let date = _date.startOfWeek()
+        //        let context = SwiftDataStack.modelContext
+        //        let semesters = try context.fetch(FetchDescriptor<Semester>())
+        //        let currentSemesterEntity = semesters.first { ($0.startDate ... $0.endDate).contains(date) }
+        //        let allLectures = semesters.flatMap { $0.courses }.flatMap { $0.lectures }
+        //        let lectures: [Lecture] =
+        //            (currentSemesterEntity == nil
+        //            ? allLectures : currentSemesterEntity!.courses.flatMap { $0.lectures })
+        //            .filter { (0.0 ..< 3600.0 * 24 * 7).contains($0.startDate.stripTime().timeIntervalSince(date)) }
 
-        let lectures: [Lecture] =
-            (currentSemester == nil
-            ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
-            : currentSemester!.courses.flatMap(\.lectures))
-            .filter {
-                (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(date))
-            }
+        let lectures = try! SwiftDataStack.modelContext.fetch(
+            FetchDescriptor<Lecture>(
+                predicate: #Predicate { $0.isInthisWeek },
+            )
+        )
+
+        let currentSemester = try! SwiftDataStack.modelContext.fetch(FetchDescriptor<Semester>())
+            .first { ($0.isCurrent) }
 
         var weekNumber: Int? = nil
 
@@ -64,7 +68,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
             completion(entry)
         }
     }
@@ -75,7 +79,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -88,13 +92,6 @@ struct CurriculumWeekEntry: TimelineEntry {
     var date: Date
     var currentSemesterName: String
     var weekNumber: Int?
-
-    static let example = CurriculumWeekEntry(
-        lectures: [.example],
-        date: .now,
-        currentSemesterName: Semester.example.name,
-        weekNumber: nil
-    )
 }
 
 struct CurriculumWeekWidgetEntryView: View {
@@ -102,7 +99,7 @@ struct CurriculumWeekWidgetEntryView: View {
     var entry: CurriculumWeekProvider.Entry
 
     var body: some View {
-        CurriculumWeekView(
+        CurriculumChartView(
             lectures: entry.lectures,
             _date: entry.date,
             weekNumber: entry.weekNumber,

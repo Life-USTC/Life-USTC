@@ -6,43 +6,17 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
 struct CurriculumPreviewProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum
-
-    func placeholder(in _: Context) -> CurriculumPreviewEntry {
-        CurriculumPreviewEntry.example
+    func makeEntry(for _date: Date = Date()) -> CurriculumPreviewEntry {
+        return CurriculumPreviewEntry()
     }
 
-    func makeEntry(for _date: Date = Date()) async throws
-        -> CurriculumPreviewEntry
-    {
-        let date = _date.stripTime()
-        guard let curriculum = _curriculum.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive curriculum data")
-        }
-
-        let todayLectures =
-            curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date ..< date.add(day: 1)).contains($0.startDate)
-            }
-            .sort()
-
-        let tomorrowLectures =
-            curriculum.semesters.flatMap(\.courses).flatMap(\.lectures)
-            .filter {
-                (date.add(day: 1) ..< date.add(day: 2)).contains($0.startDate)
-            }
-            .sort()
-
-        return .init(
-            date: date,
-            todayLectures: todayLectures.clean(),
-            tomorrowLectures: tomorrowLectures.clean()
-        )
+    func placeholder(in _: Context) -> CurriculumPreviewEntry {
+        return makeEntry()
     }
 
     func getSnapshot(
@@ -50,8 +24,7 @@ struct CurriculumPreviewProvider: TimelineProvider {
         completion: @escaping (CurriculumPreviewEntry) -> Void
     ) {
         Task {
-            let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry()
             completion(entry)
         }
     }
@@ -61,8 +34,7 @@ struct CurriculumPreviewProvider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
-            let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry()
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -71,39 +43,34 @@ struct CurriculumPreviewProvider: TimelineProvider {
 }
 
 struct CurriculumPreviewEntry: TimelineEntry {
-    var date: Date
-    var todayLectures: [Lecture]
-    var tomorrowLectures: [Lecture]
-
-    static let example = CurriculumPreviewEntry(
-        date: .now,
-        todayLectures: [.example],
-        tomorrowLectures: [.example, .example, .example]
-    )
+    let date: Date = Date()
 }
 
 struct CurriculumPreviewWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumPreviewProvider.Entry
 
+    @Query var todayLectures: [Lecture]
+    @Query var tomorrowLectures: [Lecture]
+
     var body: some View {
         VStack {
             if widgetFamily == .systemLarge {
                 CurriculumPreview
                     .makeListWidget(
-                        with: entry.todayLectures,
+                        with: todayLectures,
                         numberToShow: 4
                     )
             } else if widgetFamily == .systemMedium {
                 CurriculumPreview
                     .makeListWidget(
-                        with: entry.todayLectures,
+                        with: todayLectures,
                         numberToShow: 2
                     )
             } else if widgetFamily == .systemSmall {
                 CurriculumPreview
                     .makeDayWidget(
-                        with: entry.todayLectures.first
+                        with: todayLectures.first
                     )
             }
         }
@@ -131,15 +98,5 @@ struct CurriculumPreviewWidget: Widget {
         ])
         .configurationDisplayName("Curriculum")
         .description("Show today & tomorrow's lectures")
-    }
-}
-
-struct CurriculumPreviewWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        ForEach(WidgetFamily.allCases, id: \.rawValue) { family in
-            CurriculumPreviewWidgetEntryView(entry: .example)
-                .previewContext(WidgetPreviewContext(family: family))
-                .previewDisplayName(family.description)
-        }
     }
 }
