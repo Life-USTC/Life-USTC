@@ -66,24 +66,11 @@ class UstcCasClient: LoginClientProtocol {
         username: String? = nil,
         password: String? = nil
     ) {
-        if ProcessInfo.processInfo.environment["XPC_SERVICE_NAME"] != nil {
-            // In app extension, cannot present login web view
-            loginContinuation?
-                .resume(
-                    throwing: NSError(
-                        domain: "USTCLogin",
-                        code: -1,
-                        userInfo: [NSLocalizedDescriptionKey: "Login not supported in app extensions"]
-                    )
-                )
-            return
-        }
-
         let hosting = UIHostingController(
             rootView: Browser(
                 useReeed: false,
                 prepared: true,
-                reeedMode: .userDefined,
+                reeedMode: .never,
                 url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
                 title: LocalizedStringKey("CAS Login")
             )
