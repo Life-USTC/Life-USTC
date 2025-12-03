@@ -15,6 +15,9 @@ struct BrowserUIKitView: UIViewControllerRepresentable {
     @Binding var useReeed: Bool
     @Binding var reeedMode: ReeedEnabledMode
 
+    // Closure used to open external URLs in an extension-safe way
+    var openExternalURL: (URL) -> Void
+
     func makeUIViewController(context: Context) -> UIViewController {
         let vc = UIViewController()
         vc.view.backgroundColor = .systemBackground
@@ -89,18 +92,10 @@ final class Coordinator: NSObject, WKNavigationDelegate {
             return
         }
 
-        UIApplication.shared.open(
-            url,
-            options: [:],
-            completionHandler: { success in
-                if success {
-                    decisionHandler(.cancel)
-                    return
-                }
-            }
-        )
-
-        decisionHandler(.allow)
+        // For non-http(s) schemes, ask the SwiftUI host to open the URL in an extension-safe way
+        parent.openExternalURL(url)
+        decisionHandler(.cancel)
+        return
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -180,6 +175,7 @@ final class Coordinator: NSObject, WKNavigationDelegate {
 
 struct Browser: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.openURL) var openURL
 
     @State var useReeed = false
     @State var prepared = false
@@ -193,8 +189,15 @@ struct Browser: View {
             if useReeed {
                 ReeeederView(url: url, options: .init(includeExitReaderButton: false), useReeeder: $useReeed)
             } else {
-                BrowserUIKitView(url: $url, useReeed: $useReeed, reeedMode: $reeedMode)
-                    .ignoresSafeArea(.container, edges: .bottom)
+                BrowserUIKitView(
+                    url: $url,
+                    useReeed: $useReeed,
+                    reeedMode: $reeedMode,
+                    openExternalURL: { url in
+                        openURL(url)
+                    }
+                )
+                .ignoresSafeArea(.container, edges: .bottom)
             }
         }
         .if(!prepared) { _ in

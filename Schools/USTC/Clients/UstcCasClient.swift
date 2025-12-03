@@ -63,7 +63,7 @@ class UstcCasClient: LoginClientProtocol {
             rootView: Browser(
                 useReeed: false,
                 prepared: true,
-                reeedMode: .userDefined,
+                reeedMode: .never,
                 url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
                 title: LocalizedStringKey("CAS Login")
             )
@@ -71,7 +71,16 @@ class UstcCasClient: LoginClientProtocol {
         let navigationController = UINavigationController(rootViewController: hosting)
         navigationController.modalPresentationStyle = .fullScreen
 
-        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        // Use runtime lookup to avoid compile-time reference to UIApplication.shared
+        guard let applicationClass = NSClassFromString("UIApplication") as? NSObject.Type,
+            applicationClass.responds(to: NSSelectorFromString("sharedApplication")),
+            let result = applicationClass.perform(NSSelectorFromString("sharedApplication")),
+            let application = result.takeUnretainedValue() as? UIApplication
+        else {
+            return
+        }
+
+        let scenes = application.connectedScenes.compactMap { $0 as? UIWindowScene }
         let keyWindow = scenes.flatMap { $0.windows }.first { $0.isKeyWindow } ?? scenes.first?.windows.first
         guard var topController = keyWindow?.rootViewController else { return }
         while let presented = topController.presentedViewController { topController = presented }
@@ -96,7 +105,7 @@ class UstcCasClient: LoginClientProtocol {
         let browser = Browser(
             useReeed: false,
             prepared: true,
-            reeedMode: .userDefined,
+            reeedMode: .never,
             url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
             title: LocalizedStringKey("CAS Login")
         )
