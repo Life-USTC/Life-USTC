@@ -79,7 +79,7 @@ func updateCourse(semester: Semester, courseIDs: [Int]) async throws {
 
 @MainActor
 func updateUnderGraduateCurriculum(semester: Semester) async throws {
-    @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+    @LoginClient(.ustcAAS) var ustcAASClient: USTCAASClient
     @AppStorage("USTCAdditionalCourseIDList") var additionalCourseIDList: [String: [Int]] = [:]
 
     if try await !_ustcAASClient.requireLogin() {
@@ -126,7 +126,7 @@ func updateUnderGraduateCurriculum(semester: Semester) async throws {
 @MainActor
 func updateGraduateCurriculum(semester: Semester) async throws {
     @AppStorage("USTCAdditionalCourseIDList") var additionalCourseIDList: [String: [Int]] = [:]
-    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcCAS) var casClient: USTCCASClient
 
     if !(try await _casClient.requireLogin()) {
         throw BaseError.runtimeError("UstcCAS Not logined")

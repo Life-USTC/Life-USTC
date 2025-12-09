@@ -155,10 +155,6 @@ struct FeedView: View {
         } label: {
             FeedViewPreview(feed: feed, isRead: isRead)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                // .background(
-                //     RoundedRectangle(cornerRadius: 10)
-                //         .fill(Color(.systemBackground))
-                // )
                 .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .overlay(

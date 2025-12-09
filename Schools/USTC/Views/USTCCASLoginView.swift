@@ -17,7 +17,7 @@ extension View {
 
 struct USTCCASLoginView: View {
     @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-    @LoginClient(.ustcCAS) var ustcCasClient: UstcCasClient
+    @LoginClient(.ustcCAS) var ustcCasClient: USTCCASClient
 
     @State var presenterInjected = true
     @StateObject var ustcCASViewModel = UstcCasViewModel.shared

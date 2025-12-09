@@ -11,6 +11,8 @@ import SwiftUI
 /// Store score for one course
 @Model
 final class ScoreEntry {
+    var scoreSheet: ScoreSheet?
+
     // MARK: - Information about the course itself
 
     /// - Important:
@@ -32,7 +34,7 @@ final class ScoreEntry {
     ///
     /// - Important:
     /// Avoid using `.` as `semesterID.lessonCode` is used to notify user.
-    var lessonCode: String
+    @Attribute(.unique) var lessonCode: String
 
     /// Used to group semesters, smaller id comes first in time
     ///
@@ -90,9 +92,9 @@ final class ScoreEntry {
 }
 
 @Model
-final class Score {
-    /// List of course, default order matters for UI.
-    var entries: [ScoreEntry]
+final class ScoreSheet {
+    @Attribute(.unique) var uniqueID = 0
+    @Relationship(deleteRule: .cascade, inverse: \ScoreEntry.scoreSheet) var entries: [ScoreEntry] = []
 
     /// Total GPA
     var gpa: Double
@@ -106,14 +108,12 @@ final class Score {
     var additionalMessage: String?
 
     init(
-        entries: [ScoreEntry] = [],
         gpa: Double = 0.0,
         majorRank: Int = 0,
         majorStdCount: Int = 0,
         majorName: String = "",
         additionalMessage: String? = nil
     ) {
-        self.entries = entries
         self.gpa = gpa
         self.majorRank = majorRank
         self.majorStdCount = majorStdCount
@@ -122,7 +122,7 @@ final class Score {
     }
 }
 
-extension Score {
+extension ScoreSheet {
     static func update() async throws {
         try await SchoolSystem.current.updateScore()
     }

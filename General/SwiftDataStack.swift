@@ -12,7 +12,7 @@ enum SwiftDataStack {
             Exam.self,
             Homework.self,
 
-            Score.self,
+            ScoreSheet.self,
             ScoreEntry.self,
 
             FeedSource.self,

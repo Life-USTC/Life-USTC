@@ -9,8 +9,8 @@ import SwiftUI
 import UIKit
 import WebKit
 
-class UstcCasClient: LoginClientProtocol {
-    static let shared = UstcCasClient()
+class USTCCASClient: LoginClientProtocol {
+    static let shared = USTCCASClient()
 
     @AppSecureStorage("passportUsername") var username: String
     @AppSecureStorage("passportPassword") var password: String
@@ -39,8 +39,7 @@ class UstcCasClient: LoginClientProtocol {
 
                 self.loginContinuation = continuation
                 self.startBackgroundLogin()
-                //                try? await Task.sleep(nanoseconds: 10_000_000_000)
-                try? await Task.sleep(nanoseconds: 100_000_000)
+                try? await Task.sleep(nanoseconds: 10_000_000_000)
                 if !self.backgroundLoginCompleted {
                     self.presentLoginWebView(
                         shouldAutoLogin: shouldAutoLogin,
@@ -147,7 +146,7 @@ class UstcCasClient: LoginClientProtocol {
 }
 
 extension LoginClientProtocol {
-    static let ustcCAS = UstcCasClient.shared
+    static let ustcCAS = USTCCASClient.shared
 }
 
 extension URL {

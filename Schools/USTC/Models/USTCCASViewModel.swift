@@ -11,7 +11,7 @@ import SwiftUI
 class UstcCasViewModel: ObservableObject {
     static let shared = UstcCasViewModel()
 
-    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcCAS) var casClient: USTCCASClient
 
     @AppSecureStorage("passportUsername") var username: String
     @AppSecureStorage("passportPassword") var password: String

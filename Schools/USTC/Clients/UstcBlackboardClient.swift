@@ -9,10 +9,10 @@ import SwiftSoup
 import SwiftUI
 
 /// USTC Undergraduate Academic Affairs System
-class UstcBlackboardClient: LoginClientProtocol {
-    static let shared = UstcBlackboardClient()
+class USTCBlackboardClient: LoginClientProtocol {
+    static let shared = USTCBlackboardClient()
 
-    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcCAS) var casClient: USTCCASClient
     var session: URLSession = .shared
 
     override func login() async throws -> Bool {
@@ -56,5 +56,5 @@ class UstcBlackboardClient: LoginClientProtocol {
 }
 
 extension LoginClientProtocol {
-    static var ustcBlackboard = UstcBlackboardClient.shared
+    static var ustcBlackboard = USTCBlackboardClient.shared
 }

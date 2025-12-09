@@ -11,10 +11,10 @@ import SwiftyJSON
 import WidgetKit
 
 /// USTC Undergraduate Academic Affairs System
-class UstcAASClient: LoginClientProtocol {
-    static let shared = UstcAASClient()
+class USTCAASClient: LoginClientProtocol {
+    static let shared = USTCAASClient()
 
-    @LoginClient(.ustcCAS) var casClient: UstcCasClient
+    @LoginClient(.ustcCAS) var casClient: USTCCASClient
     var session: URLSession = .shared
 
     override func login() async throws -> Bool {
@@ -39,5 +39,5 @@ class UstcAASClient: LoginClientProtocol {
 }
 
 extension LoginClientProtocol {
-    static var ustcAAS = UstcAASClient.shared
+    static var ustcAAS = USTCAASClient.shared
 }

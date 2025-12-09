@@ -90,6 +90,7 @@ targets:
         NSCalendarsUsageDescription: "向日历中添加课表/考试信息"
         NSCalendarsFullAccessUsageDescription: "向日历中添加课表/考试信息"
         NSRemindersFullAccessUsageDescription: "向日历中添加课表/考试信息"
+        NSPhotoLibraryAddUsageDescription: "Export images to Photo Library"
         NSPrivacyAccessedAPITypes:
           - NSPrivacyAccessedAPIType: NSPrivacyAccessedAPICategoryUserDefaults
             NSPrivacyAccessedAPITypeReasons: ["1C8F.1"]

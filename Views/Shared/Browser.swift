@@ -83,7 +83,7 @@ final class Coordinator: NSObject, WKNavigationDelegate {
                         for: URL(string: "https://id.ustc.edu.cn"),
                         mainDocumentURL: nil
                     )
-                    UstcCasClient.shared.loginSuccess()
+                    USTCCASClient.shared.loginSuccess()
                 }
                 decisionHandler(.cancel)
                 return

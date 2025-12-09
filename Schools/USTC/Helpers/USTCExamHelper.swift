@@ -32,7 +32,7 @@ extension USTCSchool {
             return (startTime, endTime)
         }
 
-        @LoginClient(.ustcAAS) var ustcAASClient: UstcAASClient
+        @LoginClient(.ustcAAS) var ustcAASClient: USTCAASClient
 
         let examURL = URL(
             string: "https://jw.ustc.edu.cn/for-std/exam-arrange"
