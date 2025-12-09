@@ -15,7 +15,11 @@ struct ExamDetailView: View {
         List {
             Section {
                 if exams.isEmpty {
-                    ContentUnavailableView("No Exam", image: "calendar")
+                    ContentUnavailableView(
+                        "No Exams",
+                        systemImage: "calendar.badge.checkmark",
+                        description: Text("Enjoy your free time!")
+                    )
                 } else {
                     ForEach(exams.clean()) { exam in
                         ExamCardView(exam: exam)

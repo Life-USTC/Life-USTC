@@ -31,25 +31,18 @@ enum ExamPreview {
             }
             .padding(.bottom, 10)
 
-            // let exams = exams_.isEmpty ? Array(repeating: .example, count: 4) : exams_
             let exams = exams_
 
-            ZStack {
+            if exams_.isEmpty {
+                ContentUnavailableView(
+                    "No More Exam!",
+                    systemImage: "calendar.badge.checkmark"
+                )
+            } else {
                 VStack(alignment: .leading, spacing: 5) {
                     ForEach(Array(exams.prefix(numberToShow).enumerated()), id: \.1.id) { index, exam in
                         ExamView(exam: exam, color: color)
                     }
-                }
-                .if(exams_.isEmpty) {
-                    $0
-                        .redacted(reason: .placeholder)
-                        .blur(radius: 5)
-                }
-
-                if exams_.isEmpty {
-                    Text("No More Exam!")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.secondary)
                 }
             }
 
@@ -104,25 +97,13 @@ extension ExamPreview {
                 .fontWeight(.regular)
                 .foregroundColor(.gray.opacity(0.8))
             }
-            .if(exam_ == nil) {
-                $0
-                    .redacted(reason: .placeholder)
-                    .blur(radius: 5)
-            }
 
             if exam_ == nil {
-                VStack(alignment: .center, spacing: 20) {
-                    Image(systemName: "moon.stars")
-                        .font(.system(size: 50))
-                        .fontWeight(.regular)
-                        .frame(width: 60, height: 60)
-                        .padding(5)
-                        .fontWeight(.heavy)
-                        .foregroundColor(.blue.opacity(0.8))
-                    Text("No More Exam!")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
+                ContentUnavailableView(
+                    "No More Exam!",
+                    systemImage: "moon.stars",
+                    description: Text("Enjoy!")
+                )
             }
         }
         .dynamicTypeSize(.medium)

@@ -67,7 +67,11 @@ struct HomeworkDetailView: View {
         List {
             Section {
                 if homeworks.isEmpty {
-                    ContentUnavailableView("No Homework", image: "checkmark.seal")
+                    ContentUnavailableView(
+                        "No Homework",
+                        systemImage: "checkmark.seal.fill",
+                        description: Text("All caught up!")
+                    )
                 } else {
                     ForEach(newHomework) { homework in
                         HomeworkView(homework: homework)
