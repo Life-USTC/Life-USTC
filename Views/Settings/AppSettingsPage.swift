@@ -10,7 +10,6 @@ import SwiftUI
 struct AppSettingsPage: View {
     @AppStorage("scoreViewPreventScreenShot") var preventScreenShot = false
     @AppStorage("appShouldNOTUpdateAnything", store: .appGroup) var appShouldNOTUpdateAnything = false
-    @AppStorage("curriculumChartShouldHideEvening", store: .appGroup) var curriculumChartShouldHideEvening = false
     @AppStorage("useBaiduStatistics") var useBaiduStatistics = true
     @AppStorage("widgetCanRefreshNewData", store: .appGroup) var widgetCanRefreshNewData: Bool? = nil
 
@@ -20,10 +19,6 @@ struct AppSettingsPage: View {
                 Toggle(
                     "Prevent screenshot when showing score",
                     isOn: $preventScreenShot
-                )
-                Toggle(
-                    "Hide evening in Curriculum",
-                    isOn: $curriculumChartShouldHideEvening
                 )
                 Toggle(
                     "Use Baidu Statistics",
