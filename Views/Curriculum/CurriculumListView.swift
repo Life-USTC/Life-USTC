@@ -18,7 +18,7 @@ struct CurriculumListView: View {
     @ViewBuilder
     func section(for semester: Semester) -> some View {
         Section {
-            ForEach(semester.courses ?? [], id: \.lessonCode) { course in
+            ForEach(semester.courses, id: \.lessonCode) { course in
                 VStack(alignment: .leading) {
                     HStack(alignment: .bottom) {
                         Text(course.name)

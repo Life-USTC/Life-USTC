@@ -101,9 +101,7 @@ struct CurriculumWeekWidgetEntryView: View {
     var body: some View {
         CurriculumChartView(
             lectures: entry.lectures,
-            _date: entry.date,
-            weekNumber: entry.weekNumber,
-            fontSize: widgetFamily == .systemExtraLarge ? 15 : 10
+            referenceDate: entry.date,
         )
         .padding(3)
         .widgetBackground(

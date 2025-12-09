@@ -11,12 +11,6 @@ import SwiftData
 import SwiftUI
 
 struct CurriculumDetailView: View {
-    var heightPerClass = 10
-
-    @AppStorage(
-        "curriculumChartShouldHideEvening",
-        store: .appGroup
-    ) var curriculumChartShouldHideEvening: Bool = false
     @AppStorage("HideWeekendinCurriculum") var hideWeekend = true
 
     @Query(sort: \Semester.startDate, order: .forward) var semesters: [Semester]
@@ -70,18 +64,18 @@ struct CurriculumDetailView: View {
         HStack {
             Text(currentSemester?.name ?? "All".localized)
 
-            if let weekNumber {
-                Spacer()
+            Spacer()
 
-                if isCurrentWeek {
+            if isCurrentWeek {
+                if let weekNumber {
                     Text(String(format: "Week %@".localized, String(weekNumber)))
-                } else {
-                    Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
                 }
-            } else if !isCurrentWeek {
-                Spacer()
-
-                Text("[NOT CURRENT]")
+            } else {
+                if let weekNumber {
+                    Text(String(format: "Week %@ [NOT CURRENT]".localized, String(weekNumber)))
+                } else {
+                    Text("[NOT CURRENT]")
+                }
             }
 
             Spacer()
@@ -94,47 +88,35 @@ struct CurriculumDetailView: View {
 
     var body: some View {
         VStack {
-            if !showLandscape {
-                HStack(alignment: .bottom) {
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-            }
-
             detailBarView
 
             if showLandscape {
                 CurriculumChartView(
                     lectures: lectures,
-                    _date: referenceDate,
-                    weekNumber: weekNumber
+                    referenceDate: referenceDate,
                 )
-                .id(curriculumChartShouldHideEvening)
             } else {
                 CurriculumWeekViewVerticalNew(
                     lectures: lectures,
-                    _date: referenceDate,
-                    weekNumber: weekNumber,
+                    referenceDate: referenceDate,
                     hideWeekend: hideWeekend
                 )
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear.frame(height: 50)
-        }
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
-            ToolbarItemGroup(placement: .secondaryAction) {
-                if showLandscape {
-                    Button {
-                        curriculumChartShouldHideEvening.toggle()
-                    } label: {
-                        Label(
-                            curriculumChartShouldHideEvening ? "Show evening" : "Hide evening",
-                            systemImage: curriculumChartShouldHideEvening ? "moon" : "moon.fill"
-                        )
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await CalendarSaveHelper.saveCurriculum()
                     }
-                } else {
+                } label: {
+                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
+                }
+            }
+
+            ToolbarItemGroup(placement: .secondaryAction) {
+                if !showLandscape {
                     Button {
                         hideWeekend.toggle()
                     } label: {
@@ -160,49 +142,12 @@ struct CurriculumDetailView: View {
                     Label("Details", systemImage: "info.circle")
                 }
             }
-
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    Task {
-                        try await CalendarSaveHelper.saveCurriculum()
-                    }
-                } label: {
-                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
-                }
-            }
-
-            ToolbarItemGroup(placement: .bottomBar) {
-                Button {
-                    referenceDate = referenceDate.add(day: -7)
-                } label: {
-                    Image(systemName: "chevron.left")
-                }
-
-                Spacer()
-
-                DatePicker("Pick Date", selection: $referenceDate, displayedComponents: .date)
-                    .labelsHidden()
-
-                Spacer()
-
-                Button {
-                    referenceDate = referenceDate.add(day: 7)
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-            }
         }
         .navigationTitle("Curriculum")
-        .refreshable {
-            Task {
-                try await Curriculum.update()
-            }
-        }
         .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
-                    if abs(value.translation.width) < 20 {
-                        // too small a swipe
+                    if abs(value.translation.width) < 20 {  // too small a swipe
                         return
                     }
 
@@ -236,7 +181,7 @@ struct CurriculumDetailView: View {
         }
         .task {
             Task {
-                try await Curriculum.update()
+                // try await Curriculum.update()
             }
         }
     }

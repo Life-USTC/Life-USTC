@@ -42,7 +42,7 @@ struct CurriculumPreviewCard: View {
         .card()
         .task {
             Task {
-                try await SchoolSystem.current.updateCurriculum()
+                try await Curriculum.update()
             }
         }
     }

@@ -8,30 +8,29 @@
 import Charts
 import SwiftUI
 
+private var fontSize: Double = 10
+
 struct CurriculumChartView: View {
     var lectures: [Lecture]
-    var _date: Date
-    var weekNumber: Int?
-    var fontSize: Double = 10
+    var referenceDate: Date
 
-    var date: Date {
-        _date.startOfWeek()
-    }
-    var behavior: CurriculumBehavior {
-        SchoolSystem.current.curriculumBehavior
-    }
+    var todayStart: Date { referenceDate.stripTime() }
+    var weekStart: Date { todayStart.startOfWeek() }
+    var weekEnd: Date { weekStart.add(day: 7) }
+
+    var behavior: CurriculumBehavior { SchoolSystem.current.curriculumBehavior }
+
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()
     }
 
-    func length(_ lecture: Lecture) -> Int {
-        (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
+    var isCurrentWeek: Bool {
+        (weekStart ... weekEnd).contains(Date().stripTime())
     }
 
     var body: some View {
         Chart {
-            if (date ... date.add(day: 7)).contains(Date().stripTime()) {
-                // See GH#2
+            if isCurrentWeek {
                 BarMark(
                     xStart: .value(
                         "Start Time",
@@ -63,12 +62,11 @@ struct CurriculumChartView: View {
                 .foregroundStyle((lecture.course?.color ?? .mint).opacity(0.4))
                 .annotation(position: .overlay) {
                     HStack {
-                        Text(lecture.name.truncated(length: length(lecture) > 2 ? 6 : 4))
+                        Text(lecture.name.truncated(length: lecture.length > 2 ? 6 : 4))
                             .font(.system(size: 15, weight: .light))
                         Text("@\(lecture.location)")
                             .font(.system(size: 15, weight: .semibold, design: .monospaced))
                     }
-                    .minimumScaleFactor(0.01)
                 }
             }
         }
@@ -119,11 +117,11 @@ struct CurriculumChartView: View {
                 AxisGridLine()
             }
 
-            AxisMarks(position: .leading, values: [date.add(day: 7)]) { _ in
+            AxisMarks(position: .leading, values: [weekEnd]) { _ in
                 AxisGridLine()
             }
         }
-        .chartYScale(domain: date ... date.add(day: 7))
+        .chartYScale(domain: weekStart ... weekEnd)
         .if(lectures.isEmpty) {
             $0
                 .redacted(reason: .placeholder)
