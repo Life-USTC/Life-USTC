@@ -4,28 +4,56 @@ import SwiftUI
 import SwiftyJSON
 
 @MainActor
-func updateCouse(semsester: Semester, courseIDs: [Int]) async throws {
+func updateCourse(semester: Semester, courseIDs: [Int]) async throws {
     for courseID in courseIDs {
         let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semsester.jw_id)/\(courseID).json")!
+            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/\(courseID).json")!
         )
         let json = try JSON(data: data)
 
-        let course = Course(
-            jw_id: Int(json["id"].intValue),
-            name: json["name"].stringValue,
-            courseCode: json["courseCode"].stringValue,
-            lessonCode: json["lessonCode"].stringValue,
-            teacherName: json["teacherName"].stringValue,
-            description: json["detailText"].string,
-            credit: json["credit"].doubleValue,
-            additionalInfo: [:],
-            dateTimePlacePersonText: json["dateTimePlacePersonText"].string
+        let courseID = Int(json["id"].intValue)
+        let courseName = json["name"].stringValue
+        let courseCode = json["courseCode"].stringValue
+        let lessonCode = json["lessonCode"].stringValue
+        let teacherName = json["teacherName"].stringValue
+        let detailText = json["detailText"].string
+        let credit = json["credit"].doubleValue
+        let dateTimePlacePersonText = json["dateTimePlacePersonText"].string
+
+        let course = try SwiftDataStack.modelContext.upsert(
+            predicate: #Predicate<Course> { $0.jw_id == courseID },
+            update: { existing in
+                existing.name = courseName
+                existing.courseCode = courseCode
+                existing.lessonCode = lessonCode
+                existing.teacherName = teacherName
+                existing.detailText = detailText
+                existing.credit = credit
+                existing.additionalInfo = [:]
+                existing.dateTimePlacePersonText = dateTimePlacePersonText
+                existing.semester = semester
+
+                for lecture in existing.lectures {
+                    SwiftDataStack.modelContext.delete(lecture)
+                }
+                existing.lectures = []
+            },
+            create: {
+                let newCourse = Course(
+                    jw_id: courseID,
+                    name: courseName,
+                    courseCode: courseCode,
+                    lessonCode: lessonCode,
+                    teacherName: teacherName,
+                    description: detailText,
+                    credit: credit,
+                    additionalInfo: [:],
+                    dateTimePlacePersonText: dateTimePlacePersonText
+                )
+                newCourse.semester = semester
+                return newCourse
+            }
         )
-        SwiftDataStack.modelContext.insert(course)
-        try! SwiftDataStack.modelContext.save()
-        course.semester = semsester
-        course.lectures = []
 
         for lectureJSON in json["lectures"].arrayValue {
             let lecture = Lecture(
@@ -41,9 +69,11 @@ func updateCouse(semsester: Semester, courseIDs: [Int]) async throws {
             )
 
             SwiftDataStack.modelContext.insert(lecture)
-            try! SwiftDataStack.modelContext.save()
             lecture.course = course
+            course.lectures.append(lecture)
         }
+
+        try! SwiftDataStack.modelContext.save()
     }
 }
 
@@ -90,7 +120,7 @@ func updateUnderGraduateCurriculum(semester: Semester) async throws {
         return courseIDs
     }()
 
-    try await updateCouse(semsester: semester, courseIDs: courseIDs)
+    try await updateCourse(semester: semester, courseIDs: courseIDs)
 }
 
 @MainActor
@@ -156,62 +186,57 @@ func updateGraduateCurriculum(semester: Semester) async throws {
         return courseIDs
     }()
 
-    try await updateCouse(semsester: semester, courseIDs: courseIDs)
-}
-
-@MainActor
-func debug() {
-    // Query all curriculum, semester, course, lecture, debug print:
-    for curriculum in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Curriculum>()
-    ) {
-        debugPrint(curriculum.uniqueID)
-    }
-    for semester in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Semester>()
-    ) {
-        debugPrint(semester.name)
-        debugPrint(semester.courses?.count)
-    }
-    for course in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Course>()
-    ) {
-        debugPrint(course.name)
-        debugPrint(course.lectures?.count)
-    }
-    for lecture in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Lecture>()
-    ) {
-        //        debugPrint(lecture.name, lecture.course?.name ?? "No Course")
-    }
-
-    debugPrint("----- End of Debug -----")
+    try await updateCourse(semester: semester, courseIDs: courseIDs)
 }
 
 extension USTCSchool {
     @MainActor
     static func updateCurriculum() async throws {
         @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-        let curriculum = Curriculum()
-        SwiftDataStack.modelContext.insert(curriculum)
-        try! SwiftDataStack.modelContext.save()
 
+        debug()
+
+        let curriculum = try SwiftDataStack.modelContext.upsert(
+            predicate: #Predicate<Curriculum> { $0.uniqueID == 0 },
+            update: { _ in },
+            create: { Curriculum() }
+        )
         let (data, _) = try await URLSession.shared.data(
             from: URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")!
         )
+        try! SwiftDataStack.modelContext.save()
+
+        debugPrint(curriculum.uniqueID)
 
         let json = try JSON(data: data)
         for semesterJSON in json.arrayValue {
-            let semester = Semester(
-                jw_id: semesterJSON["id"].stringValue,
-                name: semesterJSON["name"].stringValue,
-                startDate: Date(timeIntervalSince1970: semesterJSON["startDate"].doubleValue),
-                endDate: Date(timeIntervalSince1970: semesterJSON["endDate"].doubleValue)
+            let semesterID = semesterJSON["id"].stringValue
+            let semesterName = semesterJSON["name"].stringValue
+            let semesterStartDate = Date(timeIntervalSince1970: semesterJSON["startDate"].doubleValue)
+            let semesterEndDate = Date(timeIntervalSince1970: semesterJSON["endDate"].doubleValue)
+
+            let semester = try SwiftDataStack.modelContext.upsert(
+                predicate: #Predicate<Semester> { $0.jw_id == semesterID },
+                update: { existing in
+                    existing.name = semesterName
+                    existing.startDate = semesterStartDate
+                    existing.endDate = semesterEndDate
+                },
+                create: {
+                    Semester(
+                        jw_id: semesterID,
+                        name: semesterName,
+                        startDate: semesterStartDate,
+                        endDate: semesterEndDate
+                    )
+                }
             )
-            SwiftDataStack.modelContext.insert(semester)
-            try! SwiftDataStack.modelContext.save()
+
             semester.curriculum = curriculum
             try! SwiftDataStack.modelContext.save()
+
+            debugPrint(semester.jw_id, semester.name, semester.id)
+            debug()
 
             switch ustcStudentType {
             case .undergraduate:
@@ -222,7 +247,33 @@ extension USTCSchool {
                 }
             }
         }
-
         debug()
     }
+}
+
+@MainActor
+private func debug() {
+    // Query all curriculum, semester, course, lecture, debug print:
+    for curriculum in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Curriculum>()
+    ) {
+        debugPrint(curriculum.id, curriculum.uniqueID, curriculum.semesters.count)
+    }
+    for semester in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Semester>()
+    ) {
+        debugPrint(semester.id, semester.name, semester.courses.count)
+    }
+    for course in try! SwiftDataStack.modelContext.fetch(
+        FetchDescriptor<Course>()
+    ) {
+        debugPrint(course.id, course.name, course.lectures.count)
+    }
+    // for lecture in try! SwiftDataStack.modelContext.fetch(
+    //     FetchDescriptor<Lecture>()
+    // ) {
+    //     debugPrint(lecture.id, lecture.name, lecture.course?.name ?? "No Course")
+    // }
+
+    debugPrint("----- End of Debug -----")
 }
