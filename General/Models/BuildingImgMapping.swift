@@ -25,4 +25,14 @@ extension BuildingImgMapping {
             )
         }
     }
+
+    static func getImageURL(for location: String) async throws -> URL? {
+        let mapping = try await fetch()
+        for rule in mapping {
+            if location.range(of: rule.regex, options: .regularExpression) != nil {
+                return URL(string: SchoolSystem.current.buildingimgBaseURL.absoluteString + rule.path)
+            }
+        }
+        return nil
+    }
 }

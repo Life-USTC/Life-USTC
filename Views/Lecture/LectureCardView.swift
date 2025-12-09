@@ -3,10 +3,6 @@ import SwiftUI
 struct LectureCardView: View {
     var lecture: Lecture
 
-    var length: Int {
-        (lecture.endIndex ?? 0) - (lecture.startIndex ?? 0) + 1
-    }
-
     var body: some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 5)
@@ -23,15 +19,15 @@ struct LectureCardView: View {
                 Group {
                     Text(lecture.name)
                         .lineLimit(2, reservesSpace: false)
-                        .font(.system(size: 8, weight: .light))
+                        .font(.system(size: 10, weight: .light))
                     Text(lecture.location)
                         .lineLimit(2, reservesSpace: false)
-                        .font(.system(size: 10, weight: .light, design: .monospaced))
+                        .font(.system(size: 12, weight: .light, design: .monospaced))
                 }
 
                 Spacer()
 
-                if length > 1 {
+                if lecture.length >= 2 {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(lecture.teacherName)
                             .lineLimit(1, reservesSpace: false)

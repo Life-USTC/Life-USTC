@@ -78,6 +78,10 @@ extension Lecture {
     var isFinished: Bool {
         endDate < Date()
     }
+
+    var length: Int {
+        (endIndex ?? 0) - (startIndex ?? 0) + 1
+    }
 }
 
 extension [Lecture] {
