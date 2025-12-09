@@ -11,7 +11,7 @@ import SwiftData
 @Model
 final class Curriculum {
     @Attribute(.unique) var uniqueID = 0
-    @Relationship(deleteRule: .cascade, inverse: \Semester.curriculum) var semesters: [Semester]?
+    @Relationship(deleteRule: .cascade, inverse: \Semester.curriculum) var semesters: [Semester] = []
 
     init() {}
 }

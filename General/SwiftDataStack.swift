@@ -4,13 +4,19 @@ import SwiftUI
 enum SwiftDataStack {
     static let modelContainer: ModelContainer = {
         let schema = Schema([
-            Course.self,
             Curriculum.self,
+            Semester.self,
+            Course.self,
+            Lecture.self,
+
             Exam.self,
             Homework.self,
-            Lecture.self,
+
             Score.self,
-            Semester.self,
+            ScoreEntry.self,
+
+            FeedSource.self,
+            Feed.self,
         ])
 
         let modelConfiguration = ModelConfiguration(

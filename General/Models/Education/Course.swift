@@ -12,7 +12,7 @@ import SwiftUI
 @Model
 final class Course {
     var semester: Semester?
-    @Relationship(deleteRule: .cascade, inverse: \Lecture.course) var lectures: [Lecture]?
+    @Relationship(deleteRule: .cascade, inverse: \Lecture.course) var lectures: [Lecture] = []
 
     @Attribute(.unique) var jw_id: Int
     var name: String
