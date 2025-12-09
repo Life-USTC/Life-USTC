@@ -133,9 +133,11 @@ struct AllSourceView: View {
                 }
 
                 if feedsSearched.isEmpty {
-                    Text("No feeds found.")
-                        .foregroundStyle(.secondary)
-                        .hStackCenter()
+                    ContentUnavailableView(
+                        "No Feeds",
+                        systemImage: "newspaper",
+                        description: Text(searchText.isEmpty ? "No feeds available" : "No feeds match your search")
+                    )
                 }
             }
             .padding(.horizontal, 12)

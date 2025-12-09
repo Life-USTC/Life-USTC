@@ -157,8 +157,16 @@ struct ScoreDetailView: View {
 
     var body: some View {
         List {
-            rankingView
-            scoreListView
+            if summaries.isEmpty || (summaries.first?.entries ?? []).isEmpty {
+                ContentUnavailableView(
+                    "No Score Data",
+                    systemImage: "chart.bar.doc.horizontal",
+                    description: Text("Your scores will appear here once available")
+                )
+            } else {
+                rankingView
+                scoreListView
+            }
         }
         .refreshable {
             Task {
