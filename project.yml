@@ -26,12 +26,11 @@ targets:
     platform: iOS
     deploymentTarget: "17.0"
     sources:
+      - path: "App/"
       - path: "Assets/"
       - path: "General/"
       - path: "Schools/"
       - path: "Views/"
-      - path: "AppDelegate.swift"
-      - path: "ContentView.swift"
       - path: "LaunchScreen.storyboard"
     settings:
       base:
