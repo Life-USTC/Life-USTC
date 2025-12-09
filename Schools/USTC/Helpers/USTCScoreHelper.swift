@@ -20,19 +20,17 @@ extension USTCSchool {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
-        var request = URLRequest(url: scoreURL)
-
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, _) = try await URLSession.shared.data(from: scoreURL)
         let cache = try JSON(data: data)
 
-        var result = Score()
+        let result = Score()
         let subJson = cache["stdGradeRank"]
         result.gpa = cache["overview"]["gpa"].double ?? 0
         result.majorName = subJson["majorName"].string ?? "Error"
         result.majorRank = subJson["majorRank"].int ?? 0
         result.majorStdCount = subJson["majorStdCount"].int ?? 0
 
-        result.courses = cache["semesters"]
+        result.entries = cache["semesters"]
             .flatMap { _, semesterJSON in
                 semesterJSON["scores"]
                     .map { _, courseJSON in

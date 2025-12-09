@@ -92,7 +92,7 @@ final class ScoreEntry {
 @Model
 final class Score {
     /// List of course, default order matters for UI.
-    var courses: [ScoreEntry]
+    var entries: [ScoreEntry]
 
     /// Total GPA
     var gpa: Double
@@ -106,14 +106,14 @@ final class Score {
     var additionalMessage: String?
 
     init(
-        courses: [ScoreEntry] = [],
+        entries: [ScoreEntry] = [],
         gpa: Double = 0.0,
         majorRank: Int = 0,
         majorStdCount: Int = 0,
         majorName: String = "",
         additionalMessage: String? = nil
     ) {
-        self.courses = courses
+        self.entries = entries
         self.gpa = gpa
         self.majorRank = majorRank
         self.majorStdCount = majorStdCount

@@ -176,7 +176,7 @@ struct ScoreDetailView: View {
 
 extension ScoreDetailView {
     private var filteredCourses: [ScoreEntry] {
-        let courses = summaries.first?.courses ?? []
+        let courses = summaries.first?.entries ?? []
         return courses.filter { course in
             !semesterNameToRemove.contains(course.semesterName)
         }
@@ -211,7 +211,7 @@ extension ScoreDetailView {
     }
 
     var semesterNameList: [String] {
-        let courses = summaries.first?.courses ?? []
+        let courses = summaries.first?.entries ?? []
         return
             courses
             .categorise { $0.semesterName }
