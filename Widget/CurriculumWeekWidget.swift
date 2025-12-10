@@ -10,7 +10,6 @@ import SwiftData
 import SwiftUI
 import WidgetKit
 
-@MainActor
 struct CurriculumWeekProvider: TimelineProvider {
     func makeEntry(for date: Date = Date()) -> CurriculumWeekEntry {
         return CurriculumWeekEntry()
