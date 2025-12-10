@@ -54,7 +54,7 @@ struct USTCAdditionalCourseView: View {
         }
         .task {
             Task {
-                let url = URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")
+                let url = URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/semesters.json")
                 let (data, _) = try await URLSession.shared.data(from: url!)
 
                 let json = try JSON(data: data)
@@ -161,7 +161,7 @@ struct USTCAdditionalCourseSemesterView: View {
 
     func updateCourses() async throws {
         let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
+            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
         )
 
         let json = try JSON(data: data)

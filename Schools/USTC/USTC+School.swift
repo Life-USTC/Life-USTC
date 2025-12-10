@@ -5,6 +5,10 @@ enum USTCStudentType: String {
     case graduate = "Graduate"
 }
 
+extension Constants {
+    static let ustcStaticURLPrefix = "https://static.life-ustc.tiankaima.dev/"
+}
+
 enum USTCSchool {
     static func make() -> School {
         return School(
@@ -13,10 +17,10 @@ enum USTCSchool {
             fullChineseName: "中国科学技术大学",
             commonNames: ["中科大"],
 
-            remoteFeedURL: URL(string: "\(Constants.staticURLPrefix)/feed_source.json")!,
-            geoLocationURL: URL(string: "\(Constants.staticURLPrefix)/geo_data.json")!,
-            buildingimgBaseURL: URL(string: "\(Constants.staticURLPrefix)/")!,
-            buildingimgMappingURL: URL(string: "\(Constants.staticURLPrefix)/building_img_rules.json")!,
+            remoteFeedURL: URL(string: "\(Constants.ustcStaticURLPrefix)/feed_source.json")!,
+            geoLocationURL: URL(string: "\(Constants.ustcStaticURLPrefix)/geo_data.json")!,
+            buildingimgBaseURL: URL(string: "\(Constants.ustcStaticURLPrefix)/")!,
+            buildingimgMappingURL: URL(string: "\(Constants.ustcStaticURLPrefix)/building_img_rules.json")!,
 
             curriculumBehavior: ustcCurriculumBehavior,
 

@@ -114,6 +114,6 @@ extension URL {
             resolvingAgainstBaseURL: false
         )!
         components.queryItems = [.init(name: "service", value: absoluteString)]
-        return components.url ?? Constants.exampleURL
+        return components.url!
     }
 }

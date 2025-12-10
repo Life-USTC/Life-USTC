@@ -7,7 +7,7 @@ import SwiftyJSON
 func updateCourse(semester: Semester, courseIDs: [Int]) async throws {
     for courseID in courseIDs {
         let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/\(courseID).json")!
+            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/\(courseID).json")!
         )
         let json = try JSON(data: data)
 
@@ -167,7 +167,7 @@ func updateGraduateCurriculum(semester: Semester) async throws {
     let courseIDs = try await {
         let (semester_data, _) = try await URLSession.shared.data(
             from:
-                URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
+                URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
         )
         let json = try JSON(data: semester_data)
         let allCourses = json.arrayValue
@@ -200,7 +200,7 @@ extension USTCSchool {
             create: { Curriculum() }
         )
         let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")!
+            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/semesters.json")!
         )
         try! SwiftDataStack.modelContext.save()
 
