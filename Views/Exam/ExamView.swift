@@ -2,10 +2,9 @@ import SwiftUI
 
 struct ExamView: View {
     var exam: Exam
-    var color: Color = .blue
 
     var examColor: Color {
-        exam.daysLeft <= 7 ? .red.opacity(0.8) : color.opacity(0.8)
+        exam.daysLeft <= 7 ? .red.opacity(0.8) : exam.color.opacity(0.8)
     }
 
     var body: some View {

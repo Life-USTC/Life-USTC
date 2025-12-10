@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ExamListWidget: View {
     let exams: [Exam]
-    var color: Color = .blue
     var numberToShow: Int = 2
 
     var body: some View {
@@ -26,7 +25,7 @@ struct ExamListWidget: View {
 
                     VStack(alignment: .leading, spacing: 5) {
                         ForEach(exams.prefix(numberToShow), id: \.id) { exam in
-                            ExamView(exam: exam, color: color)
+                            ExamView(exam: exam)
                         }
                     }
 

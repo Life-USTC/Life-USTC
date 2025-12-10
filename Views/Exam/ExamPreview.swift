@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ExamPreview: View {
     var exams: [Exam] = []
-    var color: Color = .blue
 
     var body: some View {
         VStack(spacing: 10) {
@@ -20,7 +19,7 @@ struct ExamPreview: View {
                 )
             } else {
                 ForEach(exams) { exam in
-                    ExamView(exam: exam, color: color)
+                    ExamView(exam: exam)
                 }
             }
         }

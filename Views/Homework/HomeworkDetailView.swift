@@ -44,7 +44,7 @@ private struct HomeworkView: View {
                 Text(homework.dueDate, style: .relative)
                     .fontWeight(.bold)
                     .foregroundColor(
-                        homework.daysLeft <= 1 ? .red : .accentColor
+                        homework.daysLeft <= 1 ? .red : homework.color
                     )
             }
         }

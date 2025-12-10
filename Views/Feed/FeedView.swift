@@ -11,9 +11,6 @@ import SwiftUI
 private struct FeedViewPreview: View {
     let feed: Feed
     let isRead: Bool
-    var color: Color {
-        Color(hex: feed.colorHex ?? "#FFFFFF")
-    }
     var hasImage: Bool { feed.imageURL != nil }
     private let imageHeight: CGFloat = 180
 
@@ -31,15 +28,18 @@ private struct FeedViewPreview: View {
                     .lineLimit(3)
 
                 HStack(spacing: 6) {
-                    Text(feed.source?.name ?? "Unknown")
-                        .font(.system(.caption2, weight: .heavy))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(color.opacity(0.9))
-                        }
+                    if let sourceName = feed.source?.name {
+                        Text(sourceName)
+                            .lineLimit(1)
+                            .font(.system(.caption2, weight: .heavy))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(feed.color.opacity(0.9))
+                            }
+                    }
 
                     Text(feed.datePosted.formatted(.relative(presentation: .named)))
                         .font(.system(.caption2, design: .monospaced))
