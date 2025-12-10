@@ -61,7 +61,7 @@ struct LectureSheetView: View {
             .background {
                 GeometryReader { geo in
                     Rectangle()
-                        .fill((lecture.course?.color ?? .accentColor).opacity(0.2))
+                        .fill((lecture.course?.color ?? .accentColor).opacity(0.3))
                         .frame(width: geo.size.width + 10, height: geo.size.height / 2)
                         .offset(x: -5, y: geo.size.height / 2)
                 }

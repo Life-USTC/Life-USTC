@@ -6,7 +6,7 @@ struct LectureCardView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 5)
-                .fill(lecture.color.opacity(0.1))
+                .fill(lecture.color.opacity(0.2))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
