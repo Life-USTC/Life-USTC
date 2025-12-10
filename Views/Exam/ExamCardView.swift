@@ -8,7 +8,6 @@ struct ExamCardView: View {
             VStack(alignment: .leading) {
                 Text("\(exam.courseName)")
                     .font(.system(.title2, weight: .medium))
-                    .strikethrough(exam.isFinished)
                     .foregroundColor(exam.isFinished ? .gray : .primary)
                     .background {
                         GeometryReader { geo in

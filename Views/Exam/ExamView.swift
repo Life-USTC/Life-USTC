@@ -8,10 +8,6 @@ struct ExamView: View {
         exam.daysLeft <= 7 ? .red.opacity(0.8) : color.opacity(0.8)
     }
 
-    var isFinished: Bool {
-        exam.isFinished
-    }
-
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -26,13 +22,13 @@ struct ExamView: View {
             Spacer()
 
             VStack(alignment: .trailing) {
-                if isFinished {
+                if exam.isFinished {
                     Text("Finished")
                         .foregroundColor(.gray)
                         .font(.subheadline)
                         .fontWeight(.heavy)
                 } else {
-                    Text(RelativeDateTimeFormatter().localizedString(for: exam.startDate, relativeTo: Date()))
+                    Text(exam.startDate, style: .relative)
                         .foregroundColor(examColor)
                         .font(.subheadline)
                         .fontWeight(.heavy)
@@ -54,10 +50,8 @@ struct ExamView: View {
                     .fill(examColor.opacity(0.05))
             }
         }
-        .if(isFinished) {
-            $0
-                .strikethrough()
-                .grayscale(1.0)
+        .if(exam.isFinished) {
+            $0.grayscale(1.0)
         }
     }
 }
