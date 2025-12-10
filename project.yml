@@ -64,6 +64,7 @@ targets:
       - sdk: CoreTelephony.framework
       - sdk: Security.framework
       - sdk: SystemConfiguration.framework
+      - package: Oklch
       - package: FeedKit
       - package: Introspect
       - package: SwiftyJSON
@@ -143,6 +144,7 @@ targets:
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         SKIP_INSTALL: YES
     dependencies:
+      - package: Oklch
       - package: FeedKit
       - package: Introspect
       - package: SwiftyJSON
@@ -181,6 +183,9 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
 
 packages:
+  Oklch:
+    url: https://github.com/nikstar/swift-oklch
+    branch: main
   FeedKit:
     url: https://github.com/nmdias/FeedKit
     majorVersion: 9.1.2
