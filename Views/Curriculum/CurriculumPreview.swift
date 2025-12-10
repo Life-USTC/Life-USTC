@@ -42,8 +42,7 @@ struct CurriculumPreview: View {
             if todayLectures.isEmpty && tomorrowLectures.isEmpty {
                 ContentUnavailableView(
                     "Nothing here",
-                    systemImage: "calendar",
-                    description: Text("Enjoy!")
+                    systemImage: "calendar.badge.checkmark",
                 )
             }
         }

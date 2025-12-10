@@ -11,7 +11,7 @@ import SwiftData
 import SwiftUI
 
 struct CurriculumListView: View {
-    @Query(sort: \Semester.startDate, order: .forward) var semesters: [Semester]
+    @Query(sort: \Semester.startDate, order: .reverse) var semesters: [Semester]
 
     var dismissAction: (() -> Void)
 
@@ -65,11 +65,11 @@ struct CurriculumListView: View {
 
     var body: some View {
         List {
-            ForEach(semesters, id: \.id) { semester in
+            ForEach(semesters.filter { !$0.courses.isEmpty }, id: \.id) { semester in
                 section(for: semester)
             }
         }
-
+        .navigationTitle("Curriculum")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {
@@ -90,17 +90,11 @@ struct CurriculumListView: View {
 
                 Button {
                     Task {
-                        try await SchoolSystem.current.updateCurriculum()
+                        try await Curriculum.update()
                     }
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
-            }
-        }
-        .navigationTitle("Curriculum")
-        .task {
-            Task {
-                try await SchoolSystem.current.updateCurriculum()
             }
         }
     }

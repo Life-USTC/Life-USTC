@@ -17,7 +17,6 @@ struct ExamPreview: View {
                 ContentUnavailableView(
                     "No More Exam!",
                     systemImage: "calendar.badge.checkmark",
-                    description: Text("Enjoy!")
                 )
             } else {
                 ForEach(exams) { exam in

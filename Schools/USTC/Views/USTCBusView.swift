@@ -365,7 +365,6 @@ struct USTCBusView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
-        .navigationTitle("Bus Timetable")
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .onAppear {
             // Make sure currentRouteIndex is valid
@@ -383,6 +382,7 @@ struct USTCBusView: View {
                 ProgressView("Loading...")
             }
         }
+        .navigationTitle("Bus Timetable")
         .task {
             Task {
                 data = try await USTCBusData.fetch()

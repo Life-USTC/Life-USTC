@@ -23,7 +23,6 @@ struct ScoreDetailView: View {
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
 
-    @State private var isRefreshing = false
     @State private var showShareSheet = false
     @State private var exportedImage: UIImage?
 
@@ -149,14 +148,17 @@ struct ScoreDetailView: View {
 
     var listContent: some View {
         Group {
-            if scoreSheet == nil || (scoreSheet?.entries ?? []).isEmpty {
+            if scoreSheet != nil {
+                rankingView
+            }
+
+            if (scoreSheet?.entries ?? []).isEmpty {
                 ContentUnavailableView(
                     "No Score Data",
                     systemImage: "chart.bar.doc.horizontal",
                     description: Text("Your scores will appear here once available")
                 )
             } else {
-                rankingView
                 scoreListView
             }
         }
@@ -194,18 +196,11 @@ struct ScoreDetailView: View {
 
                 Button {
                     Task {
-                        isRefreshing = true
                         try await ScoreSheet.update()
-                        isRefreshing = false
                     }
                 } label: {
-                    if isRefreshing {
-                        ProgressView()
-                    } else {
-                        Image(systemName: "arrow.clockwise")
-                    }
+                    Label("Refresh", systemImage: "arrow.clockwise")
                 }
-                .disabled(isRefreshing)
             }
         }
         .sheet(isPresented: $showShareSheet) {

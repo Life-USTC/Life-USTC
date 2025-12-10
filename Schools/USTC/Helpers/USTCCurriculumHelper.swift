@@ -194,8 +194,6 @@ extension USTCSchool {
     static func updateCurriculum() async throws {
         @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
 
-        debug()
-
         let curriculum = try SwiftDataStack.modelContext.upsert(
             predicate: #Predicate<Curriculum> { $0.uniqueID == 0 },
             update: { _ in },
@@ -205,8 +203,6 @@ extension USTCSchool {
             from: URL(string: "\(Constants.staticURLPrefix)/curriculum/semesters.json")!
         )
         try! SwiftDataStack.modelContext.save()
-
-        debugPrint(curriculum.uniqueID)
 
         let json = try JSON(data: data)
         for semesterJSON in json.arrayValue {
@@ -235,9 +231,6 @@ extension USTCSchool {
             semester.curriculum = curriculum
             try! SwiftDataStack.modelContext.save()
 
-            debugPrint(semester.jw_id, semester.name, semester.id)
-            debug()
-
             switch ustcStudentType {
             case .undergraduate:
                 try await updateUnderGraduateCurriculum(semester: semester)
@@ -247,33 +240,5 @@ extension USTCSchool {
                 }
             }
         }
-        debug()
     }
-}
-
-@MainActor
-private func debug() {
-    // Query all curriculum, semester, course, lecture, debug print:
-    for curriculum in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Curriculum>()
-    ) {
-        debugPrint(curriculum.id, curriculum.uniqueID, curriculum.semesters.count)
-    }
-    for semester in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Semester>()
-    ) {
-        debugPrint(semester.id, semester.name, semester.courses.count)
-    }
-    for course in try! SwiftDataStack.modelContext.fetch(
-        FetchDescriptor<Course>()
-    ) {
-        debugPrint(course.id, course.name, course.lectures.count)
-    }
-    // for lecture in try! SwiftDataStack.modelContext.fetch(
-    //     FetchDescriptor<Lecture>()
-    // ) {
-    //     debugPrint(lecture.id, lecture.name, lecture.course?.name ?? "No Course")
-    // }
-
-    debugPrint("----- End of Debug -----")
 }

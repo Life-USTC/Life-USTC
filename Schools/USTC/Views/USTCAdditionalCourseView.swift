@@ -141,29 +141,38 @@ struct USTCAdditionalCourseSemesterView: View {
             }
 
             if coursesToShow.isEmpty {
-                Text("No course found?")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .task {
-            Task {
-                let (data, _) = try await URLSession.shared.data(
-                    from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.id)/courses.json")!
+                ContentUnavailableView(
+                    "No Course Found",
+                    systemImage: "book.closed"
                 )
-
-                let json = try JSON(data: data)
-                courses = json.arrayValue.map { item in
-                    Course(
-                        jw_id: item["id"].intValue,
-                        name: item["name"].stringValue,
-                        courseCode: item["courseCode"].stringValue,
-                        lessonCode: item["lessonCode"].stringValue,
-                        teacherName: item["teacherName"].stringValue,
-                    )
-                }
             }
         }
-        .searchable(text: $searchKeyword)
         .navigationTitle(semester.name)
+        .task {
+            try? await updateCourses()
+        }
+        .refreshable {
+            Task {
+                try await updateCourses()
+            }
+        }
+        .searchable(text: $searchKeyword, placement: .navigationBarDrawer(displayMode: .always))
+    }
+
+    func updateCourses() async throws {
+        let (data, _) = try await URLSession.shared.data(
+            from: URL(string: "\(Constants.staticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
+        )
+
+        let json = try JSON(data: data)
+        courses = json.arrayValue.map { item in
+            Course(
+                jw_id: item["id"].intValue,
+                name: item["name"].stringValue,
+                courseCode: item["courseCode"].stringValue,
+                lessonCode: item["lessonCode"].stringValue,
+                teacherName: item["teacherName"].stringValue,
+            )
+        }
     }
 }

@@ -11,8 +11,8 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink("App Settings", destination: AppSettingsPage())
-                    .accessibilityIdentifier("settings_app_settings")
+                // NavigationLink("App Settings", destination: AppSettingsPage())
+                //     .accessibilityIdentifier("settings_app_settings")
                 NavigationLink("Home Page Settings", destination: HomeSettingPage())
                     .accessibilityIdentifier("settings_home_settings")
                 NavigationLink("Feed Source Settings", destination: FeedSetingsPage())
