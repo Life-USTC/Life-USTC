@@ -20,6 +20,10 @@ struct GeoLocation {
 
 extension [GeoLocation] {
     static func refresh() async throws -> Self {
+        if SwiftDataStack.isPresentingDemo {
+            return DemoData.geoLocations
+        }
+
         let (data, _) = try await URLSession.shared.data(from: SchoolSystem.current.geoLocationURL)
         let json = try JSON(data: data)
 

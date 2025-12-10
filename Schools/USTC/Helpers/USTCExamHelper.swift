@@ -11,6 +11,8 @@ import SwiftSoup
 extension USTCSchool {
     @MainActor
     static func updateExam() async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         func parseDate(from: String) -> (startTime: Date, endTime: Date)? {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"

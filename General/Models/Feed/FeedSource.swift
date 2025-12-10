@@ -46,6 +46,8 @@ final class FeedSource {
 extension FeedSource {
     @MainActor
     static func update() async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         let (data, _) = try await URLSession.shared.data(
             from: SchoolSystem.current.remoteFeedURL
         )

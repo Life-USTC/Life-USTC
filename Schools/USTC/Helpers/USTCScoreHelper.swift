@@ -12,6 +12,8 @@ import SwiftyJSON
 extension USTCSchool {
     @MainActor
     static func updateScore() async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         @LoginClient(.ustcAAS) var ustcAASClient: USTCAASClient
 
         let scoreURL = URL(

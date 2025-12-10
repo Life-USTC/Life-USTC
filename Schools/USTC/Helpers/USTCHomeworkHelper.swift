@@ -11,6 +11,8 @@ import SwiftyJSON
 extension USTCSchool {
     @MainActor
     static func updateHomework() async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         func decodeDate(from raw: String) -> Date? {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

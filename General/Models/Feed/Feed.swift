@@ -51,6 +51,8 @@ final class Feed {
 extension Feed {
     @MainActor
     static func update() async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         try await FeedSource.update()
 
         let descriptor = FetchDescriptor<FeedSource>()
@@ -63,6 +65,8 @@ extension Feed {
 
     @MainActor
     static func update(for feedSource: FeedSource) async throws {
+        if SwiftDataStack.isPresentingDemo { return }
+
         let parseResult = try? await withCheckedThrowingContinuation { continuation in
             FeedParser(URL: feedSource.url)
                 .parseAsync { result in

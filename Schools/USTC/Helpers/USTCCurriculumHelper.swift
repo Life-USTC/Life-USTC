@@ -194,6 +194,8 @@ extension USTCSchool {
     static func updateCurriculum() async throws {
         @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
 
+        if SwiftDataStack.isPresentingDemo { return }
+
         let curriculum = try SwiftDataStack.modelContext.upsert(
             predicate: #Predicate<Curriculum> { $0.uniqueID == 0 },
             update: { _ in },
