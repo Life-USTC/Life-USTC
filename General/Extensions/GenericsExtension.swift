@@ -67,9 +67,7 @@ extension CaseIterable where Self: Equatable {
 /// - Parameter key: Function to extract the grouping key from each element
 /// - Returns: Dictionary mapping keys to arrays of elements
 extension Sequence {
-    public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U:
-        [Iterator.Element]]
-    {
+    public func categorise<U: Hashable>(_ key: (Iterator.Element) -> U) -> [U: [Iterator.Element]] {
         var dict: [U: [Iterator.Element]] = [:]
         for el in self {
             let key = key(el)

@@ -2,7 +2,7 @@ name: Life-USTC
 options:
   bundleIdPrefix: dev.tiankaima.
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
   xcodeVersion: "15.0"
   createIntermediateGroups: true
   groupSortPosition: top
@@ -12,7 +12,7 @@ options:
 
 settings:
   base:
-    MARKETING_VERSION: "2.2.3"
+    MARKETING_VERSION: "2.3.0"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -24,15 +24,13 @@ targets:
   Life-USTC:
     type: application
     platform: iOS
-    deploymentTarget: "16.0"
+    deploymentTarget: "17.0"
     sources:
+      - path: "App/"
       - path: "Assets/"
       - path: "General/"
-      - path: "Models/"
       - path: "Schools/"
       - path: "Views/"
-      - path: "AppDelegate.swift"
-      - path: "ContentView.swift"
       - path: "LaunchScreen.storyboard"
     settings:
       base:
@@ -66,6 +64,7 @@ targets:
       - sdk: CoreTelephony.framework
       - sdk: Security.framework
       - sdk: SystemConfiguration.framework
+      - package: Oklch
       - package: FeedKit
       - package: Introspect
       - package: SwiftyJSON
@@ -92,6 +91,7 @@ targets:
         NSCalendarsUsageDescription: "向日历中添加课表/考试信息"
         NSCalendarsFullAccessUsageDescription: "向日历中添加课表/考试信息"
         NSRemindersFullAccessUsageDescription: "向日历中添加课表/考试信息"
+        NSPhotoLibraryAddUsageDescription: "Export images to Photo Library"
         NSPrivacyAccessedAPITypes:
           - NSPrivacyAccessedAPIType: NSPrivacyAccessedAPICategoryUserDefaults
             NSPrivacyAccessedAPITypeReasons: ["1C8F.1"]
@@ -119,13 +119,15 @@ targets:
   Widget iOS:
     type: app-extension
     platform: iOS
-    deploymentTarget: "16.0"
+    deploymentTarget: "17.0"
     sources:
       - path: "Assets/"
       - path: "General/"
-      - path: "Models/"
-      - path: "Schools/"
-      - path: "Views/"
+      - path: "Schools/Protocols/"
+      - path: "Views/Lecture/LectureView.swift"
+      - path: "Views/Curriculum/CurriculumChartView.swift"
+      - path: "Views/Exam/ExamView.swift"
+      - path: "Views/Extensions/"
       - path: "Widget/"
     entitlements:
       path: Widget/Widget.entitlements
@@ -142,6 +144,7 @@ targets:
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         SKIP_INSTALL: YES
     dependencies:
+      - package: Oklch
       - package: FeedKit
       - package: Introspect
       - package: SwiftyJSON
@@ -180,6 +183,9 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
 
 packages:
+  Oklch:
+    url: https://github.com/nikstar/swift-oklch
+    branch: main
   FeedKit:
     url: https://github.com/nmdias/FeedKit
     majorVersion: 9.1.2

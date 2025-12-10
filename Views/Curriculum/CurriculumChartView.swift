@@ -1,0 +1,136 @@
+//
+//  CurriculumWeekView.swift
+//  Life@USTC
+//
+//  Created by Tiankai Ma on 2023/8/20.
+//
+
+import Charts
+import SwiftUI
+
+private var fontSize: Double = 10
+
+struct CurriculumChartView: View {
+    var lectures: [Lecture]
+    var referenceDate: Date
+
+    var todayStart: Date { referenceDate.stripTime() }
+    var weekStart: Date { todayStart.startOfWeek() }
+    var weekEnd: Date { weekStart.add(day: 7) }
+
+    var behavior: CurriculumBehavior { SchoolSystem.current.curriculumBehavior }
+
+    var mergedTimes: [Int] {
+        (behavior.shownTimes + behavior.highLightTimes).sorted()
+    }
+
+    var isCurrentWeek: Bool {
+        (weekStart ... weekEnd).contains(Date().stripTime())
+    }
+
+    var body: some View {
+        Chart {
+            if isCurrentWeek {
+                BarMark(
+                    xStart: .value(
+                        "Start Time",
+                        mergedTimes.first!
+                    ),
+
+                    xEnd: .value(
+                        "End Time",
+                        mergedTimes.last!
+                    ),
+                    y: .value("Date", Date().stripTime(), unit: .day)
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.2))
+            }
+
+            ForEach(lectures) { lecture in
+                BarMark(
+                    xStart: .value(
+                        "Start Time",
+                        behavior.convertTo(lecture.startDate.minutesSinceMidnight)
+                    ),
+
+                    xEnd: .value(
+                        "End Time",
+                        behavior.convertTo(lecture.endDate.minutesSinceMidnight)
+                    ),
+                    y: .value("Date", lecture.startDate.stripTime(), unit: .day)
+                )
+                .foregroundStyle((lecture.course?.color ?? .mint).opacity(0.4))
+                .annotation(position: .overlay) {
+                    HStack {
+                        Text(lecture.name.truncated(length: lecture.length > 2 ? 6 : 4))
+                            .font(.system(size: 15, weight: .light))
+                        Text("@\(lecture.location)")
+                            .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                    }
+                }
+            }
+        }
+        .chartXAxis {
+            AxisMarks(position: .top, values: behavior.shownTimes) { value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = behavior.convertFrom(_hhmm)
+                    AxisValueLabel {
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        )
+                        .font(.system(size: fontSize - 1))
+                    }
+                    AxisGridLine()
+                }
+            }
+
+            if (mergedTimes.first! ... mergedTimes.last!)
+                .contains(behavior.convertTo(Date().stripDate().minutesSinceMidnight))
+            {
+                AxisMarks(
+                    position: .bottom,
+                    values: [behavior.convertTo(Date().stripDate().minutesSinceMidnight)]
+                ) { _ in
+                    AxisGridLine(stroke: .init(dash: []))
+                        .foregroundStyle(.red)
+                }
+            }
+
+            AxisMarks(position: .bottom, values: behavior.highLightTimes) {
+                value in
+                if let _hhmm = value.as(Int.self) {
+                    let hhmm = behavior.convertFrom(_hhmm)
+                    AxisValueLabel(anchor: .topTrailing) {
+                        Text(
+                            "\(hhmm / 60, specifier: "%02d"):\(hhmm % 60, specifier: "%02d")"
+                        )
+                        .foregroundColor(.blue)
+                    }
+                    AxisGridLine()
+                        .foregroundStyle(.blue)
+                }
+            }
+        }
+        .chartXScale(domain: mergedTimes.first! ... mergedTimes.last!)
+        .chartYAxis {
+            AxisMarks(position: .leading, values: .stride(by: .day)) { _ in
+                AxisGridLine()
+            }
+
+            AxisMarks(position: .leading, values: [weekEnd]) { _ in
+                AxisGridLine()
+            }
+        }
+        .chartYScale(domain: weekStart ... weekEnd)
+        .if(lectures.isEmpty) {
+            $0
+                .redacted(reason: .placeholder)
+                .blur(radius: 2)
+                .overlay {
+                    Text("No lectures this week")
+                        .font(.system(.title2, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+        }
+    }
+}

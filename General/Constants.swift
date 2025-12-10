@@ -33,33 +33,9 @@ extension Bundle {
     }
 }
 
-var userAgent: String {
-    "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari/602.1.50"
+enum Constants {
+    static let userAgent =
+        "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari/602.1.50"
+    static let demoUserName = "demo"
+    static let demoPassword = "demo"
 }
-
-var staticURLPrefix: String {
-    return "https://static.life-ustc.tiankaima.dev/"
-}
-
-let exampleURL = URL(string: "https://example.com")!
-
-var appShouldPresentDemo: Bool {
-    get {
-        UserDefaults.appGroup.object(forKey: "appShouldPresentDemo") as? Bool ?? false
-    }
-    set {
-        UserDefaults.appGroup.set(newValue, forKey: "appShouldPresentDemo")
-    }
-}
-
-var appShouldNOTUpdate: Bool {
-    get {
-        UserDefaults.appGroup.object(forKey: "appShouldNOTUpdateAnything") as? Bool ?? false
-    }
-    set {
-        UserDefaults.appGroup.set(newValue, forKey: "appShouldNOTUpdateAnything")
-    }
-}
-
-let demoUserName = "demo"
-let demoPassword = "demo"

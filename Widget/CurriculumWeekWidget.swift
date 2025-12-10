@@ -6,56 +6,17 @@
 //
 
 import Intents
+import SwiftData
 import SwiftUI
 import WidgetKit
 
 struct CurriculumWeekProvider: TimelineProvider {
-    @ManagedData(.curriculum) var curriculum: Curriculum
-
-    func placeholder(in _: Context) -> CurriculumWeekEntry {
-        CurriculumWeekEntry.example
+    func makeEntry(for date: Date = Date()) -> CurriculumWeekEntry {
+        return CurriculumWeekEntry()
     }
 
-    func makeEntry(for _date: Date = Date()) async throws -> CurriculumWeekEntry {
-        let date = _date.startOfWeek()
-        guard let curriculum = _curriculum.retriveLocal() else {
-            throw BaseError.runtimeError("Failed to retrive curriculum data")
-        }
-        let currentSemester: Semester? =
-            curriculum.semesters
-            .filter { ($0.startDate ... $0.endDate).contains(date) }
-            .first
-
-        let lectures: [Lecture] =
-            (currentSemester == nil
-            ? curriculum.semesters.flatMap { $0.courses.flatMap(\.lectures) }
-            : currentSemester!.courses.flatMap(\.lectures))
-            .filter {
-                (0.0 ..< 3600.0 * 24 * 7)
-                    .contains($0.startDate.stripTime().timeIntervalSince(date))
-            }
-
-        var weekNumber: Int? = nil
-
-        if let currentSemester {
-            weekNumber =
-                (Calendar(identifier: .gregorian)
-                    .dateComponents(
-                        [.weekOfYear],
-                        from: currentSemester.startDate,
-                        to: date
-                    )
-                    .weekOfYear ?? 0) + 1
-        } else {
-            weekNumber = nil
-        }
-
-        return .init(
-            lectures: lectures,
-            date: date,
-            currentSemesterName: currentSemester?.name ?? "All",
-            weekNumber: weekNumber
-        )
+    func placeholder(in _: Context) -> CurriculumWeekEntry {
+        makeEntry()
     }
 
     func getSnapshot(
@@ -64,7 +25,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
             completion(entry)
         }
     }
@@ -75,7 +36,7 @@ struct CurriculumWeekProvider: TimelineProvider {
     ) {
         Task {
             let date = Date()
-            let entry = try await makeEntry(for: date)
+            let entry = makeEntry(for: date)
 
             let timeline = Timeline(entries: [entry], policy: .atEnd)
             completion(timeline)
@@ -84,29 +45,32 @@ struct CurriculumWeekProvider: TimelineProvider {
 }
 
 struct CurriculumWeekEntry: TimelineEntry {
-    var lectures: [Lecture]
-    var date: Date
-    var currentSemesterName: String
-    var weekNumber: Int?
-
-    static let example = CurriculumWeekEntry(
-        lectures: [.example],
-        date: .now,
-        currentSemesterName: Semester.example.name,
-        weekNumber: nil
-    )
+    var date: Date = Date()
 }
 
 struct CurriculumWeekWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: CurriculumWeekProvider.Entry
 
+    @State var referenceDate: Date = Date()
+    var todayStart: Date { referenceDate.stripTime() }
+    var weekStart: Date { todayStart.startOfWeek() }
+    var weekEnd: Date { weekStart.add(day: 7) }
+
+    @Query(sort: \Lecture.startDate, order: .forward) var lecturesQuery: [Lecture]
+
+    var lectures: [Lecture] {
+        lecturesQuery
+            .filter {
+                (weekStart ... weekEnd)
+                    .contains($0.startDate.stripTime())
+            }
+    }
+
     var body: some View {
-        CurriculumWeekView(
-            lectures: entry.lectures,
-            _date: entry.date,
-            weekNumber: entry.weekNumber,
-            fontSize: widgetFamily == .systemExtraLarge ? 15 : 10
+        CurriculumChartView(
+            lectures: lectures,
+            referenceDate: referenceDate,
         )
         .padding(3)
         .widgetBackground(
@@ -121,6 +85,7 @@ struct CurriculumWeekWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CurriculumWeekProvider()) {
             CurriculumWeekWidgetEntryView(entry: $0)
+                .modelContainer(SwiftDataStack.modelContainer)
         }
         .supportedFamilies([.systemExtraLarge])
         .configurationDisplayName("Curriculum")
