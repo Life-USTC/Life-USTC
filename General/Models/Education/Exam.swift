@@ -22,6 +22,10 @@ final class Exam {
     var classRoomDistrict: String
     var detailText: String
 
+    var color: Color {
+        Color.fromSeed(courseName)
+    }
+
     init(
         lessonCode: String,
         courseName: String,

@@ -6,6 +6,7 @@
 //
 
 import EventKit
+import Oklch
 import SwiftData
 import SwiftUI
 
@@ -25,8 +26,7 @@ final class Course {
     var dateTimePlacePersonText: String?
 
     var color: Color {
-        let courseColors: [Color] = [.orange, .teal, .cyan, .blue, .indigo, .purple, .pink, .brown]
-        return courseColors[jw_id % courseColors.count]
+        return Color.fromSeed(name)
     }
 
     init(

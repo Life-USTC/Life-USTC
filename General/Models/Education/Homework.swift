@@ -7,12 +7,17 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class Homework {
     var title: String
     var courseName: String
     var dueDate: Date
+
+    var color: Color {
+        Color.fromSeed(courseName)
+    }
 
     var isFinished: Bool {
         Date() > dueDate
