@@ -47,15 +47,30 @@ extension Feed {
         let json = try JSON(data: data)
 
         for sourceJSON in json["sources"].arrayValue {
-            let feedSource = FeedSource(
-                url: URL(string: sourceJSON["url"].stringValue)!,
-                name: sourceJSON["locales"]["zh"].stringValue,
-                detailText: sourceJSON["description"].stringValue,
-                image: sourceJSON["icons"]["sf-symbols"].stringValue,
-                colorHex: sourceJSON["color"].stringValue
-            )
+            let sourceURL = URL(string: sourceJSON["url"].stringValue)!
+            let sourceName = sourceJSON["locales"]["zh"].stringValue
+            let sourceDescription = sourceJSON["description"].stringValue
+            let sourceImage = sourceJSON["icons"]["sf-symbols"].stringValue
+            let sourceColor = sourceJSON["color"].stringValue
 
-            SwiftDataStack.modelContext.insert(feedSource)
+            let feedSource = try SwiftDataStack.modelContext.upsert(
+                predicate: #Predicate<FeedSource> { $0.url == sourceURL },
+                update: { source in
+                    source.name = sourceName
+                    source.detailText = sourceDescription
+                    source.image = sourceImage
+                    source.colorHex = sourceColor
+                },
+                create: {
+                    FeedSource(
+                        url: sourceURL,
+                        name: sourceName,
+                        detailText: sourceDescription,
+                        image: sourceImage,
+                        colorHex: sourceColor
+                    )
+                }
+            )
 
             let parseResult = try? await withCheckedThrowingContinuation { continuation in
                 FeedParser(URL: feedSource.url)
@@ -69,17 +84,80 @@ extension Feed {
                     }
             }
 
-            if let feeds = parseResult?.rssFeed?.items?
-                .map({
-                    Feed(item: $0, source: feedSource)
-                })
-                ?? parseResult?.atomFeed?.entries?
-                .map({
-                    Feed(entry: $0, source: feedSource)
-                })
-            {
-                for feed in feeds {
-                    SwiftDataStack.modelContext.insert(feed)
+            if let rssItems = parseResult?.rssFeed?.items {
+                for item in rssItems {
+                    let feedURL = URL(string: item.link ?? "example.com")!
+                    let feedTitle = item.title ?? "!!No title found for this Feed"
+                    let feedKeywords = Set(item.categories?.map { $0.value ?? "" } ?? [])
+                    let feedDescription = item.description
+                    let feedDate = item.pubDate ?? Date()
+                    let feedColorHex = sourceColor
+
+                    var feedImageURL: URL?
+                    if let enclosure = item.enclosure, enclosure.attributes?.type == "image/jpeg",
+                        let urlString = enclosure.attributes?.url
+                    {
+                        feedImageURL = URL(string: urlString)
+                    }
+
+                    try SwiftDataStack.modelContext.upsert(
+                        predicate: #Predicate<Feed> { $0.url == feedURL },
+                        update: { feed in
+                            feed.title = feedTitle
+                            feed.keywords = feedKeywords
+                            feed.detailText = feedDescription
+                            feed.datePosted = feedDate
+                            feed.imageURL = feedImageURL
+                            feed.colorHex = feedColorHex
+                            feed.source = feedSource
+                        },
+                        create: {
+                            let newFeed = Feed(
+                                title: feedTitle,
+                                keywords: feedKeywords,
+                                detailText: feedDescription,
+                                datePosted: feedDate,
+                                url: feedURL,
+                                imageURL: feedImageURL,
+                                colorHex: feedColorHex
+                            )
+                            newFeed.source = feedSource
+                            return newFeed
+                        }
+                    )
+                }
+            } else if let atomEntries = parseResult?.atomFeed?.entries {
+                for entry in atomEntries {
+                    let feedURL = URL(string: entry.links?.first?.attributes?.href ?? "example.com")!
+                    let feedTitle = entry.title ?? "!!No title found for this Feed"
+                    let feedKeywords = Set(entry.categories?.map { $0.attributes?.label ?? "" } ?? [])
+                    let feedDescription = entry.summary?.value
+                    let feedDate = entry.updated ?? Date()
+                    let feedColorHex = sourceColor
+
+                    try SwiftDataStack.modelContext.upsert(
+                        predicate: #Predicate<Feed> { $0.url == feedURL },
+                        update: { feed in
+                            feed.title = feedTitle
+                            feed.keywords = feedKeywords
+                            feed.detailText = feedDescription
+                            feed.datePosted = feedDate
+                            feed.colorHex = feedColorHex
+                            feed.source = feedSource
+                        },
+                        create: {
+                            let newFeed = Feed(
+                                title: feedTitle,
+                                keywords: feedKeywords,
+                                detailText: feedDescription,
+                                datePosted: feedDate,
+                                url: feedURL,
+                                colorHex: feedColorHex
+                            )
+                            newFeed.source = feedSource
+                            return newFeed
+                        }
+                    )
                 }
             }
         }

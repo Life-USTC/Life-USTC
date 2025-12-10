@@ -32,17 +32,30 @@ extension USTCSchool {
         )
         let cache = try JSON(data: data)
 
+        // remove all old homework entries
+        try! SwiftDataStack.modelContext.delete(model: Homework.self)
+
         for homeworkJSON in cache.arrayValue {
             guard let dueDate = decodeDate(from: homeworkJSON["endDate"].stringValue) else {
                 continue
             }
-            let homework = Homework(
-                title: homeworkJSON["title"].stringValue,
-                courseName: homeworkJSON["calendarNameLocalizable"]["rawValue"].stringValue,
-                dueDate: dueDate
-            )
 
-            SwiftDataStack.modelContext.insert(homework)
+            let title = homeworkJSON["title"].stringValue
+            let courseName = homeworkJSON["calendarNameLocalizable"]["rawValue"].stringValue
+
+            try SwiftDataStack.modelContext.upsert(
+                predicate: #Predicate<Homework> { $0.title == title && $0.courseName == courseName },
+                update: { homework in
+                    homework.dueDate = dueDate
+                },
+                create: {
+                    Homework(
+                        title: title,
+                        courseName: courseName,
+                        dueDate: dueDate
+                    )
+                }
+            )
         }
     }
 }

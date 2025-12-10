@@ -41,8 +41,7 @@ extension USTCSchool {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
-        var request = URLRequest(url: examURL)
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, _) = try await URLSession.shared.data(from: examURL)
 
         guard let dataString = String(data: data, encoding: .utf8) else {
             throw DecodingError.dataCorrupted(
@@ -61,19 +60,36 @@ extension USTCSchool {
                 continue
             }
 
-            let exam = Exam(
-                lessonCode: textList[0],
-                courseName: textList[2],
-                typeName: textList[1],
-                startDate: parsed.startTime,
-                endDate: parsed.endTime,
-                classRoomName: textList[4],
-                classRoomBuildingName: textList[5],
-                classRoomDistrict: textList[6],
-                description: textList[7]
-            )
+            let lessonCode = textList[0]
+            let courseName = textList[2]
+            let typeName = textList[1]
 
-            SwiftDataStack.modelContext.insert(exam)
+            try SwiftDataStack.modelContext.upsert(
+                predicate: #Predicate<Exam> {
+                    $0.lessonCode == lessonCode && $0.courseName == courseName && $0.typeName == typeName
+                },
+                update: { exam in
+                    exam.startDate = parsed.startTime
+                    exam.endDate = parsed.endTime
+                    exam.classRoomName = textList[4]
+                    exam.classRoomBuildingName = textList[5]
+                    exam.classRoomDistrict = textList[6]
+                    exam.detailText = textList[7]
+                },
+                create: {
+                    Exam(
+                        lessonCode: lessonCode,
+                        courseName: courseName,
+                        typeName: typeName,
+                        startDate: parsed.startTime,
+                        endDate: parsed.endTime,
+                        classRoomName: textList[4],
+                        classRoomBuildingName: textList[5],
+                        classRoomDistrict: textList[6],
+                        description: textList[7]
+                    )
+                }
+            )
         }
     }
 }
