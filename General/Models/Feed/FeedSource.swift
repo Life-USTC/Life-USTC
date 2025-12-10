@@ -20,6 +20,13 @@ final class FeedSource {
     var image: String?  // sf symbol
     var colorHex: String?
 
+    var color: Color {
+        if let hex = colorHex {
+            return Color(hex: hex)
+        }
+        return Color.fromSeed(name)
+    }
+
     init(
         url: URL,
         name: String,
@@ -36,11 +43,9 @@ final class FeedSource {
     }
 }
 
-extension Feed {
+extension FeedSource {
     @MainActor
     static func update() async throws {
-        @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
-
         let (data, _) = try await URLSession.shared.data(
             from: SchoolSystem.current.remoteFeedURL
         )
@@ -53,7 +58,7 @@ extension Feed {
             let sourceImage = sourceJSON["icons"]["sf-symbols"].stringValue
             let sourceColor = sourceJSON["color"].stringValue
 
-            let feedSource = try SwiftDataStack.modelContext.upsert(
+            try SwiftDataStack.modelContext.upsert(
                 predicate: #Predicate<FeedSource> { $0.url == sourceURL },
                 update: { source in
                     source.name = sourceName
@@ -71,95 +76,6 @@ extension Feed {
                     )
                 }
             )
-
-            let parseResult = try? await withCheckedThrowingContinuation { continuation in
-                FeedParser(URL: feedSource.url)
-                    .parseAsync { result in
-                        switch result {
-                        case .success(let success):
-                            continuation.resume(returning: success)
-                        case .failure(let failure):
-                            continuation.resume(throwing: failure)
-                        }
-                    }
-            }
-
-            if let rssItems = parseResult?.rssFeed?.items {
-                for item in rssItems {
-                    let feedURL = URL(string: item.link ?? "example.com")!
-                    let feedTitle = item.title ?? "!!No title found for this Feed"
-                    let feedKeywords = Set(item.categories?.map { $0.value ?? "" } ?? [])
-                    let feedDescription = item.description
-                    let feedDate = item.pubDate ?? Date()
-                    let feedColorHex = sourceColor
-
-                    var feedImageURL: URL?
-                    if let enclosure = item.enclosure, enclosure.attributes?.type == "image/jpeg",
-                        let urlString = enclosure.attributes?.url
-                    {
-                        feedImageURL = URL(string: urlString)
-                    }
-
-                    try SwiftDataStack.modelContext.upsert(
-                        predicate: #Predicate<Feed> { $0.url == feedURL },
-                        update: { feed in
-                            feed.title = feedTitle
-                            feed.keywords = feedKeywords
-                            feed.detailText = feedDescription
-                            feed.datePosted = feedDate
-                            feed.imageURL = feedImageURL
-                            feed.colorHex = feedColorHex
-                            feed.source = feedSource
-                        },
-                        create: {
-                            let newFeed = Feed(
-                                title: feedTitle,
-                                keywords: feedKeywords,
-                                detailText: feedDescription,
-                                datePosted: feedDate,
-                                url: feedURL,
-                                imageURL: feedImageURL,
-                                colorHex: feedColorHex
-                            )
-                            newFeed.source = feedSource
-                            return newFeed
-                        }
-                    )
-                }
-            } else if let atomEntries = parseResult?.atomFeed?.entries {
-                for entry in atomEntries {
-                    let feedURL = URL(string: entry.links?.first?.attributes?.href ?? "example.com")!
-                    let feedTitle = entry.title ?? "!!No title found for this Feed"
-                    let feedKeywords = Set(entry.categories?.map { $0.attributes?.label ?? "" } ?? [])
-                    let feedDescription = entry.summary?.value
-                    let feedDate = entry.updated ?? Date()
-                    let feedColorHex = sourceColor
-
-                    try SwiftDataStack.modelContext.upsert(
-                        predicate: #Predicate<Feed> { $0.url == feedURL },
-                        update: { feed in
-                            feed.title = feedTitle
-                            feed.keywords = feedKeywords
-                            feed.detailText = feedDescription
-                            feed.datePosted = feedDate
-                            feed.colorHex = feedColorHex
-                            feed.source = feedSource
-                        },
-                        create: {
-                            let newFeed = Feed(
-                                title: feedTitle,
-                                keywords: feedKeywords,
-                                detailText: feedDescription,
-                                datePosted: feedDate,
-                                url: feedURL,
-                                colorHex: feedColorHex
-                            )
-                            newFeed.source = feedSource
-                            return newFeed
-                        }
-                    )
-                }
-            }
         }
     }
 }
