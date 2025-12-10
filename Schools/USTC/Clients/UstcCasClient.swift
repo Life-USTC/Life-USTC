@@ -67,6 +67,16 @@ class USTCCASClient: LoginClientProtocol {
                 title: LocalizedStringKey("CAS Login")
             )
         )
+
+        let dismissButton = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
+            target: self,
+            action: #selector(dismissLoginAction)
+        )
+        dismissButton.accessibilityLabel = NSLocalizedString("Cancel", comment: "")
+        hosting.navigationItem.leftBarButtonItem = dismissButton
+
         let navigationController = UINavigationController(rootViewController: hosting)
         navigationController.modalPresentationStyle = .fullScreen
 
@@ -94,6 +104,10 @@ class USTCCASClient: LoginClientProtocol {
     func dismissLoginWebView() {
         loginWebViewController?.dismiss(animated: true)
         loginWebViewController = nil
+    }
+
+    @objc private func dismissLoginAction() {
+        loginFailed()
     }
 
     private func startBackgroundLogin() {
