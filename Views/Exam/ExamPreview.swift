@@ -16,7 +16,7 @@ struct ExamPreview: View {
             if exams.isEmpty {
                 ContentUnavailableView(
                     "No More Exam!",
-                    systemImage: "calendar.badge.checkmark",
+                    systemImage: "calendar.badge.checkmark"
                 )
             } else {
                 ForEach(exams) { exam in

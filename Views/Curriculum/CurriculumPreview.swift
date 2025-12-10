@@ -41,8 +41,8 @@ struct CurriculumPreview: View {
             }
             if todayLectures.isEmpty && tomorrowLectures.isEmpty {
                 ContentUnavailableView(
-                    "Nothing here",
-                    systemImage: "calendar.badge.checkmark",
+                    "No courses today!",
+                    systemImage: "moon.stars"
                 )
             }
         }
