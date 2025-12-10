@@ -66,8 +66,7 @@ extension [Exam] {
     /// Uses AppStorage to track which exam names should be hidden
     /// - Returns: Array with visible exams first, hidden exams last
     func clean() -> [Exam] {
-        // @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
-        var hiddenExamName: [String] = UserDefaults.appGroup.stringArray(forKey: "hiddenExamName") ?? []
+        @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
 
         hiddenExamName = hiddenExamName.filter { !$0.isEmpty }
         var result = self.sorted()
