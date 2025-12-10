@@ -41,32 +41,30 @@ struct ExamProvider: TimelineProvider {
 
 struct ExamEntry: TimelineEntry {
     let date = Date()
-    @Query var exams: [Exam]
 }
 
 struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: ExamProvider.Entry
 
+    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
+
     var body: some View {
         VStack {
             if widgetFamily == .systemMedium {
-                ExamPreview
-                    .makeListWidget(
-                        with: entry.exams,
-                        numberToShow: 2
-                    )
+                ExamListWidget(
+                    exams: exams,
+                    numberToShow: 2
+                )
             } else if widgetFamily == .systemLarge {
-                ExamPreview
-                    .makeListWidget(
-                        with: entry.exams,
-                        numberToShow: 6
-                    )
+                ExamListWidget(
+                    exams: exams,
+                    numberToShow: 6
+                )
             } else if widgetFamily == .systemSmall {
-                ExamPreview
-                    .makeDayWidget(
-                        with: entry.exams.filter { !$0.isFinished }.first
-                    )
+                ExamDayWidget(
+                    exam: exams.filter { !$0.isFinished }.first
+                )
             }
         }
         .padding(3)
@@ -82,6 +80,7 @@ struct ExamWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: ExamProvider()) { entry in
             ExamWidgetEntryView(entry: entry)
+                .modelContainer(SwiftDataStack.modelContainer)
         }
         .supportedFamilies([
             .systemSmall,
