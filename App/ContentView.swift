@@ -11,12 +11,13 @@ import SwiftUI
 @main
 struct Life_USTCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @AppStorage("appShouldPresentDemo", store: .appGroup) private var appShouldPresentDemo = false
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(SwiftDataStack.modelContainer)
+        .modelContainer(SwiftDataStack.container(forDemo: appShouldPresentDemo))
     }
 }
 
