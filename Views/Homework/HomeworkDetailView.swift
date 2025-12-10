@@ -55,12 +55,9 @@ private struct HomeworkView: View {
 struct HomeworkDetailView: View {
     @Query(sort: \Homework.dueDate, order: .forward) var homeworks: [Homework]
 
-    var archivedHomework: [Homework] {
+    var homeworkSorted: [Homework] {
         homeworks.filter { $0.dueDate < Date() }.sorted { $0.dueDate > $1.dueDate }
-    }
-
-    var newHomework: [Homework] {
-        homeworks.filter { $0.dueDate > Date() }.sorted { $0.dueDate < $1.dueDate }
+            + homeworks.filter { $0.dueDate > Date() }.sorted { $0.dueDate < $1.dueDate }
     }
 
     var body: some View {
@@ -70,14 +67,9 @@ struct HomeworkDetailView: View {
                     ContentUnavailableView(
                         "No Homework",
                         systemImage: "checkmark.seal.fill",
-                        description: Text("All caught up!")
                     )
                 } else {
-                    ForEach(newHomework) { homework in
-                        HomeworkView(homework: homework)
-                    }
-
-                    ForEach(archivedHomework) { homework in
+                    ForEach(homeworkSorted) { homework in
                         HomeworkView(homework: homework)
                     }
                 }
@@ -89,15 +81,26 @@ struct HomeworkDetailView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .navigationTitle("Homework (BB)")
+        .task {
+            Task {
+                try await Homework.update()
+            }
+        }
         .refreshable {
             Task {
                 try await Homework.update()
             }
         }
-        .navigationTitle("Homework (BB)")
-        .task {
-            Task {
-                try await Homework.update()
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await Homework.update()
+                    }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
             }
         }
     }

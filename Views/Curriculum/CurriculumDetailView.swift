@@ -103,19 +103,15 @@ struct CurriculumDetailView: View {
                 )
             }
         }
+        .navigationTitle("Curriculum")
+        .task {
+            Task {
+                try await Curriculum.update()
+            }
+        }
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    Task {
-                        try await CalendarSaveHelper.saveCurriculum()
-                    }
-                } label: {
-                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
-                }
-            }
-
-            ToolbarItemGroup(placement: .secondaryAction) {
                 if !showLandscape {
                     Button {
                         hideWeekend.toggle()
@@ -126,6 +122,14 @@ struct CurriculumDetailView: View {
                                 ? "distribute.horizontal.center" : "distribute.horizontal.center.fill"
                         )
                     }
+                }
+
+                Button {
+                    Task {
+                        try await CalendarSaveHelper.saveCurriculum()
+                    }
+                } label: {
+                    Label("Save to Calendar", systemImage: "calendar.badge.plus")
                 }
 
                 Button {
@@ -143,7 +147,6 @@ struct CurriculumDetailView: View {
                 }
             }
         }
-        .navigationTitle("Curriculum")
         .highPriorityGesture(
             DragGesture(minimumDistance: 20, coordinateSpace: .global)
                 .onEnded { value in
@@ -177,11 +180,6 @@ struct CurriculumDetailView: View {
                         showCurriculumDetails = false
                     }
                 )
-            }
-        }
-        .task {
-            Task {
-                // try await Curriculum.update()
             }
         }
     }

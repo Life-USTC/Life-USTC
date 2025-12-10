@@ -9,13 +9,14 @@ import SwiftData
 import SwiftUI
 
 struct AllSourceView: View {
-    @Query var sourceEntities: [FeedSource]
     @AppStorage("readFeedURLList", store: .appGroup) var readFeedURLList: [String] = []
     @AppStorage("feedReadCutoffDate", store: .appGroup) var feedReadCutoffDate: Date?
 
+    @Query(sort: \FeedSource.name, order: .forward) var sourceEntities: [FeedSource]
+
     @State var searchText = ""
     @State var showingFeedSettings = false
-    @State var selectedIndex = 0
+    @State var selectedSource: FeedSource?
 
     private var defaultCutoffDate: Date {
         Calendar.current.date(from: DateComponents(year: 2025, month: 11, day: 26)) ?? .distantPast
@@ -46,15 +47,10 @@ struct AllSourceView: View {
 
     var feedsSearched: [Feed] {
         let feeds: [Feed]
-        if selectedIndex == 0 {
+        if selectedSource == nil {
             feeds = sourceEntities.flatMap { $0.feeds }
         } else {
-            let idx = selectedIndex - 1
-            if sourceEntities.indices.contains(idx) {
-                feeds = sourceEntities[idx].feeds
-            } else {
-                feeds = []
-            }
+            feeds = selectedSource?.feeds ?? []
         }
 
         guard !searchText.isEmpty else {
@@ -89,12 +85,12 @@ struct AllSourceView: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment: .top, spacing: 8) {
-                        ForEach(Array(sourceEntities.enumerated()), id: \.1.id) { i, source in
+                        ForEach(sourceEntities, id: \.id) { source in
                             Button {
-                                if selectedIndex == i + 1 {
-                                    selectedIndex = 0
+                                if selectedSource == source {
+                                    selectedSource = nil
                                 } else {
-                                    selectedIndex = i + 1
+                                    selectedSource = source
                                 }
                                 markAllRead(for: source)
                             } label: {
@@ -108,13 +104,13 @@ struct AllSourceView: View {
                                 }
                                 .labelStyle(
                                     FeedSourceLabelStyle(
-                                        dimmed: selectedIndex != 0 && selectedIndex != i + 1
+                                        dimmed: selectedSource != nil && selectedSource != source
                                     )
                                 )
                             }
                             .buttonStyle(
                                 FeedSourceButtonStyle(
-                                    selected: selectedIndex == i + 1,
+                                    selected: selectedSource == source,
                                     color: Color(hex: source.colorHex ?? "#767676")
                                 )
                             )
@@ -143,15 +139,28 @@ struct AllSourceView: View {
             .padding(.horizontal, 12)
             .padding(.top, 8)
         }
+        .searchable(text: $searchText)
+        .navigationTitle("Feed")
+        .task {
+            Task {
+                try await Feed.update()
+            }
+        }
         .refreshable {
             Task {
                 try await Feed.update()
             }
         }
-        .searchable(text: $searchText)
-        .navigationTitle("Feed")
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    Task {
+                        try await Feed.update()
+                    }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+
                 Button {
                     showingFeedSettings = true
                 } label: {
@@ -164,11 +173,6 @@ struct AllSourceView: View {
                 FeedSetingsPage(dismissAction: {
                     showingFeedSettings = false
                 })
-            }
-        }
-        .task {
-            Task {
-                try await Feed.update()
             }
         }
     }

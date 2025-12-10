@@ -16,9 +16,8 @@ struct ExamDetailView: View {
             Section {
                 if exams.isEmpty {
                     ContentUnavailableView(
-                        "No Exams",
+                        "No More Exam!",
                         systemImage: "calendar.badge.checkmark",
-                        description: Text("Enjoy your free time!")
                     )
                 } else {
                     ForEach(exams.clean()) { exam in
@@ -31,6 +30,12 @@ struct ExamDetailView: View {
                 Text("disclaimer")
                     .font(.system(.caption, weight: .semibold))
                     .foregroundColor(.secondary)
+            }
+        }
+        .navigationTitle("Exam")
+        .task {
+            Task {
+                try await Exam.update()
             }
         }
         .refreshable {
@@ -47,12 +52,14 @@ struct ExamDetailView: View {
                 } label: {
                     Label("Save to Calendar", systemImage: "calendar.badge.plus")
                 }
-            }
-        }
-        .navigationTitle("Exam")
-        .task {
-            Task {
-                try await Exam.update()
+
+                Button {
+                    Task {
+                        try await Exam.update()
+                    }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
             }
         }
     }
