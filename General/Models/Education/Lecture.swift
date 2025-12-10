@@ -85,6 +85,7 @@ extension Lecture {
 }
 
 extension [Lecture] {
+    @available(*, deprecated, message: "We now argue this process be done in backend/during data fetching.")
     func union() -> [Lecture] {
         var unionedLectures: [Lecture] = []
         for lecture in self {
@@ -107,10 +108,4 @@ extension [Lecture] {
         return unionedLectures
     }
 
-    // func clean() -> [Lecture] {
-    //     let lectures = self.union()
-    //     return
-    //         (lectures.filter { $0.startDate > Date() }
-    //         + lectures.filter { $0.startDate <= Date() })
-    // }
 }
