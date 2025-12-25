@@ -85,7 +85,7 @@
 "Web Service" = "网络通服务";
 "Physics Experiment" = "大物预约";
 "E-Card" = "一卡通";
-"Work-integrated Learning" = "学工一体化";
+"Student Affairs" = "学工一体化";
 "Hanhai Platform" = "瀚海教学网";
 "Central Room" = "中区研讨室";
 "West Room" = "西区未来学习中心";
@@ -281,9 +281,9 @@
 
 "Authors" = "作者";
 "About Life@USTC" = "关于 Life@USTC";
-"Teaching Quality Management Platform" = "教学质量管理平台";
+"Quality Platform" = "教学质量管理平台";
 "Second Classroom" = "第二课堂";
-"Course Selection Result" = "选课结果";
-"Student Fitness Test" = "学生体测";
+"Selection Result" = "选课结果";
+"Fitness Test" = "学生体测";
 "Visitor Entry" = "亲友入校";
 "Meeting Rooms" = "会议室";
