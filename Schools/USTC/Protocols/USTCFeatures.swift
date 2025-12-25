@@ -94,7 +94,7 @@ enum USTCFeatures {
                 }
             }(),
             .init(
-                name: "Course Selection Result",
+                name: "Selection Result",
                 image: "list.clipboard",
                 description: "选课结果",
                 url: "https://app.ustc.edu.cn/site/timeTableQuery/index",
@@ -107,7 +107,7 @@ enum USTCFeatures {
                 markUp: true
             ),
             .init(
-                name: "Teaching Quality Management Platform",
+                name: "Quality Platform",
                 image: "chart.bar.xaxis",
                 description: "教学质量管理平台",
                 url: "https://tqm.ustc.edu.cn/wx?universitycode=10358&sourcefrom=qywx",
@@ -171,7 +171,7 @@ enum USTCFeatures {
                 markUp: true
             ),
             .init(
-                name: "Student Fitness Test",
+                name: "Fitness Test",
                 image: "figure.strengthtraining.traditional",
                 description: "学生体测",
                 url: "https://tc.ustc.edu.cn/fitness/login/ustc/loginRedirect",
@@ -218,7 +218,7 @@ enum USTCFeatures {
                 url: "https://vista.ustc.edu.cn/",
             ),
             .init(
-                name: "Work-integrated Learning",
+                name: "Student Affairs",
                 image: "desktopcomputer",
                 description: "奖学金、助学金、勤工助学等",
                 url: "https://xgyth.ustc.edu.cn/usp/index.aspx",
