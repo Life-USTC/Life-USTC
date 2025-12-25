@@ -118,27 +118,27 @@ enum USTCFeatures {
     static var ustcMeetingRoomFeatures: [FeatureWithView] {
         [
             .init(
-                name: "Meeting Room Appointment for Central Campus",
+                name: "Central Room",
                 image: "building.columns",
                 description: "预约中区研讨室/青年之家会议室",
                 url: "http://roombooking.cmet.ustc.edu.cn/api/cas/index",
                 markUp: true
             ),
             .init(
-                name: "Meeting Room Appointment for West Campus",
+                name: "West Room",
                 image: "building.2",
                 description: "西区未来学习中心",
                 url: "http://ic.lib.ustc.edu.cn/"
             ),
             .init(
-                name: "Meeting Room Appointment for Gaoxin Campus",
+                name: "Gaoxin Room",
                 image: "building.fill",
                 description: "高新校区交流体验中心",
                 url: "http://hs.lib.ustc.edu.cn/account/Login",
                 markUp: true
             ),
             .init(
-                name: "Art Education Center Appointment",
+                name: "Arts Center",
                 image: "music.note.list",
                 description: "艺术教学中心场馆预约",
                 url: "http://roombooking.cmet.ustc.edu.cn/booking/api/cas/index",
