@@ -87,9 +87,9 @@
 "E-Card" = "一卡通";
 "Work-integrated Learning" = "学工一体化";
 "Hanhai Platform" = "瀚海教学网";
-"Meeting Room Appointment for Central Campus" = "中区研讨室";
-"Meeting Room Appointment for West Campus" = "西区未来学习中心";
-"Meeting Room Appointment for Gaoxin Campus" = "高新校区交流体验中心";
+"Central Room" = "中区研讨室";
+"West Room" = "西区未来学习中心";
+"Gaoxin Room" = "高新校区交流体验中心";
 "Library" = "图书馆";
 "Calendar" = "教学日历";
 "TA" = "助教管理系统";
@@ -239,7 +239,7 @@
 "Select Additional Course" = "添加额外课程";
 "You can choose additional courses here, they would appear in your curriculum alongside other alongside other courses. This is useful for sit-in or TA courses" = "您可以在这里选择更多课程，会在课程表中一并展示出来，可用于旁听或助教课程";
 "Graduate AAS" = "教务系统（研）";
-"Art Education Center Appointment" = "艺教中心预约";
+"Arts Center" = "艺教中心预约";
 
 "Homework (BB)" = "作业 (BB)";
 "No More Homework!" = "无更多作业";
