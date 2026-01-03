@@ -88,8 +88,8 @@ struct FeaturesView: View {
                             } label: {
                                 Label(feature.title, systemImage: feature.image)
                                     .labelStyle(FeatureLabelStyle())
-                                    .accessibilityIdentifier(feature.identifier ?? "")
                             }
+                            .accessibilityIdentifier(feature.identifier ?? "")
                         }
                     }
                     .padding(.horizontal, 10)
@@ -117,8 +117,8 @@ struct FeaturesView: View {
                         } label: {
                             Label(feature.title, systemImage: feature.image)
                                 .symbolRenderingMode(.hierarchical)
-                                .accessibilityIdentifier(feature.identifier ?? "")
                         }
+                        .accessibilityIdentifier(feature.identifier ?? "")
                     }
                 } header: {
                     Text(key)
