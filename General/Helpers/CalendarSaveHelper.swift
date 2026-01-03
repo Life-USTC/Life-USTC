@@ -29,7 +29,7 @@ enum CalendarSaveHelper {
         calendarName: String
     ) async throws {
         try await calendarSaveLock.withCriticalRegion {
-            let eventStore = EKEventStore()
+            let eventStore = EKEventStore.shared
 
             if EKEventStore.authorizationStatus(for: .event) != .fullAccess {
                 try await eventStore.requestFullAccessToEvents()

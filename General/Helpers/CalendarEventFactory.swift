@@ -3,10 +3,14 @@ import EventKit
 import SwiftData
 import SwiftUI
 
+extension EKEventStore {
+    static var shared: EKEventStore = EKEventStore()
+}
+
 enum CalendarEventFactory {
     static func fromLecture(
         _ lecture: Lecture,
-        in store: EKEventStore = EKEventStore()
+        in store: EKEventStore = .shared
     ) async throws -> EKEvent {
         let event = EKEvent(eventStore: store)
         event.title = lecture.name
@@ -20,7 +24,7 @@ enum CalendarEventFactory {
 
     static func fromExam(
         _ exam: Exam,
-        in store: EKEventStore = EKEventStore()
+        in store: EKEventStore = .shared
     ) async throws -> EKEvent {
         let event = EKEvent(eventStore: store)
         event.title = exam.courseName + " " + exam.typeName
@@ -35,7 +39,7 @@ enum CalendarEventFactory {
 
     static func fromLectures(
         _ lectures: [Lecture],
-        in store: EKEventStore = EKEventStore()
+        in store: EKEventStore = .shared
     ) async throws -> [EKEvent] {
         return try await lectures.asyncMap {
             try await fromLecture($0, in: store)
@@ -44,7 +48,7 @@ enum CalendarEventFactory {
 
     static func fromExams(
         _ exams: [Exam],
-        in store: EKEventStore = EKEventStore()
+        in store: EKEventStore = .shared
     ) async throws -> [EKEvent] {
         return try await exams.asyncMap {
             try await fromExam($0, in: store)
