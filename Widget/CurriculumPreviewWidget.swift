@@ -101,7 +101,7 @@ struct CurriculumPreviewWidgetEntryView: View {
         }
         .padding(3)
         .widgetBackground(
-            Color("BackgroundWhite")
+            Color.clear
         )
     }
 }
