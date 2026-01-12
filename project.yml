@@ -237,7 +237,7 @@ schemes:
       config: Debug
       commandLineArguments: {}
       environmentVariables:
-        _XCWidgetKind: CurriculumPreviewWidget
+        _XCWidgetKind: CurriculumWidget
         _XCWidgetDefaultView: timeline
         _XCWidgetFamily: systemMedium
 

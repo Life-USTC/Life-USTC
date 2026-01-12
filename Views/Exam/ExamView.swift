@@ -13,7 +13,9 @@ struct ExamView: View {
                 Text(exam.courseName)
                     .font(.headline)
                     .fontWeight(.bold)
+                    .lineLimit(1)
                 Text("\(exam.startDate, format: .dateTime.day().month()) @ **\(exam.classRoomName)**")
+                    .lineLimit(1)
                     .font(.footnote)
                     .foregroundColor(.gray.opacity(0.8))
             }
@@ -21,17 +23,18 @@ struct ExamView: View {
             Spacer()
 
             VStack(alignment: .trailing) {
-                if exam.isFinished {
-                    Text("Finished")
-                        .foregroundColor(.gray)
-                        .font(.subheadline)
-                        .fontWeight(.heavy)
-                } else {
-                    Text(exam.startDate, style: .relative)
-                        .foregroundColor(examColor)
-                        .font(.subheadline)
-                        .fontWeight(.heavy)
+                Group {
+                    if exam.isFinished {
+                        Text("Finished")
+                            .foregroundColor(.gray)
+                    } else {
+                        Text(exam.startDate, style: .relative)
+                            .foregroundColor(examColor)
+                    }
                 }
+                .font(.subheadline)
+                .fontWeight(.heavy)
+
                 Text(exam.startDate ... exam.endDate)
                     .font(.caption)
                     .foregroundColor(.gray.opacity(0.8))

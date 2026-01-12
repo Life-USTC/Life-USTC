@@ -32,9 +32,6 @@ struct LectureView: View {
                     .font(.caption)
                     .foregroundColor(.gray.opacity(0.8))
             }
-            .if(lecture.isFinished) {
-                $0.strikethrough()
-            }
         }
         .padding(.leading, 15)
         .padding(.trailing, 10)

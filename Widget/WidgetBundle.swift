@@ -12,7 +12,9 @@ import WidgetKit
 struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {
         CurriculumWidget()
+        CurriculumNextWidget()
         CurriculumWeekWidget()
         ExamWidget()
+        ExamNextWidget()
     }
 }

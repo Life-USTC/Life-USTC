@@ -89,10 +89,6 @@ struct CurriculumWidgetEntryView: View {
                     lectures: todayLectures,
                     numberToShow: 2
                 )
-            } else if widgetFamily == .systemSmall {
-                CurriculumDayWidget(
-                    lecture: todayLectures.first
-                )
             }
         }
         .padding(3)
@@ -103,7 +99,7 @@ struct CurriculumWidgetEntryView: View {
 }
 
 struct CurriculumWidget: Widget {
-    let kind: String = "CurriculumPreviewWidget"
+    let kind: String = "CurriculumWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(
@@ -114,7 +110,6 @@ struct CurriculumWidget: Widget {
                 .modelContainer(SwiftDataStack.modelContainer)
         }
         .supportedFamilies([
-            .systemSmall,
             .systemMedium,
             .systemLarge,
         ])

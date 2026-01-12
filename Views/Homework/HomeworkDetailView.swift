@@ -16,7 +16,6 @@ private struct HomeworkView: View {
             VStack(alignment: .leading) {
                 Text(homework.title)
                     .font(.system(.title2, weight: .bold))
-                    .strikethrough(homework.isFinished)
                     .foregroundColor(homework.isFinished ? .gray : .primary)
 
                 Text(homework.courseName)

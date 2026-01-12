@@ -65,10 +65,6 @@ struct ExamWidgetEntryView: View {
                     exams: exams,
                     numberToShow: 6
                 )
-            } else if widgetFamily == .systemSmall {
-                ExamDayWidget(
-                    exam: exams.first
-                )
             }
         }
         .padding(3)
@@ -87,7 +83,6 @@ struct ExamWidget: Widget {
                 .modelContainer(SwiftDataStack.modelContainer)
         }
         .supportedFamilies([
-            .systemSmall,
             .systemMedium,
             .systemLarge,
         ])

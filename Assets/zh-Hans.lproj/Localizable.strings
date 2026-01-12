@@ -30,6 +30,10 @@
 "widgetsWelcomeTitle" = "将小组件添加到主屏幕";
 "widgetsWelcomeDescription" = "长按主屏幕，点击「+」，搜索「Life@USTC」即可添加课表和考试小组件，方便快速访问。";
 "Next" = "下一步";
+"Next Lecture" = "下一节课";
+"Show the next upcoming lecture" = "显示下一节课程";
+"Next Exam" = "下一场考试";
+"Show the next upcoming exam" = "显示下一场考试安排";
 "Username:" = "用户名：";
 "Password:" = "密码：";
 "Check & Login" = "确认 & 登录";

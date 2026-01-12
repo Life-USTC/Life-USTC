@@ -6,6 +6,10 @@
 "widgetsWelcomeTitle" = "Add Widgets to Home Screen";
 "widgetsWelcomeDescription" = "Long press on your Home Screen, tap '+', and search for 'Life@USTC' to add curriculum and exam widgets for quick access.";
 "Next" = "Next";
+"Next Lecture" = "Next Lecture";
+"Show the next upcoming lecture" = "Show the next upcoming lecture";
+"Next Exam" = "Next Exam";
+"Show the next upcoming exam" = "Show the next upcoming exam";
 
 "disclaimer" = "Double check with information provided on your school's website. Information here might be incorrect or out-dated. We take no responsiblity for any of that.";
 
