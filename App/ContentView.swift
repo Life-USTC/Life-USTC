@@ -107,7 +107,9 @@ struct ContentView: View {
     var body: some View {
         Group {
             if firstLogin {
-                SchoolSystem.current.firstLoginView($firstLogin)
+                SchoolSystem.current.firstLoginView {
+                    firstLogin = false
+                }
             } else {
                 if UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
                     iPadView

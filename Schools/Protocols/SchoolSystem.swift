@@ -24,7 +24,7 @@ struct School {
     let updateScore: () async throws -> Void
     let updateHomework: () async throws -> Void
 
-    let firstLoginView: (Binding<Bool>) -> AnyView
+    let firstLoginView: (@escaping () -> Void) -> AnyView
     let settings: [SettingWithView]
     let features: [LocalizedStringKey: [FeatureWithView]]
 

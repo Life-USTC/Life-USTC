@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct USTCOnboardingView: View {
-    @Binding var isPresented: Bool
+    var dismissAction: () -> Void
     @State var currentStep: OnboardingStep = .casLogin
     @State var casLoginCompleted = false
 
@@ -43,7 +43,7 @@ struct USTCOnboardingView: View {
                                 },
                                 onSkip: {
                                     withAnimation {
-                                        isPresented = false
+                                        dismissAction()
                                     }
                                 }
                             )
@@ -51,7 +51,7 @@ struct USTCOnboardingView: View {
                             USTCWidgetsWelcomeView(
                                 onDone: {
                                     withAnimation {
-                                        isPresented = false
+                                        dismissAction()
                                     }
                                 }
                             )
@@ -66,7 +66,7 @@ struct USTCOnboardingView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         withAnimation {
-                            isPresented = false
+                            dismissAction()
                         }
                     } label: {
                         Image(systemName: "xmark")
