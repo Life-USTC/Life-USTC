@@ -9,7 +9,11 @@ import SwiftData
 import SwiftUI
 
 struct ExamDetailView: View {
-    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
+    @Query(sort: \Exam.startDate, order: .forward) var _exams: [Exam]
+
+    var exams: [Exam] {
+        _exams.staged()
+    }
 
     var body: some View {
         List {
@@ -17,10 +21,10 @@ struct ExamDetailView: View {
                 if exams.isEmpty {
                     ContentUnavailableView(
                         "No More Exam!",
-                        systemImage: "calendar.badge.checkmark",
+                        systemImage: "calendar.badge.checkmark"
                     )
                 } else {
-                    ForEach(exams.clean()) { exam in
+                    ForEach(exams) { exam in
                         ExamCardView(exam: exam)
                     }
                 }

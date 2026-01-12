@@ -11,8 +11,8 @@ import WidgetKit
 @main
 struct ExamWidgetBundle: WidgetBundle {
     var body: some Widget {
+        CurriculumWidget()
         CurriculumWeekWidget()
-        CurriculumPreviewWidget()
         ExamWidget()
     }
 }

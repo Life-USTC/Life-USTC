@@ -10,18 +10,18 @@ import SwiftData
 import SwiftUI
 import WidgetKit
 
-struct CurriculumPreviewProvider: TimelineProvider {
-    func makeEntry(for _date: Date = Date()) -> CurriculumPreviewEntry {
-        return CurriculumPreviewEntry()
+struct CurriculumProvider: TimelineProvider {
+    func makeEntry(for _date: Date = Date()) -> CurriculumEntry {
+        return CurriculumEntry()
     }
 
-    func placeholder(in _: Context) -> CurriculumPreviewEntry {
+    func placeholder(in _: Context) -> CurriculumEntry {
         return makeEntry()
     }
 
     func getSnapshot(
         in _: Context,
-        completion: @escaping (CurriculumPreviewEntry) -> Void
+        completion: @escaping (CurriculumEntry) -> Void
     ) {
         Task {
             let entry = makeEntry()
@@ -42,25 +42,13 @@ struct CurriculumPreviewProvider: TimelineProvider {
     }
 }
 
-struct CurriculumPreviewEntry: TimelineEntry {
+struct CurriculumEntry: TimelineEntry {
     let date: Date = Date()
 }
 
-extension [Lecture] {
-    fileprivate func reorderForWidget() -> [Lecture] {
-        return
-            self.filter {
-                !$0.isFinished
-            }
-            + self.filter {
-                $0.isFinished
-            }
-    }
-}
-
-struct CurriculumPreviewWidgetEntryView: View {
+struct CurriculumWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
-    var entry: CurriculumPreviewProvider.Entry
+    var entry: CurriculumProvider.Entry
 
     static var referenceDate: Date { Date() }
     static var todayStart: Date { referenceDate.stripTime() }
@@ -72,14 +60,22 @@ struct CurriculumPreviewWidgetEntryView: View {
             todayStart <= lecture.startDate && lecture.startDate < tomorrowStart
         },
         sort: [SortDescriptor(\Lecture.startDate, order: .forward)]
-    ) var todayLectures: [Lecture]
+    ) var _todayLectures: [Lecture]
+
+    var todayLectures: [Lecture] {
+        _todayLectures.staged()
+    }
 
     @Query(
         filter: #Predicate<Lecture> { lecture in
             tomorrowStart <= lecture.startDate && lecture.startDate < dayAfterTomorrowStart
         },
         sort: [SortDescriptor(\Lecture.startDate, order: .forward)]
-    ) var tomorrowLectures: [Lecture]
+    ) var _tomorrowLectures: [Lecture]
+
+    var tomorrowLectures: [Lecture] {
+        _tomorrowLectures.staged()
+    }
 
     var body: some View {
         VStack {
@@ -90,12 +86,12 @@ struct CurriculumPreviewWidgetEntryView: View {
                 )
             } else if widgetFamily == .systemMedium {
                 CurriculumListWidget(
-                    lectures: todayLectures.reorderForWidget(),
+                    lectures: todayLectures,
                     numberToShow: 2
                 )
             } else if widgetFamily == .systemSmall {
                 CurriculumDayWidget(
-                    lecture: todayLectures.reorderForWidget().first
+                    lecture: todayLectures.first
                 )
             }
         }
@@ -106,15 +102,15 @@ struct CurriculumPreviewWidgetEntryView: View {
     }
 }
 
-struct CurriculumPreviewWidget: Widget {
+struct CurriculumWidget: Widget {
     let kind: String = "CurriculumPreviewWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: kind,
-            provider: CurriculumPreviewProvider()
+            provider: CurriculumProvider()
         ) {
-            CurriculumPreviewWidgetEntryView(entry: $0)
+            CurriculumWidgetEntryView(entry: $0)
                 .modelContainer(SwiftDataStack.modelContainer)
         }
         .supportedFamilies([

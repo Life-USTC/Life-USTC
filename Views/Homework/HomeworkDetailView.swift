@@ -53,11 +53,10 @@ private struct HomeworkView: View {
 }
 
 struct HomeworkDetailView: View {
-    @Query(sort: \Homework.dueDate, order: .forward) var homeworks: [Homework]
+    @Query(sort: \Homework.dueDate, order: .forward) var _homeworks: [Homework]
 
-    var homeworkSorted: [Homework] {
-        homeworks.filter { $0.dueDate < Date() }.sorted { $0.dueDate > $1.dueDate }
-            + homeworks.filter { $0.dueDate > Date() }.sorted { $0.dueDate < $1.dueDate }
+    var homeworks: [Homework] {
+        _homeworks.staged()
     }
 
     var body: some View {
@@ -66,10 +65,10 @@ struct HomeworkDetailView: View {
                 if homeworks.isEmpty {
                     ContentUnavailableView(
                         "No Homework",
-                        systemImage: "checkmark.seal.fill",
+                        systemImage: "checkmark.seal.fill"
                     )
                 } else {
-                    ForEach(homeworkSorted) { homework in
+                    ForEach(homeworks) { homework in
                         HomeworkView(homework: homework)
                     }
                 }

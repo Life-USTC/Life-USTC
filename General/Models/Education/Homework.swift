@@ -38,8 +38,26 @@ final class Homework {
     }
 }
 
+extension Homework: Comparable {
+    static func < (lhs: Homework, rhs: Homework) -> Bool {
+        lhs.dueDate < rhs.dueDate
+    }
+}
+
 extension Homework {
     static func update() async throws {
         try await SchoolSystem.current.updateHomework()
+    }
+}
+
+extension [Homework] {
+    /// Sorts homework so that unfinished ones appear first (chronological).
+    /// If showFinishedHomework is true, finished ones appear last (reverse chronological).
+    func staged(showFinishedHomework: Bool = true) -> [Homework] {
+        let unfinished = self.filter { !$0.isFinished }.sorted()
+        if showFinishedHomework {
+            return unfinished + self.filter(\.isFinished).sorted().reversed()
+        }
+        return unfinished
     }
 }

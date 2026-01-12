@@ -20,6 +20,18 @@ struct ScoreDetailView: View {
         scoreSheets.first
     }
 
+    var semesterNameList: [String] {
+        scoreSheet?.semesterNameList ?? []
+    }
+
+    var semesterGroupedScores: [(name: String, entries: [ScoreEntry])] {
+        scoreSheet?
+            .staged(
+                semesterNameToHide: semesterNameToRemove,
+                sortPreference: sortPreference?.rawValue
+            ) ?? []
+    }
+
     @State var semesterNameToRemove: [String] = []
     @State private var sortPreference: SortPreference? = .gpa
 
@@ -135,7 +147,10 @@ struct ScoreDetailView: View {
     }
 
     var scoreListView: some View {
-        ForEach(sortedScore, id: \.name) { semester in
+        ForEach(
+            semesterGroupedScores,
+            id: \.name
+        ) { semester in
             Section {
                 makeView(with: semester.entries)
             } header: {
@@ -213,51 +228,5 @@ struct ScoreDetailView: View {
                 try await ScoreSheet.update()
             }
         }
-    }
-}
-
-extension ScoreDetailView {
-    private var filteredCourses: [ScoreEntry] {
-        let entries = scoreSheet?.entries ?? []
-        return entries.filter { entry in
-            !semesterNameToRemove.contains(entry.semesterName)
-        }
-    }
-
-    private var sortedCourses: [ScoreEntry] {
-        filteredCourses.sorted { lhs, rhs in
-            guard let preference = sortPreference else { return true }
-
-            switch preference {
-            case .gpa:
-                return (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
-            case .code:
-                return lhs.lessonCode < rhs.lessonCode
-            }
-        }
-    }
-
-    var sortedScore: [(name: String, entries: [ScoreEntry])] {
-        // Group entries by semester
-        let groupedBySemester = sortedCourses.categorise { entry in
-            entry.semesterName
-        }
-
-        // Sort semesters by semester ID (descending)
-        return
-            groupedBySemester
-            .sorted { lhs, rhs in
-                lhs.value[0].semesterID > rhs.value[0].semesterID
-            }
-            .map { ($0.key, $0.value) }
-    }
-
-    var semesterNameList: [String] {
-        let entries = scoreSheet?.entries ?? []
-        return
-            entries
-            .categorise { $0.semesterName }
-            .sorted(by: { lhs, rhs in lhs.value[0].semesterID > rhs.value[0].semesterID })
-            .map { $0.key }
     }
 }

@@ -47,26 +47,27 @@ struct ExamWidgetEntryView: View {
     @Environment(\.widgetFamily) var widgetFamily
     var entry: ExamProvider.Entry
 
-    @Query(sort: \Exam.startDate, order: .forward) var exams: [Exam]
-    var unfinishedExams: [Exam] {
-        exams.filter { !$0.isFinished }
+    @Query(sort: \Exam.startDate, order: .forward) var _exams: [Exam]
+
+    var exams: [Exam] {
+        _exams.staged(showFinishedExams: false)
     }
 
     var body: some View {
         VStack {
             if widgetFamily == .systemMedium {
                 ExamListWidget(
-                    exams: unfinishedExams,
+                    exams: exams,
                     numberToShow: 2
                 )
             } else if widgetFamily == .systemLarge {
                 ExamListWidget(
-                    exams: unfinishedExams,
+                    exams: exams,
                     numberToShow: 6
                 )
             } else if widgetFamily == .systemSmall {
                 ExamDayWidget(
-                    exam: unfinishedExams.first
+                    exam: exams.first
                 )
             }
         }

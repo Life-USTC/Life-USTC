@@ -49,6 +49,12 @@ final class Exam {
     }
 }
 
+extension Exam: Comparable {
+    static func < (lhs: Exam, rhs: Exam) -> Bool {
+        lhs.startDate < rhs.startDate
+    }
+}
+
 extension Exam {
     /// Full location string combining district, building, and room
     var detailLocation: String {
@@ -66,50 +72,30 @@ extension Exam {
 }
 
 extension [Exam] {
-    /// Returns cleaned exam list with hidden exams moved to the end
-    /// Uses AppStorage to track which exam names should be hidden
-    /// - Returns: Array with visible exams first, hidden exams last
-    func clean() -> [Exam] {
+    /// Sorts exams so that unfinished ones appear first (chronological).
+    /// If showFinishedExams is true, finished ones appear last (reverse chronological).
+    private func _staged(showFinishedExams: Bool = true) -> [Exam] {
+        let unfinished = self.filter { !$0.isFinished }.sorted()
+        if showFinishedExams {
+            return unfinished + self.filter(\.isFinished).sorted().reversed()
+        }
+        return unfinished
+    }
+
+    /// Moves hidden exams to the end of the list based on user preferences while maintaining the staged order
+    func staged(showFinishedExams: Bool = true) -> [Exam] {
         @AppStorage("hiddenExamName", store: .appGroup) var hiddenExamName: [String] = []
 
-        hiddenExamName = hiddenExamName.filter { !$0.isEmpty }
-        var result = self.sorted()
-        var hiddenResult = [Exam]()
-        for name in hiddenExamName {
-            hiddenResult += result.filter { exam in
-                exam.courseName.contains(name)
-            }
+        let hiddenPatterns = hiddenExamName.filter { !$0.isEmpty }
+        var result = self._staged(showFinishedExams: showFinishedExams)
+        var hiddenExams = [Exam]()
 
-            result.removeAll { exam in
-                exam.courseName.contains(name)
-            }
+        for pattern in hiddenPatterns {
+            hiddenExams += result.filter { $0.courseName.contains(pattern) }
+            result.removeAll { $0.courseName.contains(pattern) }
         }
 
-        return result + hiddenResult
-    }
-
-    /// Sorts exams by start date with unfinished exams first
-    /// Unfinished exams sorted ascending, finished exams sorted descending
-    /// - Returns: Sorted array with upcoming exams first
-    func sorted() -> [Exam] {
-        self
-            .filter { !$0.isFinished }
-            .sorted { $0.startDate < $1.endDate }
-            + self
-            .filter(\.isFinished)
-            .sorted { $0.startDate > $1.endDate }
-    }
-
-    /// Merges two exam lists, adding only new exams
-    /// - Parameter exams: Exams to merge in
-    /// - Returns: Combined array without duplicates
-    func merge(with exams: [Exam]) -> [Exam] {
-        var result = self
-        for exam in exams {
-            if !result.filter({ $0 == exam }).isEmpty { continue }
-            result.append(exam)
-        }
-        return result
+        return result + hiddenExams
     }
 }
 

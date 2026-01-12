@@ -85,27 +85,8 @@ extension Lecture {
 }
 
 extension [Lecture] {
-    @available(*, deprecated, message: "We now argue this process be done in backend/during data fetching.")
-    func union() -> [Lecture] {
-        var unionedLectures: [Lecture] = []
-        for lecture in self {
-            if let lastLecture = unionedLectures.last {
-                if lecture.startDate == lastLecture.startDate,
-                    lecture.endDate == lastLecture.endDate,
-                    lecture.name == lastLecture.name,
-                    lecture.location == lastLecture.location,
-                    lecture.periods == lastLecture.periods,
-                    lecture.additionalInfo == lastLecture.additionalInfo
-                {
-                    unionedLectures[unionedLectures.count - 1].teacherName += ("、" + lecture.teacherName)
-                } else {
-                    unionedLectures.append(lecture)
-                }
-            } else {
-                unionedLectures.append(lecture)
-            }
-        }
-        return unionedLectures
+    func staged() -> [Lecture] {
+        self.filter { !$0.isFinished }.sorted()
+            + self.filter { $0.isFinished }.sorted().reversed()
     }
-
 }

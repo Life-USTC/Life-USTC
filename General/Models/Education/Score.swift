@@ -91,6 +91,12 @@ final class ScoreEntry {
     }
 }
 
+extension ScoreEntry: Comparable {
+    static func < (lhs: ScoreEntry, rhs: ScoreEntry) -> Bool {
+        lhs.lessonCode < rhs.lessonCode
+    }
+}
+
 @Model
 final class ScoreSheet {
     @Attribute(.unique) var uniqueID = 0
@@ -125,5 +131,39 @@ final class ScoreSheet {
 extension ScoreSheet {
     static func update() async throws {
         try await SchoolSystem.current.updateScore()
+    }
+
+    /// Sorted and grouped scores for presentation
+    func staged(
+        semesterNameToHide: [String] = [],
+        sortPreference: String? = "GPA"
+    ) -> [(name: String, entries: [ScoreEntry])] {
+        let filtered = entries.filter { !semesterNameToHide.contains($0.semesterName) }
+
+        let sorted: [ScoreEntry]
+        if sortPreference == "GPA" {
+            sorted = filtered.sorted { (lhs: ScoreEntry, rhs: ScoreEntry) -> Bool in
+                (lhs.gpa ?? 0) > (rhs.gpa ?? 0)
+            }
+        } else {
+            sorted = filtered.sorted()
+        }
+
+        let groupedBySemester = sorted.categorise { $0.semesterName }
+
+        return
+            groupedBySemester
+            .sorted { lhs, rhs in
+                lhs.value[0].semesterID > rhs.value[0].semesterID
+            }
+            .map { ($0.key, $0.value) }
+    }
+
+    /// List of semester names sorted by semester ID (descending)
+    var semesterNameList: [String] {
+        entries
+            .categorise { $0.semesterName }
+            .sorted(by: { lhs, rhs in lhs.value[0].semesterID > rhs.value[0].semesterID })
+            .map { $0.key }
     }
 }
