@@ -17,6 +17,19 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
     @MainActor
     func testScreenshots() throws {
         let app = XCUIApplication()
+
+        addUIInterruptionMonitor(withDescription: "Save Password") { (alert) -> Bool in
+            let labels = ["Not Now", "以后", "Never for This Website", "不再提示"]
+            for label in labels {
+                let button = alert.buttons[label]
+                if button.exists {
+                    button.tap()
+                    return true
+                }
+            }
+            return false
+        }
+
         app.launchArguments.append("UI_TEST_RESET_ONBOARDING")
         setupSnapshot(app)
         app.launch()
@@ -30,6 +43,12 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
         app.tap()
 
         app.buttons["login_submit_button"].tap()
+
+        // Handle possible "Save Password" alert by backgrounding the app and returning.
+        XCUIDevice.shared.press(.home)
+        _ = app.wait(for: .runningBackground, timeout: 5)
+        app.activate()
+        _ = app.wait(for: .runningForeground, timeout: 5)
 
         app.buttons["onboarding_add_button"].tap()
 
