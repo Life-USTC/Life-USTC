@@ -30,6 +30,7 @@ targets:
       - path: "Assets/"
       - path: "General/"
       - path: "Schools/"
+      - path: "Server/"
       - path: "Views/"
       - path: "LaunchScreen.storyboard"
     settings:
@@ -51,6 +52,7 @@ targets:
         com.apple.developer.associated-domains:
           - webcredentials:passport.ustc.edu.cn
           - webcredentials:id.ustc.edu.cn
+          - webcredentials:life-ustc.tiankaima.dev
         com.apple.security.app-sandbox: true
         com.apple.security.application-groups:
           - group.dev.tiankaima.Life-USTC
@@ -64,6 +66,7 @@ targets:
       - sdk: CoreTelephony.framework
       - sdk: Security.framework
       - sdk: SystemConfiguration.framework
+      - sdk: AuthenticationServices.framework
       - package: Oklch
       - package: FeedKit
       - package: Introspect
@@ -115,6 +118,10 @@ targets:
           ]
         BGTaskSchedulerPermittedIdentifiers:
           - dev.tiankaima.Life-USTC.background_refresh
+        ServerBaseURL: "$(SERVER_BASE_URL)"
+    configFiles:
+      Debug: Server/Debug.xcconfig
+      Release: Server/Release.xcconfig
 
   Widget iOS:
     type: app-extension

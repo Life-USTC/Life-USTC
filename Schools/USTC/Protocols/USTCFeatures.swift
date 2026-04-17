@@ -37,6 +37,12 @@ enum USTCFeatures {
     static var ustcPublicFeatures: [FeatureWithView] {
         [
             .init(
+                image: "checklist",
+                title: "Todos",
+                subTitle: "Manage your tasks",
+                destinationView: { TodoListView() }
+            ),
+            .init(
                 image: "bus",
                 title: "Bus Timetable",
                 subTitle: "",

@@ -1,0 +1,2 @@
+// Release configuration — production server
+SERVER_BASE_URL = https:/$()/life-ustc.tiankaima.dev

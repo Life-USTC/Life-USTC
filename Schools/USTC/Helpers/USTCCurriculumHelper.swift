@@ -242,5 +242,8 @@ extension USTCSchool {
                 }
             }
         }
+
+        // Push scraped curriculum data to server (best-effort, non-blocking)
+        ServerSync.syncCurriculumInBackground()
     }
 }

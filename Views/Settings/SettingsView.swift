@@ -36,6 +36,14 @@ struct SettingsView: View {
             }
 
             Section {
+                NavigationLink("Server Account", destination: ServerAccountView())
+                    .accessibilityIdentifier("settings_server_account")
+            } header: {
+                Text("Cloud")
+                    .textCase(.none)
+            }
+
+            Section {
                 NavigationLink("About Life@USTC", destination: AboutPage())
                     .accessibilityIdentifier("settings_about")
                 NavigationLink("Legal Info", destination: LegalPage())
