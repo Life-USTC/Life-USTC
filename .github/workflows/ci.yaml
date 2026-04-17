@@ -34,10 +34,47 @@ jobs:
             echo "deploy=false" >> $GITHUB_OUTPUT
           fi
 
+  test:
+    name: Run Tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .xcodeproj
+        run: |
+          brew install xcodegen
+          xcodegen --spec project.yml
+
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-Tests \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -resultBundlePath TestResults/unit.xcresult \
+            -quiet
+
+      - name: Run UI Tests
+        run: |
+          xcodebuild test \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -only-testing:Life-USTC-UITests/E2ETests \
+            -resultBundlePath TestResults/ui.xcresult \
+            -quiet
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+
   build:
     name: Build IPA
     runs-on: macos-26
-    needs: determine_action
+    needs: [determine_action, test]
     outputs:
       build_number: ${{ steps.get_build_number.outputs.build_number }}
     steps:

@@ -65,11 +65,11 @@ struct OAuthTokenResponse: Codable {
 
 struct ServerSemester: Codable, Identifiable {
     let id: Int
+    let jwId: Int?
     let code: String
     let nameCn: String
-    let nameEn: String?
-    let startAt: Date
-    let endAt: Date
+    let startDate: Date?
+    let endDate: Date?
 }
 
 // MARK: - Section / Course
@@ -96,12 +96,13 @@ struct MatchCodesResponse: Codable {
 
 // MARK: - Calendar Subscription
 
-struct CalendarSubscription: Codable {
+struct CalendarSubscriptionSection: Codable, Identifiable {
     let id: Int
+}
+
+struct CalendarSubscription: Codable {
     let userId: String
-    let sectionIds: [Int]
-    let createdAt: Date
-    let updatedAt: Date
+    let sections: [CalendarSubscriptionSection]?
 }
 
 struct CalendarSubscriptionResponse: Codable {
@@ -170,6 +171,16 @@ struct HomeworkCompletionResponse: Codable {
 struct CreateHomeworkRequest: Encodable {
     let sectionId: Int
     let title: String
+    let description: String?
+    let publishedAt: String?
+    let submissionStartAt: String?
+    let submissionDueAt: String?
+    let isMajor: Bool?
+    let requiresTeam: Bool?
+}
+
+struct UpdateHomeworkRequest: Encodable {
+    let title: String?
     let description: String?
     let publishedAt: String?
     let submissionStartAt: String?
@@ -283,23 +294,71 @@ struct ServerBusCampus: Codable, Identifiable {
     let id: Int
     let nameCn: String
     let nameEn: String?
+    let namePrimary: String?
+    let nameSecondary: String?
 }
 
 struct ServerBusRoute: Codable, Identifiable {
     let id: Int
-    let name: String?
+    let nameCn: String?
+    let nameEn: String?
+    let descriptionPrimary: String?
+    let descriptionSecondary: String?
+    let stops: [ServerBusStop]?
 }
 
-struct ServerBusTrip: Codable {
-    let routeId: Int
-    let departureTime: String
-    let isDeparted: Bool?
+struct ServerBusStop: Codable {
+    let stopOrder: Int
+    let campus: ServerBusCampus?
+}
+
+struct ServerBusStopTime: Codable {
+    let stopOrder: Int
+    let campusId: Int?
+    let campusName: String?
+    let time: String?
+    let minutesSinceMidnight: Int?
+    let isPassThrough: Bool?
+}
+
+struct ServerBusTrip: Codable, Identifiable {
+    let id: Int
+    let routeId: Int?
+    let dayType: String?
+    let position: Int?
+    let stopTimes: [ServerBusStopTime]?
+    let departureTime: String?
+    let departureMinutes: Int?
+    let arrivalTime: String?
+    let arrivalMinutes: Int?
+    let status: String?
+    let minutesUntilDeparture: Int?
+}
+
+struct ServerBusMatch: Codable {
+    let route: ServerBusRoute?
+    let originStop: ServerBusStop?
+    let destinationStop: ServerBusStop?
+    let nextTrip: ServerBusTrip?
+    let upcomingTrips: [ServerBusTrip]?
+    let totalTrips: Int?
+    let isRecommended: Bool?
+}
+
+struct ServerBusNotice: Codable {
+    let message: String?
+    let url: String?
 }
 
 struct ServerBusResponse: Codable {
-    let campus: [ServerBusCampus]?
+    let locale: String?
+    let now: String?
+    let todayType: String?
+    let campuses: [ServerBusCampus]?
     let routes: [ServerBusRoute]?
-    let trips: [ServerBusTrip]?
+    let matches: [ServerBusMatch]?
+    let recommended: ServerBusMatch?
+    let notice: ServerBusNotice?
 }
 
 // MARK: - Metadata

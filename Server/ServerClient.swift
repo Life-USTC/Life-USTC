@@ -322,4 +322,77 @@ final class ServerClient: @unchecked Sendable {
         guard isAuthenticated else { return nil }
         return try await request(.me)
     }
+
+    // MARK: - Convenience: Academic Data
+
+    func fetchCurrentSemester() async throws -> ServerSemester {
+        try await request(.currentSemester)
+    }
+
+    func fetchSemesters(page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerSemester> {
+        try await request(.listSemesters(page: page, pageSize: pageSize))
+    }
+
+    func searchCourses(query: String? = nil, page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerCourseSummary> {
+        try await request(.listCourses(query: query, page: page, pageSize: pageSize))
+    }
+
+    func fetchCourseDetail(jwId: String) async throws -> ServerCourseDetail {
+        try await request(.getCourse(jwId: jwId))
+    }
+
+    func searchSections(
+        query: String? = nil, semesterId: Int? = nil, courseId: Int? = nil,
+        page: Int? = nil, pageSize: Int? = nil
+    ) async throws -> PaginatedResponse<ServerSectionSummary> {
+        try await request(.listSections(query: query, semesterId: semesterId, courseId: courseId, page: page, pageSize: pageSize))
+    }
+
+    func fetchSectionDetail(jwId: String) async throws -> ServerSectionDetail {
+        try await request(.getSection(jwId: jwId))
+    }
+
+    func fetchSectionSchedules(jwId: String) async throws -> [ServerScheduleEntry] {
+        try await request(.getSectionSchedules(jwId: jwId))
+    }
+
+    func searchTeachers(query: String? = nil, page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerTeacherSummary> {
+        try await request(.listTeachers(query: query, page: page, pageSize: pageSize))
+    }
+
+    func fetchTeacherDetail(id: Int) async throws -> ServerTeacherDetail {
+        try await request(.getTeacher(id: id))
+    }
+
+    func querySchedules(
+        sectionId: Int? = nil, teacherId: Int? = nil,
+        room: String? = nil, date: String? = nil, weekday: Int? = nil
+    ) async throws -> PaginatedResponse<ServerScheduleEntry> {
+        try await request(.querySchedules(sectionId: sectionId, teacherId: teacherId, room: room, date: date, weekday: weekday))
+    }
+
+    // MARK: - Convenience: Homework
+
+    func fetchHomeworks(sectionId: Int? = nil, subscribedOnly: Bool? = nil) async throws -> ServerHomeworkListResponse {
+        try await request(.listHomeworks(sectionId: sectionId, subscribedOnly: subscribedOnly))
+    }
+
+    func fetchHomework(id: String) async throws -> ServerHomework {
+        try await request(.getHomework(id: id))
+    }
+
+    // MARK: - Convenience: Todos
+
+    func fetchTodos() async throws -> ServerTodoListResponse {
+        try await request(.listTodos)
+    }
+
+    // MARK: - Convenience: Bus
+
+    func fetchBusSchedule(
+        originCampusId: Int? = nil, destinationCampusId: Int? = nil,
+        dayType: String? = nil, limit: Int? = nil
+    ) async throws -> ServerBusResponse {
+        try await request(.busSchedule(originCampusId: originCampusId, destinationCampusId: destinationCampusId, dayType: dayType, limit: limit))
+    }
 }
