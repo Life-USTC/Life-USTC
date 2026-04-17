@@ -96,7 +96,7 @@ struct ServerAccountView: View {
             }
 
             Section {
-                LabeledContent("Server", value: ServerClient.baseURL.host() ?? "")
+                LabeledContent("Server", value: ServerClient.shared.baseURL.host() ?? "")
                 LabeledContent("Status", value: isAuthenticated ? "Connected" : "Not connected")
             } header: {
                 Text("Server Info")

@@ -46,11 +46,11 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         let codeChallenge = Self.generateCodeChallenge(from: codeVerifier)
 
         var components = URLComponents(
-            url: ServerClient.baseURL.appendingPathComponent(
+            url: client.baseURL.appendingPathComponent(
                 "api/auth/oauth2/authorize"),
             resolvingAgainstBaseURL: false
         )!
-        let resource = ServerClient.baseURL.absoluteString
+        let resource = client.baseURL.absoluteString
         components.queryItems = [
             .init(name: "client_id", value: Self.clientID),
             .init(name: "response_type", value: "code"),
@@ -111,7 +111,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
     private func exchangeCodeForTokens(
         code: String, codeVerifier: String
     ) async throws {
-        let url = ServerClient.baseURL.appendingPathComponent(
+        let url = client.baseURL.appendingPathComponent(
             "api/auth/oauth2/token")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -126,7 +126,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             ("redirect_uri", Self.redirectURI),
             ("client_id", Self.clientID),
             ("code_verifier", codeVerifier),
-            ("resource", ServerClient.baseURL.absoluteString),
+            ("resource", client.baseURL.absoluteString),
         ]
 
         request.httpBody = bodyParams

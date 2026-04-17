@@ -189,6 +189,25 @@ targets:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
 
+  Life-USTC-Tests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: "Tests/Life-USTC-Tests"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.tiankaima.Life-USTC.Tests
+        PRODUCT_NAME: "Life-USTC Tests"
+        CODE_SIGN_STYLE: Automatic
+    dependencies:
+      - target: Life-USTC
+    info:
+      path: Tests/Life-USTC-Tests/Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+
 packages:
   Oklch:
     url: https://github.com/nikstar/swift-oklch
@@ -277,3 +296,13 @@ schemes:
         - Life-USTC-UITests
       targets:
         - Life-USTC-UITests
+
+  "Life-USTC-Tests":
+    build:
+      targets:
+        Life-USTC-Tests: [test]
+        Life-USTC: [test]
+    test:
+      config: Debug
+      targets:
+        - Life-USTC-Tests

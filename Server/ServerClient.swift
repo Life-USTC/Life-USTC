@@ -10,9 +10,79 @@ import KeychainAccess
 import os.log
 
 private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "Life-USTC",
+    subsystem: "dev.tiankaima.Life-USTC",
     category: "ServerClient"
 )
+
+// MARK: - Token Store Protocol
+
+/// Abstracts token persistence so tests can use an in-memory store.
+protocol TokenStore: Sendable {
+    var accessToken: String { get set }
+    var refreshToken: String { get set }
+    func clear()
+}
+
+/// Production token store backed by Keychain (shared via app group).
+final class KeychainTokenStore: TokenStore, @unchecked Sendable {
+    private let keychain: Keychain
+
+    init(
+        service: String = "dev.tiankaima.Life-USTC",
+        accessGroup: String = "group.dev.tiankaima.Life-USTC"
+    ) {
+        self.keychain = Keychain(service: service, accessGroup: accessGroup)
+    }
+
+    var accessToken: String {
+        get { (try? keychain.getString("serverAccessToken")) ?? "" }
+        set { keychain["serverAccessToken"] = newValue }
+    }
+
+    var refreshToken: String {
+        get { (try? keychain.getString("serverRefreshToken")) ?? "" }
+        set { keychain["serverRefreshToken"] = newValue }
+    }
+
+    func clear() {
+        keychain["serverAccessToken"] = nil
+        keychain["serverRefreshToken"] = nil
+    }
+}
+
+// MARK: - Server Client Configuration
+
+struct ServerClientConfiguration {
+    let baseURL: URL
+    let session: URLSession
+    var tokenStore: TokenStore
+
+    /// Default configuration from Info.plist / environment.
+    static var `default`: ServerClientConfiguration {
+        let baseURL: URL = {
+            if let override = Bundle.main.object(forInfoDictionaryKey: "ServerBaseURL") as? String,
+               let url = URL(string: override)
+            {
+                logger.info("Using server URL from Info.plist: \(override, privacy: .public)")
+                return url
+            }
+            return URL(string: "https://life-ustc.tiankaima.dev")!
+        }()
+
+        let config = URLSessionConfiguration.default
+        config.httpAdditionalHeaders = [
+            "Accept": "application/json",
+            "User-Agent": "Life-USTC-iOS/\(Bundle.main.releaseNumber ?? "unknown")",
+        ]
+        config.timeoutIntervalForRequest = 30
+
+        return ServerClientConfiguration(
+            baseURL: baseURL,
+            session: URLSession(configuration: config),
+            tokenStore: KeychainTokenStore()
+        )
+    }
+}
 
 // MARK: - Error Types
 
@@ -47,40 +117,25 @@ enum ServerError: LocalizedError {
 
 // MARK: - Server Client
 
-final class ServerClient: Sendable {
+final class ServerClient: @unchecked Sendable {
     static let shared = ServerClient()
 
-    /// Server base URL, configurable via Info.plist key `ServerBaseURL`.
-    /// Defaults to production; set to `http://localhost:3000` in debug schemes.
-    static let baseURL: URL = {
-        if let override = Bundle.main.object(forInfoDictionaryKey: "ServerBaseURL") as? String,
-           let url = URL(string: override)
-        {
-            logger.info("Using server URL from Info.plist: \(override, privacy: .public)")
-            return url
-        }
-        return URL(string: "https://life-ustc.tiankaima.dev")!
-    }()
-
-    private let keychain = Keychain(
-        service: "dev.tiankaima.Life-USTC",
-        accessGroup: "group.dev.tiankaima.Life-USTC"
-    )
-
+    let baseURL: URL
     private let session: URLSession
-    private let decoder: JSONDecoder
-    private let encoder: JSONEncoder
+    var tokenStore: TokenStore
+    let decoder: JSONDecoder
+    let encoder: JSONEncoder
 
-    // MARK: Token Management
+    // MARK: Convenience accessors
 
     var accessToken: String {
-        get { (try? keychain.getString("serverAccessToken")) ?? "" }
-        set { keychain["serverAccessToken"] = newValue }
+        get { tokenStore.accessToken }
+        set { tokenStore.accessToken = newValue }
     }
 
     var refreshToken: String {
-        get { (try? keychain.getString("serverRefreshToken")) ?? "" }
-        set { keychain["serverRefreshToken"] = newValue }
+        get { tokenStore.refreshToken }
+        set { tokenStore.refreshToken = newValue }
     }
 
     var isAuthenticated: Bool {
@@ -89,14 +144,10 @@ final class ServerClient: Sendable {
 
     // MARK: Init
 
-    init() {
-        let config = URLSessionConfiguration.default
-        config.httpAdditionalHeaders = [
-            "Accept": "application/json",
-            "User-Agent": "Life-USTC-iOS/\(Bundle.main.releaseNumber ?? "unknown")",
-        ]
-        config.timeoutIntervalForRequest = 30
-        self.session = URLSession(configuration: config)
+    init(configuration: ServerClientConfiguration = .default) {
+        self.baseURL = configuration.baseURL
+        self.session = configuration.session
+        self.tokenStore = configuration.tokenStore
 
         self.decoder = JSONDecoder()
         self.decoder.dateDecodingStrategy = .custom { decoder in
@@ -132,7 +183,7 @@ final class ServerClient: Sendable {
         _ endpoint: ServerEndpoint,
         retry: Bool = true
     ) async throws -> T {
-        var urlRequest = endpoint.buildURLRequest(baseURL: Self.baseURL)
+        var urlRequest = endpoint.buildURLRequest(baseURL: baseURL)
 
         if !accessToken.isEmpty {
             urlRequest.setValue(
@@ -217,7 +268,7 @@ final class ServerClient: Sendable {
     // MARK: - Token Refresh
 
     private func refreshAccessToken() async throws {
-        let url = Self.baseURL.appendingPathComponent("api/auth/oauth2/token")
+        let url = baseURL.appendingPathComponent("api/auth/oauth2/token")
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue(
@@ -229,7 +280,7 @@ final class ServerClient: Sendable {
             "grant_type": "refresh_token",
             "refresh_token": refreshToken,
             "client_id": ServerAuth.clientID,
-            "resource": Self.baseURL.absoluteString,
+            "resource": baseURL.absoluteString,
         ]
         urlRequest.httpBody = bodyParams
             .map {
@@ -263,8 +314,7 @@ final class ServerClient: Sendable {
 
     func clearTokens() {
         logger.info("Clearing stored tokens")
-        accessToken = ""
-        refreshToken = ""
+        tokenStore.clear()
     }
 
     /// Fetch the current user profile via `/api/me` (Bearer-token authenticated).
