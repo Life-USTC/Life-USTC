@@ -47,7 +47,6 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
                 "api/auth/oauth2/authorize"),
             resolvingAgainstBaseURL: false
         )!
-        let resource = client.baseURL.absoluteString
         components.queryItems = [
             .init(name: "client_id", value: Self.clientID),
             .init(name: "response_type", value: "code"),
@@ -55,7 +54,6 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             .init(name: "code_challenge", value: codeChallenge),
             .init(name: "code_challenge_method", value: "S256"),
             .init(name: "scope", value: "openid profile email offline_access"),
-            .init(name: "resource", value: resource),
         ]
 
         let authURL = components.url!
@@ -123,7 +121,6 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             ("redirect_uri", Self.redirectURI),
             ("client_id", Self.clientID),
             ("code_verifier", codeVerifier),
-            ("resource", client.baseURL.absoluteString),
         ]
 
         // RFC 3986 unreserved characters for application/x-www-form-urlencoded

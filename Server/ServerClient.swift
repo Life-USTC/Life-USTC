@@ -337,7 +337,6 @@ final class ServerClient: @unchecked Sendable {
             ("grant_type", "refresh_token"),
             ("refresh_token", refreshToken),
             ("client_id", ServerAuth.clientID),
-            ("resource", baseURL.absoluteString),
         ]
         urlRequest.httpBody = Self.formEncode(bodyParams)
 
