@@ -31,8 +31,9 @@ enum ServerSync {
             do {
                 try await syncCurriculum()
             } catch {
-                print(
-                    "[ServerSync] Curriculum sync failed: \(error.localizedDescription)"
+                AppLogger.shared.error(
+                    "Curriculum sync failed: \(error.localizedDescription)",
+                    category: "ServerSync"
                 )
             }
         }

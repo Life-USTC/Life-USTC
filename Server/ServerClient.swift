@@ -7,12 +7,8 @@
 
 import Foundation
 import KeychainAccess
-import os.log
 
-private let logger = Logger(
-    subsystem: "dev.tiankaima.Life-USTC",
-    category: "ServerClient"
-)
+private let logger = AppLogger.logger(for: "ServerClient")
 
 // MARK: - Token Store Protocol
 
@@ -63,7 +59,7 @@ struct ServerClientConfiguration {
             if let override = Bundle.main.object(forInfoDictionaryKey: "ServerBaseURL") as? String,
                let url = URL(string: override)
             {
-                logger.info("Using server URL from Info.plist: \(override, privacy: .public)")
+                logger.info("Using server URL from Info.plist: \(override)")
                 return url
             }
             return URL(string: "https://life-ustc.tiankaima.dev")!
@@ -201,7 +197,7 @@ final class ServerClient: @unchecked Sendable {
         }
 
         logger.debug(
-            "\(urlRequest.httpMethod ?? "GET", privacy: .public) \(urlRequest.url?.absoluteString ?? "", privacy: .public)"
+            "\(urlRequest.httpMethod ?? "GET") \(urlRequest.url?.absoluteString ?? "")"
         )
 
         let data: Data
@@ -209,7 +205,7 @@ final class ServerClient: @unchecked Sendable {
         do {
             (data, response) = try await session.data(for: urlRequest)
         } catch {
-            logger.error("Network error: \(error.localizedDescription, privacy: .public)")
+            logger.error("Network error: \(error.localizedDescription)")
             throw ServerError.networkError(error)
         }
 
@@ -218,7 +214,7 @@ final class ServerClient: @unchecked Sendable {
         }
 
         logger.debug(
-            "← \(httpResponse.statusCode, privacy: .public) (\(data.count) bytes) \(urlRequest.url?.path ?? "", privacy: .public)"
+            "← \(httpResponse.statusCode) (\(data.count) bytes) \(urlRequest.url?.path ?? "")"
         )
 
         switch httpResponse.statusCode {
@@ -227,10 +223,10 @@ final class ServerClient: @unchecked Sendable {
                 return try decoder.decode(T.self, from: data)
             } catch {
                 logger.error(
-                    "Decode error for \(urlRequest.url?.path ?? "", privacy: .public): \(String(describing: error), privacy: .public)"
+                    "Decode error for \(urlRequest.url?.path ?? ""): \(String(describing: error))"
                 )
-                if let body = String(data: data.prefix(500), encoding: .utf8) {
-                    logger.debug("Response body (truncated): \(body, privacy: .private)")
+                if data.count < 500, let body = String(data: data, encoding: .utf8) {
+                    logger.debug("Response body: \(body)")
                 }
                 throw ServerError.decodingError(error)
             }
@@ -244,18 +240,18 @@ final class ServerClient: @unchecked Sendable {
             throw ServerError.notAuthenticated
         case 403:
             let errResp = try? decoder.decode(ServerErrorResponse.self, from: data)
-            logger.warning("Forbidden: \(errResp?.error ?? "unknown", privacy: .public)")
+            logger.warning("Forbidden: \(errResp?.error ?? "unknown")")
             throw ServerError.forbidden(errResp?.error ?? "Forbidden")
         case 400:
             let errResp = try? decoder.decode(ServerErrorResponse.self, from: data)
-            logger.warning("Bad request: \(errResp?.error ?? "unknown", privacy: .public)")
+            logger.warning("Bad request: \(errResp?.error ?? "unknown")")
             throw ServerError.badRequest(errResp?.error ?? "Bad request")
         case 404:
             throw ServerError.notFound
         default:
             let errResp = try? decoder.decode(ServerErrorResponse.self, from: data)
             let msg = errResp?.error ?? "Server error (\(httpResponse.statusCode))"
-            logger.error("Server error \(httpResponse.statusCode, privacy: .public): \(msg, privacy: .public)")
+            logger.error("Server error \(httpResponse.statusCode): \(msg)")
             throw ServerError.serverError(msg)
         }
     }
@@ -297,7 +293,7 @@ final class ServerClient: @unchecked Sendable {
             httpResponse.statusCode == 200
         else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            logger.error("Token refresh failed with status \(status, privacy: .public)")
+            logger.error("Token refresh failed with status \(status)")
             clearTokens()
             throw ServerError.notAuthenticated
         }

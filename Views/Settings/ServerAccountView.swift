@@ -5,22 +5,14 @@
 //  Created on 2026/4/17.
 //
 
-import AuthenticationServices
 import SwiftUI
 
 struct ServerAccountView: View {
-    @State private var user: ServerUser?
-    @State private var isLoading = false
-    @State private var isLoggingIn = false
-    @State private var error: String?
-
-    private var isAuthenticated: Bool {
-        ServerClient.shared.isAuthenticated
-    }
+    @Bindable private var store = ServerAccountStore.shared
 
     var body: some View {
         List {
-            if let user {
+            if let user = store.user {
                 Section {
                     HStack(spacing: 12) {
                         if let imageURL = user.image,
@@ -52,12 +44,12 @@ struct ServerAccountView: View {
 
                 Section {
                     Button(role: .destructive) {
-                        logout()
+                        store.logout()
                     } label: {
                         Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
-            } else if isAuthenticated {
+            } else if store.isAuthenticated {
                 Section {
                     HStack {
                         Text("Loading account…")
@@ -78,9 +70,9 @@ struct ServerAccountView: View {
                             .multilineTextAlignment(.center)
 
                         Button {
-                            Task { await login() }
+                            Task { await store.login() }
                         } label: {
-                            if isLoggingIn {
+                            if store.isLoading {
                                 ProgressView()
                                     .frame(maxWidth: .infinity)
                             } else {
@@ -89,7 +81,7 @@ struct ServerAccountView: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
-                        .disabled(isLoggingIn)
+                        .disabled(store.isLoading)
                     }
                     .padding(.vertical, 8)
                 }
@@ -97,12 +89,12 @@ struct ServerAccountView: View {
 
             Section {
                 LabeledContent("Server", value: ServerClient.shared.baseURL.host() ?? "")
-                LabeledContent("Status", value: isAuthenticated ? "Connected" : "Not connected")
+                LabeledContent("Status", value: store.isAuthenticated ? "Connected" : "Not connected")
             } header: {
                 Text("Server Info")
             }
 
-            if let error {
+            if let error = store.error {
                 Section {
                     Text(error)
                         .foregroundStyle(.red)
@@ -111,39 +103,7 @@ struct ServerAccountView: View {
             }
         }
         .navigationTitle("Server Account")
-        .task { await loadUser() }
-    }
-
-    private func loadUser() async {
-        guard isAuthenticated else { return }
-        isLoading = true
-        do {
-            user = try await ServerClient.shared.fetchCurrentUser()
-        } catch {
-            self.error = error.localizedDescription
-        }
-        isLoading = false
-    }
-
-    @MainActor
-    private func login() async {
-        isLoggingIn = true
-        error = nil
-        do {
-            try await ServerAuth.shared.login()
-            await loadUser()
-        } catch {
-            if (error as NSError).code != ASWebAuthenticationSessionError.canceledLogin.rawValue {
-                self.error = error.localizedDescription
-            }
-        }
-        isLoggingIn = false
-    }
-
-    private func logout() {
-        ServerAuth.shared.logout()
-        user = nil
-        error = nil
+        .task { await store.loadUser() }
     }
 }
 

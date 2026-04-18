@@ -24,4 +24,5 @@ struct SettingWithView: Identifiable {
     var id = UUID()
     var name: LocalizedStringKey
     var destinationView: () -> any View
+    var debugOnly: Bool = false
 }

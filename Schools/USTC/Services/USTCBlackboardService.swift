@@ -7,12 +7,8 @@
 //
 
 import Foundation
-import os.log
 
-private let logger = Logger(
-    subsystem: "dev.tiankaima.Life-USTC",
-    category: "USTCBlackboardService"
-)
+private let logger = AppLogger.logger(for: "USTCBlackboard")
 
 /// Provides typed access to bb.ustc.edu.cn APIs.
 struct USTCBlackboardService {

@@ -8,11 +8,84 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Bindable private var account = ServerAccountStore.shared
+    @AppStorage("productionDebugEnabled") private var debugEnabled = false
+
+    private var visibleSchoolSettings: [SettingWithView] {
+        SchoolSystem.current.settings.filter { !$0.debugOnly || debugEnabled }
+    }
+
     var body: some View {
         List {
+            // MARK: - Account (top section)
             Section {
-                // NavigationLink("App Settings", destination: AppSettingsPage())
-                //     .accessibilityIdentifier("settings_app_settings")
+                if let user = account.user {
+                    NavigationLink(destination: ServerAccountView()) {
+                        HStack(spacing: 12) {
+                            if let imageURL = user.image, let url = URL(string: imageURL) {
+                                AsyncImage(url: url) { image in
+                                    image.resizable()
+                                } placeholder: {
+                                    Circle().fill(.quaternary)
+                                }
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.crop.circle.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(user.name ?? user.username ?? "User")
+                                    .font(.headline)
+                                Text(user.email)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .accessibilityIdentifier("settings_server_account")
+                } else if account.isAuthenticated {
+                    NavigationLink(destination: ServerAccountView()) {
+                        HStack {
+                            ProgressView()
+                            Text("Loading account…")
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 8)
+                        }
+                    }
+                    .accessibilityIdentifier("settings_server_account")
+                } else {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Not signed in")
+                                .font(.headline)
+                            Text("Sign in for Todos, Comments & sync")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button {
+                            Task { await account.login() }
+                        } label: {
+                            if account.isLoading {
+                                ProgressView()
+                            } else {
+                                Text("Sign In")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .disabled(account.isLoading)
+                    }
+                    .accessibilityIdentifier("settings_server_account")
+                }
+            }
+
+            // MARK: - General
+            Section {
                 NavigationLink("Home Page Settings", destination: HomeSettingPage())
                     .accessibilityIdentifier("settings_home_settings")
                 NavigationLink("Feed Source Settings", destination: FeedSetingsPage())
@@ -24,35 +97,36 @@ struct SettingsView: View {
                     .textCase(.none)
             }
 
-            Section {
-                ForEach(SchoolSystem.current.settings) { setting in
-                    NavigationLink(setting.name) {
-                        AnyView(setting.destinationView())
+            // MARK: - School (filters debugOnly items)
+            if !visibleSchoolSettings.isEmpty {
+                Section {
+                    ForEach(visibleSchoolSettings) { setting in
+                        NavigationLink(setting.name) {
+                            AnyView(setting.destinationView())
+                        }
                     }
+                } header: {
+                    Text("School")
+                        .textCase(.none)
                 }
-            } header: {
-                Text("School")
-                    .textCase(.none)
             }
 
-            Section {
-                NavigationLink("Server Account", destination: ServerAccountView())
-                    .accessibilityIdentifier("settings_server_account")
-            } header: {
-                Text("Cloud")
-                    .textCase(.none)
-            }
-
+            // MARK: - More
             Section {
                 NavigationLink("About Life@USTC", destination: AboutPage())
                     .accessibilityIdentifier("settings_about")
                 NavigationLink("Legal Info", destination: LegalPage())
                     .accessibilityIdentifier("settings_legal")
+                if debugEnabled {
+                    NavigationLink("Debug Logs", destination: DebugLogView())
+                        .accessibilityIdentifier("settings_debug_logs")
+                }
             } header: {
                 Text("More")
                     .textCase(.none)
             }
         }
         .navigationTitle("Settings")
+        .task { await account.loadUser() }
     }
 }

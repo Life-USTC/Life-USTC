@@ -8,13 +8,9 @@
 import AuthenticationServices
 import CryptoKit
 import Foundation
-import os.log
 import SwiftUI
 
-private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "Life-USTC",
-    category: "ServerAuth"
-)
+private let logger = AppLogger.logger(for: "ServerAuth")
 
 // MARK: - OAuth2 PKCE Authentication
 
@@ -62,7 +58,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         ]
 
         let authURL = components.url!
-        logger.info("Starting OAuth2 PKCE flow → \(authURL.host() ?? "", privacy: .public)")
+        logger.info("Starting OAuth2 PKCE flow → \(authURL.host() ?? "")")
 
         let code = try await withCheckedThrowingContinuation {
             (continuation: CheckedContinuation<String, Error>) in
@@ -146,7 +142,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
             if let body = String(data: data, encoding: .utf8) {
-                logger.error("Token exchange failed (\(status, privacy: .public)): \(body, privacy: .private)")
+                logger.error("Token exchange failed (\(status)): <redacted>")
             }
             throw ServerError.notAuthenticated
         }
@@ -160,7 +156,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             client.refreshToken = refresh
         }
         logger.info(
-            "Token exchange succeeded (has refresh: \(tokenResponse.refreshToken != nil, privacy: .public))"
+            "Token exchange succeeded (has refresh: \(tokenResponse.refreshToken != nil))"
         )
     }
 

@@ -33,7 +33,7 @@ enum USTCSchool {
                 AnyView(USTCOnboardingView(dismissAction: dismissAction))
             },
             settings: [
-                .init(name: "CAS Settings", destinationView: { USTCCASLoginView() }),
+                .init(name: "CAS Settings", destinationView: { USTCCASLoginView() }, debugOnly: true),
                 .init(name: "Select Additional Course", destinationView: { USTCAdditionalCourseView() }),
             ],
             features: ustcFeatures,

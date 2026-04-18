@@ -8,12 +8,8 @@
 
 import Foundation
 import SwiftSoup
-import os.log
 
-private let logger = Logger(
-    subsystem: "dev.tiankaima.Life-USTC",
-    category: "USTCAASService"
-)
+private let logger = AppLogger.logger(for: "USTCAAS")
 
 /// Provides typed access to jw.ustc.edu.cn APIs.
 /// Requires that CAS → AAS login has been performed on the shared URLSession.
@@ -39,7 +35,7 @@ struct USTCAASService {
         }
 
         let studentID = String(match.1)
-        logger.debug("Got student ID: \(studentID, privacy: .public)")
+        logger.debug("Got student ID: \(studentID)")
         return studentID
     }
 
@@ -56,7 +52,7 @@ struct USTCAASService {
         let response = try decoder.decode(AASCourseTableDTO.self, from: data)
 
         let ids = response.lessonIds ?? []
-        logger.debug("Fetched \(ids.count) lesson IDs for semester \(semesterID, privacy: .public)")
+        logger.debug("Fetched \(ids.count) lesson IDs for semester \(semesterID)")
         return ids
     }
 

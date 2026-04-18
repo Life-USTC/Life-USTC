@@ -7,12 +7,8 @@
 //
 
 import Foundation
-import os.log
 
-private let logger = Logger(
-    subsystem: "dev.tiankaima.Life-USTC",
-    category: "USTCStaticService"
-)
+private let logger = AppLogger.logger(for: "USTCStatic")
 
 /// Provides typed access to the static curriculum data server.
 struct USTCStaticService {
