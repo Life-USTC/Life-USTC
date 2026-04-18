@@ -126,15 +126,12 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             ("resource", client.baseURL.absoluteString),
         ]
 
-        request.httpBody = bodyParams
-            .map { key, value in
-                let encoded =
-                    value.addingPercentEncoding(
-                        withAllowedCharacters: .urlQueryAllowed) ?? value
-                return "\(key)=\(encoded)"
-            }
-            .joined(separator: "&")
-            .data(using: .utf8)
+        // RFC 3986 unreserved characters for application/x-www-form-urlencoded
+        request.httpBody = ServerClient.formEncode(bodyParams)
+
+        logger.debug(
+            "Token request body keys: \(bodyParams.map(\.0).joined(separator: ", "))"
+        )
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -142,9 +139,10 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             httpResponse.statusCode == 200
         else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            if let body = String(data: data, encoding: .utf8) {
-                logger.error("Token exchange failed (\(status)): <redacted>")
-            }
+            let body = String(data: data, encoding: .utf8) ?? "<no body>"
+            logger.error(
+                "Token exchange failed (\(status)): \(body)"
+            )
             throw ServerError.notAuthenticated
         }
 

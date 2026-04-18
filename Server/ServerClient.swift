@@ -302,6 +302,26 @@ final class ServerClient: @unchecked Sendable {
         let _: SuccessResponse = try await request(endpoint)
     }
 
+    // MARK: - Form Encoding
+
+    /// Encodes key-value pairs for application/x-www-form-urlencoded.
+    static func formEncode(_ params: [(String, String)]) -> Data {
+        var allowed = CharacterSet.alphanumerics
+        allowed.insert(charactersIn: "-._~")
+        return params
+            .map { key, value in
+                let k =
+                    key.addingPercentEncoding(
+                        withAllowedCharacters: allowed) ?? key
+                let v =
+                    value.addingPercentEncoding(
+                        withAllowedCharacters: allowed) ?? value
+                return "\(k)=\(v)"
+            }
+            .joined(separator: "&")
+            .data(using: .utf8)!
+    }
+
     // MARK: - Token Refresh
 
     private func refreshAccessToken() async throws {
@@ -313,18 +333,13 @@ final class ServerClient: @unchecked Sendable {
             forHTTPHeaderField: "Content-Type"
         )
 
-        let bodyParams = [
-            "grant_type": "refresh_token",
-            "refresh_token": refreshToken,
-            "client_id": ServerAuth.clientID,
-            "resource": baseURL.absoluteString,
+        let bodyParams: [(String, String)] = [
+            ("grant_type", "refresh_token"),
+            ("refresh_token", refreshToken),
+            ("client_id", ServerAuth.clientID),
+            ("resource", baseURL.absoluteString),
         ]
-        urlRequest.httpBody = bodyParams
-            .map {
-                "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-            }
-            .joined(separator: "&")
-            .data(using: .utf8)
+        urlRequest.httpBody = Self.formEncode(bodyParams)
 
         logger.info("Refreshing access token")
 
@@ -334,7 +349,8 @@ final class ServerClient: @unchecked Sendable {
             httpResponse.statusCode == 200
         else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            logger.error("Token refresh failed with status \(status)")
+            let body = String(data: data, encoding: .utf8) ?? "<no body>"
+            logger.error("Token refresh failed (\(status)): \(body)")
             clearTokens()
             throw ServerError.notAuthenticated
         }
