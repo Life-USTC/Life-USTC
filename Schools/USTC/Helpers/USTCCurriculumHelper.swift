@@ -192,9 +192,23 @@ func updateGraduateCurriculum(semester: Semester) async throws {
 extension USTCSchool {
     @MainActor
     static func updateCurriculum() async throws {
-        @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
-
         if SwiftDataStack.isPresentingDemo { return }
+
+        // Prefer server data when authenticated
+        if ServerClient.shared.isAuthenticated {
+            AppLogger.logger(for: "USTCCurriculum").info("Using server for curriculum update")
+            try await ServerDataProvider.updateCurriculum()
+            return
+        }
+
+        // Fall back to legacy USTC scraping
+        AppLogger.logger(for: "USTCCurriculum").info("Using USTC scraping for curriculum update")
+        try await updateCurriculumFromUSTC()
+    }
+
+    @MainActor
+    static func updateCurriculumFromUSTC() async throws {
+        @AppStorage("ustcStudentType", store: .appGroup) var ustcStudentType: USTCStudentType = .graduate
 
         let curriculum = try SwiftDataStack.modelContext.upsert(
             predicate: #Predicate<Curriculum> { $0.uniqueID == 0 },

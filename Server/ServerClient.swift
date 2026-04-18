@@ -46,6 +46,29 @@ final class KeychainTokenStore: TokenStore, @unchecked Sendable {
     }
 }
 
+// MARK: - Server Environment
+
+/// Known backend environments for the app.
+enum ServerEnvironment: String, CaseIterable, Identifiable {
+    case production = "https://life-ustc.tiankaima.dev"
+    case localhost = "http://localhost:3000"
+    case custom = ""
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .production: "Production"
+        case .localhost: "Localhost (Simulator)"
+        case .custom: "Custom URL"
+        }
+    }
+
+    var url: URL? {
+        URL(string: rawValue)
+    }
+}
+
 // MARK: - Server Client Configuration
 
 struct ServerClientConfiguration {
@@ -53,17 +76,32 @@ struct ServerClientConfiguration {
     let session: URLSession
     var tokenStore: TokenStore
 
-    /// Default configuration from Info.plist / environment.
+    /// Resolve baseURL from user preference → Info.plist → production default.
+    static var resolvedBaseURL: URL {
+        // 1. Check user override (debug mode)
+        if let stored = UserDefaults.standard.string(forKey: "serverBaseURL"),
+           !stored.isEmpty,
+           let url = URL(string: stored)
+        {
+            logger.info("Using server URL from user settings: \(stored)")
+            return url
+        }
+
+        // 2. Check Info.plist override
+        if let override = Bundle.main.object(forInfoDictionaryKey: "ServerBaseURL") as? String,
+           let url = URL(string: override)
+        {
+            logger.info("Using server URL from Info.plist: \(override)")
+            return url
+        }
+
+        // 3. Default production
+        return URL(string: ServerEnvironment.production.rawValue)!
+    }
+
+    /// Default configuration.
     static var `default`: ServerClientConfiguration {
-        let baseURL: URL = {
-            if let override = Bundle.main.object(forInfoDictionaryKey: "ServerBaseURL") as? String,
-               let url = URL(string: override)
-            {
-                logger.info("Using server URL from Info.plist: \(override)")
-                return url
-            }
-            return URL(string: "https://life-ustc.tiankaima.dev")!
-        }()
+        let baseURL = resolvedBaseURL
 
         let config = URLSessionConfiguration.default
         config.httpAdditionalHeaders = [
@@ -116,11 +154,14 @@ enum ServerError: LocalizedError {
 final class ServerClient: @unchecked Sendable {
     static let shared = ServerClient()
 
-    let baseURL: URL
-    private let session: URLSession
+    private(set) var baseURL: URL
+    private var session: URLSession
     var tokenStore: TokenStore
     let decoder: JSONDecoder
     let encoder: JSONEncoder
+
+    /// Lock protecting baseURL + session mutations during reconfigure.
+    private let configLock = NSLock()
 
     // MARK: Convenience accessors
 
@@ -311,6 +352,33 @@ final class ServerClient: @unchecked Sendable {
     func clearTokens() {
         logger.info("Clearing stored tokens")
         tokenStore.clear()
+    }
+
+    /// Atomically switch the backend URL. Clears tokens since they belong to the old server.
+    func reconfigure(baseURL newURL: URL) {
+        configLock.lock()
+        defer { configLock.unlock() }
+
+        let oldHost = baseURL.host() ?? ""
+        logger.info("Reconfiguring backend: \(oldHost) → \(newURL.host() ?? "")")
+
+        baseURL = newURL
+        clearTokens()
+
+        // Persist the preference
+        UserDefaults.standard.set(newURL.absoluteString, forKey: "serverBaseURL")
+    }
+
+    /// Reset to production default and clear the stored override.
+    func resetToProduction() {
+        let productionURL = URL(string: ServerEnvironment.production.rawValue)!
+        configLock.lock()
+        defer { configLock.unlock() }
+
+        baseURL = productionURL
+        clearTokens()
+        UserDefaults.standard.removeObject(forKey: "serverBaseURL")
+        logger.info("Reset to production backend")
     }
 
     /// Fetch the current user profile via `/api/me` (Bearer-token authenticated).

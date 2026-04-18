@@ -64,4 +64,11 @@ final class ServerAccountStore {
         user = nil
         error = nil
     }
+
+    /// Called when backend URL changes — reset all state.
+    func onBackendChanged() {
+        user = nil
+        error = nil
+        isLoading = false
+    }
 }

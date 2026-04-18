@@ -13,6 +13,20 @@ extension USTCSchool {
     static func updateExam() async throws {
         if SwiftDataStack.isPresentingDemo { return }
 
+        // Prefer server data when authenticated
+        if ServerClient.shared.isAuthenticated {
+            AppLogger.logger(for: "USTCExam").info("Using server for exam update")
+            try await ServerDataProvider.updateExams()
+            return
+        }
+
+        // Fall back to legacy USTC scraping
+        AppLogger.logger(for: "USTCExam").info("Using USTC scraping for exam update")
+        try await updateExamFromUSTC()
+    }
+
+    @MainActor
+    static func updateExamFromUSTC() async throws {
         func parseDate(from: String) -> (startTime: Date, endTime: Date)? {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"

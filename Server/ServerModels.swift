@@ -96,13 +96,12 @@ struct MatchCodesResponse: Codable {
 
 // MARK: - Calendar Subscription
 
-struct CalendarSubscriptionSection: Codable, Identifiable {
-    let id: Int
-}
-
 struct CalendarSubscription: Codable {
     let userId: String
-    let sections: [CalendarSubscriptionSection]?
+    let sections: [ServerSectionSummary]?
+    let calendarPath: String?
+    let calendarUrl: String?
+    let note: String?
 }
 
 struct CalendarSubscriptionResponse: Codable {

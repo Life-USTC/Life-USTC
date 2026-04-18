@@ -24,7 +24,8 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
     static let redirectURI = "dev.tiankaima.life-ustc://auth/callback"
     static let callbackScheme = "dev.tiankaima.life-ustc"
 
-    private let client = ServerClient.shared
+    /// Always read the current client — don't cache, since backend can change.
+    private var client: ServerClient { ServerClient.shared }
 
     // MARK: - ASWebAuthenticationPresentationContextProviding
 

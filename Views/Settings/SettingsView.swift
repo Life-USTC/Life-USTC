@@ -120,6 +120,8 @@ struct SettingsView: View {
                 if debugEnabled {
                     NavigationLink("Debug Logs", destination: DebugLogView())
                         .accessibilityIdentifier("settings_debug_logs")
+                    NavigationLink("Backend Server", destination: ServerBackendSettingsView())
+                        .accessibilityIdentifier("settings_backend_server")
                 }
             } header: {
                 Text("More")

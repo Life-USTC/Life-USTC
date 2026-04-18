@@ -101,17 +101,64 @@ struct ServerSectionDetail: Codable, Identifiable {
 }
 
 /// Minimal schedule reference within a section detail.
+/// Note: In section detail responses, startTime/endTime are integers (e.g. 800 for 08:00).
+/// In /api/schedules responses, they are formatted strings ("08:00").
 struct ServerScheduleRef: Codable, Identifiable {
     let id: Int
     let periods: Int?
     let date: String?
     let weekday: Int
-    let startTime: String
-    let endTime: String
+    let startTime: IntOrString
+    let endTime: IntOrString
     let weekIndex: Int?
     let startUnit: Int?
     let endUnit: Int?
     let customPlace: String?
+}
+
+/// Decodes either an Int (from section detail) or String (from /api/schedules).
+enum IntOrString: Codable {
+    case int(Int)
+    case string(String)
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let intVal = try? container.decode(Int.self) {
+            self = .int(intVal)
+        } else if let strVal = try? container.decode(String.self) {
+            self = .string(strVal)
+        } else {
+            throw DecodingError.typeMismatch(
+                IntOrString.self,
+                .init(codingPath: decoder.codingPath, debugDescription: "Expected Int or String")
+            )
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .int(let v): try container.encode(v)
+        case .string(let v): try container.encode(v)
+        }
+    }
+
+    /// Parsed hours and minutes.
+    var components: (hour: Int, minute: Int) {
+        switch self {
+        case .int(let v):
+            // e.g. 800 → 08:00, 1400 → 14:00
+            return (v / 100, v % 100)
+        case .string(let s):
+            // e.g. "08:00"
+            let parts = s.split(separator: ":")
+            guard parts.count == 2,
+                  let h = Int(parts[0]),
+                  let m = Int(parts[1])
+            else { return (0, 0) }
+            return (h, m)
+        }
+    }
 }
 
 struct ServerScheduleGroup: Codable, Identifiable {
@@ -168,8 +215,8 @@ struct ServerScheduleEntry: Codable, Identifiable {
     let periods: Int?
     let date: String?
     let weekday: Int
-    let startTime: String  // "HH:MM"
-    let endTime: String    // "HH:MM"
+    let startTime: IntOrString
+    let endTime: IntOrString
     let weekIndex: Int?
     let startUnit: Int?
     let endUnit: Int?
@@ -214,12 +261,16 @@ struct ServerScheduleSectionRef: Codable, Identifiable {
 struct ServerExamEntry: Codable, Identifiable {
     let id: Int
     let examDate: String?
+    let startTime: Int?
+    let endTime: Int?
+    let examType: Int?
+    let examMode: String?
     let examBatch: NamedEntity?
     let examRooms: [ServerExamRoom]?
 }
 
 struct ServerExamRoom: Codable, Identifiable {
     let id: Int
-    let roomCode: String?
-    let seatCount: Int?
+    let room: String?
+    let count: Int?
 }
