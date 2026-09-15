@@ -57,11 +57,12 @@ private final class YoungNotificationsModel {
 }
 
 struct YoungNotificationsView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var model = YoungNotificationsModel()
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else if let error = model.error, model.notifications.isEmpty && !model.isLoading {
                 YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
@@ -85,7 +86,7 @@ struct YoungNotificationsView: View {
             }
         }
         .navigationTitle("Notifications")
-        .task { await model.load() }
+        .task(id: account.isAuthenticated) { await model.load() }
         .refreshable { await model.load() }
     }
 

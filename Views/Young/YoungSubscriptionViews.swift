@@ -10,6 +10,7 @@ import SwiftUI
 struct YoungEventSubscriptionPanel: View {
     let youngId: String
 
+    @Bindable private var account = ServerAccountStore.shared
     @State private var state: ServerYoungEventSubscriptionState?
     @State private var isLoading = false
     @State private var isSaving = false
@@ -17,7 +18,7 @@ struct YoungEventSubscriptionPanel: View {
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else if let error, state == nil && !isLoading {
                 YoungErrorView(error: error, retry: { Task { await load() } }, reauthorize: true)
@@ -43,7 +44,7 @@ struct YoungEventSubscriptionPanel: View {
         .overlay {
             if isLoading && state != nil { ProgressView() }
         }
-        .task { await load() }
+        .task(id: account.isAuthenticated) { await load() }
     }
 
     private var subscribedBinding: Binding<Bool> {
@@ -113,6 +114,7 @@ struct YoungEventSubscriptionPanel: View {
 struct YoungOrganizerFollowPanel: View {
     let organizerId: String
 
+    @Bindable private var account = ServerAccountStore.shared
     @State private var state: ServerYoungOrganizerSubscriptionState?
     @State private var isLoading = false
     @State private var isSaving = false
@@ -120,7 +122,7 @@ struct YoungOrganizerFollowPanel: View {
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else if let error, state == nil && !isLoading {
                 YoungErrorView(error: error, retry: { Task { await load() } }, reauthorize: true)
@@ -138,7 +140,7 @@ struct YoungOrganizerFollowPanel: View {
         .overlay {
             if isLoading && state != nil { ProgressView() }
         }
-        .task { await load() }
+        .task(id: account.isAuthenticated) { await load() }
     }
 
     private var followBinding: Binding<Bool> {
@@ -218,11 +220,12 @@ private final class YoungEventSubscriptionsModel {
 }
 
 struct YoungEventSubscriptionsView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var model = YoungEventSubscriptionsModel()
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else if let error = model.error, model.subscriptions.isEmpty && !model.isLoading {
                 YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
@@ -268,7 +271,7 @@ struct YoungEventSubscriptionsView: View {
             }
         }
         .navigationTitle("My Activities")
-        .task { await model.load() }
+        .task(id: account.isAuthenticated) { await model.load() }
         .refreshable { await model.load() }
     }
 }
@@ -313,11 +316,12 @@ private final class YoungOrganizerSubscriptionsModel {
 }
 
 struct YoungOrganizerSubscriptionsView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var model = YoungOrganizerSubscriptionsModel()
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else if let error = model.error, model.subscriptions.isEmpty && !model.isLoading {
                 YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
@@ -348,7 +352,7 @@ struct YoungOrganizerSubscriptionsView: View {
             }
         }
         .navigationTitle("Followed Organizers")
-        .task { await model.load() }
+        .task(id: account.isAuthenticated) { await model.load() }
         .refreshable { await model.load() }
     }
 }

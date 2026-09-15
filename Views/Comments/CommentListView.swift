@@ -76,6 +76,7 @@ class CommentListViewModel {
 }
 
 struct CommentListView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State var viewModel: CommentListViewModel
     @State private var showingCompose = false
 
@@ -119,7 +120,7 @@ struct CommentListView: View {
             }
         }
         .toolbar {
-            if ServerClient.shared.isAuthenticated {
+            if account.isAuthenticated {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingCompose = true
@@ -132,7 +133,7 @@ struct CommentListView: View {
         .sheet(isPresented: $showingCompose) {
             CommentComposeView(viewModel: viewModel)
         }
-        .task { await viewModel.load() }
+        .task(id: account.isAuthenticated) { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .overlay {
             if viewModel.isLoading && viewModel.comments.isEmpty {

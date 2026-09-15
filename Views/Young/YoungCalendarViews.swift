@@ -33,6 +33,9 @@ private final class YoungActivityCalendarModel {
         let range = YoungCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
         isLoading = true
         error = nil
+        events = []
+        unknownDateCount = 0
+        source = nil
         do {
             let page = try await ServerClient.shared.fetchYoungEventsPage(
                 dateFrom: range.from,
@@ -162,10 +165,14 @@ struct YoungActivityCalendarView: View {
                 .padding(.bottom, 4)
             }
 
-            calendarContent
-                .overlay {
-                    if model.isLoading { ProgressView() }
-                }
+            if let error = model.error, !model.isLoading {
+                YoungErrorView(error: error, retry: { Task { await model.load() } })
+            } else {
+                calendarContent
+                    .overlay {
+                        if model.isLoading { ProgressView() }
+                    }
+            }
         }
         .navigationTitle("Activity Calendar")
         .task(id: model.requestID) { await model.load() }
@@ -275,6 +282,7 @@ private final class WorkspaceCalendarModel {
         let range = YoungCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
         isLoading = true
         error = nil
+        events = []
         do {
             let value = try await ServerClient.shared.fetchPersonalCalendarEvents(
                 dateFrom: range.from,
@@ -292,11 +300,12 @@ private final class WorkspaceCalendarModel {
 }
 
 struct WorkspaceCalendarView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var model = WorkspaceCalendarModel()
 
     var body: some View {
         Group {
-            if !ServerClient.shared.isAuthenticated {
+            if !account.isAuthenticated {
                 YoungLoginRequiredView()
             } else {
                 VStack(spacing: 0) {
@@ -337,7 +346,7 @@ struct WorkspaceCalendarView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 8)
 
-                    if let error = model.error, model.events.isEmpty && !model.isLoading {
+                    if let error = model.error, !model.isLoading {
                         YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
                     } else if model.events.isEmpty && !model.isLoading {
                         ContentUnavailableView(
@@ -357,7 +366,7 @@ struct WorkspaceCalendarView: View {
             }
         }
         .navigationTitle("My Calendar")
-        .task(id: model.requestID) { await model.load() }
+        .task(id: "\(model.requestID)-\(account.isAuthenticated)") { await model.load() }
         .refreshable { await model.load() }
     }
 
@@ -386,6 +395,7 @@ struct WorkspaceCalendarView: View {
             }
             if let at = event.at {
                 HStack(spacing: 4) {
+                    Text(YoungFormatting.dayTitle(at))
                     Text(at, style: .time)
                     if let endsAt = event.endsAt {
                         Text("–")

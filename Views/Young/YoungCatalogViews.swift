@@ -48,6 +48,9 @@ private final class YoungEventsViewModel {
         let requestGeneration = generation
         isLoading = true
         error = nil
+        events = []
+        unknownDateCount = 0
+        source = nil
         do {
             let page = try await ServerClient.shared.fetchYoungEventsPage(
                 dateUnknown: dateUnknown ? true : nil,

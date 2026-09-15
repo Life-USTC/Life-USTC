@@ -42,6 +42,7 @@ struct YoungErrorView: View {
 }
 
 struct YoungReauthorizeButton: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var isLoading = false
     @State private var error: String?
 
@@ -51,9 +52,12 @@ struct YoungReauthorizeButton: View {
                 Task {
                     isLoading = true
                     error = nil
-                    ServerAuth.shared.logout()
+                    account.logout()
                     do {
-                        try await ServerAuth.shared.login()
+                        await account.login()
+                        if let accountError = account.error {
+                            throw ServerError.serverError(accountError)
+                        }
                     } catch {
                         self.error = error.localizedDescription
                     }
@@ -72,6 +76,7 @@ struct YoungReauthorizeButton: View {
 }
 
 struct YoungLoginRequiredView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var isLoading = false
     @State private var error: String?
 
@@ -91,7 +96,10 @@ struct YoungLoginRequiredView: View {
                     isLoading = true
                     error = nil
                     do {
-                        try await ServerAuth.shared.login()
+                        await account.login()
+                        if let accountError = account.error {
+                            throw ServerError.serverError(accountError)
+                        }
                     } catch {
                         self.error = error.localizedDescription
                     }
