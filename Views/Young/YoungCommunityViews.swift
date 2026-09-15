@@ -5,6 +5,7 @@
 //  Native Second Classroom catalog, calendar, workspace, and subscription UI.
 //
 
+import Foundation
 import SwiftUI
 
 // MARK: - Shared state views
@@ -459,7 +460,7 @@ struct YoungEventDetailView: View {
             LabeledContent("Department", value: department)
         }
         if let hours = event.hours {
-            LabeledContent("Hours", value: "\(hours, specifier: "%.1f")")
+            LabeledContent("Hours", value: String(format: "%.1f", hours))
         }
         if let capacity = event.capacity {
             LabeledContent("Capacity", value: "\(event.appliedCount ?? 0) / \(capacity)")
