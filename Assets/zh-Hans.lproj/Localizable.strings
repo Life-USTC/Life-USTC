@@ -412,3 +412,6 @@
 "Delete this comment?" = "删除这条评论？";
 "Edit Comment" = "编辑评论";
 "Save" = "保存";
+"Load more replies" = "加载更多回复";
+"Unable to load replies" = "回复加载失败";
+"Reply thread was not returned by the server" = "服务器未返回回复线程";

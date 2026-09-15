@@ -20,6 +20,8 @@ class CommentListViewModel {
     var isLoading = false
     var error: String?
     var mutationError: String?
+    var loadingReplyIDs: Set<String> = []
+    var replyErrors: [String: String] = [:]
 
     init(
         targetType: String,
@@ -121,6 +123,83 @@ class CommentListViewModel {
             mutationError = error.localizedDescription
         }
     }
+
+    func loadMoreReplies(for comment: ServerComment) async {
+        guard let cursor = comment.repliesNextCursor,
+            !loadingReplyIDs.contains(comment.id)
+        else { return }
+
+        loadingReplyIDs.insert(comment.id)
+        replyErrors[comment.id] = nil
+        defer { loadingReplyIDs.remove(comment.id) }
+
+        do {
+            let response = try await ServerClient.shared.fetchCommentReplies(
+                id: comment.id,
+                cursor: cursor,
+                pageSize: 20
+            )
+            guard mergeReplyPage(response) else {
+                throw ServerError.serverError(
+                    "Reply thread was not returned by the server".localized
+                )
+            }
+            replyErrors[comment.id] = nil
+        } catch {
+            guard !Task.isCancelled else { return }
+            replyErrors[comment.id] = error.localizedDescription
+        }
+    }
+
+    private func mergeReplyPage(_ response: ServerCommentRepliesResponse) -> Bool {
+        guard let incomingRoot = response.thread.first(where: { $0.id == response.rootId }) else {
+            return false
+        }
+
+        var mergedRoot = false
+        func merge(_ node: ServerComment) -> ServerComment {
+            if node.id == response.rootId {
+                mergedRoot = true
+                var replies = node.replies ?? []
+                for incoming in incomingRoot.replies ?? [] {
+                    if let index = replies.firstIndex(where: { $0.id == incoming.id }) {
+                        replies[index] = mergeExistingReply(replies[index], incoming)
+                    } else {
+                        replies.append(incoming)
+                    }
+                }
+                return incomingRoot.replacingReplies(replies, nextCursor: response.nextCursor)
+            }
+
+            guard let children = node.replies else { return node }
+            let updatedChildren = children.map(merge)
+            return node.replacingReplies(updatedChildren, nextCursor: node.repliesNextCursor)
+        }
+
+        comments = comments.map(merge)
+        if mergedRoot {
+            replyErrors[response.rootId] = nil
+        }
+        return mergedRoot
+    }
+
+    private func mergeExistingReply(
+        _ existing: ServerComment,
+        _ incoming: ServerComment
+    ) -> ServerComment {
+        var replies = existing.replies ?? []
+        for incomingReply in incoming.replies ?? [] {
+            if let index = replies.firstIndex(where: { $0.id == incomingReply.id }) {
+                replies[index] = mergeExistingReply(replies[index], incomingReply)
+            } else {
+                replies.append(incomingReply)
+            }
+        }
+        return incoming.replacingReplies(
+            replies,
+            nextCursor: incoming.repliesNextCursor ?? existing.repliesNextCursor
+        )
+    }
 }
 
 struct CommentListView: View {
@@ -181,7 +260,12 @@ struct CommentListView: View {
                             onEdit: { editingComment = $0 },
                             onDelete: { comment in
                                 Task { await viewModel.deleteComment(comment) }
-                            }
+                            },
+                            onLoadMoreReplies: { comment in
+                                Task { await viewModel.loadMoreReplies(for: comment) }
+                            },
+                            isLoadingReplies: { viewModel.loadingReplyIDs.contains($0) },
+                            replyError: { viewModel.replyErrors[$0] }
                         )
                     }
 
@@ -275,6 +359,9 @@ private struct CommentNodeView: View {
     let onReply: (ServerComment) -> Void
     let onEdit: (ServerComment) -> Void
     let onDelete: (ServerComment) -> Void
+    let onLoadMoreReplies: (ServerComment) -> Void
+    let isLoadingReplies: (String) -> Bool
+    let replyError: (String) -> String?
     @State private var showingDeleteConfirmation = false
 
     var body: some View {
@@ -380,6 +467,37 @@ private struct CommentNodeView: View {
                 .buttonStyle(.borderless)
             }
 
+            if comment.repliesNextCursor != nil {
+                VStack(alignment: .leading, spacing: 4) {
+                    Button {
+                        onLoadMoreReplies(comment)
+                    } label: {
+                        if isLoadingReplies(comment.id) {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Label("Load more replies", systemImage: "arrow.down.circle")
+                        }
+                    }
+                    .font(.caption)
+                    .disabled(isLoadingReplies(comment.id))
+
+                    if let error = replyError(comment.id) {
+                        HStack(spacing: 6) {
+                            Text("Unable to load replies")
+                            Button("Retry") {
+                                onLoadMoreReplies(comment)
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        Text(error)
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+
             if let children = comment.children, !children.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(children) { child in
@@ -389,7 +507,10 @@ private struct CommentNodeView: View {
                             onReaction: onReaction,
                             onReply: onReply,
                             onEdit: onEdit,
-                            onDelete: onDelete
+                            onDelete: onDelete,
+                            onLoadMoreReplies: onLoadMoreReplies,
+                            isLoadingReplies: isLoadingReplies,
+                            replyError: replyError
                         )
                     }
                 }

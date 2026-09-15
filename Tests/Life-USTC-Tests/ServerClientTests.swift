@@ -175,6 +175,24 @@ final class ServerClientTests: XCTestCase {
         XCTAssertNil(object["attachmentIds"])
     }
 
+    func testEndpointBuildURLRequest_commentRepliesUsesOpaqueCursor() {
+        let request = ServerEndpoint.listCommentReplies(
+            id: "comment/中文",
+            cursor: "cursor+/=",
+            pageSize: 20
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+        let query = Dictionary(uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) })
+
+        XCTAssertEqual(request.httpMethod, "GET")
+        XCTAssertEqual(
+            components.percentEncodedPath,
+            "/api/community/comments/comment%2F%E4%B8%AD%E6%96%87/replies"
+        )
+        XCTAssertEqual(query["cursor"], "cursor+/=")
+        XCTAssertEqual(query["pageSize"], "20")
+    }
+
     // MARK: - Response Decoding
 
     func testDecodeServerUser() async throws {

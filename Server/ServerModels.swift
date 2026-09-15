@@ -297,6 +297,36 @@ struct ServerComment: Codable, Identifiable {
     let canModerate: Bool?
 
     var children: [ServerComment]? { replies }
+
+    func replacingReplies(
+        _ replies: [ServerComment],
+        nextCursor: String?
+    ) -> ServerComment {
+        ServerComment(
+            id: id,
+            body: body,
+            renderedBody: renderedBody,
+            visibility: visibility,
+            status: status,
+            isAnonymous: isAnonymous,
+            authorHidden: authorHidden,
+            isAuthor: isAuthor,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            author: author,
+            parentId: parentId,
+            rootId: rootId,
+            replies: replies,
+            repliesNextCursor: nextCursor,
+            attachments: attachments,
+            reactions: reactions,
+            canReact: canReact,
+            canReply: canReply,
+            canEdit: canEdit,
+            canDelete: canDelete,
+            canModerate: canModerate
+        )
+    }
 }
 
 struct ServerCommentListResponse: Codable {
