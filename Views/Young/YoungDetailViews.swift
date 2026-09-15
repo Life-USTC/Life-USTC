@@ -5,6 +5,7 @@
 //  Public Second Classroom activity and organizer details.
 //
 
+import Foundation
 import SwiftUI
 
 struct YoungEventDetailView: View {
