@@ -11,6 +11,12 @@ struct CommentComposeView: View {
     @Environment(\.dismiss) private var dismiss
 
     let viewModel: CommentListViewModel
+    let parentId: String?
+
+    init(viewModel: CommentListViewModel, parentId: String? = nil) {
+        self.viewModel = viewModel
+        self.parentId = parentId
+    }
 
     @State private var commentBody = ""
     @State private var isAnonymous = false
@@ -49,7 +55,7 @@ struct CommentComposeView: View {
                     }
                 }
             }
-            .navigationTitle("New Comment")
+            .navigationTitle(Text((parentId == nil ? "New Comment" : "Reply").localized))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -81,7 +87,7 @@ struct CommentComposeView: View {
             body: commentBody.trimmingCharacters(in: .whitespaces),
             visibility: visibility,
             isAnonymous: isAnonymous,
-            parentId: nil
+            parentId: parentId
         )
 
         do {

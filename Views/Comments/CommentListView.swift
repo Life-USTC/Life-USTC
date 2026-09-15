@@ -79,6 +79,7 @@ struct CommentListView: View {
     @Bindable private var account = ServerAccountStore.shared
     @State var viewModel: CommentListViewModel
     @State private var showingCompose = false
+    @State private var replyingTo: ServerComment?
 
     var body: some View {
         Group {
@@ -100,14 +101,19 @@ struct CommentListView: View {
             } else {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.comments) { comment in
-                        CommentNodeView(comment: comment, depth: 0) { reaction in
-                            Task {
-                                await viewModel.toggleReaction(
-                                    commentId: comment.id,
-                                    reaction: reaction
-                                )
-                            }
-                        }
+                        CommentNodeView(
+                            comment: comment,
+                            depth: 0,
+                            onReaction: { reaction in
+                                Task {
+                                    await viewModel.toggleReaction(
+                                        commentId: comment.id,
+                                        reaction: reaction
+                                    )
+                                }
+                            },
+                            onReply: { replyingTo = $0 }
+                        )
                     }
 
                     if viewModel.hiddenCount > 0 {
@@ -133,6 +139,9 @@ struct CommentListView: View {
         .sheet(isPresented: $showingCompose) {
             CommentComposeView(viewModel: viewModel)
         }
+        .sheet(item: $replyingTo) { comment in
+            CommentComposeView(viewModel: viewModel, parentId: comment.id)
+        }
         .task(id: account.isAuthenticated) { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .overlay {
@@ -147,6 +156,7 @@ private struct CommentNodeView: View {
     let comment: ServerComment
     let depth: Int
     let onReaction: (ServerCommentReaction) -> Void
+    let onReply: (ServerComment) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -220,10 +230,23 @@ private struct CommentNodeView: View {
                 }
             }
 
+            if comment.canReply != false, ServerClient.shared.isAuthenticated {
+                Button("Reply") {
+                    onReply(comment)
+                }
+                .font(.caption)
+                .buttonStyle(.borderless)
+            }
+
             if let children = comment.children, !children.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(children) { child in
-                        CommentNodeView(comment: child, depth: depth + 1, onReaction: onReaction)
+                        CommentNodeView(
+                            comment: child,
+                            depth: depth + 1,
+                            onReaction: onReaction,
+                            onReply: onReply
+                        )
                     }
                 }
                 .padding(.leading, 16)

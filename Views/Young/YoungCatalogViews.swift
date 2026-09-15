@@ -96,7 +96,7 @@ struct YoungEventsListView: View {
         Group {
             if let error = model.error, model.events.isEmpty && !model.isLoading {
                 YoungErrorView(error: error) { Task { await model.load() } }
-            } else if model.events.isEmpty && !model.isLoading && model.unknownDateCount == 0 {
+            } else if model.events.isEmpty && !model.isLoading && model.unknownDateCount == 0 && model.source == nil {
                 ContentUnavailableView {
                     Label(
                         model.dateUnknown
