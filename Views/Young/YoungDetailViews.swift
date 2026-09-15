@@ -99,7 +99,7 @@ struct YoungEventDetailView: View {
                 ProgressView()
             }
         }
-        .navigationTitle(Text(event?.name ?? "Activity"))
+        .navigationTitle(Text(event?.name ?? "Activity".localized))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: youngId) { await load() }
     }
@@ -275,7 +275,7 @@ struct YoungOrganizerDetailView: View {
                 ProgressView()
             }
         }
-        .navigationTitle(Text(model.organizer?.name ?? "Organizer"))
+        .navigationTitle(Text(model.organizer?.name ?? "Organizer".localized))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: organizerId) { await model.load(id: organizerId) }
         .refreshable { await model.load(id: organizerId) }
