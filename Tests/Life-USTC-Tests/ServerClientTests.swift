@@ -74,8 +74,9 @@ final class ServerClientTests: XCTestCase {
         let request = ServerEndpoint.getYoungEvent(youngId: "event/中文")
             .buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
 
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
         XCTAssertEqual(
-            request.url?.percentEncodedPath,
+            components.percentEncodedPath,
             "/api/catalog/young-events/event%2F%E4%B8%AD%E6%96%87"
         )
         XCTAssertEqual(request.httpMethod, "GET")
@@ -83,6 +84,7 @@ final class ServerClientTests: XCTestCase {
 
     func testEndpointBuildURLRequest_youngCalendarUsesShanghaiRangeAndPagination() {
         let request = ServerEndpoint.listYoungEvents(
+            dateUnknown: nil,
             active: nil,
             category: nil,
             search: nil,
@@ -102,6 +104,29 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(query["timeBasis"], "activity")
         XCTAssertEqual(query["page"], "2")
         XCTAssertEqual(query["pageSize"], "100")
+    }
+
+    func testEndpointBuildURLRequest_youngUnknownDateFilter() {
+        let request = ServerEndpoint.listYoungEvents(
+            dateUnknown: true,
+            active: nil,
+            category: nil,
+            search: nil,
+            organizerId: "org-42",
+            dateFrom: nil,
+            dateTo: nil,
+            timeBasis: .registration,
+            page: 1,
+            pageSize: 100
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+        let query = Dictionary(uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) })
+        XCTAssertEqual(query["dateUnknown"], "true")
+        XCTAssertEqual(query["organizerId"], "org-42")
+        XCTAssertEqual(query["timeBasis"], "registration")
+        XCTAssertNil(query["dateFrom"])
+        XCTAssertNil(query["dateTo"])
     }
 
     func testEndpointBuildURLRequest_youngCommentUsesYoungId() {
@@ -213,7 +238,7 @@ final class ServerClientTests: XCTestCase {
             let name = page == "1" ? "First" : "Second"
             let body: [String: Any] = [
                 "data": [[
-                    "youngId": "young-(page)",
+                    "youngId": "young-\(page)",
                     "name": name,
                     "category": NSNull(),
                     "department": NSNull(),
@@ -236,14 +261,18 @@ final class ServerClientTests: XCTestCase {
                     "createdAt": NSNull(),
                 ]],
                 "pagination": ["page": Int(page)!, "pageSize": 1, "total": 2, "totalPages": 2],
+                "unknownDateCount": 3,
+                "source": ["status": "fresh", "lastSyncedAt": "2026-09-15T00:00:00Z"],
             ]
             let data = try JSONSerialization.data(withJSONObject: body)
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, data)
         }
 
-        let events = try await client.fetchYoungEvents()
-        XCTAssertEqual(events.map(\.youngId), ["young-1", "young-2"])
+        let page = try await client.fetchYoungEventsPage()
+        XCTAssertEqual(page.data.map(\.youngId), ["young-1", "young-2"])
+        XCTAssertEqual(page.unknownDateCount, 3)
+        XCTAssertEqual(page.source.status, "fresh")
         XCTAssertEqual(requestedPages, ["1", "2"])
     }
 

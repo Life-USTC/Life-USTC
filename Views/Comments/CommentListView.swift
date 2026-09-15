@@ -88,6 +88,7 @@ struct CommentListView: View {
                     Text(error)
                 } actions: {
                     Button("Retry") { Task { await viewModel.load() } }
+                    YoungReauthorizeButton()
                 }
             } else if viewModel.comments.isEmpty && !viewModel.isLoading {
                 ContentUnavailableView(
@@ -109,7 +110,7 @@ struct CommentListView: View {
                     }
 
                     if viewModel.hiddenCount > 0 {
-                        Text("\(viewModel.hiddenCount) hidden comment(s)")
+                        Text(String(format: "%d hidden comments".localized, viewModel.hiddenCount))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

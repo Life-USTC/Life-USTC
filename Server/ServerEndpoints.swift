@@ -43,7 +43,7 @@ enum ServerEndpoint {
 
     // Second Classroom (public catalog)
     case listYoungEvents(
-        active: Bool?, category: String?, search: String?, organizerId: String?,
+        dateUnknown: Bool?, active: Bool?, category: String?, search: String?, organizerId: String?,
         dateFrom: String?, dateTo: String?, timeBasis: YoungEventTimeBasis?,
         page: Int?, pageSize: Int?
     )
@@ -265,10 +265,11 @@ enum ServerEndpoint {
                 .init(name: "pageSize", value: "\(pageSize)"),
             ]
         case .listYoungEvents(
-            let active, let category, let search, let organizerId,
+            let dateUnknown, let active, let category, let search, let organizerId,
             let dateFrom, let dateTo, let timeBasis, let page, let pageSize
         ):
             var items: [URLQueryItem] = []
+            if let dateUnknown { items.append(.init(name: "dateUnknown", value: dateUnknown ? "true" : "false")) }
             if let active { items.append(.init(name: "active", value: active ? "true" : "false")) }
             if let category { items.append(.init(name: "category", value: category)) }
             if let search { items.append(.init(name: "search", value: search)) }

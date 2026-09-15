@@ -138,6 +138,30 @@ struct ServerYoungEvent: Codable, Identifiable, Hashable {
     }
 }
 
+struct ServerYoungCatalogSource: Codable, Hashable {
+    let status: String
+    let lastSyncedAt: Date?
+}
+
+struct ServerYoungEventsPage: Codable {
+    let data: [ServerYoungEvent]
+    let pagination: PaginationInfo
+    let unknownDateCount: Int
+    let source: ServerYoungCatalogSource
+
+    init(
+        data: [ServerYoungEvent],
+        pagination: PaginationInfo,
+        unknownDateCount: Int,
+        source: ServerYoungCatalogSource
+    ) {
+        self.data = data
+        self.pagination = pagination
+        self.unknownDateCount = unknownDateCount
+        self.source = source
+    }
+}
+
 struct ServerYoungOrganizer: Codable, Identifiable, Hashable {
     let id: String
     let name: String
