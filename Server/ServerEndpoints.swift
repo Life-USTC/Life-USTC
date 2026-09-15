@@ -85,6 +85,8 @@ enum ServerEndpoint {
         page: Int?, pageSize: Int?
     )
     case createComment(CreateCommentRequest)
+    case updateComment(id: String, UpdateCommentRequest)
+    case deleteComment(id: String)
     case listCommentReplies(id: String, cursor: String?, pageSize: Int?)
     case addCommentReaction(id: String, CommentReactionRequest)
     case removeCommentReaction(id: String, type: String)
@@ -128,9 +130,9 @@ enum ServerEndpoint {
         case .updateYoungEventSubscription, .updateYoungOrganizerSubscription:
             return "PUT"
         case .updateHomework, .setHomeworkCompletion,
-            .updateTodo:
+            .updateTodo, .updateComment:
             return "PATCH"
-        case .deleteHomework, .deleteTodo, .removeCommentReaction:
+        case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction:
             return "DELETE"
         }
     }
@@ -209,6 +211,8 @@ enum ServerEndpoint {
             return "/api/todos/\(id)"
         case .listComments, .createComment:
             return "/api/community/comments"
+        case .updateComment(let id, _), .deleteComment(let id):
+            return "/api/community/comments/\(Self.pathSegment(id))"
         case .listCommentReplies(let id, _, _):
             return "/api/community/comments/\(Self.pathSegment(id))/replies"
         case .addCommentReaction(let id, _), .removeCommentReaction(let id, _):
@@ -340,6 +344,7 @@ enum ServerEndpoint {
         case .createTodo(let req): return req
         case .updateTodo(_, let req): return req
         case .createComment(let req): return req
+        case .updateComment(_, let req): return req
         case .addCommentReaction(_, let req): return req
         case .createUpload(let req): return req
         default: return nil

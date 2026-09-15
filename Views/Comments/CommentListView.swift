@@ -19,6 +19,7 @@ class CommentListViewModel {
     var hiddenCount = 0
     var isLoading = false
     var error: String?
+    var mutationError: String?
 
     init(
         targetType: String,
@@ -55,6 +56,7 @@ class CommentListViewModel {
 
     func toggleReaction(commentId: String, reaction: ServerCommentReaction) async {
         guard ServerClient.shared.isAuthenticated else { return }
+        mutationError = nil
         do {
             if reaction.hasReacted {
                 try await ServerClient.shared.requestVoid(
@@ -70,7 +72,53 @@ class CommentListViewModel {
             }
             await load()
         } catch {
-            self.error = error.localizedDescription
+            self.mutationError = error.localizedDescription
+        }
+    }
+
+    func updateComment(
+        _ comment: ServerComment,
+        body: String,
+        visibility: String,
+        isAnonymous: Bool
+    ) async throws {
+        guard ServerClient.shared.isAuthenticated else {
+            let error = ServerError.notAuthenticated
+            mutationError = error.localizedDescription
+            throw error
+        }
+
+        mutationError = nil
+        do {
+            let _: ServerCommentUpdateResponse = try await ServerClient.shared.request(
+                .updateComment(
+                    id: comment.id,
+                    UpdateCommentRequest(
+                        body: body,
+                        visibility: visibility,
+                        isAnonymous: isAnonymous
+                    )
+                )
+            )
+            await load()
+        } catch {
+            mutationError = error.localizedDescription
+            throw error
+        }
+    }
+
+    func deleteComment(_ comment: ServerComment) async {
+        guard ServerClient.shared.isAuthenticated else {
+            mutationError = ServerError.notAuthenticated.localizedDescription
+            return
+        }
+
+        mutationError = nil
+        do {
+            try await ServerClient.shared.requestVoid(.deleteComment(id: comment.id))
+            await load()
+        } catch {
+            mutationError = error.localizedDescription
         }
     }
 }
@@ -80,6 +128,7 @@ struct CommentListView: View {
     @State var viewModel: CommentListViewModel
     @State private var showingCompose = false
     @State private var replyingTo: ServerComment?
+    @State private var editingComment: ServerComment?
 
     var body: some View {
         Group {
@@ -100,19 +149,39 @@ struct CommentListView: View {
                 )
             } else {
                 LazyVStack(alignment: .leading, spacing: 16) {
+                    if let error = viewModel.error {
+                        CommentErrorBanner(
+                            title: "Unable to refresh comments",
+                            message: error,
+                            retry: { Task { await viewModel.load() } }
+                        )
+                    }
+
+                    if let error = viewModel.mutationError {
+                        CommentErrorBanner(
+                            title: "Comment action failed",
+                            message: error,
+                            dismiss: { viewModel.mutationError = nil }
+                        )
+                    }
+
                     ForEach(viewModel.comments) { comment in
                         CommentNodeView(
                             comment: comment,
                             depth: 0,
-                            onReaction: { reaction in
+                            onReaction: { commentId, reaction in
                                 Task {
                                     await viewModel.toggleReaction(
-                                        commentId: comment.id,
+                                        commentId: commentId,
                                         reaction: reaction
                                     )
                                 }
                             },
-                            onReply: { replyingTo = $0 }
+                            onReply: { replyingTo = $0 },
+                            onEdit: { editingComment = $0 },
+                            onDelete: { comment in
+                                Task { await viewModel.deleteComment(comment) }
+                            }
                         )
                     }
 
@@ -142,6 +211,9 @@ struct CommentListView: View {
         .sheet(item: $replyingTo) { comment in
             CommentComposeView(viewModel: viewModel, parentId: comment.id)
         }
+        .sheet(item: $editingComment) { comment in
+            CommentComposeView(viewModel: viewModel, editingComment: comment)
+        }
         .task(id: account.isAuthenticated) { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .overlay {
@@ -152,11 +224,58 @@ struct CommentListView: View {
     }
 }
 
+private struct CommentErrorBanner: View {
+    let title: String
+    let message: String
+    let retry: (() -> Void)?
+    let dismiss: (() -> Void)?
+
+    init(
+        title: String,
+        message: String,
+        retry: (() -> Void)? = nil,
+        dismiss: (() -> Void)? = nil
+    ) {
+        self.title = title
+        self.message = message
+        self.retry = retry
+        self.dismiss = dismiss
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle")
+                Text(title.localized)
+                    .font(.subheadline.bold())
+                Spacer()
+                if let dismiss {
+                    Button("Dismiss", action: dismiss)
+                        .font(.caption)
+                }
+            }
+            Text(message)
+                .font(.caption)
+            if let retry {
+                Button("Retry", action: retry)
+                    .font(.caption)
+            }
+        }
+        .foregroundStyle(.red)
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+    }
+}
+
 private struct CommentNodeView: View {
     let comment: ServerComment
     let depth: Int
-    let onReaction: (ServerCommentReaction) -> Void
+    let onReaction: (String, ServerCommentReaction) -> Void
     let onReply: (ServerComment) -> Void
+    let onEdit: (ServerComment) -> Void
+    let onDelete: (ServerComment) -> Void
+    @State private var showingDeleteConfirmation = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -185,6 +304,29 @@ private struct CommentNodeView: View {
 
                 Spacer()
 
+                if comment.canEdit == true || comment.canDelete == true {
+                    Menu {
+                        if comment.canEdit == true {
+                            Button {
+                                onEdit(comment)
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                        }
+                        if comment.canDelete == true {
+                            Button(role: .destructive) {
+                                showingDeleteConfirmation = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityLabel("Comment actions")
+                }
+
                 Text(comment.createdAt, style: .relative)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -209,7 +351,7 @@ private struct CommentNodeView: View {
             if !comment.reactions.isEmpty {
                 HStack(spacing: 8) {
                     ForEach(comment.reactions, id: \.type) { reaction in
-                        Button { onReaction(reaction) } label: {
+                        Button { onReaction(comment.id, reaction) } label: {
                             HStack(spacing: 2) {
                                 Text(reactionEmoji(reaction.type))
                                 Text("\(reaction.count)")
@@ -245,7 +387,9 @@ private struct CommentNodeView: View {
                             comment: child,
                             depth: depth + 1,
                             onReaction: onReaction,
-                            onReply: onReply
+                            onReply: onReply,
+                            onEdit: onEdit,
+                            onDelete: onDelete
                         )
                     }
                 }
@@ -254,6 +398,16 @@ private struct CommentNodeView: View {
         }
         .padding(.vertical, 8)
         .padding(.leading, CGFloat(depth) * 16)
+        .confirmationDialog(
+            "Delete this comment?",
+            isPresented: $showingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                onDelete(comment)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 
     private func reactionEmoji(_ type: String) -> String {

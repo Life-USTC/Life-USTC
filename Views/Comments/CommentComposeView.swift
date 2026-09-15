@@ -12,10 +12,19 @@ struct CommentComposeView: View {
 
     let viewModel: CommentListViewModel
     let parentId: String?
+    let editingComment: ServerComment?
 
-    init(viewModel: CommentListViewModel, parentId: String? = nil) {
+    init(
+        viewModel: CommentListViewModel,
+        parentId: String? = nil,
+        editingComment: ServerComment? = nil
+    ) {
         self.viewModel = viewModel
         self.parentId = parentId
+        self.editingComment = editingComment
+        _commentBody = State(initialValue: editingComment?.body ?? "")
+        _isAnonymous = State(initialValue: editingComment?.isAnonymous ?? false)
+        _visibility = State(initialValue: editingComment?.visibility ?? "public")
     }
 
     @State private var commentBody = ""
@@ -55,15 +64,23 @@ struct CommentComposeView: View {
                     }
                 }
             }
-            .navigationTitle(Text((parentId == nil ? "New Comment" : "Reply").localized))
+            .navigationTitle(
+                Text(
+                    (editingComment != nil
+                        ? "Edit Comment"
+                        : parentId == nil ? "New Comment" : "Reply").localized
+                )
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Post") {
+                    Button {
                         Task { await send() }
+                    } label: {
+                        Text((editingComment == nil ? "Post" : "Save").localized)
                     }
                     .disabled(
                         commentBody.trimmingCharacters(in: .whitespaces).isEmpty
@@ -91,13 +108,23 @@ struct CommentComposeView: View {
         )
 
         do {
-            let _: IDResponse = try await ServerClient.shared.request(
-                .createComment(request)
-            )
-            await viewModel.load()
+            if let editingComment {
+                try await viewModel.updateComment(
+                    editingComment,
+                    body: request.body,
+                    visibility: visibility,
+                    isAnonymous: isAnonymous
+                )
+            } else {
+                let _: IDResponse = try await ServerClient.shared.request(
+                    .createComment(request)
+                )
+                await viewModel.load()
+            }
             dismiss()
         } catch {
             self.error = error.localizedDescription
+            viewModel.mutationError = error.localizedDescription
         }
         isSending = false
     }

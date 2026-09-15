@@ -394,14 +394,7 @@ struct WorkspaceCalendarView: View {
                     .foregroundStyle(.secondary)
             }
             if let at = event.at {
-                HStack(spacing: 4) {
-                    Text(YoungFormatting.dayTitle(at))
-                    Text(at, style: .time)
-                    if let endsAt = event.endsAt {
-                        Text("–")
-                        Text(endsAt, style: .time)
-                    }
-                }
+                Text(YoungFormatting.dateRange(at, event.endsAt))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

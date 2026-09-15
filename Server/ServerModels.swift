@@ -309,6 +309,11 @@ struct ServerCommentListResponse: Codable {
     var viewer: ServerCommentViewer { meta.viewer }
 }
 
+struct ServerCommentUpdateResponse: Codable {
+    let success: Bool
+    let comment: ServerComment
+}
+
 struct ServerCommentViewer: Codable {
     let userId: String?
     let name: String?
@@ -429,6 +434,37 @@ struct CreateCommentRequest: Encodable {
         try container.encodeIfPresent(visibility, forKey: .visibility)
         try container.encodeIfPresent(isAnonymous, forKey: .isAnonymous)
         try container.encodeIfPresent(parentId, forKey: .parentId)
+        try container.encodeIfPresent(attachmentIds, forKey: .attachmentIds)
+    }
+}
+
+struct UpdateCommentRequest: Encodable {
+    let body: String
+    let visibility: String?
+    let isAnonymous: Bool?
+    let attachmentIds: [String]?
+
+    init(
+        body: String,
+        visibility: String? = nil,
+        isAnonymous: Bool? = nil,
+        attachmentIds: [String]? = nil
+    ) {
+        self.body = body
+        self.visibility = visibility
+        self.isAnonymous = isAnonymous
+        self.attachmentIds = attachmentIds
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case body, visibility, isAnonymous, attachmentIds
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(body, forKey: .body)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
+        try container.encodeIfPresent(isAnonymous, forKey: .isAnonymous)
         try container.encodeIfPresent(attachmentIds, forKey: .attachmentIds)
     }
 }

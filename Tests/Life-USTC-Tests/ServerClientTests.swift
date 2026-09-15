@@ -147,6 +147,34 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(query["youngId"], "young-42")
     }
 
+    func testEndpointBuildURLRequest_commentMutationsUseCommentPathAndMethods() {
+        let update = ServerEndpoint.updateComment(
+            id: "comment/中文",
+            UpdateCommentRequest(body: "Updated", visibility: "public", isAnonymous: false)
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+        XCTAssertEqual(update.httpMethod, "PATCH")
+        XCTAssertEqual(
+            URLComponents(url: update.url!, resolvingAgainstBaseURL: false)?.percentEncodedPath,
+            "/api/community/comments/comment%2F%E4%B8%AD%E6%96%87"
+        )
+
+        let delete = ServerEndpoint.deleteComment(id: "comment-42")
+            .buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+        XCTAssertEqual(delete.httpMethod, "DELETE")
+        XCTAssertEqual(delete.url?.path, "/api/community/comments/comment-42")
+    }
+
+    func testUpdateCommentRequestOmitsUnsetOptionalFields() throws {
+        let data = try JSONEncoder().encode(UpdateCommentRequest(body: "Updated"))
+        let object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        XCTAssertEqual(object["body"] as? String, "Updated")
+        XCTAssertNil(object["visibility"])
+        XCTAssertNil(object["isAnonymous"])
+        XCTAssertNil(object["attachmentIds"])
+    }
+
     // MARK: - Response Decoding
 
     func testDecodeServerUser() async throws {

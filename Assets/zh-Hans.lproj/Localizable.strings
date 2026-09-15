@@ -403,3 +403,12 @@
 "Post" = "发布";
 "Reply" = "回复";
 "Sign in again to authorize" = "重新登录以授权新功能";
+"Unable to refresh comments" = "评论刷新失败";
+"Comment action failed" = "评论操作失败";
+"Dismiss" = "关闭";
+"Comment actions" = "评论操作";
+"Edit" = "编辑";
+"Delete" = "删除";
+"Delete this comment?" = "删除这条评论？";
+"Edit Comment" = "编辑评论";
+"Save" = "保存";
