@@ -39,7 +39,27 @@ enum ServerEndpoint {
     case updateSubscriptions(UpdateSubscriptionRequest)
 
     // Calendar Events
-    case listCalendarEvents(from: String, to: String)
+    case listCalendarEvents(dateFrom: String, dateTo: String, page: Int, pageSize: Int)
+
+    // Second Classroom (public catalog)
+    case listYoungEvents(
+        active: Bool?, category: String?, search: String?, organizerId: String?,
+        dateFrom: String?, dateTo: String?, timeBasis: YoungEventTimeBasis?,
+        page: Int?, pageSize: Int?
+    )
+    case getYoungEvent(youngId: String)
+    case listYoungOrganizers(search: String?, page: Int?, pageSize: Int?)
+    case getYoungOrganizer(organizerId: String)
+
+    // Second Classroom (authenticated workspace)
+    case listYoungEventSubscriptions(page: Int, pageSize: Int, unread: Bool?)
+    case getYoungEventSubscription(youngId: String)
+    case updateYoungEventSubscription(youngId: String, YoungEventSubscriptionRequest)
+    case listYoungOrganizerSubscriptions(page: Int, pageSize: Int, unread: Bool?)
+    case getYoungOrganizerSubscription(organizerId: String)
+    case updateYoungOrganizerSubscription(organizerId: String, YoungOrganizerSubscriptionRequest)
+    case listYoungNotifications(page: Int, pageSize: Int, unread: Bool?)
+    case markYoungNotificationRead(id: String)
 
     // Overview
     case overview
@@ -61,9 +81,13 @@ enum ServerEndpoint {
     // Comments
     case listComments(
         targetType: String, targetId: String?,
-        sectionId: Int?, teacherId: Int?
+        youngId: String?, sectionId: Int?, teacherId: Int?,
+        page: Int?, pageSize: Int?
     )
     case createComment(CreateCommentRequest)
+    case listCommentReplies(id: String, cursor: String?, pageSize: Int?)
+    case addCommentReaction(id: String, CommentReactionRequest)
+    case removeCommentReaction(id: String, type: String)
 
     // Bus
     case busSchedule(
@@ -88,18 +112,25 @@ enum ServerEndpoint {
             .listTeachers, .getTeacher,
             .querySchedules,
             .getSubscriptions, .listCalendarEvents,
+            .listYoungEvents, .getYoungEvent, .listYoungOrganizers,
+            .getYoungOrganizer, .listYoungEventSubscriptions,
+            .getYoungEventSubscription, .listYoungOrganizerSubscriptions,
+            .getYoungOrganizerSubscription, .listYoungNotifications,
             .overview,
             .listHomeworks, .getHomework, .listTodos,
-            .listComments,
+            .listComments, .listCommentReplies,
             .busSchedule, .metadata, .listUploads:
             return "GET"
         case .matchCodes, .updateSubscriptions, .createHomework,
-            .createTodo, .createComment, .createUpload:
+            .createTodo, .createComment, .addCommentReaction,
+            .markYoungNotificationRead, .createUpload:
             return "POST"
+        case .updateYoungEventSubscription, .updateYoungOrganizerSubscription:
+            return "PUT"
         case .updateHomework, .setHomeworkCompletion,
             .updateTodo:
             return "PATCH"
-        case .deleteHomework, .deleteTodo:
+        case .deleteHomework, .deleteTodo, .removeCommentReaction:
             return "DELETE"
         }
     }
@@ -135,7 +166,29 @@ enum ServerEndpoint {
         case .updateSubscriptions:
             return "/api/calendar-subscriptions"
         case .listCalendarEvents:
-            return "/api/calendar-subscriptions/current"
+            return "/api/workspace/calendar/events"
+        case .listYoungEvents:
+            return "/api/catalog/young-events"
+        case .getYoungEvent(let youngId):
+            return "/api/catalog/young-events/\(Self.pathSegment(youngId))"
+        case .listYoungOrganizers:
+            return "/api/catalog/young-organizers"
+        case .getYoungOrganizer(let organizerId):
+            return "/api/catalog/young-organizers/\(Self.pathSegment(organizerId))"
+        case .listYoungEventSubscriptions:
+            return "/api/workspace/young-event-subscriptions"
+        case .getYoungEventSubscription(let youngId),
+             .updateYoungEventSubscription(let youngId, _):
+            return "/api/workspace/young-event-subscriptions/\(Self.pathSegment(youngId))"
+        case .listYoungOrganizerSubscriptions:
+            return "/api/workspace/young-organizer-subscriptions"
+        case .getYoungOrganizerSubscription(let organizerId),
+             .updateYoungOrganizerSubscription(let organizerId, _):
+            return "/api/workspace/young-organizer-subscriptions/\(Self.pathSegment(organizerId))"
+        case .listYoungNotifications:
+            return "/api/workspace/young-notifications"
+        case .markYoungNotificationRead(let id):
+            return "/api/workspace/young-notifications/\(Self.pathSegment(id))/read"
         case .overview:
             return "/api/me"
         case .listHomeworks, .createHomework:
@@ -155,7 +208,11 @@ enum ServerEndpoint {
         case .deleteTodo(let id):
             return "/api/todos/\(id)"
         case .listComments, .createComment:
-            return "/api/comments"
+            return "/api/community/comments"
+        case .listCommentReplies(let id, _, _):
+            return "/api/community/comments/\(Self.pathSegment(id))/replies"
+        case .addCommentReaction(let id, _), .removeCommentReaction(let id, _):
+            return "/api/community/comments/\(Self.pathSegment(id))/reactions"
         case .busSchedule:
             return "/api/bus"
         case .metadata:
@@ -200,22 +257,64 @@ enum ServerEndpoint {
             if let date { items.append(.init(name: "date", value: date)) }
             if let weekday { items.append(.init(name: "weekday", value: "\(weekday)")) }
             return items.isEmpty ? nil : items
-        case .listCalendarEvents(let from, let to):
+        case .listCalendarEvents(let dateFrom, let dateTo, let page, let pageSize):
             return [
-                .init(name: "from", value: from),
-                .init(name: "to", value: to),
+                .init(name: "dateFrom", value: dateFrom),
+                .init(name: "dateTo", value: dateTo),
+                .init(name: "page", value: "\(page)"),
+                .init(name: "pageSize", value: "\(pageSize)"),
             ]
+        case .listYoungEvents(
+            let active, let category, let search, let organizerId,
+            let dateFrom, let dateTo, let timeBasis, let page, let pageSize
+        ):
+            var items: [URLQueryItem] = []
+            if let active { items.append(.init(name: "active", value: active ? "true" : "false")) }
+            if let category { items.append(.init(name: "category", value: category)) }
+            if let search { items.append(.init(name: "search", value: search)) }
+            if let organizerId { items.append(.init(name: "organizerId", value: organizerId)) }
+            if let dateFrom { items.append(.init(name: "dateFrom", value: dateFrom)) }
+            if let dateTo { items.append(.init(name: "dateTo", value: dateTo)) }
+            if let timeBasis { items.append(.init(name: "timeBasis", value: timeBasis.rawValue)) }
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            return items.isEmpty ? nil : items
+        case .listYoungOrganizers(let search, let page, let pageSize):
+            var items: [URLQueryItem] = []
+            if let search { items.append(.init(name: "search", value: search)) }
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            return items.isEmpty ? nil : items
+        case .listYoungEventSubscriptions(let page, let pageSize, let unread),
+             .listYoungOrganizerSubscriptions(let page, let pageSize, let unread),
+             .listYoungNotifications(let page, let pageSize, let unread):
+            var items = [
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "pageSize", value: "\(pageSize)"),
+            ]
+            if let unread { items.append(.init(name: "unread", value: unread ? "true" : "false")) }
+            return items
         case .listHomeworks(let sectionId, let subscribedOnly):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
             if let subscribedOnly, subscribedOnly { items.append(.init(name: "subscribedOnly", value: "true")) }
             return items.isEmpty ? nil : items
-        case .listComments(let targetType, let targetId, let sectionId, let teacherId):
+        case .listComments(let targetType, let targetId, let youngId, let sectionId, let teacherId, let page, let pageSize):
             var items = [URLQueryItem(name: "targetType", value: targetType)]
             if let targetId { items.append(.init(name: "targetId", value: targetId)) }
+            if let youngId { items.append(.init(name: "youngId", value: youngId)) }
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
             if let teacherId { items.append(.init(name: "teacherId", value: "\(teacherId)")) }
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items
+        case .listCommentReplies(_, let cursor, let pageSize):
+            var items: [URLQueryItem] = []
+            if let cursor { items.append(.init(name: "cursor", value: cursor)) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            return items.isEmpty ? nil : items
+        case .removeCommentReaction(_, let type):
+            return [.init(name: "type", value: type)]
         case .busSchedule(let origin, let dest, let dayType, let limit):
             var items: [URLQueryItem] = []
             if let origin { items.append(.init(name: "originCampusId", value: "\(origin)")) }
@@ -232,12 +331,15 @@ enum ServerEndpoint {
         switch self {
         case .matchCodes(let req): return req
         case .updateSubscriptions(let req): return req
+        case .updateYoungEventSubscription(_, let req): return req
+        case .updateYoungOrganizerSubscription(_, let req): return req
         case .createHomework(let req): return req
         case .updateHomework(_, let req): return req
         case .setHomeworkCompletion(_, let req): return req
         case .createTodo(let req): return req
         case .updateTodo(_, let req): return req
         case .createComment(let req): return req
+        case .addCommentReaction(_, let req): return req
         case .createUpload(let req): return req
         default: return nil
         }
@@ -246,22 +348,26 @@ enum ServerEndpoint {
     // MARK: - Build URLRequest
 
     func buildURLRequest(baseURL: URL) -> URLRequest {
-        var components = URLComponents(
-            url: baseURL.appendingPathComponent(path),
-            resolvingAgainstBaseURL: false
-        )!
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!
+        let basePath = components.percentEncodedPath.hasSuffix("/")
+            ? String(components.percentEncodedPath.dropLast())
+            : components.percentEncodedPath
+        components.percentEncodedPath = basePath + path
         components.queryItems = queryItems
 
         var request = URLRequest(url: components.url!)
         request.httpMethod = method
         return request
     }
+
+    private static func pathSegment(_ value: String) -> String {
+        let allowed = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))
+        return value.addingPercentEncoding(withAllowedCharacters: allowed) ?? value
+    }
 }
 
 // MARK: - Type-erased Encodable wrapper
 
 extension ServerEndpoint {
-    /// Calendar events reuse the subscriptions endpoint with date range query params.
-    /// The `overview` endpoint reuses `/api/me` — the response includes the user profile;
-    /// future server changes may add overview data to this or a dedicated endpoint.
+    /// Workspace calendar events are returned by the complete date-range endpoint.
 }

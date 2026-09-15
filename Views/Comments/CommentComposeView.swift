@@ -21,7 +21,6 @@ struct CommentComposeView: View {
     private let visibilityOptions = [
         ("public", "Public"),
         ("logged_in_only", "Logged-in Only"),
-        ("anonymous", "Anonymous"),
     ]
 
     var body: some View {
@@ -76,6 +75,7 @@ struct CommentComposeView: View {
         let request = CreateCommentRequest(
             targetType: viewModel.targetType,
             targetId: viewModel.targetId,
+            youngId: viewModel.youngId,
             sectionId: viewModel.sectionId,
             teacherId: viewModel.teacherId,
             body: commentBody.trimmingCharacters(in: .whitespaces),

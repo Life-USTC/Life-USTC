@@ -164,6 +164,16 @@ extension FeaturesView {
     func collectFeatures() -> [LocalizedStringKey: [FeatureWithView]] {
         var results: [LocalizedStringKey: [FeatureWithView]] = [:]
 
+        results["Public"] = [
+            .init(
+                image: "figure.run",
+                title: "Second Classroom",
+                subTitle: "Activities, organizers, calendars, and reminders",
+                destinationView: { YoungCommunityView() },
+                identifier: "feature_young_community"
+            )
+        ]
+
         results["AAS"] = [
             .init(
                 image: "book",

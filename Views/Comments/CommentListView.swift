@@ -11,6 +11,7 @@ import SwiftUI
 class CommentListViewModel {
     let targetType: String
     let targetId: String?
+    let youngId: String?
     let sectionId: Int?
     let teacherId: Int?
 
@@ -22,11 +23,13 @@ class CommentListViewModel {
     init(
         targetType: String,
         targetId: String? = nil,
+        youngId: String? = nil,
         sectionId: Int? = nil,
         teacherId: Int? = nil
     ) {
         self.targetType = targetType
         self.targetId = targetId
+        self.youngId = youngId
         self.sectionId = sectionId
         self.teacherId = teacherId
     }
@@ -35,21 +38,40 @@ class CommentListViewModel {
         isLoading = true
         error = nil
         do {
-            let response: ServerCommentListResponse =
-                try await ServerClient.shared.request(
-                    .listComments(
-                        targetType: targetType,
-                        targetId: targetId,
-                        sectionId: sectionId,
-                        teacherId: teacherId
-                    )
-                )
+            let response = try await ServerClient.shared.fetchComments(
+                targetType: targetType,
+                targetId: targetId,
+                youngId: youngId,
+                sectionId: sectionId,
+                teacherId: teacherId
+            )
             comments = response.comments
             hiddenCount = response.hiddenCount
         } catch {
             self.error = error.localizedDescription
         }
         isLoading = false
+    }
+
+    func toggleReaction(commentId: String, reaction: ServerCommentReaction) async {
+        guard ServerClient.shared.isAuthenticated else { return }
+        do {
+            if reaction.hasReacted {
+                try await ServerClient.shared.requestVoid(
+                    .removeCommentReaction(id: commentId, type: reaction.type)
+                )
+            } else {
+                let _: SuccessResponse = try await ServerClient.shared.request(
+                    .addCommentReaction(
+                        id: commentId,
+                        CommentReactionRequest(type: reaction.type)
+                    )
+                )
+            }
+            await load()
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 }
 
@@ -59,7 +81,15 @@ struct CommentListView: View {
 
     var body: some View {
         Group {
-            if viewModel.comments.isEmpty && !viewModel.isLoading {
+            if let error = viewModel.error, viewModel.comments.isEmpty && !viewModel.isLoading {
+                ContentUnavailableView {
+                    Label("Unable to Load Comments", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error)
+                } actions: {
+                    Button("Retry") { Task { await viewModel.load() } }
+                }
+            } else if viewModel.comments.isEmpty && !viewModel.isLoading {
                 ContentUnavailableView(
                     "No Comments",
                     systemImage: "bubble.left.and.bubble.right",
@@ -68,7 +98,14 @@ struct CommentListView: View {
             } else {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.comments) { comment in
-                        CommentNodeView(comment: comment, depth: 0)
+                        CommentNodeView(comment: comment, depth: 0) { reaction in
+                            Task {
+                                await viewModel.toggleReaction(
+                                    commentId: comment.id,
+                                    reaction: reaction
+                                )
+                            }
+                        }
                     }
 
                     if viewModel.hiddenCount > 0 {
@@ -107,6 +144,7 @@ struct CommentListView: View {
 private struct CommentNodeView: View {
     let comment: ServerComment
     let depth: Int
+    let onReaction: (ServerCommentReaction) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -143,22 +181,39 @@ private struct CommentNodeView: View {
             Text(comment.body)
                 .font(.body)
 
-            if let reactions = comment.reactions, !reactions.isEmpty {
-                HStack(spacing: 8) {
-                    ForEach(reactions, id: \.type) { reaction in
-                        HStack(spacing: 2) {
-                            Text(reactionEmoji(reaction.type))
-                            Text("\(reaction.count)")
-                                .font(.caption2)
+            if let attachments = comment.attachments, !attachments.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(attachments) { attachment in
+                        if let url = URL(string: attachment.url) {
+                            Link(destination: url) {
+                                Label(attachment.filename, systemImage: "paperclip")
+                                    .font(.caption)
+                            }
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            reaction.hasReacted
-                                ? Color.accentColor.opacity(0.15)
-                                : Color.secondary.opacity(0.1)
-                        )
-                        .clipShape(Capsule())
+                    }
+                }
+            }
+
+            if !comment.reactions.isEmpty {
+                HStack(spacing: 8) {
+                    ForEach(comment.reactions, id: \.type) { reaction in
+                        Button { onReaction(reaction) } label: {
+                            HStack(spacing: 2) {
+                                Text(reactionEmoji(reaction.type))
+                                Text("\(reaction.count)")
+                                    .font(.caption2)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                reaction.hasReacted
+                                    ? Color.accentColor.opacity(0.15)
+                                    : Color.secondary.opacity(0.1)
+                            )
+                            .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!ServerClient.shared.isAuthenticated || comment.canReact == false)
                     }
                 }
             }
@@ -166,7 +221,7 @@ private struct CommentNodeView: View {
             if let children = comment.children, !children.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(children) { child in
-                        CommentNodeView(comment: child, depth: depth + 1)
+                        CommentNodeView(comment: child, depth: depth + 1, onReaction: onReaction)
                     }
                 }
                 .padding(.leading, 16)
@@ -193,10 +248,10 @@ private struct CommentNodeView: View {
 
 #Preview {
     NavigationStack {
-        CommentListView(
-            viewModel: CommentListViewModel(
-                targetType: "section", targetId: "1"
-            )
+            CommentListView(
+                viewModel: CommentListViewModel(
+                    targetType: "section", targetId: "1"
+                )
         )
     }
 }

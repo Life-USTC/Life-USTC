@@ -246,45 +246,195 @@ struct UpdateTodoRequest: Encodable {
 // MARK: - Comment
 
 struct ServerCommentAuthor: Codable {
-    let id: String
+    let id: String?
     let name: String?
     let username: String?
     let image: String?
+    let isUstcVerified: Bool?
+    let isAdmin: Bool?
+    let isGuest: Bool?
 }
 
 struct ServerCommentReaction: Codable {
     let type: String
     let count: Int
-    let hasReacted: Bool
+    let viewerHasReacted: Bool
+
+    var hasReacted: Bool { viewerHasReacted }
+}
+
+struct ServerCommentAttachment: Codable, Identifiable {
+    let id: String
+    let uploadId: String
+    let filename: String
+    let url: String
+    let contentType: String?
+    let size: Int
 }
 
 struct ServerComment: Codable, Identifiable {
     let id: String
     let body: String
+    let renderedBody: String?
     let visibility: String
+    let status: String?
     let isAnonymous: Bool
+    let authorHidden: Bool?
+    let isAuthor: Bool?
     let createdAt: Date
     let updatedAt: Date
     let author: ServerCommentAuthor?
-    let reactions: [ServerCommentReaction]?
-    let children: [ServerComment]?
+    let parentId: String?
+    let rootId: String?
+    let replies: [ServerComment]?
+    let repliesNextCursor: String?
+    let attachments: [ServerCommentAttachment]?
+    let reactions: [ServerCommentReaction]
+    let canReact: Bool?
+    let canReply: Bool?
+    let canEdit: Bool?
+    let canDelete: Bool?
+    let canModerate: Bool?
+
+    var children: [ServerComment]? { replies }
 }
 
 struct ServerCommentListResponse: Codable {
-    let comments: [ServerComment]
+    let data: [ServerComment]
+    let pagination: PaginationInfo
+    let meta: ServerCommentListMeta
+
+    var comments: [ServerComment] { data }
+    var hiddenCount: Int { meta.hiddenCount }
+    var viewer: ServerCommentViewer { meta.viewer }
+}
+
+struct ServerCommentViewer: Codable {
+    let userId: String?
+    let name: String?
+    let image: String?
+    let isAdmin: Bool
+    let isAuthenticated: Bool
+    let isSuspended: Bool
+    let suspensionReason: String?
+    let suspensionExpiresAt: Date?
+}
+
+struct ServerCommentTarget: Codable {
+    let type: String
+    let targetId: String?
+    let youngId: String?
+    let youngEventId: Int?
+    let youngEventName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case type, targetId, youngId, youngEventId, youngEventName
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(String.self, forKey: .type)
+        if let value = try? container.decode(String.self, forKey: .targetId) {
+            targetId = value
+        } else if let value = try? container.decode(Int.self, forKey: .targetId) {
+            targetId = String(value)
+        } else {
+            targetId = nil
+        }
+        youngId = try container.decodeIfPresent(String.self, forKey: .youngId)
+        youngEventId = try container.decodeIfPresent(Int.self, forKey: .youngEventId)
+        youngEventName = try container.decodeIfPresent(String.self, forKey: .youngEventName)
+    }
+}
+
+struct ServerCommentListMeta: Codable {
     let hiddenCount: Int
-    let viewer: ServerHomeworkViewer?
+    let viewer: ServerCommentViewer
+    let target: ServerCommentTarget
+}
+
+struct ServerCommentRepliesResponse: Codable {
+    let rootId: String
+    let thread: [ServerComment]
+    let nextCursor: String?
+    let viewer: ServerCommentViewer
 }
 
 struct CreateCommentRequest: Encodable {
     let targetType: String
     let targetId: String?
+    let youngId: String?
     let sectionId: Int?
     let teacherId: Int?
+    let sectionJwId: Int?
+    let courseJwId: Int?
+    let homeworkId: String?
+    let sectionTeacherId: Int?
     let body: String
     let visibility: String?
     let isAnonymous: Bool?
     let parentId: String?
+    let attachmentIds: [String]?
+
+    init(
+        targetType: String,
+        targetId: String? = nil,
+        youngId: String? = nil,
+        sectionId: Int? = nil,
+        teacherId: Int? = nil,
+        sectionJwId: Int? = nil,
+        courseJwId: Int? = nil,
+        homeworkId: String? = nil,
+        sectionTeacherId: Int? = nil,
+        body: String,
+        visibility: String? = nil,
+        isAnonymous: Bool? = nil,
+        parentId: String? = nil,
+        attachmentIds: [String]? = nil
+    ) {
+        self.targetType = targetType
+        self.targetId = targetId
+        self.youngId = youngId
+        self.sectionId = sectionId
+        self.teacherId = teacherId
+        self.sectionJwId = sectionJwId
+        self.courseJwId = courseJwId
+        self.homeworkId = homeworkId
+        self.sectionTeacherId = sectionTeacherId
+        self.body = body
+        self.visibility = visibility
+        self.isAnonymous = isAnonymous
+        self.parentId = parentId
+        self.attachmentIds = attachmentIds
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case targetType, targetId, youngId, sectionId, teacherId
+        case sectionJwId, courseJwId, homeworkId, sectionTeacherId
+        case body, visibility, isAnonymous, parentId, attachmentIds
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(targetType, forKey: .targetType)
+        try container.encodeIfPresent(targetId, forKey: .targetId)
+        try container.encodeIfPresent(youngId, forKey: .youngId)
+        try container.encodeIfPresent(sectionId, forKey: .sectionId)
+        try container.encodeIfPresent(teacherId, forKey: .teacherId)
+        try container.encodeIfPresent(sectionJwId, forKey: .sectionJwId)
+        try container.encodeIfPresent(courseJwId, forKey: .courseJwId)
+        try container.encodeIfPresent(homeworkId, forKey: .homeworkId)
+        try container.encodeIfPresent(sectionTeacherId, forKey: .sectionTeacherId)
+        try container.encode(body, forKey: .body)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
+        try container.encodeIfPresent(isAnonymous, forKey: .isAnonymous)
+        try container.encodeIfPresent(parentId, forKey: .parentId)
+        try container.encodeIfPresent(attachmentIds, forKey: .attachmentIds)
+    }
+}
+
+struct CommentReactionRequest: Encodable {
+    let type: String
 }
 
 // MARK: - Bus

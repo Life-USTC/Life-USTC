@@ -53,7 +53,19 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             .init(name: "redirect_uri", value: Self.redirectURI),
             .init(name: "code_challenge", value: codeChallenge),
             .init(name: "code_challenge_method", value: "S256"),
-            .init(name: "scope", value: "openid profile email offline_access"),
+            .init(
+                name: "scope",
+                value: [
+                    "openid", "profile", "email", "offline_access",
+                    "workspace.young-subscription:read",
+                    "workspace.young-subscription:write",
+                    "workspace.young-notification:read",
+                    "workspace.young-notification:write",
+                    "workspace.calendar:read",
+                    "community.comment:read",
+                    "community.comment:write",
+                ].joined(separator: " ")
+            ),
         ]
 
         let authURL = components.url!

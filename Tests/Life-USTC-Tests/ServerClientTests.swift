@@ -70,6 +70,58 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(queryDict["limit"], "10")
     }
 
+    func testEndpointBuildURLRequest_youngEventUsesYoungIdAndPublicPath() {
+        let request = ServerEndpoint.getYoungEvent(youngId: "event/中文")
+            .buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+
+        XCTAssertEqual(
+            request.url?.percentEncodedPath,
+            "/api/catalog/young-events/event%2F%E4%B8%AD%E6%96%87"
+        )
+        XCTAssertEqual(request.httpMethod, "GET")
+    }
+
+    func testEndpointBuildURLRequest_youngCalendarUsesShanghaiRangeAndPagination() {
+        let request = ServerEndpoint.listYoungEvents(
+            active: nil,
+            category: nil,
+            search: nil,
+            organizerId: nil,
+            dateFrom: "2026-09-14",
+            dateTo: "2026-09-20",
+            timeBasis: .activity,
+            page: 2,
+            pageSize: 100
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+        let query = Dictionary(uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) })
+        XCTAssertEqual(components.path, "/api/catalog/young-events")
+        XCTAssertEqual(query["dateFrom"], "2026-09-14")
+        XCTAssertEqual(query["dateTo"], "2026-09-20")
+        XCTAssertEqual(query["timeBasis"], "activity")
+        XCTAssertEqual(query["page"], "2")
+        XCTAssertEqual(query["pageSize"], "100")
+    }
+
+    func testEndpointBuildURLRequest_youngCommentUsesYoungId() {
+        let request = ServerEndpoint.listComments(
+            targetType: "young-event",
+            targetId: nil,
+            youngId: "young-42",
+            sectionId: nil,
+            teacherId: nil,
+            page: 1,
+            pageSize: 100
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+        let query = Dictionary(uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) })
+        XCTAssertEqual(components.path, "/api/community/comments")
+        XCTAssertEqual(query["targetType"], "young-event")
+        XCTAssertEqual(query["youngId"], "young-42")
+    }
+
     // MARK: - Response Decoding
 
     func testDecodeServerUser() async throws {
@@ -117,6 +169,144 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(response.todos[0].title, "Buy milk")
         XCTAssertEqual(response.todos[0].priority, .medium)
         XCTAssertFalse(response.todos[0].completed)
+    }
+
+    func testDecodeYoungEventDetail() async throws {
+        MockURLProtocol.stubJSON([
+            "youngId": "young-42",
+            "name": "Campus Volunteer Day",
+            "category": NSNull(),
+            "department": "Student Affairs",
+            "organizer": "Volunteer Center",
+            "organizerId": "org-1",
+            "status": "Open",
+            "registrationStatus": "报名中",
+            "location": "East Campus",
+            "imageUrl": NSNull(),
+            "hours": 2.5,
+            "capacity": 100,
+            "appliedCount": 20,
+            "startAt": "2026-09-20T09:00:00+08:00",
+            "endAt": "2026-09-20T11:00:00+08:00",
+            "applyStartAt": "2026-09-01T00:00:00+08:00",
+            "applyEndAt": "2026-09-19T23:59:59+08:00",
+            "isActive": true,
+            "sourceMissing": false,
+            "lastSeenAt": "2026-09-15T00:00:00+08:00",
+            "createdAt": NSNull(),
+            "rawJson": [:],
+        ])
+
+        let event: ServerYoungEvent = try await client.request(.getYoungEvent(youngId: "young-42"))
+        XCTAssertEqual(event.youngId, "young-42")
+        XCTAssertEqual(event.organizerId, "org-1")
+        XCTAssertEqual(event.hours, 2.5)
+        XCTAssertTrue(event.isActive)
+    }
+
+    func testFetchYoungEventsFollowsAllPages() async throws {
+        var requestedPages: [String] = []
+        MockURLProtocol.requestHandler = { request in
+            let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            let page = components.queryItems?.first(where: { $0.name == "page" })?.value ?? "1"
+            requestedPages.append(page)
+            let name = page == "1" ? "First" : "Second"
+            let body: [String: Any] = [
+                "data": [[
+                    "youngId": "young-(page)",
+                    "name": name,
+                    "category": NSNull(),
+                    "department": NSNull(),
+                    "organizer": NSNull(),
+                    "organizerId": NSNull(),
+                    "status": NSNull(),
+                    "registrationStatus": NSNull(),
+                    "location": NSNull(),
+                    "imageUrl": NSNull(),
+                    "hours": NSNull(),
+                    "capacity": NSNull(),
+                    "appliedCount": NSNull(),
+                    "startAt": NSNull(),
+                    "endAt": NSNull(),
+                    "applyStartAt": NSNull(),
+                    "applyEndAt": NSNull(),
+                    "isActive": false,
+                    "sourceMissing": false,
+                    "lastSeenAt": NSNull(),
+                    "createdAt": NSNull(),
+                ]],
+                "pagination": ["page": Int(page)!, "pageSize": 1, "total": 2, "totalPages": 2],
+            ]
+            let data = try JSONSerialization.data(withJSONObject: body)
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, data)
+        }
+
+        let events = try await client.fetchYoungEvents()
+        XCTAssertEqual(events.map(\.youngId), ["young-1", "young-2"])
+        XCTAssertEqual(requestedPages, ["1", "2"])
+    }
+
+    func testDecodeYoungEventCommentsAndTarget() async throws {
+        MockURLProtocol.stubJSON([
+            "data": [[
+                "id": "comment-1",
+                "body": "Looking forward to it",
+                "renderedBody": "Looking forward to it",
+                "visibility": "public",
+                "status": "visible",
+                "author": NSNull(),
+                "authorHidden": false,
+                "isAnonymous": true,
+                "isAuthor": false,
+                "createdAt": "2026-09-15T00:00:00Z",
+                "updatedAt": "2026-09-15T00:00:00Z",
+                "parentId": NSNull(),
+                "rootId": NSNull(),
+                "replies": [],
+                "repliesNextCursor": NSNull(),
+                "attachments": [],
+                "reactions": [[
+                    "type": "heart",
+                    "count": 2,
+                    "viewerHasReacted": true,
+                ]],
+                "canReact": true,
+                "canReply": true,
+                "canEdit": false,
+                "canDelete": false,
+                "canModerate": false,
+            ]],
+            "pagination": ["page": 1, "pageSize": 100, "total": 1, "totalPages": 1],
+            "meta": [
+                "hiddenCount": 0,
+                "viewer": [
+                    "userId": NSNull(), "name": NSNull(), "image": NSNull(),
+                    "isAdmin": false, "isAuthenticated": false, "isSuspended": false,
+                    "suspensionReason": NSNull(), "suspensionExpiresAt": NSNull(),
+                ],
+                "target": [
+                    "type": "young-event", "targetId": NSNull(),
+                    "youngId": "young-42", "youngEventId": NSNull(),
+                    "youngEventName": "Campus Volunteer Day",
+                ],
+            ],
+        ])
+
+        let response: ServerCommentListResponse = try await client.request(
+            .listComments(
+                targetType: "young-event",
+                targetId: nil,
+                youngId: "young-42",
+                sectionId: nil,
+                teacherId: nil,
+                page: 1,
+                pageSize: 100
+            )
+        )
+        XCTAssertEqual(response.comments.count, 1)
+        XCTAssertEqual(response.meta.target.youngId, "young-42")
+        XCTAssertTrue(response.comments[0].reactions[0].hasReacted)
     }
 
     // MARK: - Authentication
@@ -284,5 +474,17 @@ final class ServerClientTests: XCTestCase {
         let todo = try client.decoder.decode(ServerTodo.self, from: json)
         XCTAssertEqual(todo.id, "t2")
         XCTAssertTrue(todo.completed)
+    }
+
+    func testYoungCalendarDateUsesShanghaiMondayWeek() {
+        var calendar = YoungCalendarDate.calendar
+        calendar.timeZone = YoungCalendarDate.shanghai
+        let sunday = calendar.date(from: DateComponents(year: 2026, month: 9, day: 20))!
+        let monday = YoungCalendarDate.weekStart(sunday)
+        XCTAssertEqual(YoungCalendarDate.dateString(monday), "2026-09-14")
+
+        let range = YoungCalendarDate.range(for: .week, date: sunday)
+        XCTAssertEqual(range.from, "2026-09-14")
+        XCTAssertEqual(range.to, "2026-09-20")
     }
 }
