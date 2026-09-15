@@ -11,6 +11,21 @@ struct CommentComposeView: View {
     @Environment(\.dismiss) private var dismiss
 
     let viewModel: CommentListViewModel
+    let parentId: String?
+    let editingComment: ServerComment?
+
+    init(
+        viewModel: CommentListViewModel,
+        parentId: String? = nil,
+        editingComment: ServerComment? = nil
+    ) {
+        self.viewModel = viewModel
+        self.parentId = parentId
+        self.editingComment = editingComment
+        _commentBody = State(initialValue: editingComment?.body ?? "")
+        _isAnonymous = State(initialValue: editingComment?.isAnonymous ?? false)
+        _visibility = State(initialValue: editingComment?.visibility ?? "public")
+    }
 
     @State private var commentBody = ""
     @State private var isAnonymous = false
@@ -21,7 +36,6 @@ struct CommentComposeView: View {
     private let visibilityOptions = [
         ("public", "Public"),
         ("logged_in_only", "Logged-in Only"),
-        ("anonymous", "Anonymous"),
     ]
 
     var body: some View {
@@ -50,15 +64,23 @@ struct CommentComposeView: View {
                     }
                 }
             }
-            .navigationTitle("New Comment")
+            .navigationTitle(
+                Text(
+                    (editingComment != nil
+                        ? "Edit Comment"
+                        : parentId == nil ? "New Comment" : "Reply").localized
+                )
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Post") {
+                    Button {
                         Task { await send() }
+                    } label: {
+                        Text((editingComment == nil ? "Post" : "Save").localized)
                     }
                     .disabled(
                         commentBody.trimmingCharacters(in: .whitespaces).isEmpty
@@ -76,22 +98,33 @@ struct CommentComposeView: View {
         let request = CreateCommentRequest(
             targetType: viewModel.targetType,
             targetId: viewModel.targetId,
+            youngId: viewModel.youngId,
             sectionId: viewModel.sectionId,
             teacherId: viewModel.teacherId,
             body: commentBody.trimmingCharacters(in: .whitespaces),
             visibility: visibility,
             isAnonymous: isAnonymous,
-            parentId: nil
+            parentId: parentId
         )
 
         do {
-            let _: IDResponse = try await ServerClient.shared.request(
-                .createComment(request)
-            )
-            await viewModel.load()
+            if let editingComment {
+                try await viewModel.updateComment(
+                    editingComment,
+                    body: request.body,
+                    visibility: visibility,
+                    isAnonymous: isAnonymous
+                )
+            } else {
+                let _: IDResponse = try await ServerClient.shared.request(
+                    .createComment(request)
+                )
+                await viewModel.load()
+            }
             dismiss()
         } catch {
             self.error = error.localizedDescription
+            viewModel.mutationError = error.localizedDescription
         }
         isSending = false
     }

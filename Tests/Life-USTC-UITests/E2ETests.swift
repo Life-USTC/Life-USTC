@@ -228,13 +228,22 @@ final class E2ETests: XCTestCase {
         selectTab("Settings")
 
         let serverAccount = app.buttons["settings_server_account"]
-        if serverAccount.waitForExistence(timeout: 10) {
-            serverAccount.tap()
-            // Server Account view should show server info
-            let serverText = app.staticTexts["Server Info"]
-                .exists ? true : app.staticTexts["Server Account"].waitForExistence(timeout: 5)
-            XCTAssertTrue(serverText, "Server Account view should be accessible")
+        XCTAssertTrue(
+            serverAccount.waitForExistence(timeout: 10),
+            "Settings should contain the server account control"
+        )
+        if app.staticTexts["Not signed in"].waitForExistence(timeout: 2) {
+            // The CAS demo login does not grant a separate server OAuth session.
+            // Verify the signed-out account CTA without launching an external flow.
+            XCTAssertTrue(app.staticTexts["Sign in for Todos, Comments & sync"].exists)
+            return
         }
+
+        serverAccount.tap()
+        // Server Account view should show server info
+        let serverText = app.staticTexts["Server Info"]
+            .exists ? true : app.staticTexts["Server Account"].waitForExistence(timeout: 5)
+        XCTAssertTrue(serverText, "Server Account view should be accessible")
     }
 
     @MainActor

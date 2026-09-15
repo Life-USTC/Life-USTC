@@ -50,6 +50,12 @@ struct FeaturePreview: View {
             subTitle: "",
             destinationView: { USTCBusView() }
         ),
+        .init(
+            image: "figure.run",
+            title: "Second Classroom",
+            subTitle: "",
+            destinationView: { YoungCommunityView() }
+        ),
     ]
     var body: some View {
         LazyVGrid(
