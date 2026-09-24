@@ -25,9 +25,6 @@
 "Activity description" = "Activity description";
 "Read description and participation notes" = "Read description and participation notes";
 "Registered" = "Registered";
-"Participation mode" = "Participation mode";
-"Online event" = "Online event";
-"In-person event" = "In-person event";
 "Online meeting information" = "Online meeting information";
 "Activity level" = "Activity level";
 "Module" = "Module";
@@ -38,3 +35,4 @@
 "Phone" = "Phone";
 "Duration (hours)" = "Duration (hours)";
 "Service hours" = "Service hours";
+"Online meeting available" = "Online meeting available";

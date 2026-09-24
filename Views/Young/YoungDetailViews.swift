@@ -141,7 +141,7 @@ struct YoungEventDetailView: View {
         if let status = event.status, !status.isEmpty {
             LabeledContent("Status", value: status)
         }
-        if let online = event.isOnline { LabeledContent("Participation mode", value: online ? "Online event".localized : "In-person event".localized) }
+        if event.isOnline == true { Text("Online meeting available") }
         if event.isOnline != false, let meeting = event.onlineMeetingInfo, !meeting.isEmpty {
             LabeledContent("Online meeting information", value: meeting).textSelection(.enabled)
         }

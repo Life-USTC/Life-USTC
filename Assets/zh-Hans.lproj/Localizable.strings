@@ -426,9 +426,6 @@
 "Activity description" = "活动介绍";
 "Read description and participation notes" = "查看完整活动介绍与参与须知";
 "Registered" = "已报名";
-"Participation mode" = "参与方式";
-"Online event" = "线上活动";
-"In-person event" = "线下活动";
 "Online meeting information" = "线上会议信息";
 "Activity level" = "活动级别";
 "Module" = "模块";
@@ -439,3 +436,4 @@
 "Phone" = "联系电话";
 "Duration (hours)" = "持续时长（小时）";
 "Service hours" = "志愿服务时长";
+"Online meeting available" = "提供线上会议";
