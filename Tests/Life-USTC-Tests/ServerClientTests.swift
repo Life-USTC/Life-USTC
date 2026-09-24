@@ -251,7 +251,13 @@ final class ServerClientTests: XCTestCase {
             "organizer": "Volunteer Center",
             "organizerId": "org-1",
             "status": "Open",
-            "registrationStatus": "报名中",
+            "requiresSignup": true,
+            "requiresSignupInfo": true,
+            "isOnline": true,
+            "onlineMeetingInfo": "800-414-186",
+            "externalSponsor": "Partner",
+            "allowedAttachmentTypes": ["pdf"],
+            "upstreamOrganizerIds": [], "upstreamSponsorIds": [], "tagIds": [], "signupDepartmentIds": [],
             "location": "East Campus",
             "imageUrl": NSNull(),
             "hours": 2.5,
@@ -269,6 +275,9 @@ final class ServerClientTests: XCTestCase {
         ])
 
         let event: ServerYoungEvent = try await client.request(.getYoungEvent(youngId: "young-42"))
+        XCTAssertEqual(event.onlineMeetingInfo, "800-414-186")
+        XCTAssertEqual(event.allowedAttachmentTypes, ["pdf"])
+        XCTAssertEqual(event.requiresSignupInfo, true)
         XCTAssertEqual(event.youngId, "young-42")
         XCTAssertEqual(event.organizerId, "org-1")
         XCTAssertEqual(event.hours, 2.5)
@@ -291,7 +300,8 @@ final class ServerClientTests: XCTestCase {
                     "organizer": NSNull(),
                     "organizerId": NSNull(),
                     "status": NSNull(),
-                    "registrationStatus": NSNull(),
+                    "requiresSignup": NSNull(),
+                    "allowedAttachmentTypes": [], "upstreamOrganizerIds": [], "upstreamSponsorIds": [], "tagIds": [], "signupDepartmentIds": [],
                     "location": NSNull(),
                     "imageUrl": NSNull(),
                     "hours": NSNull(),
