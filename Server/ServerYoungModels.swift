@@ -100,6 +100,12 @@ enum YoungCalendarDate {
     }
 }
 
+struct ServerYoungEventPlace: Codable, Hashable {
+    let placeInfo: String?
+    let placeSt: String?
+    let placeEt: String?
+}
+
 struct ServerYoungEvent: Codable, Identifiable, Hashable {
     let youngId: String
     let name: String
@@ -108,7 +114,44 @@ struct ServerYoungEvent: Codable, Identifiable, Hashable {
     let organizer: String?
     let organizerId: String?
     let status: String?
-    let registrationStatus: String?
+    let activityStatusCode: String?
+    let signupStatusCode: String?
+    let requiresSignup: Bool?
+    let categoryCode: String?
+    let moduleCode: String?
+    let formCode: String?
+    let activityLevelCode: String?
+    let departmentId: String?
+    let upstreamOrganizerIds: [String]
+    let upstreamSponsorIds: [String]
+    let tagIds: [String]
+    let signupScopeCode: String?
+    let signupDepartmentIds: [String]
+    let requiresSignupInfo: Bool?
+    let allowedAttachmentTypes: [String]
+    let isOnline: Bool?
+    let onlineMeetingInfo: String?
+    let externalSponsor: String?
+    let description: String?
+    let participationNotes: String?
+    let activityLevel: String?
+    let module: String?
+    let form: String?
+    let grades: String?
+    let sponsor: String?
+    let contactName: String?
+    let contactTel: String?
+    let duration: Double?
+    let serviceHour: Double?
+    let sumHours: Double?
+    let sumPersons: Int?
+    let partakeNum: Int?
+    let favCount: Int?
+    let limitNum: Int?
+    let createdAtUpstream: Date?
+    let auditedAt: Date?
+    let updatedAtUpstream: Date?
+    let places: [ServerYoungEventPlace]?
     let location: String?
     let imageUrl: String?
     let hours: Double?

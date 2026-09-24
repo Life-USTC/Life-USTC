@@ -415,3 +415,25 @@
 "Load more replies" = "加载更多回复";
 "Unable to load replies" = "回复加载失败";
 "Reply thread was not returned by the server" = "服务器未返回回复线程";
+
+// Second Classroom participation details
+"Registration required" = "需要报名";
+"No registration required" = "无需报名";
+"Additional registration information required" = "报名时需填写补充信息";
+"Eligible grades" = "面向年级";
+"Accepted attachment formats" = "可提交的附件格式";
+"Check eligibility on the official Young website." = "报名资格与面向范围请以第二课堂平台为准。";
+"Activity description" = "活动介绍";
+"Read description and participation notes" = "查看完整活动介绍与参与须知";
+"Registered" = "已报名";
+"Online meeting information" = "线上会议信息";
+"Activity level" = "活动级别";
+"Module" = "模块";
+"Participation format" = "参与形式";
+"Sponsor" = "主办单位";
+"External organizer" = "校外主办方";
+"Contact" = "联系人";
+"Phone" = "联系电话";
+"Duration (hours)" = "持续时长（小时）";
+"Service hours" = "志愿服务时长";
+"Online meeting available" = "提供线上会议";

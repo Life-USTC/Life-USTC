@@ -14,3 +14,25 @@
 "disclaimer" = "Double check with information provided on your school's website. Information here might be incorrect or out-dated. We take no responsiblity for any of that.";
 
 "即停" = "Stop briefly";
+
+// Second Classroom participation details
+"Registration required" = "Registration required";
+"No registration required" = "No registration required";
+"Additional registration information required" = "Additional registration information required";
+"Eligible grades" = "Eligible grades";
+"Accepted attachment formats" = "Accepted attachment formats";
+"Check eligibility on the official Young website." = "Check eligibility on the official Young website.";
+"Activity description" = "Activity description";
+"Read description and participation notes" = "Read description and participation notes";
+"Registered" = "Registered";
+"Online meeting information" = "Online meeting information";
+"Activity level" = "Activity level";
+"Module" = "Module";
+"Participation format" = "Participation format";
+"Sponsor" = "Sponsor";
+"External organizer" = "External organizer";
+"Contact" = "Contact";
+"Phone" = "Phone";
+"Duration (hours)" = "Duration (hours)";
+"Service hours" = "Service hours";
+"Online meeting available" = "Online meeting available";
