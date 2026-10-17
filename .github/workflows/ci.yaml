@@ -132,7 +132,9 @@ jobs:
 
   upload_to_testflight:
     name: Upload to TestFlight
-    runs-on: ubuntu-latest
+    # Must stay on macOS: fastlane pilot uploads the IPA via altool/Transporter,
+    # neither of which exists on Linux (fastlane_core itunes_transporter.rb).
+    runs-on: macos-26
     timeout-minutes: 30
     needs: [determine_action, build]
     if: needs.determine_action.outputs.should_deploy == 'true'
