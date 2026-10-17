@@ -22,6 +22,8 @@ scheme("Life-USTC-UITests")
 
 output_directory("./screenshots")
 
+cloned_source_packages_path("SourcePackages")
+
 clear_previous_screenshots(true)
 
 override_status_bar(true)
