@@ -38,6 +38,12 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen --spec project.yml
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
       - name: Setup Simulators
         run: |
           xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
@@ -46,7 +52,7 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
-          fastlane snapshot
+          bundle exec fastlane snapshot
 
       - name: Upload screenshots artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
