@@ -2,11 +2,6 @@ name: Screenshots
 
 on:
   pull_request:
-    branches:
-      - "*"
-  push:
-    branches:
-      - "*"
   workflow_dispatch:
 
 permissions:
@@ -15,31 +10,37 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   snapshot:
     name: Generate iOS UI Screenshots
     runs-on: macos-26
+    timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install XcodeGen
         run: |
           brew install xcodegen
 
+      - name: Cache Swift packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+
       - name: Generate Xcode project
         run: xcodegen --spec project.yml
 
       - name: Setup Simulators
-        continue-on-error: true
         run: |
-          xcrun simctl create "iPhone 14" "iPhone 14"
-          xcrun simctl create "iPhone 14 Plus" "iPhone 14 Plus"
-          xcrun simctl create "iPhone 14 Pro" "iPhone 14 Pro"
           xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
-          xcrun simctl create "iPad Pro (12.9-inch) (3rd generation)" "iPad Pro (12.9-inch) (3rd generation)"
-          xcrun simctl create "iPad Air (3rd generation)" "iPad Air (3rd generation)"
-          xcrun simctl create "iPad mini (5th generation)" "iPad mini (5th generation)"
 
       - name: Run Fastlane Snapshot
         env:
@@ -48,7 +49,7 @@ jobs:
           fastlane snapshot
 
       - name: Upload screenshots artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ios-screenshots-${{ github.run_id }}
           path: |
@@ -56,7 +57,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Publish screenshots to gh-pages (append-only)
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./screenshots
@@ -76,21 +77,6 @@ jobs:
 
       - name: Comment on Pull Request (sticky)
         if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
         with:
           path: screenshots_comment.md
-
-      - name: Comment on Commit
-        if: github.event_name == 'push'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('screenshots_comment.md', 'utf8');
-            await github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body
-            });

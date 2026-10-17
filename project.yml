@@ -211,7 +211,7 @@ targets:
 packages:
   Oklch:
     url: https://github.com/nikstar/swift-oklch
-    branch: main
+    revision: f0ee82f950ff3fc2d7e6f2a968941378139c1d71 # main @ 2026-10-17
   FeedKit:
     url: https://github.com/nmdias/FeedKit
     majorVersion: 9.1.2
@@ -226,16 +226,16 @@ packages:
     majorVersion: 2.5.3
   Reeeed:
     url: https://github.com/tiankaima/reeeed
-    branch: main
+    revision: 4bdebe8b9ac6bd95e021d2da802ddcdd8d002d35 # main @ 2026-10-17
   LoremSwiftum:
     url: https://github.com/lukaskubanek/LoremSwiftum
-    branch: master
+    revision: 4b26c1d946f8fbb76c2a8d4e701ba099cab7b79d # master @ 2026-10-17
   ScreenshotPreventingSwiftUI:
     url: https://github.com/yoxisem544/ScreenshotPreventing-iOS
     from: 1.4.0
   KeychainAccess:
     url: https://github.com/kishikawakatsumi/KeychainAccess
-    branch: master
+    revision: e0c7eebc5a4465a3c4680764f26b7a61f567cdaf # master @ 2026-10-17
 
 schemes:
   Life-USTC:

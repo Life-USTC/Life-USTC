@@ -3,10 +3,9 @@ name: CI
 on:
   push:
     branches:
-      - "*"
+      - main
+      - "ci-*"
   pull_request:
-    branches:
-      - "*"
   workflow_dispatch:
     inputs:
       beta:
@@ -15,10 +14,15 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   determine_action:
     name: Determine Build Action
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       should_deploy: ${{ steps.should_deploy.outputs.deploy }}
       should_add_to_group: ${{ steps.should_deploy.outputs.deploy }}
@@ -37,8 +41,17 @@ jobs:
   test:
     name: Run Tests
     runs-on: macos-26
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Cache Swift packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
 
       - name: Setup .xcodeproj
         run: |
@@ -51,6 +64,7 @@ jobs:
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-Tests \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/unit.xcresult \
             -quiet
 
@@ -61,12 +75,13 @@ jobs:
             -scheme Life-USTC-UITests \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -only-testing:Life-USTC-UITests/E2ETests \
+            -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
 
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: test-results
           path: TestResults/
@@ -74,11 +89,20 @@ jobs:
   build:
     name: Build IPA
     runs-on: macos-26
+    timeout-minutes: 60
     needs: [determine_action, test]
     outputs:
       build_number: ${{ steps.get_build_number.outputs.build_number }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Cache Swift packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
 
       - name: Setup .xcodeproj
         run: |
@@ -92,7 +116,7 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
 
       - name: Upload app-store ipa and dsyms to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: app-store-ipa-dsyms
           path: |
@@ -108,19 +132,26 @@ jobs:
 
   upload_to_testflight:
     name: Upload to TestFlight
-    runs-on: macos-26
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [determine_action, build]
     if: needs.determine_action.outputs.should_deploy == 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
 
       - name: Download IPA and dSYMs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: app-store-ipa-dsyms
 
       - name: Upload to TestFlight
-        run: fastlane ios testflight_upload
+        run: bundle exec fastlane ios testflight_upload
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
@@ -128,21 +159,28 @@ jobs:
 
   add_to_testflight_group:
     name: Add to TestFlight Group
-    runs-on: macos-26
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
     if: needs.determine_action.outputs.should_add_to_group == 'true' && !cancelled()
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
 
       - name: Wait for TestFlight build processing
-        run: fastlane ios testflight_wait_for_processing build_number:${{ needs.build.outputs.build_number }}
+        run: bundle exec fastlane ios testflight_wait_for_processing build_number:${{ needs.build.outputs.build_number }}
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY: ${{ secrets.ASC_KEY }}
 
       - name: Add to TestFlight group
-        run: fastlane ios testflight_add_to_group
+        run: bundle exec fastlane ios testflight_add_to_group
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}

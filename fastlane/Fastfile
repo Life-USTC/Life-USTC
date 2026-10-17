@@ -9,6 +9,7 @@ platform :ios do
     gym(
       scheme: "Life-USTC",
       export_method: "app-store",
+      cloned_source_packages_path: "SourcePackages",
       export_options: {
         provisioningProfiles: {
           "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
@@ -51,7 +52,14 @@ platform :ios do
     app = Spaceship::ConnectAPI::App.find("dev.tiankaima.Life-USTC")
 
     UI.message("Waiting for build (#{build_number}) to finish processing...")
+    max_checks = 40 # 40 checks x 30s = 20 minutes
+    checks = 0
     loop do
+      checks += 1
+      if checks > max_checks
+        UI.user_error!("Build (#{build_number}) did not finish processing within #{max_checks * 30 / 60} minutes; giving up. Check App Store Connect for its processing state.")
+      end
+
       builds = app.get_builds(filter: { version: build_number })
       if builds.empty?
         UI.message("Build not found yet, waiting...")
