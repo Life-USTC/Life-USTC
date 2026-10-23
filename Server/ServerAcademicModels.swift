@@ -101,11 +101,10 @@ struct ServerSectionDetail: Codable, Identifiable {
 }
 
 /// Minimal schedule reference within a section detail.
-/// Note: In section detail responses, startTime/endTime are integers (e.g. 800 for 08:00).
-/// In /api/schedules responses, they are formatted strings ("08:00").
+/// Times use the catalog API's "HH:mm" format.
 struct ServerScheduleRef: Codable, Identifiable {
     let id: Int
-    let periods: Int?
+    let periods: Double?
     let date: String?
     let weekday: Int
     let startTime: IntOrString
@@ -116,7 +115,7 @@ struct ServerScheduleRef: Codable, Identifiable {
     let customPlace: String?
 }
 
-/// Decodes either an Int (from section detail) or String (from /api/schedules).
+/// Decodes either numeric HHMM or a formatted time string.
 enum IntOrString: Codable {
     case int(Int)
     case string(String)
@@ -208,11 +207,11 @@ struct ServerTeacherDetail: Codable, Identifiable {
     let _count: ServerTeacherSummary.TeacherSectionCount?
 }
 
-// MARK: - Schedule (full, from GET /api/schedules)
+// MARK: - Schedule (full, from GET /api/catalog/schedules)
 
 struct ServerScheduleEntry: Codable, Identifiable {
     let id: Int
-    let periods: Int?
+    let periods: Double?
     let date: String?
     let weekday: Int
     let startTime: IntOrString

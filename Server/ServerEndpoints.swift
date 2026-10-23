@@ -32,11 +32,11 @@ enum ServerEndpoint {
     case getTeacher(id: Int)
 
     // Schedules
-    case querySchedules(sectionId: Int?, teacherId: Int?, room: String?, date: String?, weekday: Int?)
+    case querySchedules(sectionId: Int?, teacherId: Int?, roomId: Int?, dateFrom: String?, dateTo: String?, weekday: Int?)
 
     // Calendar Subscriptions
     case getSubscriptions
-    case updateSubscriptions(UpdateSubscriptionRequest)
+    case importSubscriptions(MatchCodesRequest)
 
     // Calendar Events
     case listCalendarEvents(dateFrom: String, dateTo: String, page: Int, pageSize: Int)
@@ -65,7 +65,8 @@ enum ServerEndpoint {
     case overview
 
     // Homeworks
-    case listHomeworks(sectionId: Int?, subscribedOnly: Bool?)
+    case listHomeworks(sectionId: Int?, page: Int?, pageSize: Int?)
+    case listSubscribedHomeworks(page: Int?, pageSize: Int?)
     case getHomework(id: String)
     case createHomework(CreateHomeworkRequest)
     case updateHomework(id: String, UpdateHomeworkRequest)
@@ -92,16 +93,13 @@ enum ServerEndpoint {
     case removeCommentReaction(id: String, type: String)
 
     // Bus
-    case busSchedule(
-        originCampusId: Int?, destinationCampusId: Int?,
-        dayType: String?, limit: Int?
-    )
+    case busSchedule(versionKey: String?)
 
     // Metadata
     case metadata
 
     // Uploads
-    case listUploads
+    case listUploads(page: Int?, pageSize: Int?)
     case createUpload(CreateUploadRequest)
 
     // MARK: - Properties
@@ -119,17 +117,17 @@ enum ServerEndpoint {
             .getYoungEventSubscription, .listYoungOrganizerSubscriptions,
             .getYoungOrganizerSubscription, .listYoungNotifications,
             .overview,
-            .listHomeworks, .getHomework, .listTodos,
+            .listHomeworks, .listSubscribedHomeworks, .getHomework, .listTodos,
             .listComments, .listCommentReplies,
             .busSchedule, .metadata, .listUploads:
             return "GET"
-        case .matchCodes, .updateSubscriptions, .createHomework,
+        case .matchCodes, .importSubscriptions, .createHomework,
             .createTodo, .createComment, .addCommentReaction,
             .markYoungNotificationRead, .createUpload:
             return "POST"
-        case .updateYoungEventSubscription, .updateYoungOrganizerSubscription:
+        case .updateYoungEventSubscription, .updateYoungOrganizerSubscription, .setHomeworkCompletion:
             return "PUT"
-        case .updateHomework, .setHomeworkCompletion,
+        case .updateHomework,
             .updateTodo, .updateComment:
             return "PATCH"
         case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction:
@@ -140,33 +138,33 @@ enum ServerEndpoint {
     var path: String {
         switch self {
         case .me:
-            return "/api/me"
+            return "/api/account/profile"
         case .listSemesters:
-            return "/api/semesters"
+            return "/api/catalog/semesters"
         case .currentSemester:
-            return "/api/semesters/current"
+            return "/api/catalog/semesters/current"
         case .listCourses:
-            return "/api/courses"
+            return "/api/catalog/courses"
         case .getCourse(let jwId):
-            return "/api/courses/\(jwId)"
+            return "/api/catalog/courses/\(Self.pathSegment(jwId))"
         case .listSections:
-            return "/api/sections"
+            return "/api/catalog/sections"
         case .getSection(let jwId):
-            return "/api/sections/\(jwId)"
+            return "/api/catalog/sections/\(Self.pathSegment(jwId))"
         case .getSectionSchedules(let jwId):
-            return "/api/sections/\(jwId)/schedules"
+            return "/api/catalog/sections/\(Self.pathSegment(jwId))/schedules"
         case .matchCodes:
-            return "/api/sections/match-codes"
+            return "/api/catalog/sections/match-codes"
         case .listTeachers:
-            return "/api/teachers"
+            return "/api/catalog/teachers"
         case .getTeacher(let id):
-            return "/api/teachers/\(id)"
+            return "/api/catalog/teachers/\(id)"
         case .querySchedules:
-            return "/api/schedules"
+            return "/api/catalog/schedules"
         case .getSubscriptions:
-            return "/api/calendar-subscriptions/current"
-        case .updateSubscriptions:
-            return "/api/calendar-subscriptions"
+            return "/api/workspace/subscriptions/current"
+        case .importSubscriptions:
+            return "/api/workspace/subscriptions/import-codes"
         case .listCalendarEvents:
             return "/api/workspace/calendar/events"
         case .listYoungEvents:
@@ -192,23 +190,25 @@ enum ServerEndpoint {
         case .markYoungNotificationRead(let id):
             return "/api/workspace/young-notifications/\(Self.pathSegment(id))/read"
         case .overview:
-            return "/api/me"
+            return "/api/workspace/overview"
         case .listHomeworks, .createHomework:
-            return "/api/homeworks"
+            return "/api/community/section-homeworks"
+        case .listSubscribedHomeworks:
+            return "/api/workspace/homeworks"
         case .getHomework(let id):
-            return "/api/homeworks/\(id)"
+            return "/api/community/section-homeworks/\(Self.pathSegment(id))"
         case .updateHomework(let id, _):
-            return "/api/homeworks/\(id)"
+            return "/api/community/section-homeworks/\(Self.pathSegment(id))"
         case .deleteHomework(let id):
-            return "/api/homeworks/\(id)"
+            return "/api/community/section-homeworks/\(Self.pathSegment(id))"
         case .setHomeworkCompletion(let id, _):
-            return "/api/homeworks/\(id)/completion"
+            return "/api/workspace/homeworks/\(Self.pathSegment(id))/completion"
         case .listTodos, .createTodo:
-            return "/api/todos"
+            return "/api/workspace/todos"
         case .updateTodo(let id, _):
-            return "/api/todos/\(id)"
+            return "/api/workspace/todos/\(Self.pathSegment(id))"
         case .deleteTodo(let id):
-            return "/api/todos/\(id)"
+            return "/api/workspace/todos/\(Self.pathSegment(id))"
         case .listComments, .createComment:
             return "/api/community/comments"
         case .updateComment(let id, _), .deleteComment(let id):
@@ -218,30 +218,32 @@ enum ServerEndpoint {
         case .addCommentReaction(let id, _), .removeCommentReaction(let id, _):
             return "/api/community/comments/\(Self.pathSegment(id))/reactions"
         case .busSchedule:
-            return "/api/bus"
+            return "/api/catalog/bus"
         case .metadata:
-            return "/api/metadata"
+            return "/api/catalog/metadata"
         case .listUploads, .createUpload:
-            return "/api/uploads"
+            return "/api/workspace/uploads"
         }
     }
 
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .listSemesters(let page, let pageSize):
+        case .listSemesters(let page, let pageSize),
+             .listSubscribedHomeworks(let page, let pageSize),
+             .listUploads(let page, let pageSize):
             var items: [URLQueryItem] = []
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
         case .listCourses(let query, let page, let pageSize):
             var items: [URLQueryItem] = []
-            if let query { items.append(.init(name: "q", value: query)) }
+            if let query { items.append(.init(name: "search", value: query)) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
         case .listSections(let query, let semesterId, let courseId, let page, let pageSize):
             var items: [URLQueryItem] = []
-            if let query { items.append(.init(name: "q", value: query)) }
+            if let query { items.append(.init(name: "search", value: query)) }
             if let semesterId { items.append(.init(name: "semesterId", value: "\(semesterId)")) }
             if let courseId { items.append(.init(name: "courseId", value: "\(courseId)")) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
@@ -249,16 +251,22 @@ enum ServerEndpoint {
             return items.isEmpty ? nil : items
         case .listTeachers(let query, let page, let pageSize):
             var items: [URLQueryItem] = []
-            if let query { items.append(.init(name: "q", value: query)) }
+            if let query { items.append(.init(name: "search", value: query)) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
-        case .querySchedules(let sectionId, let teacherId, let room, let date, let weekday):
+        case .getSection:
+            return [
+                .init(name: "includeSchedules", value: "true"),
+                .init(name: "includeExams", value: "true"),
+            ]
+        case .querySchedules(let sectionId, let teacherId, let roomId, let dateFrom, let dateTo, let weekday):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
             if let teacherId { items.append(.init(name: "teacherId", value: "\(teacherId)")) }
-            if let room { items.append(.init(name: "room", value: room)) }
-            if let date { items.append(.init(name: "date", value: date)) }
+            if let roomId { items.append(.init(name: "roomId", value: "\(roomId)")) }
+            if let dateFrom { items.append(.init(name: "dateFrom", value: dateFrom)) }
+            if let dateTo { items.append(.init(name: "dateTo", value: dateTo)) }
             if let weekday { items.append(.init(name: "weekday", value: "\(weekday)")) }
             return items.isEmpty ? nil : items
         case .listCalendarEvents(let dateFrom, let dateTo, let page, let pageSize):
@@ -299,10 +307,11 @@ enum ServerEndpoint {
             ]
             if let unread { items.append(.init(name: "unread", value: unread ? "true" : "false")) }
             return items
-        case .listHomeworks(let sectionId, let subscribedOnly):
+        case .listHomeworks(let sectionId, let page, let pageSize):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
-            if let subscribedOnly, subscribedOnly { items.append(.init(name: "subscribedOnly", value: "true")) }
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
         case .listComments(let targetType, let targetId, let youngId, let sectionId, let teacherId, let page, let pageSize):
             var items = [URLQueryItem(name: "targetType", value: targetType)]
@@ -320,13 +329,8 @@ enum ServerEndpoint {
             return items.isEmpty ? nil : items
         case .removeCommentReaction(_, let type):
             return [.init(name: "type", value: type)]
-        case .busSchedule(let origin, let dest, let dayType, let limit):
-            var items: [URLQueryItem] = []
-            if let origin { items.append(.init(name: "originCampusId", value: "\(origin)")) }
-            if let dest { items.append(.init(name: "destinationCampusId", value: "\(dest)")) }
-            if let dayType { items.append(.init(name: "dayType", value: dayType)) }
-            if let limit { items.append(.init(name: "limit", value: "\(limit)")) }
-            return items.isEmpty ? nil : items
+        case .busSchedule(let versionKey):
+            return versionKey.map { [.init(name: "versionKey", value: $0)] }
         default:
             return nil
         }
@@ -335,7 +339,7 @@ enum ServerEndpoint {
     var body: (any Encodable)? {
         switch self {
         case .matchCodes(let req): return req
-        case .updateSubscriptions(let req): return req
+        case .importSubscriptions(let req): return req
         case .updateYoungEventSubscription(_, let req): return req
         case .updateYoungOrganizerSubscription(_, let req): return req
         case .createHomework(let req): return req

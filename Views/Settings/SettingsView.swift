@@ -39,9 +39,11 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(user.name ?? user.username ?? "User")
                                     .font(.headline)
-                                Text(user.email)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                if let email = user.email {
+                                    Text(email)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                         .padding(.vertical, 4)
