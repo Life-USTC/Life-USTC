@@ -224,6 +224,15 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     private func open(_ identifier: String, file: StaticString = #filePath, line: UInt = #line) {
         let button = app.buttons[identifier]
+        _ = button.waitForExistence(timeout: 2)
+        for _ in 0..<8 {
+            if button.exists && button.isHittable { break }
+            app.swipeUp()
+        }
+        for _ in 0..<8 {
+            if button.exists && button.isHittable { break }
+            app.swipeDown()
+        }
         XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing control: \(identifier)", file: file, line: line)
         let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: button)
         XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 10), .completed,
@@ -245,12 +254,12 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     private func returnHome() {
         for _ in 0..<3 {
-            if app.buttons["home_catalog"].isHittable { return }
+            if app.navigationBars["Life@USTC"].exists { return }
             let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
             XCTAssertTrue(back.waitForExistence(timeout: 5))
             back.tap()
         }
-        XCTAssertTrue(app.buttons["home_catalog"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Life@USTC"].waitForExistence(timeout: 5))
     }
 
     @MainActor

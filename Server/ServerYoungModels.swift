@@ -215,6 +215,16 @@ struct ServerYoungOrganizer: Codable, Identifiable, Hashable {
     let historyCount: Int?
 }
 
+enum ServerCalendarTargetKind: String, Codable, Hashable {
+    case section, exam, homework, todo
+    case youngEvent = "young_event"
+}
+
+struct ServerCalendarTarget: Codable, Hashable {
+    let kind: ServerCalendarTargetKind
+    let id: String
+}
+
 struct ServerPersonalCalendarEvent: Codable, Identifiable, Hashable {
     let id: String
     let type: String
@@ -224,6 +234,16 @@ struct ServerPersonalCalendarEvent: Codable, Identifiable, Hashable {
     let location: String?
     let url: String
     let youngId: String?
+    let target: ServerCalendarTarget?
+    let sectionJwId: Int?
+    let sectionCode: String?
+    let teachers: [String]?
+    let subscriptionKind: ServerSubscriptionKind?
+    let priority: TodoPriority?
+    let content: String?
+    let examMode: String?
+    let hasTime: Bool?
+    let completionRequired: Bool?
 }
 
 struct ServerYoungEventSubscription: Codable, Identifiable {

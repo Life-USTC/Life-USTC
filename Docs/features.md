@@ -46,6 +46,25 @@ PATCH/DELETE `/api/workspace/subscriptions`, and PATCH
 `/api/workspace/subscriptions/{jwId}`. Catalog identities and permissions follow
 the pinned OpenAPI contract.
 
+## Learning workspace
+
+Home reads the server action hierarchy: current focus, urgent items, upcoming
+items and today, next-three-day and all-pending deadline groups. Calendar and
+home rows open the matching section, exam, homework, todo or activity. Only the
+current account and selected period can expose a cached snapshot; failed reads
+within that boundary retain the last complete result and offer retry.
+
+The todo list exhausts filtered pages and retains global completion counts.
+Editors send only changed fields and can explicitly clear notes or due dates;
+mutation failures retain the draft or confirmed state. Shared homework includes
+complete subscription coverage, server completion timestamps and the
+teaching-assistant rule that a passed deadline archives work without manual
+completion. The exam list retains past semesters and unknown dates.
+
+The calendar subscription screen copies or shares the private URL supplied by
+the server. Missing access and failed reads have explicit recovery states; the
+app does not construct a feed token or place that URL in logs.
+
 ## Existing capabilities and remaining parity
 
 Second Classroom already has native activity/organizer browsing, calendars,
@@ -53,8 +72,8 @@ subscriptions, follows and notification views. Comment/reply/reaction workflows
 and basic todos also exist. Their complete parity acceptance remains part of the
 inventory; an existing screen alone does not establish it.
 
-Further work includes the rich actionable home, complete homework/todo editing,
-description and file workflows, server publications, campus links/pins, weather,
+Further work includes shared-homework creation and maintenance, description
+and file workflows, server publications, campus links/pins, weather,
 map and bus preferences, global discovery, and complete account/governance
 entries. Account security and administration retain their declared session-only
 Web boundaries unless a separately reviewed supported API is added. Service
@@ -74,7 +93,9 @@ responses and token/callback binding. `ServerJourneyTests` drives the actual
 app and URLSession against a bounded loopback HTTP fixture; it does not claim
 server-side permission enforcement. Existing university/demo tests remain.
 
-CI runs all unit tests, both native journey suites and the signed IPA build.
+`WorkspaceJourneyTests` exercises home destinations, todo mutations, homework
+completion, unknown-date exams and private calendar-feed actions using HTTP
+fixtures. CI runs all unit tests, the native journey suites and the signed IPA build.
 Manual branch validation uses `ci.yaml` with `beta=false`; the workflow's normal
 main-branch delivery handles TestFlight. Visual changes include matched evidence
 in their PR. macOS runner configuration belongs in personal environment setup,

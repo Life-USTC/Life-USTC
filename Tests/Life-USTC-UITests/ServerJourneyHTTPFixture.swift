@@ -29,9 +29,21 @@ final class ServerJourneyHTTPFixture {
     private var membership: [Int: String] = [43: "teaching_assistant"]
     private var pendingCatalogFailure = false
     private var pendingSubscriptionFailure = false
+    private var workspace: WorkspaceLearningHTTPState?
+    private var failedRequest: (method: String, path: String)?
+
+    init(workspace: Bool = false) {
+        if workspace { self.workspace = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState()) }
+    }
 
     var requests: [Request] { queue.sync { received } }
     var subscriptionKinds: [Int: String] { queue.sync { membership } }
+    var workspaceTodos: [[String: Any]] { queue.sync { workspace?.todoState.todos ?? [] } }
+    var workspaceHomeworks: [[String: Any]] { queue.sync { workspace?.homeworks ?? [] } }
+
+    func failNextRequest(method: String, path: String) {
+        queue.sync { failedRequest = (method, path) }
+    }
 
     func failNextCatalogRead() {
         queue.sync { pendingCatalogFailure = true }
@@ -147,6 +159,12 @@ final class ServerJourneyHTTPFixture {
             }
         }
 
+        if let failedRequest, request.method == failedRequest.method, request.path == failedRequest.path {
+            self.failedRequest = nil
+            return (503, ["error": "Workspace fixture unavailable"])
+        }
+        if let response = workspace?.response(to: request) { return response }
+
         switch (request.method, request.path) {
         case ("GET", "/api/community/comments"):
             guard request.query["targetType"] == "section", request.query["targetId"] == "7",
@@ -260,7 +278,9 @@ final class ServerJourneyHTTPFixture {
             return section
         }
         return ["userId": "fixture-student", "sections": sections,
-                "calendarPath": NSNull(), "calendarUrl": NSNull(), "note": ""]
+                "calendarPath": NSNull(),
+                "calendarUrl": workspace == nil ? NSNull() : "https://fixture.invalid/calendar/native-journey.ics" as Any,
+                "note": ""]
     }
 
     private static func page(_ data: [[String: Any]], pageSize: Int) -> [String: Any] {
