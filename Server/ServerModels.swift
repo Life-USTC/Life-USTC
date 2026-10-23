@@ -154,7 +154,7 @@ struct ServerDescription: Codable {
 }
 
 struct ServerHomeworkCompletion: Codable {
-    let completedAt: Date?
+    let completedAt: Date
 }
 
 struct ServerHomework: Codable, Identifiable {
@@ -174,6 +174,18 @@ struct ServerHomework: Codable, Identifiable {
     let createdBy: ServerHomeworkCreator?
     let completion: ServerHomeworkCompletion?
     let commentCount: Int?
+    let section: ServerWorkspaceSection?
+    let createdById: String?
+    let updatedById: String?
+    let deletedById: String?
+    let updatedBy: ServerHomeworkCreator?
+    let deletedBy: ServerHomeworkCreator?
+
+    func isPending(at date: Date = Date()) -> Bool {
+        guard completion == nil else { return false }
+        guard !completionRequired, let dueAt = submissionDueAt else { return true }
+        return dueAt > date
+    }
 }
 
 struct ServerHomeworkViewer: Codable {
@@ -271,12 +283,51 @@ struct CreateTodoRequest: Encodable {
     let dueAt: String?
 }
 
+enum ServerPatchValue<Value: Encodable> {
+    case unchanged
+    case null
+    case value(Value)
+
+    func encode<Key: CodingKey>(to container: inout KeyedEncodingContainer<Key>, forKey key: Key) throws {
+        switch self {
+        case .unchanged: break
+        case .null: try container.encodeNil(forKey: key)
+        case .value(let value): try container.encode(value, forKey: key)
+        }
+    }
+}
+
 struct UpdateTodoRequest: Encodable {
     let title: String?
-    let content: String?
+    let content: ServerPatchValue<String>
     let priority: String?
-    let dueAt: String?
+    let dueAt: ServerPatchValue<String>
     let completed: Bool?
+
+    init(
+        title: String? = nil,
+        content: ServerPatchValue<String> = .unchanged,
+        priority: String? = nil,
+        dueAt: ServerPatchValue<String> = .unchanged,
+        completed: Bool? = nil
+    ) {
+        self.title = title
+        self.content = content
+        self.priority = priority
+        self.dueAt = dueAt
+        self.completed = completed
+    }
+
+    enum CodingKeys: String, CodingKey { case title, content, priority, dueAt, completed }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(title, forKey: .title)
+        try content.encode(to: &container, forKey: .content)
+        try container.encodeIfPresent(priority, forKey: .priority)
+        try dueAt.encode(to: &container, forKey: .dueAt)
+        try container.encodeIfPresent(completed, forKey: .completed)
+    }
 }
 
 // MARK: - Comment

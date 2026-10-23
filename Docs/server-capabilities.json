@@ -73,10 +73,11 @@
       "feature": "calendar",
       "capability": "personal-calendar-view",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungCalendarViews.swift",
-        "Server/ServerYoungClient.swift"
+        "Views/Workspace/WorkspaceCalendarModel.swift",
+        "Views/Workspace/ServerCalendarFeedView.swift"
       ]
     },
     {
@@ -92,10 +93,9 @@
       "feature": "calendar",
       "capability": "event-card",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Young/YoungCalendarViews.swift",
-        "Server/ServerYoungClient.swift"
+        "Views/Workspace/WorkspaceEventViews.swift"
       ]
     },
     {
@@ -185,10 +185,10 @@
       "feature": "exam",
       "capability": "cross-section-exam-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerDataProvider.swift",
-        "Views/Exam/ExamDetailView.swift"
+        "Views/Workspace/ServerWorkspaceExamsView.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
@@ -240,10 +240,10 @@
       "feature": "homework",
       "capability": "cross-section-homework-summary",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Workspace/ServerHomeworkListView.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
@@ -267,10 +267,10 @@
       "feature": "homework",
       "capability": "homework-completion",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Workspace/ServerHomeworkDetailView.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
@@ -396,18 +396,22 @@
       "feature": "overview",
       "capability": "authenticated-overview",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Views/HomeView.swift"
+        "Views/HomeView.swift",
+        "Views/Workspace/WorkspaceHomeModel.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
       "feature": "overview",
       "capability": "workspace-shell-navigation",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "App/ContentView.swift",
+        "Views/Shared/ContentViewTab.swift"
+      ]
     },
     {
       "feature": "overview",
@@ -602,20 +606,22 @@
       "feature": "todo",
       "capability": "todo-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Todos/TodoListView.swift",
-        "Views/Todos/TodoEditView.swift"
+        "Views/Todos/TodoModels.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
       "feature": "todo",
       "capability": "todo-edit",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Todos/TodoListView.swift",
-        "Views/Todos/TodoEditView.swift"
+        "Views/Todos/TodoEditView.swift",
+        "Views/Todos/TodoModels.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {

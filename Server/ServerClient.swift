@@ -274,7 +274,7 @@ final class ServerClient: @unchecked Sendable {
     }
 
     func request<T: Decodable>(
-        _ endpoint: ServerEndpoint, retry: Bool, expectedRevision: UUID
+        _ endpoint: ServerEndpoint, retry: Bool = true, expectedRevision: UUID
     ) async throws -> T {
         try Task.checkCancellation()
         let configuration = try configLock.withLock {

@@ -79,7 +79,7 @@ final class E2ETests: XCTestCase {
         } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
             app.buttons["onboarding_close_button"].tap()
         }
-        XCTAssertTrue(app.buttons["home_catalog"].waitForExistence(timeout: 10), "Main screen should appear after onboarding")
+        XCTAssertTrue(app.buttons["home_subscriptions"].waitForExistence(timeout: 10), "Main screen should appear after onboarding")
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.

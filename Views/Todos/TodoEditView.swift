@@ -9,92 +9,94 @@ import SwiftUI
 
 struct TodoEditView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var account = ServerAccountStore.shared
+    @State private var model: ServerTodoEditorModel
 
-    @State private var title = ""
-    @State private var content = ""
-    @State private var priority: TodoPriority = .medium
-    @State private var hasDueDate = false
-    @State private var dueDate = Date().addingTimeInterval(86400)
-    @State private var isSaving = false
-    @State private var error: String?
-
-    var onSave: (() async -> Void)?
+    init(todo: ServerTodo? = nil) {
+        _model = State(initialValue: ServerTodoEditorModel(todo: todo))
+    }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField("Title", text: $title)
-                    TextField("Notes", text: $content, axis: .vertical)
-                        .lineLimit(3...6)
-                }
-
-                Section {
-                    Picker("Priority", selection: $priority) {
-                        ForEach(TodoPriority.allCases, id: \.self) { p in
-                            Label(p.displayName, systemImage: p.iconName)
-                                .tag(p)
-                        }
-                    }
-
-                    Toggle("Due Date", isOn: $hasDueDate)
-                    if hasDueDate {
-                        DatePicker(
-                            "Due",
-                            selection: $dueDate,
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                    }
-                }
-
-                if let error {
+                if model.isCurrentSession {
                     Section {
-                        Text(error)
-                            .foregroundStyle(.red)
+                        TextField("Todo Title", text: $model.title)
+                            .accessibilityIdentifier("todo.title")
+                        TextField("Notes", text: $model.content, axis: .vertical)
+                            .lineLimit(3...6)
+                            .accessibilityIdentifier("todo.notes")
+                    }
+
+                    Section {
+                        Picker("Priority", selection: $model.priority) {
+                            ForEach(TodoPriority.allCases, id: \.self) { priority in
+                                Label(LocalizedStringKey(priority.displayName), systemImage: priority.iconName)
+                                    .tag(priority)
+                            }
+                        }
+                        .accessibilityIdentifier("todo.priority")
+                        Toggle("Due Date", isOn: $model.hasDueDate)
+                            .accessibilityIdentifier("todo.hasDueDate")
+                        if model.hasDueDate {
+                            DatePicker(
+                                "Due", selection: $model.dueDate,
+                                displayedComponents: [.date, .hourAndMinute]
+                            )
+                            .accessibilityIdentifier("todo.dueDate")
+                        }
+                    } footer: {
+                        Text("Dates use Shanghai time.")
+                    }
+
+                    if let validationError = model.validationError,
+                       !model.title.isEmpty || !model.content.isEmpty {
+                        Text(validationError)
                             .font(.caption)
+                            .foregroundStyle(.red)
+                            .accessibilityIdentifier("todo.validation")
+                    }
+                    if let error = model.error {
+                        Section {
+                            Text(error)
+                                .foregroundStyle(.red)
+                                .font(.callout)
+                                .accessibilityIdentifier("todo.save.error")
+                            Button("Retry") { Task { await save() } }
+                                .disabled(!model.canSave)
+                                .accessibilityIdentifier("todo.save.retry")
+                        }
                     }
                 }
             }
-            .navigationTitle("New Todo")
+            .disabled(model.isSaving)
+            .environment(\.timeZone, YoungCalendarDate.shanghai)
+            .environment(\.calendar, YoungCalendarDate.calendar)
+            .navigationTitle(LocalizedStringKey(model.isEditing ? "Edit Todo" : "New Todo"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .disabled(model.isSaving)
+                        .accessibilityIdentifier("todo.cancel")
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button {
                         Task { await save() }
+                    } label: {
+                        if model.isSaving { ProgressView() } else { Text("Save") }
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || isSaving)
+                    .disabled(!model.canSave)
+                    .accessibilityIdentifier("todo.save")
                 }
             }
         }
+        .interactiveDismissDisabled(model.isSaving)
+        .onChange(of: account.sessionRevision) { _, _ in dismiss() }
     }
 
     private func save() async {
-        isSaving = true
-        error = nil
-
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-
-        let request = CreateTodoRequest(
-            title: title.trimmingCharacters(in: .whitespaces),
-            content: content.isEmpty ? nil : content,
-            priority: priority.rawValue,
-            dueAt: hasDueDate ? formatter.string(from: dueDate) : nil
-        )
-
-        do {
-            let _: IDResponse = try await ServerClient.shared.request(
-                .createTodo(request)
-            )
-            await onSave?()
-            dismiss()
-        } catch {
-            self.error = error.localizedDescription
-        }
-        isSaving = false
+        if await model.save() { dismiss() }
     }
 }
 

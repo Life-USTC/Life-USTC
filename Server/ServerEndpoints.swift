@@ -66,6 +66,10 @@ enum ServerEndpoint {
 
     // Overview
     case overview
+    case actionableOverview(atTime: String?, locale: String?)
+
+    // Personal exams
+    case listSubscribedExams(page: Int, pageSize: Int, filters: ServerExamFilters)
 
     // Homeworks
     case listHomeworks(sectionId: Int?, page: Int?, pageSize: Int?)
@@ -78,6 +82,7 @@ enum ServerEndpoint {
 
     // Todos
     case listTodos
+    case listTodosPage(page: Int, pageSize: Int, filters: ServerTodoFilters)
     case createTodo(CreateTodoRequest)
     case updateTodo(id: String, UpdateTodoRequest)
     case deleteTodo(id: String)
@@ -119,7 +124,7 @@ enum ServerEndpoint {
             .getYoungOrganizer, .listYoungEventSubscriptions,
             .getYoungEventSubscription, .listYoungOrganizerSubscriptions,
             .getYoungOrganizerSubscription, .listYoungNotifications,
-            .overview,
+            .overview, .actionableOverview, .listSubscribedExams, .listTodosPage,
             .listHomeworks, .listSubscribedHomeworks, .getHomework, .listTodos,
             .listComments, .listCommentReplies,
             .busSchedule, .metadata, .listUploads:
@@ -198,6 +203,10 @@ enum ServerEndpoint {
             return "/api/workspace/young-notifications/\(Self.pathSegment(id))/read"
         case .overview:
             return "/api/workspace/overview"
+        case .actionableOverview:
+            return "/api/workspace/overview/actionable"
+        case .listSubscribedExams:
+            return "/api/workspace/exams"
         case .listHomeworks, .createHomework:
             return "/api/community/section-homeworks"
         case .listSubscribedHomeworks:
@@ -210,7 +219,7 @@ enum ServerEndpoint {
             return "/api/community/section-homeworks/\(Self.pathSegment(id))"
         case .setHomeworkCompletion(let id, _):
             return "/api/workspace/homeworks/\(Self.pathSegment(id))/completion"
-        case .listTodos, .createTodo:
+        case .listTodos, .listTodosPage, .createTodo:
             return "/api/workspace/todos"
         case .updateTodo(let id, _):
             return "/api/workspace/todos/\(Self.pathSegment(id))"
@@ -235,6 +244,29 @@ enum ServerEndpoint {
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .actionableOverview(let atTime, let locale):
+            var items: [URLQueryItem] = []
+            if let atTime { items.append(.init(name: "atTime", value: atTime)) }
+            if let locale { items.append(.init(name: "locale", value: locale)) }
+            return items.isEmpty ? nil : items
+        case .listTodosPage(let page, let pageSize, let filters):
+            var items = [URLQueryItem(name: "page", value: "\(page)"), URLQueryItem(name: "pageSize", value: "\(pageSize)")]
+            if let completed = filters.completed { items.append(.init(name: "completed", value: completed ? "true" : "false")) }
+            if let priority = filters.priority { items.append(.init(name: "priority", value: priority.rawValue)) }
+            if let before = filters.dueBefore { items.append(.init(name: "dueBefore", value: ISO8601DateFormatter().string(from: before))) }
+            if let after = filters.dueAfter { items.append(.init(name: "dueAfter", value: ISO8601DateFormatter().string(from: after))) }
+            return items
+        case .listSubscribedExams(let page, let pageSize, let filters):
+            var items = [
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "pageSize", value: "\(pageSize)"),
+                URLQueryItem(name: "includeDateUnknown", value: filters.includeDateUnknown ? "true" : "false"),
+            ]
+            if let semesterID = filters.semesterID { items.append(.init(name: "semesterId", value: "\(semesterID)")) }
+            if let dateFrom = filters.dateFrom { items.append(.init(name: "dateFrom", value: dateFrom)) }
+            if let dateTo = filters.dateTo { items.append(.init(name: "dateTo", value: dateTo)) }
+            if let locale = filters.locale { items.append(.init(name: "locale", value: locale)) }
+            return items
         case .listSemesters(let page, let pageSize),
              .listSubscribedHomeworks(let page, let pageSize),
              .listUploads(let page, let pageSize):

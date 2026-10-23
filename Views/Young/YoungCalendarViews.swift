@@ -259,49 +259,9 @@ struct YoungActivityCalendarView: View {
     }
 }
 
-@Observable
-private final class WorkspaceCalendarModel {
-    var mode: YoungCalendarDisplayMode = .week
-    var referenceDate = Date()
-    var events: [ServerPersonalCalendarEvent] = []
-    var isLoading = false
-    var error: String?
-
-    private var generation = 0
-
-    var requestID: String {
-        "\(mode.rawValue)-\(YoungCalendarDate.dateString(referenceDate))"
-    }
-
-    func load() async {
-        guard ServerClient.shared.isAuthenticated else { return }
-        generation += 1
-        let requestGeneration = generation
-        let requestedMode = mode
-        let requestedReferenceDate = referenceDate
-        let range = YoungCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
-        isLoading = true
-        error = nil
-        events = []
-        do {
-            let value = try await ServerClient.shared.fetchPersonalCalendarEvents(
-                dateFrom: range.from,
-                dateTo: range.to
-            )
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            events = value
-        } catch {
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            self.error = error.localizedDescription
-        }
-        guard requestGeneration == generation else { return }
-        isLoading = false
-    }
-}
-
 struct WorkspaceCalendarView: View {
     @Bindable private var account = ServerAccountStore.shared
-    @State private var model = WorkspaceCalendarModel()
+    @State private var model = ServerWorkspaceCalendarModel()
 
     var body: some View {
         Group {
@@ -348,7 +308,8 @@ struct WorkspaceCalendarView: View {
 
                     if let error = model.error, !model.isLoading {
                         YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
-                    } else if model.events.isEmpty && !model.isLoading {
+                    }
+                    if model.events.isEmpty && !model.isLoading && model.error == nil {
                         ContentUnavailableView(
                             "Calendar Empty",
                             systemImage: "calendar",
@@ -356,7 +317,7 @@ struct WorkspaceCalendarView: View {
                         )
                     } else {
                         List(model.events) { event in
-                            personalEventRow(event)
+                            WorkspaceEventLink(event: event)
                         }
                         .overlay {
                             if model.isLoading { ProgressView() }
@@ -366,55 +327,25 @@ struct WorkspaceCalendarView: View {
             }
         }
         .navigationTitle("My Calendar")
-        .task(id: "\(model.requestID)-\(account.isAuthenticated)") { await model.load() }
+        .task(id: "\(model.requestID)-\(account.sessionRevision)") { await model.load() }
         .refreshable { await model.load() }
-    }
-
-    @ViewBuilder
-    private func personalEventRow(_ event: ServerPersonalCalendarEvent) -> some View {
-        if event.type == "young_event", let youngId = event.youngId {
-            NavigationLink {
-                YoungEventDetailView(youngId: youngId)
-            } label: {
-                personalEventLabel(event)
-            }
-        } else {
-            personalEventLabel(event)
-        }
-    }
-
-    private func personalEventLabel(_ event: ServerPersonalCalendarEvent) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(event.title)
-                    .font(.headline)
-                Spacer()
-                Text(eventTypeTitle(event.type).localized)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-            if let at = event.at {
-                Text(YoungFormatting.dateRange(at, event.endsAt))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            }
-            if let location = event.location, !location.isEmpty {
-                Text(location)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        .toolbar {
+            if account.isAuthenticated {
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        ServerCalendarFeedView()
+                    } label: {
+                        Label("Calendar subscription", systemImage: "calendar.badge.plus")
+                    }
+                    .accessibilityIdentifier("calendar_feed")
+                }
             }
         }
-        .padding(.vertical, 4)
-    }
-
-    private func eventTypeTitle(_ type: String) -> String {
-        switch type {
-        case "young_event": "Activity"
-        case "schedule": "Course"
-        case "exam": "Exam"
-        case "homework_due": "Homework"
-        case "todo_due": "Todo"
-        default: type
+        .onReceive(NotificationCenter.default.publisher(for: .serverWorkspaceDidChange)) { _ in
+            Task { await model.load() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in
+            Task { await model.load() }
         }
     }
 }
