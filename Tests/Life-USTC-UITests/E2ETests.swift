@@ -25,10 +25,25 @@ final class E2ETests: XCTestCase {
         }
     }
 
+    override func tearDownWithError() throws {
+        if (testRun?.failureCount ?? 0) > 0 {
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+        }
+        app.terminate()
+    }
+
     // MARK: - Helpers
 
     /// Complete the USTC CAS demo login flow (username: demo, password: demo).
     private func performDemoLogin() {
+        let university = app.buttons["welcome_university"]
+        XCTAssertTrue(university.waitForExistence(timeout: 10))
+        university.tap()
         let username = app.textFields["login_username_field"]
         XCTAssertTrue(username.waitForExistence(timeout: 10), "Login screen should appear")
         username.tap()
@@ -64,24 +79,52 @@ final class E2ETests: XCTestCase {
         } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
             app.buttons["onboarding_close_button"].tap()
         }
+        XCTAssertTrue(app.buttons["home_catalog"].waitForExistence(timeout: 10), "Main screen should appear after onboarding")
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.
     private func selectTab(_ tabName: String) {
+        let destination = ["Features": "Discover", "Feed": "Discover", "Settings": "Account"][tabName] ?? tabName
         let tabBar = app.tabBars.firstMatch
         if tabBar.exists {
             // iPhone: use the tab bar
-            let tabs = ["Home": 0, "Features": 1, "Feed": 2, "Settings": 3]
-            if let index = tabs[tabName] {
+            let tabs = ["Home": 0, "Calendar": 1, "Discover": 2, "Account": 3]
+            if let index = tabs[destination] {
                 tabBar.buttons.element(boundBy: index).tap()
             }
         } else {
             // iPad: use sidebar buttons
-            let sidebarButton = app.buttons["Tab.\(tabName)"]
-            if sidebarButton.waitForExistence(timeout: 5) {
-                sidebarButton.tap()
-            }
+            sidebarTab(destination).tap()
         }
+        if tabName == "Features" || tabName == "Feed" {
+            // Pop an existing discovery destination before opening another one.
+            if !app.buttons["discover_university"].exists {
+                navigateBack()
+            }
+            let entry = app.buttons[tabName == "Features" ? "discover_university" : "discover_feed"]
+            XCTAssertTrue(entry.waitForExistence(timeout: 5))
+            entry.tap()
+        }
+    }
+
+    private let sidebarLabels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]
+
+    private func sidebarTab(_ name: String) -> XCUIElement {
+        let tab = app.buttons["Tab.\(name)"]
+        if !tab.isHittable {
+            let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
+            XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Sidebar should be available")
+            toggle.tap()
+        }
+        XCTAssertTrue(tab.waitForExistence(timeout: 5), "Tab \(name) should exist")
+        XCTAssertTrue(tab.isHittable, "Tab \(name) should be reachable")
+        return tab
+    }
+
+    private func navigateBack() {
+        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 5), "Back control should be available")
+        back.tap()
     }
 
     /// Launch app, log in with demo credentials, and complete onboarding.
@@ -97,8 +140,11 @@ final class E2ETests: XCTestCase {
     func testLoginScreenAppears() {
         app.launch()
 
+        XCTAssertTrue(app.buttons["welcome_sign_in"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["welcome_browse"].exists)
+        app.buttons["welcome_university"].tap()
         let username = app.textFields["login_username_field"]
-        XCTAssertTrue(username.waitForExistence(timeout: 10), "Login username field should appear on first launch")
+        XCTAssertTrue(username.waitForExistence(timeout: 10), "University login remains available from optional setup")
 
         let password = app.secureTextFields["login_password_field"]
         XCTAssertTrue(password.exists, "Login password field should be present")
@@ -128,7 +174,7 @@ final class E2ETests: XCTestCase {
         if !hasTabBar {
             // iPad — sidebar tab buttons should exist
             XCTAssertTrue(
-                app.buttons["Tab.Home"].waitForExistence(timeout: 10),
+                sidebarTab("Home").exists,
                 "Home tab should be accessible after onboarding"
             )
         } else {
@@ -156,8 +202,6 @@ final class E2ETests: XCTestCase {
 
         // Navigate to Settings tab
         selectTab("Settings")
-        let serverAccount = app.buttons["settings_server_account"]
-            .exists ? app.buttons["settings_server_account"] : app.staticTexts["Server Account"]
         // Settings should contain identifiable elements
         let aboutExists = app.buttons["settings_about"].waitForExistence(timeout: 5)
             || app.staticTexts["About"].waitForExistence(timeout: 2)
@@ -196,11 +240,7 @@ final class E2ETests: XCTestCase {
         // Should navigate to curriculum detail — verify we're not still on features grid
         sleep(1)
 
-        // Navigate back (if on iPhone with nav stack)
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        if backButton.exists {
-            backButton.tap()
-        }
+        navigateBack()
     }
 
     @MainActor
@@ -215,10 +255,7 @@ final class E2ETests: XCTestCase {
 
         sleep(1)
 
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
-        if backButton.exists {
-            backButton.tap()
-        }
+        navigateBack()
     }
 
     @MainActor

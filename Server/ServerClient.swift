@@ -8,6 +8,20 @@
 import Foundation
 import KeychainAccess
 
+extension Notification.Name {
+    static let serverSessionDidChange = Notification.Name("serverSessionDidChange")
+}
+
+#if DEBUG
+private final class UITestTokenStore: TokenStore, @unchecked Sendable {
+    var accessToken: String
+    var refreshToken = ""
+
+    init(accessToken: String) { self.accessToken = accessToken }
+    func clear() { accessToken = ""; refreshToken = "" }
+}
+#endif
+
 private let logger = AppLogger.logger(for: "ServerClient")
 
 // MARK: - Token Store Protocol
@@ -76,8 +90,22 @@ struct ServerClientConfiguration {
     let session: URLSession
     var tokenStore: TokenStore
 
+    #if DEBUG
+    static var uiTestBaseURL: URL? {
+        guard let raw = ProcessInfo.processInfo.environment["UI_TEST_SERVER_URL"],
+            let url = URL(string: raw), url.scheme == "http",
+            ["127.0.0.1", "localhost", "::1"].contains(url.host ?? ""),
+            url.user == nil, url.password == nil
+        else { return nil }
+        return url
+    }
+    #endif
+
     /// Resolve baseURL from user preference → Info.plist → production default.
     static var resolvedBaseURL: URL {
+        #if DEBUG
+        if let url = uiTestBaseURL { return url }
+        #endif
         // 1. Check user override (debug mode)
         if let stored = UserDefaults.standard.string(forKey: "serverBaseURL"),
            !stored.isEmpty,
@@ -102,6 +130,20 @@ struct ServerClientConfiguration {
     /// Default configuration.
     static var `default`: ServerClientConfiguration {
         let baseURL = resolvedBaseURL
+
+        #if DEBUG
+        if uiTestBaseURL != nil {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.httpCookieStorage = nil
+            return ServerClientConfiguration(
+                baseURL: baseURL,
+                session: URLSession(configuration: configuration),
+                tokenStore: UITestTokenStore(
+                    accessToken: ProcessInfo.processInfo.environment["UI_TEST_SERVER_ACCESS_TOKEN"] ?? ""
+                )
+            )
+        }
+        #endif
 
         let config = URLSessionConfiguration.default
         config.httpAdditionalHeaders = [
@@ -162,6 +204,14 @@ final class ServerClient: @unchecked Sendable {
 
     /// Lock protecting baseURL + session mutations during reconfigure.
     private let configLock = NSLock()
+    private var revision = UUID()
+    private var refreshOperation: (id: UUID, revision: UUID, task: Task<Void, Error>)?
+
+    var sessionRevision: UUID { configLock.withLock { revision } }
+
+    var authorizationContext: (baseURL: URL, revision: UUID) {
+        configLock.withLock { (baseURL, revision) }
+    }
 
     // MARK: Convenience accessors
 
@@ -220,11 +270,22 @@ final class ServerClient: @unchecked Sendable {
         _ endpoint: ServerEndpoint,
         retry: Bool = true
     ) async throws -> T {
-        var urlRequest = endpoint.buildURLRequest(baseURL: baseURL)
+        try await request(endpoint, retry: retry, expectedRevision: sessionRevision)
+    }
 
-        if !accessToken.isEmpty {
+    func request<T: Decodable>(
+        _ endpoint: ServerEndpoint, retry: Bool, expectedRevision: UUID
+    ) async throws -> T {
+        try Task.checkCancellation()
+        let configuration = try configLock.withLock {
+            guard expectedRevision == revision else { throw CancellationError() }
+            return (baseURL, session, revision, tokenStore.accessToken)
+        }
+        var urlRequest = endpoint.buildURLRequest(baseURL: configuration.0)
+
+        if !configuration.3.isEmpty {
             urlRequest.setValue(
-                "Bearer \(accessToken)",
+                "Bearer \(configuration.3)",
                 forHTTPHeaderField: "Authorization"
             )
         }
@@ -244,12 +305,13 @@ final class ServerClient: @unchecked Sendable {
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(for: urlRequest)
+            (data, response) = try await configuration.1.data(for: urlRequest)
         } catch {
             logger.error("Network error: \(error.localizedDescription)")
             throw ServerError.networkError(error)
         }
 
+        guard configuration.2 == sessionRevision else { throw CancellationError() }
         guard let httpResponse = response as? HTTPURLResponse else {
             throw ServerError.networkError(URLError(.badServerResponse))
         }
@@ -266,16 +328,19 @@ final class ServerClient: @unchecked Sendable {
                 logger.error(
                     "Decode error for \(urlRequest.url?.path ?? ""): \(String(describing: error))"
                 )
-                if data.count < 500, let body = String(data: data, encoding: .utf8) {
-                    logger.debug("Response body: \(body)")
-                }
                 throw ServerError.decodingError(error)
             }
         case 401:
-            if retry, !refreshToken.isEmpty {
-                logger.info("Got 401, attempting token refresh")
-                try await refreshAccessToken()
-                return try await request(endpoint, retry: false)
+            let refresh = try configLock.withLock {
+                guard expectedRevision == revision else { throw CancellationError() }
+                return (available: !tokenStore.refreshToken.isEmpty,
+                        needed: tokenStore.accessToken == configuration.3)
+            }
+            if retry, refresh.available {
+                if refresh.needed {
+                    try await refreshAccessToken(expectedRevision: configuration.2)
+                }
+                return try await request(endpoint, retry: false, expectedRevision: expectedRevision)
             }
             logger.warning("Unauthorized (no refresh token available)")
             throw ServerError.notAuthenticated
@@ -324,8 +389,30 @@ final class ServerClient: @unchecked Sendable {
 
     // MARK: - Token Refresh
 
-    private func refreshAccessToken() async throws {
-        let url = baseURL.appendingPathComponent("api/auth/oauth2/token")
+    private func refreshAccessToken(expectedRevision: UUID) async throws {
+        let operation = try configLock.withLock { () throws -> (id: UUID, revision: UUID, task: Task<Void, Error>) in
+            guard expectedRevision == revision else { throw CancellationError() }
+            if let existing = refreshOperation, existing.revision == expectedRevision {
+                return existing
+            }
+            let operation = (id: UUID(), revision: expectedRevision, task: Task {
+                try await self.performTokenRefresh(expectedRevision: expectedRevision)
+            })
+            refreshOperation = operation
+            return operation
+        }
+        defer {
+            configLock.withLock {
+                if refreshOperation?.id == operation.id { refreshOperation = nil }
+            }
+        }
+        try await operation.task.value
+    }
+
+    private func performTokenRefresh(expectedRevision: UUID) async throws {
+        let configuration = configLock.withLock { (baseURL, session, revision, refreshToken) }
+        guard expectedRevision == configuration.2 else { throw CancellationError() }
+        let url = configuration.0.appendingPathComponent("api/auth/oauth2/token")
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue(
@@ -335,65 +422,98 @@ final class ServerClient: @unchecked Sendable {
 
         let bodyParams: [(String, String)] = [
             ("grant_type", "refresh_token"),
-            ("refresh_token", refreshToken),
+            ("refresh_token", configuration.3),
             ("client_id", ServerAuth.clientID),
         ]
         urlRequest.httpBody = Self.formEncode(bodyParams)
 
         logger.info("Refreshing access token")
 
-        let (data, response) = try await session.data(for: urlRequest)
+        let (data, response) = try await configuration.1.data(for: urlRequest)
 
-        guard let httpResponse = response as? HTTPURLResponse,
-            httpResponse.statusCode == 200
-        else {
-            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            let body = String(data: data, encoding: .utf8) ?? "<no body>"
-            logger.error("Token refresh failed (\(status)): \(body)")
-            clearTokens()
-            throw ServerError.notAuthenticated
+        guard expectedRevision == sessionRevision else { throw CancellationError() }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw ServerError.networkError(URLError(.badServerResponse))
+        }
+        guard httpResponse.statusCode == 200 else {
+            logger.error("Token refresh failed (\(httpResponse.statusCode))")
+            let errorResponse = try? decoder.decode(ServerErrorResponse.self, from: data)
+            // Only an explicit rejected grant invalidates the session and its offline cache.
+            if httpResponse.statusCode == 400, errorResponse?.error == "invalid_grant" {
+                guard clearTokens(expectedRevision: expectedRevision) else { throw CancellationError() }
+                throw ServerError.notAuthenticated
+            }
+            throw ServerError.serverError("Token refresh failed (\(httpResponse.statusCode))")
         }
 
         let tokenResponse = try decoder.decode(OAuthTokenResponse.self, from: data)
-        accessToken = tokenResponse.accessToken
-        if let newRefresh = tokenResponse.refreshToken {
-            refreshToken = newRefresh
+        try configLock.withLock {
+            guard expectedRevision == revision else { throw CancellationError() }
+            tokenStore.accessToken = tokenResponse.accessToken
+            if let newRefresh = tokenResponse.refreshToken {
+                tokenStore.refreshToken = newRefresh
+            }
         }
         logger.info("Token refresh succeeded")
     }
 
     // MARK: - Session
 
-    func clearTokens() {
-        logger.info("Clearing stored tokens")
-        tokenStore.clear()
+    func acceptAuthorization(_ response: OAuthTokenResponse, expectedRevision: UUID) throws {
+        try configLock.withLock {
+            guard revision == expectedRevision else { throw CancellationError() }
+            tokenStore.accessToken = response.accessToken
+            tokenStore.refreshToken = response.refreshToken ?? ""
+            revision = UUID()
+        }
+        NotificationCenter.default.post(name: .serverSessionDidChange, object: self)
+    }
+
+    @discardableResult
+    func clearTokens(expectedRevision: UUID? = nil) -> Bool {
+        let cleared = configLock.withLock {
+            if let expectedRevision, expectedRevision != revision { return false }
+            tokenStore.clear()
+            revision = UUID()
+            return true
+        }
+        if cleared {
+            logger.info("Cleared stored tokens")
+            NotificationCenter.default.post(name: .serverSessionDidChange, object: self)
+        }
+        return cleared
     }
 
     /// Atomically switch the backend URL. Clears tokens since they belong to the old server.
     func reconfigure(baseURL newURL: URL) {
         configLock.lock()
-        defer { configLock.unlock() }
 
         let oldHost = baseURL.host() ?? ""
         logger.info("Reconfiguring backend: \(oldHost) → \(newURL.host() ?? "")")
 
         baseURL = newURL
-        clearTokens()
+        tokenStore.clear()
+        revision = UUID()
+        configLock.unlock()
 
         // Persist the preference
         UserDefaults.standard.set(newURL.absoluteString, forKey: "serverBaseURL")
+        NotificationCenter.default.post(name: .serverSessionDidChange, object: self)
     }
 
     /// Reset to production default and clear the stored override.
     func resetToProduction() {
         let productionURL = URL(string: ServerEnvironment.production.rawValue)!
         configLock.lock()
-        defer { configLock.unlock() }
 
         baseURL = productionURL
-        clearTokens()
+        tokenStore.clear()
+        revision = UUID()
+        configLock.unlock()
         UserDefaults.standard.removeObject(forKey: "serverBaseURL")
         logger.info("Reset to production backend")
+        NotificationCenter.default.post(name: .serverSessionDidChange, object: self)
     }
 
     /// Fetch the current user profile (Bearer-token authenticated).
@@ -421,10 +541,10 @@ final class ServerClient: @unchecked Sendable {
     }
 
     func searchSections(
-        query: String? = nil, semesterId: Int? = nil, courseId: Int? = nil,
+        query: String? = nil, semesterId: Int? = nil, courseId: Int? = nil, teacherId: Int? = nil,
         page: Int? = nil, pageSize: Int? = nil
     ) async throws -> PaginatedResponse<ServerSectionSummary> {
-        try await request(.listSections(query: query, semesterId: semesterId, courseId: courseId, page: page, pageSize: pageSize))
+        try await request(.listSections(query: query, semesterId: semesterId, courseId: courseId, teacherId: teacherId, page: page, pageSize: pageSize))
     }
 
     func fetchSectionDetail(jwId: String) async throws -> ServerSectionDetail {

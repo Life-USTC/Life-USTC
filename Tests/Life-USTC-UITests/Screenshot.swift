@@ -1,17 +1,28 @@
 import XCTest
 
 final class Life_USTC_ScreenshotTests: XCTestCase {
-    private func sidebarButton(in app: XCUIApplication, timeout: TimeInterval = 0) -> XCUIElement? {
-        let labels = ["Sidebar", "边栏"]
-        for label in labels {
-            let button = app.buttons[label]
-            if timeout > 0 {
-                if button.waitForExistence(timeout: timeout) { return button }
-            } else if button.exists {
-                return button
+    private let sidebarLabels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]
+
+    private func selectTab(_ name: String, index: Int, in app: XCUIApplication) {
+        if app.tabBars.firstMatch.exists {
+            app.tabBars.firstMatch.buttons.element(boundBy: index).tap()
+        } else {
+            let tab = app.buttons["Tab.\(name)"]
+            if !tab.isHittable {
+                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
+                XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Sidebar should be available")
+                toggle.tap()
             }
+            XCTAssertTrue(tab.waitForExistence(timeout: 5), "Tab \(name) should exist")
+            XCTAssertTrue(tab.isHittable, "Tab \(name) should be reachable")
+            tab.tap()
         }
-        return nil
+    }
+
+    private func navigateBack(in app: XCUIApplication) {
+        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 5), "Back control should be available")
+        back.tap()
     }
 
     @MainActor
@@ -33,6 +44,8 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
         app.launchArguments.append("UI_TEST_RESET_ONBOARDING")
         setupSnapshot(app)
         app.launch()
+        XCTAssertTrue(app.buttons["welcome_university"].waitForExistence(timeout: 10))
+        app.buttons["welcome_university"].tap()
 
         XCTAssertTrue(app.textFields["login_username_field"].waitForExistence(timeout: 10))
         app.textFields["login_username_field"].tap()
@@ -62,71 +75,40 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
         } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
             app.buttons["onboarding_close_button"].tap()
         }
+        XCTAssertTrue(app.buttons["home_catalog"].waitForExistence(timeout: 10))
 
-        // Ensure tab bar or sidebar is present. On iPad the app uses a sidebar instead
-        // of a bottom tab bar, so detect which UI is available and tap the
-        // appropriate controls.
-        let tabBar = app.tabBars.firstMatch
-        let hasTabBar = tabBar.waitForExistence(timeout: 4)
-        let tabBarCollapsed = sidebarButton(in: app, timeout: 4) != nil
-
-        if !hasTabBar {
-            // On iPad the sidebar buttons should exist (use visible tab labels)
-            if tabBarCollapsed { sidebarButton(in: app)?.tap() }
-            XCTAssertTrue(app.buttons["Tab.Features"].waitForExistence(timeout: 10))
-            if tabBarCollapsed {
-                app.tap()
-            }
-        }
-
+        selectTab("Home", index: 0, in: app)
         snapshot("04_Home")
 
-        // 05 Features (tab index 1) — handle both tab bar and sidebar
-        if hasTabBar {
-            tabBar.buttons.element(boundBy: 1).tap()
-        } else if tabBarCollapsed {
-            sidebarButton(in: app)?.tap()
-            app.buttons["Tab.Features"].tap()
-            app.tap()
-        } else {
-            app.buttons["Tab.Features"].tap()
-        }
+        // 05 Features through Discover on both tab bar and sidebar layouts.
+        selectTab("Discover", index: 2, in: app)
+        app.buttons["discover_university"].tap()
         snapshot("05_Features")
 
         // 06 Curriculum detail via feature tile
         XCTAssertTrue(app.buttons["feature_curriculum"].waitForExistence(timeout: 5))
         app.buttons["feature_curriculum"].tap()
         snapshot("06_Curriculum")
-        if hasTabBar {
-            app.navigationBars.buttons.element(boundBy: 0).tap()
-        }
+        navigateBack(in: app)
 
         // 07 Exam detail
         XCTAssertTrue(app.buttons["feature_exam"].waitForExistence(timeout: 3))
         app.buttons["feature_exam"].tap()
         snapshot("07_Exam")
-        if hasTabBar {
-            app.navigationBars.buttons.element(boundBy: 0).tap()
-        }
+        navigateBack(in: app)
 
         // 08 Score detail
         XCTAssertTrue(app.buttons["feature_score"].waitForExistence(timeout: 3))
         app.buttons["feature_score"].tap()
         snapshot("08_Score")
-        if hasTabBar {
-            app.navigationBars.buttons.element(boundBy: 0).tap()
-        }
+        navigateBack(in: app)
 
         // 09 Feed (tab index 2)
-        if hasTabBar {
-            tabBar.buttons.element(boundBy: 2).tap()
-        } else if tabBarCollapsed {
-            sidebarButton(in: app)?.tap()
-            app.buttons["Tab.Feed"].tap()
-            app.tap()
-        } else {
-            app.buttons["Tab.Feed"].tap()
+        selectTab("Discover", index: 2, in: app)
+        if !app.buttons["discover_feed"].exists {
+            navigateBack(in: app)
         }
+        app.buttons["discover_feed"].tap()
         snapshot("09_Feed")
     }
 }

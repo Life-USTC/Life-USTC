@@ -22,9 +22,9 @@ enum ServerEndpoint {
     case getCourse(jwId: String)
 
     // Sections
-    case listSections(query: String?, semesterId: Int?, courseId: Int?, page: Int?, pageSize: Int?)
+    case listSections(query: String?, semesterId: Int?, courseId: Int?, teacherId: Int? = nil, page: Int?, pageSize: Int?)
     case getSection(jwId: String)
-    case getSectionSchedules(jwId: String)
+    case getSectionSchedules(jwId: String, page: Int? = nil, pageSize: Int? = nil)
     case matchCodes(MatchCodesRequest)
 
     // Teachers
@@ -37,6 +37,9 @@ enum ServerEndpoint {
     // Calendar Subscriptions
     case getSubscriptions
     case importSubscriptions(MatchCodesRequest)
+    case appendSubscriptions(SectionSubscriptionRequest)
+    case removeSubscriptions(SectionSubscriptionRequest)
+    case setSubscriptionKind(jwId: Int, SubscriptionKindRequest)
 
     // Calendar Events
     case listCalendarEvents(dateFrom: String, dateTo: String, page: Int, pageSize: Int)
@@ -128,9 +131,9 @@ enum ServerEndpoint {
         case .updateYoungEventSubscription, .updateYoungOrganizerSubscription, .setHomeworkCompletion:
             return "PUT"
         case .updateHomework,
-            .updateTodo, .updateComment:
+            .updateTodo, .updateComment, .appendSubscriptions, .setSubscriptionKind:
             return "PATCH"
-        case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction:
+        case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction, .removeSubscriptions:
             return "DELETE"
         }
     }
@@ -151,7 +154,7 @@ enum ServerEndpoint {
             return "/api/catalog/sections"
         case .getSection(let jwId):
             return "/api/catalog/sections/\(Self.pathSegment(jwId))"
-        case .getSectionSchedules(let jwId):
+        case .getSectionSchedules(let jwId, _, _):
             return "/api/catalog/sections/\(Self.pathSegment(jwId))/schedules"
         case .matchCodes:
             return "/api/catalog/sections/match-codes"
@@ -163,6 +166,10 @@ enum ServerEndpoint {
             return "/api/catalog/schedules"
         case .getSubscriptions:
             return "/api/workspace/subscriptions/current"
+        case .appendSubscriptions, .removeSubscriptions:
+            return "/api/workspace/subscriptions"
+        case .setSubscriptionKind(let jwId, _):
+            return "/api/workspace/subscriptions/\(jwId)"
         case .importSubscriptions:
             return "/api/workspace/subscriptions/import-codes"
         case .listCalendarEvents:
@@ -241,11 +248,12 @@ enum ServerEndpoint {
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
-        case .listSections(let query, let semesterId, let courseId, let page, let pageSize):
+        case .listSections(let query, let semesterId, let courseId, let teacherId, let page, let pageSize):
             var items: [URLQueryItem] = []
             if let query { items.append(.init(name: "search", value: query)) }
             if let semesterId { items.append(.init(name: "semesterId", value: "\(semesterId)")) }
             if let courseId { items.append(.init(name: "courseId", value: "\(courseId)")) }
+            if let teacherId { items.append(.init(name: "teacherId", value: "\(teacherId)")) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
@@ -260,6 +268,11 @@ enum ServerEndpoint {
                 .init(name: "includeSchedules", value: "true"),
                 .init(name: "includeExams", value: "true"),
             ]
+        case .getSectionSchedules(_, let page, let pageSize):
+            var items: [URLQueryItem] = []
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            return items.isEmpty ? nil : items
         case .querySchedules(let sectionId, let teacherId, let roomId, let dateFrom, let dateTo, let weekday):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
@@ -340,6 +353,8 @@ enum ServerEndpoint {
         switch self {
         case .matchCodes(let req): return req
         case .importSubscriptions(let req): return req
+        case .appendSubscriptions(let req), .removeSubscriptions(let req): return req
+        case .setSubscriptionKind(_, let req): return req
         case .updateYoungEventSubscription(_, let req): return req
         case .updateYoungOrganizerSubscription(_, let req): return req
         case .createHomework(let req): return req

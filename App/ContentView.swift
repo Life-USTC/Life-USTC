@@ -23,11 +23,14 @@ struct Life_USTCApp: App {
 
 struct ContentView: View {
     @AppStorage("firstLogin_3") var firstLogin = true
+    @AppStorage("appShouldPresentDemo", store: .appGroup) private var appShouldPresentDemo = false
+    @Bindable private var account = ServerAccountStore.shared
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    let columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
+    @State private var learningRefresh = UUID()
 
     var iPhoneView: some View {
         Group {
@@ -91,23 +94,23 @@ struct ContentView: View {
     }
 
     var iPadView: some View {
-        NavigationSplitView(columnVisibility: .constant(.all)) {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             sideBarView
                 .navigationSplitViewColumnWidth(80)
                 .navigationBarHidden(true)
-        } content: {
-            tabSelection.view
-                .navigationSplitViewColumnWidth(400)
         } detail: {
-            EmptyView()
+            NavigationStack {
+                tabSelection.view
+            }
         }
+        .id(tabSelection)
         .navigationSplitViewStyle(.automatic)
     }
 
     var body: some View {
         Group {
             if firstLogin {
-                SchoolSystem.current.firstLoginView {
+                ServerWelcomeView {
                     firstLogin = false
                 }
             } else {
@@ -117,6 +120,18 @@ struct ContentView: View {
                     iPhoneView
                 }
             }
+        }
+        .id(account.sessionRevision)
+        .task { await account.loadUser() }
+        .task(id: "\(account.user?.id ?? "anonymous")-\(learningRefresh)-\(appShouldPresentDemo)") {
+            if account.user != nil { await account.refreshLearningData() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in
+            learningRefresh = UUID()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .serverSessionDidChange).receive(on: RunLoop.main)) { notification in
+            guard let client = notification.object as? ServerClient, client === ServerClient.shared else { return }
+            account.onSessionChanged()
         }
         .modifier(USTCBaseModifier())
     }

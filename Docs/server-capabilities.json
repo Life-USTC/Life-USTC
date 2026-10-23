@@ -1,0 +1,844 @@
+{
+  "serverRevision": "ff6c58eea11c85aaa1eb067fb58361dc40dc2b47",
+  "trackingIssue": 101,
+  "coverageMeaning": "Entry and source coverage only. Runtime test success is recorded per PR and does not establish complete requirement parity or production OAuth acceptance. Canonical requirements remain in the server feature files.",
+  "capabilities": [
+    {
+      "feature": "admin",
+      "capability": "admin-entry",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "admin",
+      "capability": "moderation",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "admin",
+      "capability": "user-management",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "admin",
+      "capability": "oauth-client-management",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "admin",
+      "capability": "bus-management",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "bus",
+      "capability": "bus-timetable",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Schools/USTC/Views/USTCBusView.swift",
+        "Schools/USTC/Models/USTCBusData.swift"
+      ]
+    },
+    {
+      "feature": "bus",
+      "capability": "bus-route-search",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "bus",
+      "capability": "bus-next-departures",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "bus",
+      "capability": "bus-map",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "calendar",
+      "capability": "personal-calendar-view",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungCalendarViews.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "calendar",
+      "capability": "section-calendar-view",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift"
+      ]
+    },
+    {
+      "feature": "calendar",
+      "capability": "event-card",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungCalendarViews.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "catalog-link",
+      "capability": "link-browse",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "catalog-link",
+      "capability": "link-pin-and-visit",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "comment",
+      "capability": "object-comment-section",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Comments/CommentListView.swift",
+        "Views/Comments/CommentComposeView.swift",
+        "Views/Young/YoungDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "comment",
+      "capability": "comment-governance",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "comment",
+      "capability": "comment-auxiliary-pages",
+      "surface": "public_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "course",
+      "capability": "course-list",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "course",
+      "capability": "course-detail",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "demo",
+      "capability": "demo-bootstrap",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "General/DemoData.swift",
+        "General/SwiftDataStack.swift"
+      ]
+    },
+    {
+      "feature": "description",
+      "capability": "object-description-section",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": [
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "description",
+      "capability": "description-governance",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "exam",
+      "capability": "cross-section-exam-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Server/ServerDataProvider.swift",
+        "Views/Exam/ExamDetailView.swift"
+      ]
+    },
+    {
+      "feature": "exam",
+      "capability": "section-exam-info",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Server/ServerDataProvider.swift",
+        "Views/Exam/ExamDetailView.swift"
+      ]
+    },
+    {
+      "feature": "graphql",
+      "capability": "public-query-endpoint",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "graphql",
+      "capability": "scoped-queries",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "graphql",
+      "capability": "schema-resources",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "graphql",
+      "capability": "operation-planning-prompt",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "graphql",
+      "capability": "registered-operation-runner",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "homework",
+      "capability": "cross-section-homework-summary",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "homework",
+      "capability": "section-homework-tab",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "homework",
+      "capability": "homework-governance",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "homework",
+      "capability": "homework-completion",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "ical",
+      "capability": "section-calendar-dialog",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "ical",
+      "capability": "personal-calendar-subscription",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "ical",
+      "capability": "multi-section-ical",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "mcp",
+      "capability": "protocol-endpoint",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "mcp",
+      "capability": "tool-groups",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "media",
+      "capability": "profile-avatar",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountView.swift"
+      ]
+    },
+    {
+      "feature": "oauth",
+      "capability": "authorization",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Server/ServerAuth.swift",
+        "Server/ServerClient.swift",
+        "Views/Settings/ServerAccountView.swift"
+      ]
+    },
+    {
+      "feature": "oauth",
+      "capability": "authorization-management",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "oauth",
+      "capability": "client-registration",
+      "surface": "native",
+      "implementation": "supporting_protocol",
+      "entrypoints": [
+        "Server/ServerAuth.swift"
+      ]
+    },
+    {
+      "feature": "oauth",
+      "capability": "device-authorization-grant",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "openapi",
+      "capability": "api-docs-page",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "openapi",
+      "capability": "openapi-spec",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "openapi",
+      "capability": "business-rest-routes",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "openapi",
+      "capability": "crawler-publication-ingestion",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "openapi",
+      "capability": "platform-utility-routes",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "overview",
+      "capability": "authenticated-overview",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Views/HomeView.swift"
+      ]
+    },
+    {
+      "feature": "overview",
+      "capability": "workspace-shell-navigation",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "overview",
+      "capability": "workspace-snapshot",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "overview",
+      "capability": "anonymous-overview",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/HomeView.swift"
+      ]
+    },
+    {
+      "feature": "publications",
+      "capability": "publication-read",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": [
+        "Views/Feed/FeedView.swift",
+        "Views/Feed/AllSourceView.swift"
+      ]
+    },
+    {
+      "feature": "publications",
+      "capability": "publication-source-directory",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": [
+        "Views/Feed/FeedView.swift",
+        "Views/Feed/AllSourceView.swift"
+      ]
+    },
+    {
+      "feature": "publications",
+      "capability": "publication-ingestion",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "room-map",
+      "capability": "room-map",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": [
+        "General/Models/BuildingImgMapping.swift"
+      ]
+    },
+    {
+      "feature": "schedule",
+      "capability": "my-schedule",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Server/ServerDataProvider.swift",
+        "Server/ServerEndpoints.swift",
+        "Views/Curriculum/CurriculumDetailView.swift"
+      ]
+    },
+    {
+      "feature": "schedule",
+      "capability": "public-schedule-query",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift"
+      ]
+    },
+    {
+      "feature": "schedule",
+      "capability": "section-schedule",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift"
+      ]
+    },
+    {
+      "feature": "search",
+      "capability": "global-search",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": [
+        "Views/Features/FeaturesView.swift"
+      ]
+    },
+    {
+      "feature": "section",
+      "capability": "section-list",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "section",
+      "capability": "section-detail",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "section",
+      "capability": "section-ical",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "semester",
+      "capability": "semester-list",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogView.swift"
+      ]
+    },
+    {
+      "feature": "semester",
+      "capability": "current-semester",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogView.swift"
+      ]
+    },
+    {
+      "feature": "subscribed-sections",
+      "capability": "subscribed-sections-tab",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerSubscriptionsView.swift"
+      ]
+    },
+    {
+      "feature": "subscription",
+      "capability": "subscribe-from-section",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerSubscriptionsView.swift"
+      ]
+    },
+    {
+      "feature": "subscription",
+      "capability": "batch-subscribe-by-codes",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerSubscriptionsView.swift"
+      ]
+    },
+    {
+      "feature": "subscription",
+      "capability": "update-kind",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerSubscriptionsView.swift"
+      ]
+    },
+    {
+      "feature": "teacher",
+      "capability": "teacher-list",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "teacher",
+      "capability": "teacher-detail",
+      "surface": "native",
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
+    },
+    {
+      "feature": "todo",
+      "capability": "todo-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Todos/TodoListView.swift",
+        "Views/Todos/TodoEditView.swift"
+      ]
+    },
+    {
+      "feature": "todo",
+      "capability": "todo-edit",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Todos/TodoListView.swift",
+        "Views/Todos/TodoEditView.swift"
+      ]
+    },
+    {
+      "feature": "upload",
+      "capability": "upload-list",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "upload",
+      "capability": "comment-attachment-upload",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "upload",
+      "capability": "comment-attachment-download",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "upload",
+      "capability": "upload-manage",
+      "surface": "native",
+      "implementation": "sdk_only",
+      "entrypoints": [
+        "Server/ServerEndpoints.swift",
+        "Server/ServerModels.swift"
+      ]
+    },
+    {
+      "feature": "usage",
+      "capability": "usage-guides",
+      "surface": "public_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "user",
+      "capability": "sign-in",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerWelcomeView.swift"
+      ]
+    },
+    {
+      "feature": "user",
+      "capability": "first-login-welcome",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerWelcomeView.swift"
+      ]
+    },
+    {
+      "feature": "user",
+      "capability": "post-login-redirect",
+      "surface": "native",
+      "implementation": "supporting_protocol",
+      "entrypoints": [
+        "Server/ServerAuth.swift"
+      ]
+    },
+    {
+      "feature": "user",
+      "capability": "public-profile",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountView.swift",
+        "Server/ServerAccountStore.swift"
+      ]
+    },
+    {
+      "feature": "user",
+      "capability": "settings",
+      "surface": "authenticated_web",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "user",
+      "capability": "oauth-client-activity",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "weather",
+      "capability": "weather",
+      "surface": "native",
+      "implementation": "not_present",
+      "entrypoints": []
+    },
+    {
+      "feature": "webhook-login",
+      "capability": "webhook-login",
+      "surface": "service_only",
+      "implementation": "service_only",
+      "entrypoints": []
+    },
+    {
+      "feature": "young-event",
+      "capability": "young-event",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungCatalogViews.swift",
+        "Views/Young/YoungDetailViews.swift",
+        "Views/Young/YoungCalendarViews.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-event-subscription-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-event-subscription-get",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-organizer-subscription-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-organizer-subscription-get",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-notification-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-calendar-event-list",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-event-subscription-set",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-organizer-subscription-set",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    },
+    {
+      "feature": "young-workspace",
+      "capability": "workspace-young-notification-read",
+      "surface": "native",
+      "implementation": "existing_native_entry_partial",
+      "entrypoints": [
+        "Views/Young/YoungSubscriptionViews.swift",
+        "Views/Young/YoungNotificationsView.swift",
+        "Server/ServerYoungClient.swift"
+      ]
+    }
+  ]
+}

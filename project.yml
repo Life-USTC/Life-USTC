@@ -131,6 +131,7 @@ targets:
       - path: "Assets/"
       - path: "General/"
       - path: "Schools/Protocols/"
+      - path: "Schools/USTC/Protocols/USTCCurriculumBehavior.swift"
       - path: "Views/Lecture/LectureView.swift"
       - path: "Views/Curriculum/CurriculumChartView.swift"
       - path: "Views/Exam/ExamView.swift"

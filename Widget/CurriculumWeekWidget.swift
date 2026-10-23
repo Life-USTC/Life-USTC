@@ -71,6 +71,7 @@ struct CurriculumWeekWidgetEntryView: View {
         CurriculumChartView(
             lectures: lectures,
             referenceDate: referenceDate,
+            behavior: .ustc,
         )
         .padding(3)
         .widgetBackground(

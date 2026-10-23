@@ -1,329 +1,234 @@
-//
-//  ServerDataProvider.swift
-//  Life@USTC
-//
-//  Fetches user-subscribed curriculum, exams, and semesters from the server
-//  and maps them into the app's SwiftData models (Course, Lecture, Exam, Semester).
-//
-
 import Foundation
 import SwiftData
-import SwiftUI
 
-private let logger = AppLogger.logger(for: "ServerDataProvider")
-
-/// Bridges server API responses into local SwiftData models.
+/// Stores complete server learning snapshots for the timetable and widgets.
+@MainActor
 enum ServerDataProvider {
+    private static var curriculumRefresh = UUID()
+    private static var examRefresh = UUID()
 
-    // MARK: - Public Entry Points
-
-    /// Fetch subscribed sections from server and populate Courses + Lectures.
-    /// Replaces all server-sourced curriculum data (snapshot-based refresh).
-    @MainActor
-    static func updateCurriculum() async throws {
-        let client = ServerClient.shared
-        guard client.isAuthenticated else {
-            logger.info("Skipping server curriculum update — not authenticated")
-            return
+    /// Fetches once and replaces curriculum and exams together after every
+    /// subscribed section has loaded successfully.
+    static func refreshLearningData(
+        client: ServerClient = .shared,
+        context: ModelContext? = nil
+    ) async throws {
+        guard client.isAuthenticated else { return }
+        let revision = client.sessionRevision
+        let refresh = UUID()
+        curriculumRefresh = refresh
+        examRefresh = refresh
+        let sections = try await fetchSubscribedSections(client: client)
+        try Task.checkCancellation()
+        guard revision == client.sessionRevision,
+              refresh == curriculumRefresh, refresh == examRefresh else {
+            throw CancellationError()
         }
-
-        logger.info("Fetching subscriptions from server…")
-
-        // 1. Get user's subscribed section IDs
-        let subResponse: CalendarSubscriptionResponse = try await client.request(.getSubscriptions)
-        guard let sections = subResponse.subscription?.sections, !sections.isEmpty else {
-            logger.info("No subscribed sections found on server")
-            return
+        try writeSnapshot(context: context) { context in
+            try replaceCurriculum(sections, in: context)
+            try replaceExams(sections, in: context)
         }
-
-        logger.info("Found \(sections.count) subscribed sections")
-
-        // 2. Fetch full detail (with schedules + exams) for each section
-        var sectionDetails: [ServerSectionDetail] = []
-        for section in sections {
-            do {
-                let detail: ServerSectionDetail = try await client.request(.getSection(jwId: String(section.jwId)))
-                sectionDetails.append(detail)
-            } catch {
-                logger.warning("Failed to fetch section detail for jwId=\(section.jwId): \(error)")
-            }
-        }
-
-        logger.info("Fetched \(sectionDetails.count) section details, mapping to SwiftData…")
-
-        // 3. Map to SwiftData
-        try mapSectionsToSwiftData(sectionDetails)
-
-        logger.info("Server curriculum update complete")
     }
 
-    /// Fetch exams for subscribed sections from server.
-    @MainActor
-    static func updateExams() async throws {
-        let client = ServerClient.shared
-        guard client.isAuthenticated else {
-            logger.info("Skipping server exam update — not authenticated")
-            return
+    static func updateCurriculum(
+        client: ServerClient = .shared,
+        context: ModelContext? = nil
+    ) async throws {
+        guard client.isAuthenticated else { return }
+        let revision = client.sessionRevision
+        let refresh = UUID()
+        curriculumRefresh = refresh
+        let sections = try await fetchSubscribedSections(client: client)
+        try Task.checkCancellation()
+        guard revision == client.sessionRevision, refresh == curriculumRefresh else {
+            throw CancellationError()
         }
 
-        // Get subscribed section IDs, then fetch detail for each to get exams
-        let subResponse: CalendarSubscriptionResponse = try await client.request(.getSubscriptions)
-        guard let sections = subResponse.subscription?.sections, !sections.isEmpty else {
-            return
-        }
-
-        var allExams: [(exam: ServerExamEntry, courseName: String, sectionCode: String)] = []
-
-        for section in sections {
-            do {
-                let detail: ServerSectionDetail = try await client.request(.getSection(jwId: String(section.jwId)))
-                if let exams = detail.exams {
-                    let courseName = detail.course?.nameCn ?? "Unknown"
-                    let sectionCode = detail.code
-                    for exam in exams {
-                        allExams.append((exam, courseName, sectionCode))
-                    }
-                }
-            } catch {
-                logger.warning("Failed to fetch section exams for jwId=\(section.jwId): \(error)")
-            }
-        }
-
-        logger.info("Found \(allExams.count) exams from server, mapping…")
-        try mapExamsToSwiftData(allExams)
+        try writeSnapshot(context: context) { try replaceCurriculum(sections, in: $0) }
     }
 
-    // MARK: - SwiftData Mapping
+    static func updateExams(
+        client: ServerClient = .shared,
+        context: ModelContext? = nil
+    ) async throws {
+        guard client.isAuthenticated else { return }
+        let revision = client.sessionRevision
+        let refresh = UUID()
+        examRefresh = refresh
+        let sections = try await fetchSubscribedSections(client: client)
+        try Task.checkCancellation()
+        guard revision == client.sessionRevision, refresh == examRefresh else {
+            throw CancellationError()
+        }
 
-    @MainActor
-    private static func mapSectionsToSwiftData(_ details: [ServerSectionDetail]) throws {
-        let context = SwiftDataStack.modelContext
+        try writeSnapshot(context: context) { try replaceExams(sections, in: $0) }
+    }
 
-        // Ensure curriculum root exists
-        let curriculum = try context.upsert(
-            predicate: #Predicate<Curriculum> { $0.uniqueID == 0 },
-            update: { _ in },
-            create: { Curriculum() }
-        )
-        try context.save()
+    /// Clears the learning cache when its owner or backend changes. Grades,
+    /// Blackboard homework and feeds belong to separate data sources.
+    static func clearCachedLearningData(context: ModelContext? = nil) throws {
+        curriculumRefresh = UUID()
+        examRefresh = UUID()
+        try writeSnapshot(context: context) { context in
+            try deleteCurriculum(context)
+            for exam in try context.fetch(FetchDescriptor<Exam>()) { context.delete(exam) }
+        }
+    }
 
-        // Group sections by semester
-        let bySemester = Dictionary(grouping: details) { $0.semester?.id ?? 0 }
+    private static func replaceCurriculum(_ sections: [ServerSectionDetail], in context: ModelContext) throws {
+        try deleteCurriculum(context)
+        guard !sections.isEmpty else { return }
+        let curriculum = Curriculum()
+        context.insert(curriculum)
 
+        let bySemester = Dictionary(grouping: sections) { $0.semester?.id }
         for (_, semesterSections) in bySemester {
-            guard let serverSem = semesterSections.first?.semester else { continue }
-
-            // Upsert semester
-            let semJwId = String(serverSem.jwId ?? serverSem.id)
-            let semester = try context.upsert(
-                predicate: #Predicate<Semester> { $0.jw_id == semJwId },
-                update: { existing in
-                    existing.name = serverSem.nameCn
-                    if let sd = serverSem.startDate { existing.startDate = sd }
-                    if let ed = serverSem.endDate { existing.endDate = ed }
-                },
-                create: {
-                    Semester(
-                        jw_id: semJwId,
-                        name: serverSem.nameCn,
-                        startDate: serverSem.startDate ?? .distantPast,
-                        endDate: serverSem.endDate ?? .distantFuture
-                    )
-                }
+            let info = semesterSections.first?.semester
+            let semester = Semester(
+                jw_id: info.map { String($0.jwId ?? $0.id) } ?? "unknown",
+                name: info?.nameCn ?? "Semester unavailable".localized,
+                startDate: info?.startDate ?? .distantPast,
+                endDate: info?.endDate ?? .distantFuture
             )
+            context.insert(semester)
             semester.curriculum = curriculum
 
-            // Upsert each section → Course + Lectures
-            for detail in semesterSections {
-                let courseJwId = detail.course?.jwId ?? detail.jwId
-                let courseName = detail.course?.nameCn ?? detail.code
-                let teacherNames = detail.teachers?.map(\.nameCn).joined(separator: ", ") ?? ""
-                let credits = detail.credits ?? 0
-
-                let course = try context.upsert(
-                    predicate: #Predicate<Course> { $0.jw_id == courseJwId },
-                    update: { existing in
-                        existing.name = courseName
-                        existing.courseCode = detail.course?.code ?? ""
-                        existing.lessonCode = detail.code
-                        existing.teacherName = teacherNames
-                        existing.credit = credits
-                        existing.semester = semester
-                        // Delete old lectures
-                        for lecture in existing.lectures {
-                            context.delete(lecture)
-                        }
-                        existing.lectures = []
-                    },
-                    create: {
-                        let c = Course(
-                            jw_id: courseJwId,
-                            name: courseName,
-                            courseCode: detail.course?.code ?? "",
-                            lessonCode: detail.code,
-                            teacherName: teacherNames,
-                            credit: credits
-                        )
-                        c.semester = semester
-                        return c
-                    }
+            for section in semesterSections {
+                let courseName = section.course?.nameCn ?? section.code
+                let teacherNames = section.teachers?.map(\.nameCn).joined(separator: ", ") ?? ""
+                let course = Course(
+                    jw_id: section.jwId,
+                    name: courseName,
+                    courseCode: section.course?.code ?? "",
+                    lessonCode: section.code,
+                    teacherName: teacherNames,
+                    credit: section.credits ?? 0
                 )
+                context.insert(course)
+                course.semester = semester
 
-                // Expand schedules into concrete Lecture instances
-                if let schedules = detail.schedules {
-                    let lectures = expandSchedules(
-                        schedules,
-                        semesterStart: semester.startDate,
-                        semesterEnd: semester.endDate,
-                        courseName: courseName,
-                        teacherName: teacherNames
+                for schedule in section.schedules ?? [] {
+                    guard let lectureDate = meetingDate(schedule, semester: info) else { continue }
+                    let start = schedule.startTime.components
+                    let end = schedule.endTime.components
+                    guard let startDate = shanghaiCalendar.date(
+                        bySettingHour: start.hour, minute: start.minute, second: 0, of: lectureDate
+                    ), let endDate = shanghaiCalendar.date(
+                        bySettingHour: end.hour, minute: end.minute, second: 0, of: lectureDate
+                    ) else { continue }
+
+                    let lecture = Lecture(
+                        startDate: startDate, endDate: endDate,
+                        name: courseName, location: schedule.customPlace ?? "",
+                        teacherName: teacherNames, periods: schedule.periods ?? 0,
+                        startIndex: schedule.startUnit, endIndex: schedule.endUnit
                     )
-                    for lecture in lectures {
-                        context.insert(lecture)
-                        lecture.course = course
-                        course.lectures.append(lecture)
-                    }
+                    context.insert(lecture)
+                    lecture.course = course
                 }
             }
-
-            try context.save()
         }
-
-        logger.info("Mapped \(details.count) sections to SwiftData courses")
     }
 
-    @MainActor
-    private static func mapExamsToSwiftData(
-        _ entries: [(exam: ServerExamEntry, courseName: String, sectionCode: String)]
+    private static func replaceExams(_ sections: [ServerSectionDetail], in context: ModelContext) throws {
+        for exam in try context.fetch(FetchDescriptor<Exam>()) { context.delete(exam) }
+        for section in sections {
+            for entry in section.exams ?? [] {
+                // Undated exams cannot be represented as an instant in the
+                // local calendar cache; do not invent a date for them.
+                guard let dateString = entry.examDate, let examDate = parseDate(dateString) else { continue }
+                let start = entry.startTime ?? 0
+                let end = entry.endTime ?? 0
+                guard let startDate = shanghaiCalendar.date(
+                    bySettingHour: start / 100, minute: start % 100, second: 0, of: examDate
+                ), let endDate = shanghaiCalendar.date(
+                    bySettingHour: end / 100, minute: end % 100, second: 0, of: examDate
+                ) else { continue }
+
+                context.insert(Exam(
+                    lessonCode: section.code,
+                    courseName: section.course?.nameCn ?? section.code,
+                    typeName: entry.examBatch?.nameCn ?? "",
+                    startDate: startDate, endDate: endDate,
+                    classRoomName: entry.examRooms?.compactMap(\.room).joined(separator: ", ") ?? "",
+                    classRoomBuildingName: "", classRoomDistrict: "",
+                    description: entry.examMode ?? ""
+                ))
+            }
+        }
+    }
+
+    private static func fetchSubscribedSections(client: ServerClient) async throws -> [ServerSectionDetail] {
+        try Task.checkCancellation()
+        let response: CalendarSubscriptionResponse = try await client.request(.getSubscriptions)
+        var details: [ServerSectionDetail] = []
+        for section in response.subscription?.sections ?? [] {
+            try Task.checkCancellation()
+            details.append(try await client.fetchSectionDetail(jwId: String(section.jwId)))
+        }
+        return details
+    }
+
+    private static func writeSnapshot(
+        context: ModelContext?,
+        _ update: (ModelContext) throws -> Void
     ) throws {
-        let context = SwiftDataStack.modelContext
-
-        // Delete all existing exams, then reinsert from server (snapshot refresh)
-        let existingExams = try context.fetch(FetchDescriptor<Exam>())
-        for exam in existingExams {
-            context.delete(exam)
+        // Use a dedicated context so rollback never discards an unrelated edit
+        // waiting to autosave in the app's main context. Tests inject their own.
+        // The displayed container may switch to demo while a request is in
+        // flight. Server snapshots and ownership cleanup always target live data.
+        let writer = context ?? ModelContext(SwiftDataStack.container(forDemo: false))
+        do {
+            try writer.transaction { try update(writer) }
+        } catch {
+            writer.rollback()
+            throw error
         }
-
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate]
-
-        for entry in entries {
-            let serverExam = entry.exam
-
-            // Parse exam date
-            guard let dateStr = serverExam.examDate,
-                  let examDate = parseDate(dateStr)
-            else { continue }
-
-            // Parse start/end time
-            let (startH, startM) = serverExam.startTime.map { ($0 / 100, $0 % 100) } ?? (0, 0)
-            let (endH, endM) = serverExam.endTime.map { ($0 / 100, $0 % 100) } ?? (0, 0)
-
-            var cal = Calendar.current
-            cal.timeZone = TimeZone(identifier: "Asia/Shanghai")!
-
-            let startDate = cal.date(bySettingHour: startH, minute: startM, second: 0, of: examDate) ?? examDate
-            let endDate = cal.date(bySettingHour: endH, minute: endM, second: 0, of: examDate) ?? examDate
-
-            // Room info
-            let roomNames = serverExam.examRooms?.compactMap(\.room).joined(separator: ", ") ?? ""
-            let batchName = serverExam.examBatch?.nameCn ?? ""
-
-            let exam = Exam(
-                lessonCode: entry.sectionCode,
-                courseName: entry.courseName,
-                typeName: batchName,
-                startDate: startDate,
-                endDate: endDate,
-                classRoomName: roomNames,
-                classRoomBuildingName: "",
-                classRoomDistrict: "",
-                description: serverExam.examMode ?? ""
-            )
-
-            context.insert(exam)
-        }
-
-        try context.save()
-        logger.info("Mapped \(entries.count) exams from server")
     }
 
-    // MARK: - Schedule Expansion
-
-    /// Expand weekly schedule patterns into concrete Lecture dates within the semester.
-    private static func expandSchedules(
-        _ schedules: [ServerScheduleRef],
-        semesterStart: Date,
-        semesterEnd: Date,
-        courseName: String,
-        teacherName: String
-    ) -> [Lecture] {
-        var cal = Calendar.current
-        cal.timeZone = TimeZone(identifier: "Asia/Shanghai")!
-
-        // Semester start should be a Monday (week 1 day 1)
-        let startWeekday = cal.component(.weekday, from: semesterStart)
-        // Swift Calendar: 1=Sunday, 2=Monday … 7=Saturday
-        let mondayOffset = (startWeekday == 1) ? -6 : (2 - startWeekday)
-        let semesterMonday = cal.date(byAdding: .day, value: mondayOffset, to: semesterStart)!
-
-        var lectures: [Lecture] = []
-
-        for schedule in schedules {
-            // weekIndex is 1-based, weekday is 1=Monday … 7=Sunday (USTC convention)
-            guard let weekIndex = schedule.weekIndex, weekIndex >= 1 else { continue }
-
-            let dayOffset = (weekIndex - 1) * 7 + (schedule.weekday - 1)
-            guard let lectureDate = cal.date(byAdding: .day, value: dayOffset, to: semesterMonday) else { continue }
-
-            // Skip if outside semester bounds
-            if lectureDate < semesterStart || lectureDate > semesterEnd { continue }
-
-            let startComponents = schedule.startTime.components
-            let endComponents = schedule.endTime.components
-
-            let startDate = cal.date(
-                bySettingHour: startComponents.hour,
-                minute: startComponents.minute,
-                second: 0,
-                of: lectureDate
-            ) ?? lectureDate
-
-            let endDate = cal.date(
-                bySettingHour: endComponents.hour,
-                minute: endComponents.minute,
-                second: 0,
-                of: lectureDate
-            ) ?? lectureDate
-
-            let lecture = Lecture(
-                startDate: startDate,
-                endDate: endDate,
-                name: courseName,
-                location: schedule.customPlace ?? "",
-                teacherName: teacherName,
-                periods: Double(schedule.periods ?? 0),
-                startIndex: schedule.startUnit,
-                endIndex: schedule.endUnit
-            )
-
-            lectures.append(lecture)
-        }
-
-        return lectures
+    private static func deleteCurriculum(_ context: ModelContext) throws {
+        for lecture in try context.fetch(FetchDescriptor<Lecture>()) { context.delete(lecture) }
+        for course in try context.fetch(FetchDescriptor<Course>()) { context.delete(course) }
+        for semester in try context.fetch(FetchDescriptor<Semester>()) { context.delete(semester) }
+        for curriculum in try context.fetch(FetchDescriptor<Curriculum>()) { context.delete(curriculum) }
     }
 
-    // MARK: - Date Parsing
+    private static var shanghaiCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return calendar
+    }
 
-    private static func parseDate(_ string: String) -> Date? {
-        // Try ISO 8601 first, then yyyy-MM-dd
-        let iso = ISO8601DateFormatter()
-        iso.formatOptions = [.withFullDate]
-        if let date = iso.date(from: string) { return date }
+    private static func meetingDate(_ schedule: ServerScheduleRef, semester: ServerSemester?) -> Date? {
+        if let date = schedule.date { return parseDate(date) }
+        guard let start = semester?.startDate,
+              let weekIndex = schedule.weekIndex, weekIndex >= 1 else { return nil }
+        let calendar = shanghaiCalendar
+        let startDay = calendar.startOfDay(for: start)
+        let weekday = calendar.component(.weekday, from: startDay)
+        let mondayOffset = weekday == 1 ? -6 : 2 - weekday
+        let dayOffset = mondayOffset + (weekIndex - 1) * 7 + schedule.weekday - 1
+        guard let date = calendar.date(byAdding: .day, value: dayOffset, to: startDay),
+              date >= startDay,
+              semester?.endDate.map({ date <= calendar.startOfDay(for: $0) }) ?? true
+        else { return nil }
+        return date
+    }
 
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        df.timeZone = TimeZone(identifier: "Asia/Shanghai")
-        return df.date(from: string)
+    private static func parseDate(_ value: String) -> Date? {
+        if value.count == 10 {
+            let formatter = DateFormatter()
+            formatter.calendar = shanghaiCalendar
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.timeZone = shanghaiCalendar.timeZone
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.isLenient = false
+            return formatter.date(from: value)
+        }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: value) { return date }
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.date(from: value)
     }
 }

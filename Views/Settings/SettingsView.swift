@@ -88,8 +88,6 @@ struct SettingsView: View {
 
             // MARK: - General
             Section {
-                NavigationLink("Home Page Settings", destination: HomeSettingPage())
-                    .accessibilityIdentifier("settings_home_settings")
                 NavigationLink("Feed Source Settings", destination: FeedSetingsPage())
                     .accessibilityIdentifier("settings_feed_settings")
                 NavigationLink("Exam Settings", destination: ExamSettingsPage())
@@ -130,7 +128,7 @@ struct SettingsView: View {
                     .textCase(.none)
             }
         }
-        .navigationTitle("Settings")
+        .navigationTitle("Account")
         .task { await account.loadUser() }
     }
 }

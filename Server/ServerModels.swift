@@ -251,7 +251,6 @@ enum TodoPriority: String, Codable, CaseIterable {
 
 struct ServerTodo: Codable, Identifiable {
     let id: String
-    let userId: String
     let title: String
     let content: String?
     let priority: TodoPriority
