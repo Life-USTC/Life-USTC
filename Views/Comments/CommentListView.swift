@@ -7,201 +7,6 @@
 
 import SwiftUI
 
-@Observable
-class CommentListViewModel {
-    let targetType: String
-    let targetId: String?
-    let youngId: String?
-    let sectionId: Int?
-    let teacherId: Int?
-
-    var comments: [ServerComment] = []
-    var hiddenCount = 0
-    var isLoading = false
-    var error: String?
-    var mutationError: String?
-    var loadingReplyIDs: Set<String> = []
-    var replyErrors: [String: String] = [:]
-
-    init(
-        targetType: String,
-        targetId: String? = nil,
-        youngId: String? = nil,
-        sectionId: Int? = nil,
-        teacherId: Int? = nil
-    ) {
-        self.targetType = targetType
-        self.targetId = targetId
-        self.youngId = youngId
-        self.sectionId = sectionId
-        self.teacherId = teacherId
-    }
-
-    func load() async {
-        isLoading = true
-        error = nil
-        do {
-            let response = try await ServerClient.shared.fetchComments(
-                targetType: targetType,
-                targetId: targetId,
-                youngId: youngId,
-                sectionId: sectionId,
-                teacherId: teacherId
-            )
-            comments = response.comments
-            hiddenCount = response.hiddenCount
-        } catch {
-            self.error = error.localizedDescription
-        }
-        isLoading = false
-    }
-
-    func toggleReaction(commentId: String, reaction: ServerCommentReaction) async {
-        guard ServerClient.shared.isAuthenticated else { return }
-        mutationError = nil
-        do {
-            if reaction.hasReacted {
-                try await ServerClient.shared.requestVoid(
-                    .removeCommentReaction(id: commentId, type: reaction.type)
-                )
-            } else {
-                let _: SuccessResponse = try await ServerClient.shared.request(
-                    .addCommentReaction(
-                        id: commentId,
-                        CommentReactionRequest(type: reaction.type)
-                    )
-                )
-            }
-            await load()
-        } catch {
-            self.mutationError = error.localizedDescription
-        }
-    }
-
-    func updateComment(
-        _ comment: ServerComment,
-        body: String,
-        visibility: String,
-        isAnonymous: Bool
-    ) async throws {
-        guard ServerClient.shared.isAuthenticated else {
-            let error = ServerError.notAuthenticated
-            mutationError = error.localizedDescription
-            throw error
-        }
-
-        mutationError = nil
-        do {
-            let _: ServerCommentUpdateResponse = try await ServerClient.shared.request(
-                .updateComment(
-                    id: comment.id,
-                    UpdateCommentRequest(
-                        body: body,
-                        visibility: visibility,
-                        isAnonymous: isAnonymous
-                    )
-                )
-            )
-            await load()
-        } catch {
-            mutationError = error.localizedDescription
-            throw error
-        }
-    }
-
-    func deleteComment(_ comment: ServerComment) async {
-        guard ServerClient.shared.isAuthenticated else {
-            mutationError = ServerError.notAuthenticated.localizedDescription
-            return
-        }
-
-        mutationError = nil
-        do {
-            try await ServerClient.shared.requestVoid(.deleteComment(id: comment.id))
-            await load()
-        } catch {
-            mutationError = error.localizedDescription
-        }
-    }
-
-    func loadMoreReplies(for comment: ServerComment) async {
-        guard let cursor = comment.repliesNextCursor,
-            !loadingReplyIDs.contains(comment.id)
-        else { return }
-
-        loadingReplyIDs.insert(comment.id)
-        replyErrors[comment.id] = nil
-        defer { loadingReplyIDs.remove(comment.id) }
-
-        do {
-            let response = try await ServerClient.shared.fetchCommentReplies(
-                id: comment.id,
-                cursor: cursor,
-                pageSize: 20
-            )
-            guard mergeReplyPage(response) else {
-                throw ServerError.serverError(
-                    "Reply thread was not returned by the server".localized
-                )
-            }
-            replyErrors[comment.id] = nil
-        } catch {
-            guard !Task.isCancelled else { return }
-            replyErrors[comment.id] = error.localizedDescription
-        }
-    }
-
-    private func mergeReplyPage(_ response: ServerCommentRepliesResponse) -> Bool {
-        guard let incomingRoot = response.thread.first(where: { $0.id == response.rootId }) else {
-            return false
-        }
-
-        var mergedRoot = false
-        func merge(_ node: ServerComment) -> ServerComment {
-            if node.id == response.rootId {
-                mergedRoot = true
-                var replies = node.replies ?? []
-                for incoming in incomingRoot.replies ?? [] {
-                    if let index = replies.firstIndex(where: { $0.id == incoming.id }) {
-                        replies[index] = mergeExistingReply(replies[index], incoming)
-                    } else {
-                        replies.append(incoming)
-                    }
-                }
-                return incomingRoot.replacingReplies(replies, nextCursor: response.nextCursor)
-            }
-
-            guard let children = node.replies else { return node }
-            let updatedChildren = children.map(merge)
-            return node.replacingReplies(updatedChildren, nextCursor: node.repliesNextCursor)
-        }
-
-        comments = comments.map(merge)
-        if mergedRoot {
-            replyErrors[response.rootId] = nil
-        }
-        return mergedRoot
-    }
-
-    private func mergeExistingReply(
-        _ existing: ServerComment,
-        _ incoming: ServerComment
-    ) -> ServerComment {
-        var replies = existing.replies ?? []
-        for incomingReply in incoming.replies ?? [] {
-            if let index = replies.firstIndex(where: { $0.id == incomingReply.id }) {
-                replies[index] = mergeExistingReply(replies[index], incomingReply)
-            } else {
-                replies.append(incomingReply)
-            }
-        }
-        return incoming.replacingReplies(
-            replies,
-            nextCursor: incoming.repliesNextCursor ?? existing.repliesNextCursor
-        )
-    }
-}
-
 struct CommentListView: View {
     @Bindable private var account = ServerAccountStore.shared
     @State var viewModel: CommentListViewModel
@@ -211,6 +16,11 @@ struct CommentListView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            if viewModel.viewer?.isSuspended == true {
+                Label(viewModel.viewer?.suspensionReason ?? "Comment action unavailable".localized,
+                      systemImage: "person.crop.circle.badge.exclamationmark")
+                    .font(.caption).foregroundStyle(.secondary).padding()
+            }
             if let error = viewModel.error, viewModel.comments.isEmpty && !viewModel.isLoading {
                 ContentUnavailableView {
                     Label("Unable to Load Comments", systemImage: "exclamationmark.triangle")
@@ -221,11 +31,23 @@ struct CommentListView: View {
                     YoungReauthorizeButton()
                 }
             } else if viewModel.comments.isEmpty && !viewModel.isLoading {
-                ContentUnavailableView(
-                    "No Comments",
-                    systemImage: "bubble.left.and.bubble.right",
-                    description: Text("Be the first to comment.")
-                )
+                if viewModel.hiddenCount > 0 {
+                    ContentUnavailableView {
+                        Label("No Visible Comments", systemImage: "eye.slash")
+                    } description: {
+                        Text("Some comments are hidden from your view.")
+                    } actions: {
+                        if !account.isAuthenticated {
+                            NavigationLink("Sign In") { ServerAccountView() }
+                        }
+                    }
+                } else {
+                    ContentUnavailableView(
+                        "No Comments",
+                        systemImage: "bubble.left.and.bubble.right",
+                        description: Text("Be the first to comment.")
+                    )
+                }
             } else {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     if let error = viewModel.error {
@@ -248,6 +70,9 @@ struct CommentListView: View {
                         CommentNodeView(
                             comment: comment,
                             depth: 0,
+                            canContribute: viewModel.canContribute,
+                            showsThreadLink: viewModel.focusedCommentID == nil,
+                            isMutating: { viewModel.mutatingIDs.contains($0) },
                             onReaction: { commentId, reaction in
                                 Task {
                                     await viewModel.toggleReaction(
@@ -269,23 +94,24 @@ struct CommentListView: View {
                         )
                     }
 
-                    if viewModel.hiddenCount > 0 {
-                        Text(String(format: "%d hidden comments".localized, viewModel.hiddenCount))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
                 }
                 .padding(.horizontal)
             }
+            if viewModel.hiddenCount > 0 {
+                Text(String(format: "%d hidden comments".localized, viewModel.hiddenCount))
+                    .font(.caption).foregroundStyle(.secondary).padding(.horizontal)
+            }
         }
         .toolbar {
-            if account.isAuthenticated {
+            if viewModel.canContribute {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingCompose = true
                     } label: {
                         Image(systemName: "square.and.pencil")
                     }
+                    .accessibilityLabel("New Comment")
+                    .accessibilityIdentifier("comment_compose")
                 }
             }
         }
@@ -299,7 +125,7 @@ struct CommentListView: View {
             CommentComposeView(viewModel: viewModel, editingComment: comment)
         }
         .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
-        .task(id: account.isAuthenticated) { await viewModel.load() }
+        .task(id: account.sessionRevision) { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .overlay {
             if viewModel.isLoading && viewModel.comments.isEmpty {
@@ -356,6 +182,9 @@ private struct CommentErrorBanner: View {
 private struct CommentNodeView: View {
     let comment: ServerComment
     let depth: Int
+    let canContribute: Bool
+    let showsThreadLink: Bool
+    let isMutating: (String) -> Bool
     let onReaction: (String, ServerCommentReaction) -> Void
     let onReply: (ServerComment) -> Void
     let onEdit: (ServerComment) -> Void
@@ -368,7 +197,10 @@ private struct CommentNodeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                if comment.isAnonymous {
+                if comment.isAncestryPlaceholder == true {
+                    Label("Hidden comment", systemImage: "eye.slash")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                } else if comment.isAnonymous || comment.authorHidden == true {
                     Image(systemName: "person.fill.questionmark")
                         .foregroundStyle(.secondary)
                     Text("Anonymous")
@@ -386,13 +218,21 @@ private struct CommentNodeView: View {
                         .frame(width: 24, height: 24)
                         .clipShape(Circle())
                     }
-                    Text(author.name ?? author.username ?? "User")
-                        .font(.subheadline.bold())
+                    if let identifier = author.username ?? author.id {
+                        NavigationLink {
+                            ServerPublicUserProfileView(identifier: identifier)
+                        } label: {
+                            Text(author.name ?? author.username ?? "User".localized)
+                                .font(.subheadline.bold())
+                        }
+                    } else {
+                        Text(author.name ?? "User".localized).font(.subheadline.bold())
+                    }
                 }
 
                 Spacer()
 
-                if comment.canEdit == true || comment.canDelete == true {
+                if canContribute && (comment.canEdit == true || comment.canDelete == true) {
                     Menu {
                         if comment.canEdit == true {
                             Button {
@@ -413,30 +253,35 @@ private struct CommentNodeView: View {
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityLabel("Comment actions")
+                    .disabled(isMutating(comment.id))
                 }
 
-                Text(comment.createdAt, style: .relative)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                if showsThreadLink && comment.isAncestryPlaceholder != true {
+                    NavigationLink {
+                        ServerCommentThreadView(commentID: comment.id)
+                    } label: {
+                        Text(comment.createdAt, style: .relative)
+                            .font(.caption2).foregroundStyle(.secondary)
+                    }
+                    .accessibilityLabel("View comment thread")
+                } else {
+                    Text(comment.createdAt, style: .relative)
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
             }
 
-            Text(comment.body)
-                .font(.body)
+            if comment.isAncestryPlaceholder != true {
+                Text((try? AttributedString(markdown: comment.body,
+                    options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(comment.body))
+                    .font(.body).textSelection(.enabled)
+            }
 
             if let attachments = comment.attachments, !attachments.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(attachments) { attachment in
-                        if let url = URL(string: attachment.url) {
-                            Link(destination: url) {
-                                Label(attachment.filename, systemImage: "paperclip")
-                                    .font(.caption)
-                            }
-                        }
-                    }
-                }
+                ServerCommentAttachmentList(attachments: attachments)
             }
 
             if !comment.reactions.isEmpty {
+                ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     ForEach(comment.reactions, id: \.type) { reaction in
                         Button { onReaction(comment.id, reaction) } label: {
@@ -455,17 +300,34 @@ private struct CommentNodeView: View {
                             .clipShape(Capsule())
                         }
                         .buttonStyle(.plain)
-                        .disabled(!ServerClient.shared.isAuthenticated || comment.canReact == false)
+                        .disabled(!canContribute || comment.canReact != true || isMutating(comment.id))
                     }
+                }
                 }
             }
 
-            if comment.canReply != false, ServerClient.shared.isAuthenticated {
+            HStack(spacing: 16) {
+            if comment.canReact == true, canContribute {
+                Menu {
+                    ForEach(["upvote", "downvote", "heart", "laugh", "hooray", "confused", "rocket", "eyes"], id: \.self) { type in
+                        Button(reactionEmoji(type)) {
+                            let reaction = comment.reactions.first { $0.type == type }
+                                ?? ServerCommentReaction(type: type, count: 0, viewerHasReacted: false)
+                            onReaction(comment.id, reaction)
+                        }
+                    }
+                } label: { Label("React", systemImage: "face.smiling") }
+                .font(.caption)
+                .disabled(isMutating(comment.id))
+            }
+            if comment.canReply == true, canContribute {
                 Button("Reply") {
                     onReply(comment)
                 }
                 .font(.caption)
                 .buttonStyle(.borderless)
+                .disabled(isMutating(comment.id))
+            }
             }
 
             if comment.repliesNextCursor != nil {
@@ -505,6 +367,9 @@ private struct CommentNodeView: View {
                         CommentNodeView(
                             comment: child,
                             depth: depth + 1,
+                            canContribute: canContribute,
+                            showsThreadLink: showsThreadLink,
+                            isMutating: isMutating,
                             onReaction: onReaction,
                             onReply: onReply,
                             onEdit: onEdit,
@@ -515,11 +380,12 @@ private struct CommentNodeView: View {
                         )
                     }
                 }
-                .padding(.leading, 16)
+                .padding(.leading, depth < 3 ? 12 : 0)
             }
         }
         .padding(.vertical, 8)
-        .padding(.leading, CGFloat(depth) * 16)
+        .id(comment.id)
+        .accessibilityIdentifier("comment_\(comment.id)")
         .confirmationDialog(
             "Delete this comment?",
             isPresented: $showingDeleteConfirmation,
@@ -544,6 +410,27 @@ private struct CommentNodeView: View {
         case "eyes": "👀"
         default: "•"
         }
+    }
+}
+
+struct ServerCommentThreadView: View {
+    let commentID: String
+    @State private var model: CommentListViewModel
+
+    init(commentID: String) {
+        self.commentID = commentID
+        _model = State(initialValue: CommentListViewModel(targetType: "", focusedCommentID: commentID))
+    }
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView { CommentListView(viewModel: model) }
+                .onChange(of: model.isLoading) { _, loading in
+                    if !loading { proxy.scrollTo(commentID, anchor: .center) }
+                }
+        }
+        .navigationTitle("Comment thread")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

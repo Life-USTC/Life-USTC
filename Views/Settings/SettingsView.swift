@@ -86,6 +86,22 @@ struct SettingsView: View {
                 }
             }
 
+            if account.isAuthenticated {
+                Section {
+                    NavigationLink {
+                        ServerOwnedFilesView()
+                    } label: {
+                        Label("My Files", systemImage: "folder")
+                    }
+                    .accessibilityIdentifier("settings_my_files")
+                    if let user = account.user {
+                        NavigationLink("Public profile") {
+                            ServerPublicUserProfileView(identifier: user.username ?? user.id)
+                        }
+                    }
+                }
+            }
+
             // MARK: - General
             Section {
                 NavigationLink("Feed Source Settings", destination: FeedSetingsPage())

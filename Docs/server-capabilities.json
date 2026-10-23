@@ -116,11 +116,11 @@
       "feature": "comment",
       "capability": "object-comment-section",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Comments/CommentListView.swift",
-        "Views/Comments/CommentComposeView.swift",
-        "Views/Young/YoungDetailViews.swift"
+        "Views/Comments/CommentListViewModel.swift",
+        "Views/Comments/CommentComposeView.swift"
       ]
     },
     {
@@ -169,9 +169,10 @@
       "feature": "description",
       "capability": "object-description-section",
       "surface": "native",
-      "implementation": "not_present",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerModels.swift"
+        "Views/Community/ServerDescriptionView.swift",
+        "Views/Community/ServerDescriptionModel.swift"
       ]
     },
     {
@@ -250,10 +251,11 @@
       "feature": "homework",
       "capability": "section-homework-tab",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Community/ServerSectionHomeworksView.swift",
+        "Views/Community/ServerHomeworkEditorView.swift",
+        "Views/Community/ServerHomeworkHistoryView.swift"
       ]
     },
     {
@@ -628,40 +630,41 @@
       "feature": "upload",
       "capability": "upload-list",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Community/ServerOwnedFilesView.swift",
+        "Views/Community/ServerOwnedFilesModel.swift"
       ]
     },
     {
       "feature": "upload",
       "capability": "comment-attachment-upload",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Community/ServerCommentAttachmentsView.swift",
+        "Views/Community/ServerCommentAttachmentsModel.swift",
+        "Server/ServerUploadClient.swift"
       ]
     },
     {
       "feature": "upload",
       "capability": "comment-attachment-download",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Community/ServerCommentAttachmentsView.swift",
+        "Server/ServerUploadClient.swift"
       ]
     },
     {
       "feature": "upload",
       "capability": "upload-manage",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift",
-        "Server/ServerModels.swift"
+        "Views/Community/ServerOwnedFilesView.swift",
+        "Views/Community/ServerOwnedFilesModel.swift"
       ]
     },
     {
@@ -702,10 +705,9 @@
       "feature": "user",
       "capability": "public-profile",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Settings/ServerAccountView.swift",
-        "Server/ServerAccountStore.swift"
+        "Views/Community/ServerPublicUserProfileView.swift"
       ]
     },
     {

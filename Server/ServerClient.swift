@@ -24,6 +24,16 @@ private final class UITestTokenStore: TokenStore, @unchecked Sendable {
 
 private let logger = AppLogger.logger(for: "ServerClient")
 
+private final class ServerBinaryTaskDelegate: NSObject, URLSessionTaskDelegate {
+    func urlSession(
+        _ session: URLSession, task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        completionHandler(nil)
+    }
+}
+
 // MARK: - Token Store Protocol
 
 /// Abstracts token persistence so tests can use an in-memory store.
@@ -359,6 +369,67 @@ final class ServerClient: @unchecked Sendable {
             let msg = errResp?.error ?? "Server error (\(httpResponse.statusCode))"
             logger.error("Server error \(httpResponse.statusCode): \(msg)")
             throw ServerError.serverError(msg)
+        }
+    }
+
+    func requestBinary(_ request: URLRequest, expectedRevision: UUID) async throws -> Data {
+        try await requestBinary(request, expectedRevision: expectedRevision, retry: true)
+    }
+
+    private func requestBinary(
+        _ request: URLRequest, expectedRevision: UUID, retry: Bool
+    ) async throws -> Data {
+        try Task.checkCancellation()
+        let configuration = try configLock.withLock {
+            guard expectedRevision == revision else { throw CancellationError() }
+            return (baseURL, session, tokenStore.accessToken)
+        }
+        func port(_ url: URL) -> Int { url.port ?? (url.scheme?.lowercased() == "https" ? 443 : 80) }
+        guard let url = request.url,
+              let scheme = url.scheme?.lowercased(), ["http", "https"].contains(scheme),
+              scheme == configuration.0.scheme?.lowercased(),
+              url.host?.lowercased() == configuration.0.host?.lowercased(),
+              port(url) == port(configuration.0), url.user == nil, url.password == nil,
+              ["GET", "PUT"].contains(request.httpMethod ?? "GET") else {
+            throw ServerError.badRequest("Invalid attachment request")
+        }
+        guard !configuration.2.isEmpty else { throw ServerError.notAuthenticated }
+        var authorized = request
+        authorized.setValue("Bearer \(configuration.2)", forHTTPHeaderField: "Authorization")
+        authorized.setValue(nil, forHTTPHeaderField: "Cookie")
+        authorized.httpShouldHandleCookies = false
+        authorized.cachePolicy = .reloadIgnoringLocalCacheData
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await configuration.1.data(for: authorized, delegate: ServerBinaryTaskDelegate())
+        } catch {
+            guard expectedRevision == sessionRevision else { throw CancellationError() }
+            try Task.checkCancellation()
+            throw ServerError.networkError(error)
+        }
+        try Task.checkCancellation()
+        guard expectedRevision == sessionRevision else { throw CancellationError() }
+        guard let response = response as? HTTPURLResponse else {
+            throw ServerError.networkError(URLError(.badServerResponse))
+        }
+        switch response.statusCode {
+        case 200...299: return data
+        case 401:
+            let refresh = try configLock.withLock {
+                guard expectedRevision == revision else { throw CancellationError() }
+                return (available: !tokenStore.refreshToken.isEmpty,
+                        needed: tokenStore.accessToken == configuration.2)
+            }
+            if retry, refresh.available {
+                if refresh.needed { try await refreshAccessToken(expectedRevision: expectedRevision) }
+                return try await requestBinary(request, expectedRevision: expectedRevision, retry: false)
+            }
+            throw ServerError.notAuthenticated
+        case 403: throw ServerError.forbidden("Attachment access denied")
+        case 400: throw ServerError.badRequest("Invalid attachment request")
+        case 404: throw ServerError.notFound
+        default: throw ServerError.serverError("Attachment request failed (\(response.statusCode))")
         }
     }
 

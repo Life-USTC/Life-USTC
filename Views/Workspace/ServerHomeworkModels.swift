@@ -126,14 +126,19 @@ final class ServerHomeworkDetailModel {
     let homeworkID: String
     private(set) var isLoading = false
     private(set) var isSaving = false
-    private(set) var loadError: String?
-    private(set) var mutationError: String?
+    private var loadingError: String?
+    private var writingError: String?
+    private var permissionLoadingError: String?
 
     private let client: ServerClient
     private var snapshot: ServerHomework?
     private var loadedRevision: UUID?
     private var generation = 0
     private var failedCompletion: Bool?
+    private var permissionSnapshot: ServerHomeworkViewer?
+    private var permissionsResolved = false
+    private var permissionGeneration = 0
+    private var loadingPermissions = false
 
     init(homeworkID: String, client: ServerClient = .shared) {
         self.homeworkID = homeworkID
@@ -141,9 +146,19 @@ final class ServerHomeworkDetailModel {
     }
 
     var homework: ServerHomework? { ownsSnapshot ? snapshot : nil }
-    var canRetryMutation: Bool { ownsSnapshot && failedCompletion != nil && !isSaving }
+    var loadError: String? { ownsSnapshot ? loadingError : nil }
+    var mutationError: String? { ownsSnapshot ? writingError : nil }
+    var permissionError: String? { ownsSnapshot ? permissionLoadingError : nil }
+    var viewer: ServerHomeworkViewer? { ownsSnapshot ? permissionSnapshot : nil }
+    var isLoadingPermissions: Bool { ownsSnapshot && loadingPermissions }
+    var canEdit: Bool {
+        client.isAuthenticated && ownsSnapshot && permissionsResolved && !isLoading && !loadingPermissions
+            && viewer?.isAuthenticated == true && viewer?.isSuspended == false
+            && homework?.deletedAt == nil && homework?.section?.jwId != nil
+    }
+    var canRetryMutation: Bool { client.isAuthenticated && ownsSnapshot && failedCompletion != nil && !isSaving }
     private var ownsSnapshot: Bool {
-        client.isAuthenticated && loadedRevision == client.sessionRevision
+        loadedRevision == client.sessionRevision
     }
 
     func load() async {
@@ -151,9 +166,11 @@ final class ServerHomeworkDetailModel {
         let requestGeneration = generation
         let revision = client.sessionRevision
         resetForSessionIfNeeded()
-        loadError = nil
-        isLoading = client.isAuthenticated
-        guard client.isAuthenticated else { return }
+        loadingError = nil
+        permissionGeneration += 1
+        permissionsResolved = false
+        loadingPermissions = false
+        isLoading = true
         defer {
             if requestGeneration == generation {
                 isLoading = false
@@ -170,7 +187,37 @@ final class ServerHomeworkDetailModel {
         } catch {
             guard requestGeneration == generation, revision == client.sessionRevision,
                   !Task.isCancelled else { return }
-            loadError = error.localizedDescription
+            loadingError = error.localizedDescription
+        }
+    }
+
+    func loadPermissions() async {
+        permissionsResolved = false
+        permissionLoadingError = nil
+        permissionGeneration += 1
+        let requestGeneration = permissionGeneration
+        guard client.isAuthenticated, let homework else { return }
+        let revision = client.sessionRevision
+        loadingPermissions = true
+        defer {
+            if requestGeneration == permissionGeneration { loadingPermissions = false }
+            resetForSessionIfNeeded()
+        }
+        do {
+            let response: ServerHomeworkListResponse = try await client.request(
+                .listHomeworks(sectionId: homework.sectionId, page: 1, pageSize: 1),
+                expectedRevision: revision
+            )
+            guard requestGeneration == permissionGeneration, revision == client.sessionRevision,
+                  !Task.isCancelled else { return }
+            permissionSnapshot = response.meta.viewer
+            permissionsResolved = true
+        } catch is CancellationError {
+            return
+        } catch {
+            guard requestGeneration == permissionGeneration, revision == client.sessionRevision,
+                  !Task.isCancelled else { return }
+            permissionLoadingError = error.localizedDescription
         }
     }
 
@@ -187,10 +234,10 @@ final class ServerHomeworkDetailModel {
     }
 
     private func setCompletion(_ completed: Bool) async -> Bool {
-        guard let homework, homework.completionRequired, !isSaving else { return false }
+        guard client.isAuthenticated, let homework, homework.completionRequired, !isSaving else { return false }
         let revision = client.sessionRevision
         isSaving = true
-        mutationError = nil
+        writingError = nil
         failedCompletion = nil
         defer {
             if revision == client.sessionRevision { isSaving = false }
@@ -203,18 +250,23 @@ final class ServerHomeworkDetailModel {
             return false
         } catch {
             guard revision == client.sessionRevision, !Task.isCancelled else { return false }
-            mutationError = error.localizedDescription
+            writingError = error.localizedDescription
             failedCompletion = completed
             return false
         }
     }
 
     private func resetForSessionIfNeeded() {
-        guard loadedRevision != client.sessionRevision || !client.isAuthenticated else { return }
+        guard loadedRevision != client.sessionRevision else { return }
         loadedRevision = client.sessionRevision
         snapshot = nil
-        loadError = nil
-        mutationError = nil
+        loadingError = nil
+        writingError = nil
+        permissionLoadingError = nil
+        permissionSnapshot = nil
+        permissionsResolved = false
+        loadingPermissions = false
+        permissionGeneration += 1
         failedCompletion = nil
         isSaving = false
     }

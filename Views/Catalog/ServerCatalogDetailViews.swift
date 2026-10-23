@@ -191,6 +191,18 @@ struct ServerSectionDetailView: View {
                             NavigationLink(ServerCatalogDisplay.name(teacher.nameCn, teacher.nameEn)) {
                                 ServerTeacherDetailView(id: teacher.id)
                             }
+                            NavigationLink {
+                                ScrollView {
+                                    CommentListView(viewModel: CommentListViewModel(
+                                        targetType: "section-teacher", sectionId: section.id, teacherId: teacher.id
+                                    ))
+                                }
+                                .navigationTitle("Teaching feedback")
+                            } label: {
+                                Label(String(format: "Feedback for %@".localized,
+                                             ServerCatalogDisplay.name(teacher.nameCn, teacher.nameEn)),
+                                      systemImage: "bubble.left.and.bubble.right")
+                            }
                         }
                     }
                 }
@@ -231,6 +243,14 @@ struct ServerSectionDetailView: View {
                 }
 
                 Section {
+                    NavigationLink("Description") {
+                        ServerDescriptionView(target: .section(jwId: section.jwId))
+                    }
+                    .accessibilityIdentifier("section_description")
+                    NavigationLink("Shared Homework") {
+                        ServerSectionHomeworksView(sectionJwId: section.jwId)
+                    }
+                    .accessibilityIdentifier("section_homeworks")
                     NavigationLink("Comments") {
                         ScrollView {
                             CommentListView(viewModel: CommentListViewModel(targetType: "section", targetId: String(section.id)))
@@ -346,6 +366,17 @@ struct ServerCourseDetailView: View {
                         Text("No teaching sections").foregroundStyle(.secondary)
                     }
                 }
+                Section {
+                    NavigationLink("Description") {
+                        ServerDescriptionView(target: .course(jwId: course.jwId))
+                    }
+                    NavigationLink("Comments") {
+                        ScrollView {
+                            CommentListView(viewModel: CommentListViewModel(targetType: "course", courseJwId: course.jwId))
+                        }
+                        .navigationTitle("Comments")
+                    }
+                }
             }
             if isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
@@ -419,6 +450,12 @@ struct ServerTeacherDetailView: View {
                     } else if sectionList.sections.isEmpty && sectionList.error == nil {
                         Text("No teaching sections").foregroundStyle(.secondary)
                     }
+                }
+                Section {
+                    NavigationLink("Description") {
+                        ServerDescriptionView(target: .teacher(id: teacher.id))
+                    }
+                    .accessibilityIdentifier("teacher_description")
                 }
                 Section {
                     NavigationLink("Comments") {

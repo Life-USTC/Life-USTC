@@ -65,6 +65,26 @@ The calendar subscription screen copies or shares the private URL supplied by
 the server. Missing access and failed reads have explicit recovery states; the
 app does not construct a feed token or place that URL in logs.
 
+## Community and files
+
+Course, section, teacher, teaching-assignment and homework entries lead to their
+own comments. Replies, reactions and focused threads use the server's viewer
+permissions; suspended and hidden nodes do not expose contribution actions.
+Comment drafts support visibility, anonymous posting and attachments, including
+preserving or removing existing attachments when editing.
+
+Uploads use reservation, byte transfer and completion before their IDs can be
+submitted with a comment. Failed stages remain retryable. My Files provides
+complete owned-file listing, quota, rename, deletion and authenticated local
+previews. Public profiles show the server's public contribution projection.
+
+Descriptions expose collaborative editing and the latest 20 changes. Teaching
+sections expose shared-homework creation, editing, creator deletion and up to
+50 audit entries. Public homework text can be read while signed out; personal
+completion requires a Life@USTC account. Markdown text currently uses native
+inline rendering; advanced math and tables still need acceptance in the final
+content-rendering pass.
+
 ## Existing capabilities and remaining parity
 
 Second Classroom already has native activity/organizer browsing, calendars,

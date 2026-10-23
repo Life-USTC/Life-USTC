@@ -191,6 +191,10 @@ struct ServerHomework: Codable, Identifiable {
 struct ServerHomeworkViewer: Codable {
     let userId: String?
     let isAdmin: Bool
+    let isAuthenticated: Bool?
+    let isSuspended: Bool?
+    let suspensionReason: String?
+    let suspensionExpiresAt: Date?
 }
 
 struct ServerHomeworkListResponse: Codable {
@@ -205,6 +209,7 @@ struct ServerHomeworkListMeta: Codable {
 
 struct ServerHomeworkDetailResponse: Codable {
     let homework: ServerHomework
+    let auditLogs: [ServerHomeworkAuditLog]?
 }
 
 struct HomeworkCompletionRequest: Encodable {
@@ -217,7 +222,8 @@ struct HomeworkCompletionResponse: Codable {
 }
 
 struct CreateHomeworkRequest: Encodable {
-    let sectionId: Int
+    var sectionId: Int? = nil
+    var sectionJwId: Int? = nil
     let title: String
     let description: String?
     let publishedAt: String?
@@ -228,13 +234,28 @@ struct CreateHomeworkRequest: Encodable {
 }
 
 struct UpdateHomeworkRequest: Encodable {
-    let title: String?
-    let description: String?
-    let publishedAt: String?
-    let submissionStartAt: String?
-    let submissionDueAt: String?
-    let isMajor: Bool?
-    let requiresTeam: Bool?
+    var title: String? = nil
+    var description: ServerPatchValue<String> = .unchanged
+    var publishedAt: ServerPatchValue<String> = .unchanged
+    var submissionStartAt: ServerPatchValue<String> = .unchanged
+    var submissionDueAt: ServerPatchValue<String> = .unchanged
+    var isMajor: Bool? = nil
+    var requiresTeam: Bool? = nil
+
+    enum CodingKeys: String, CodingKey {
+        case title, description, publishedAt, submissionStartAt, submissionDueAt, isMajor, requiresTeam
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(title, forKey: .title)
+        try description.encode(to: &container, forKey: .description)
+        try publishedAt.encode(to: &container, forKey: .publishedAt)
+        try submissionStartAt.encode(to: &container, forKey: .submissionStartAt)
+        try submissionDueAt.encode(to: &container, forKey: .submissionDueAt)
+        try container.encodeIfPresent(isMajor, forKey: .isMajor)
+        try container.encodeIfPresent(requiresTeam, forKey: .requiresTeam)
+    }
 }
 
 // MARK: - Todo
@@ -368,6 +389,7 @@ struct ServerComment: Codable, Identifiable {
     let isAnonymous: Bool
     let authorHidden: Bool?
     let isAuthor: Bool?
+    let isAncestryPlaceholder: Bool?
     let createdAt: Date
     let updatedAt: Date
     let author: ServerCommentAuthor?
@@ -398,6 +420,7 @@ struct ServerComment: Codable, Identifiable {
             isAnonymous: isAnonymous,
             authorHidden: authorHidden,
             isAuthor: isAuthor,
+            isAncestryPlaceholder: isAncestryPlaceholder,
             createdAt: createdAt,
             updatedAt: updatedAt,
             author: author,

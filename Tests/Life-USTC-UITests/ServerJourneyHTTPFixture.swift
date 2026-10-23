@@ -30,16 +30,23 @@ final class ServerJourneyHTTPFixture {
     private var pendingCatalogFailure = false
     private var pendingSubscriptionFailure = false
     private var workspace: WorkspaceLearningHTTPState?
+    private var community: CommunityHTTPState?
     private var failedRequest: (method: String, path: String)?
 
-    init(workspace: Bool = false) {
+    init(workspace: Bool = false, community: Bool = false) {
         if workspace { self.workspace = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState()) }
+        if community { self.community = CommunityHTTPState() }
     }
 
     var requests: [Request] { queue.sync { received } }
     var subscriptionKinds: [Int: String] { queue.sync { membership } }
     var workspaceTodos: [[String: Any]] { queue.sync { workspace?.todoState.todos ?? [] } }
     var workspaceHomeworks: [[String: Any]] { queue.sync { workspace?.homeworks ?? [] } }
+    var communityComments: [[String: Any]] { queue.sync { community?.comments ?? [] } }
+    var communityHomeworks: [[String: Any]] { queue.sync { community?.homeworks ?? [] } }
+    var communityUploads: [[String: Any]] { queue.sync { community?.uploads ?? [] } }
+
+    func hideCommunityComments() { queue.sync { community?.hideAllComments() } }
 
     func failNextRequest(method: String, path: String) {
         queue.sync { failedRequest = (method, path) }
@@ -141,7 +148,7 @@ final class ServerJourneyHTTPFixture {
     }
 
     private func send(_ object: Any, status: Int, to connection: NWConnection) {
-        guard let body = try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys]) else {
+        guard let body = object as? Data ?? (try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys])) else {
             connection.cancel()
             return
         }
@@ -163,6 +170,7 @@ final class ServerJourneyHTTPFixture {
             self.failedRequest = nil
             return (503, ["error": "Workspace fixture unavailable"])
         }
+        if let response = community?.response(to: request) { return response }
         if let response = workspace?.response(to: request) { return response }
 
         switch (request.method, request.path) {
