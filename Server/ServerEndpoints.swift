@@ -12,6 +12,11 @@ import Foundation
 enum ServerEndpoint {
     // User
     case me
+    case getPublicUser(identifier: String)
+
+    // Shared descriptions
+    case getDescription(target: ServerDescriptionTarget)
+    case upsertDescription(ServerDescriptionUpsertRequest)
 
     // Semesters
     case listSemesters(page: Int?, pageSize: Int?)
@@ -72,9 +77,11 @@ enum ServerEndpoint {
     case listSubscribedExams(page: Int, pageSize: Int, filters: ServerExamFilters)
 
     // Homeworks
-    case listHomeworks(sectionId: Int?, page: Int?, pageSize: Int?)
+    case listHomeworks(sectionId: Int?, page: Int?, pageSize: Int?,
+                       sectionJwId: Int? = nil, sectionIds: [Int]? = nil, includeDeleted: Bool? = nil)
     case listSubscribedHomeworks(page: Int?, pageSize: Int?)
     case getHomework(id: String)
+    case listHomeworkAudit(sectionJwId: Int)
     case createHomework(CreateHomeworkRequest)
     case updateHomework(id: String, UpdateHomeworkRequest)
     case deleteHomework(id: String)
@@ -91,9 +98,12 @@ enum ServerEndpoint {
     case listComments(
         targetType: String, targetId: String?,
         youngId: String?, sectionId: Int?, teacherId: Int?,
-        page: Int?, pageSize: Int?
+        page: Int?, pageSize: Int?,
+        sectionJwId: Int? = nil, courseJwId: Int? = nil,
+        homeworkId: String? = nil, sectionTeacherId: Int? = nil
     )
     case createComment(CreateCommentRequest)
+    case getComment(id: String)
     case updateComment(id: String, UpdateCommentRequest)
     case deleteComment(id: String)
     case listCommentReplies(id: String, cursor: String?, pageSize: Int?)
@@ -109,12 +119,17 @@ enum ServerEndpoint {
     // Uploads
     case listUploads(page: Int?, pageSize: Int?)
     case createUpload(CreateUploadRequest)
+    case completeUpload(CompleteUploadRequest)
+    case renameUpload(id: String, request: RenameUploadRequest)
+    case deleteUpload(id: String)
+    case downloadUpload(id: String)
 
     // MARK: - Properties
 
     var method: String {
         switch self {
-        case .me, .currentSemester, .listSemesters,
+        case .me, .getPublicUser, .getDescription, .getComment, .listHomeworkAudit, .downloadUpload,
+            .currentSemester, .listSemesters,
             .listCourses, .getCourse,
             .listSections, .getSection, .getSectionSchedules,
             .listTeachers, .getTeacher,
@@ -131,14 +146,14 @@ enum ServerEndpoint {
             return "GET"
         case .matchCodes, .importSubscriptions, .createHomework,
             .createTodo, .createComment, .addCommentReaction,
-            .markYoungNotificationRead, .createUpload:
+            .markYoungNotificationRead, .createUpload, .completeUpload, .upsertDescription:
             return "POST"
         case .updateYoungEventSubscription, .updateYoungOrganizerSubscription, .setHomeworkCompletion:
             return "PUT"
-        case .updateHomework,
+        case .updateHomework, .renameUpload,
             .updateTodo, .updateComment, .appendSubscriptions, .setSubscriptionKind:
             return "PATCH"
-        case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction, .removeSubscriptions:
+        case .deleteHomework, .deleteTodo, .deleteComment, .removeCommentReaction, .removeSubscriptions, .deleteUpload:
             return "DELETE"
         }
     }
@@ -147,6 +162,10 @@ enum ServerEndpoint {
         switch self {
         case .me:
             return "/api/account/profile"
+        case .getPublicUser(let identifier):
+            return "/api/community/users/\(Self.pathSegment(identifier))"
+        case .getDescription, .upsertDescription:
+            return "/api/community/descriptions"
         case .listSemesters:
             return "/api/catalog/semesters"
         case .currentSemester:
@@ -213,6 +232,8 @@ enum ServerEndpoint {
             return "/api/workspace/homeworks"
         case .getHomework(let id):
             return "/api/community/section-homeworks/\(Self.pathSegment(id))"
+        case .listHomeworkAudit:
+            return "/api/community/section-homeworks/audit"
         case .updateHomework(let id, _):
             return "/api/community/section-homeworks/\(Self.pathSegment(id))"
         case .deleteHomework(let id):
@@ -227,7 +248,7 @@ enum ServerEndpoint {
             return "/api/workspace/todos/\(Self.pathSegment(id))"
         case .listComments, .createComment:
             return "/api/community/comments"
-        case .updateComment(let id, _), .deleteComment(let id):
+        case .getComment(let id), .updateComment(let id, _), .deleteComment(let id):
             return "/api/community/comments/\(Self.pathSegment(id))"
         case .listCommentReplies(let id, _, _):
             return "/api/community/comments/\(Self.pathSegment(id))/replies"
@@ -239,11 +260,21 @@ enum ServerEndpoint {
             return "/api/catalog/metadata"
         case .listUploads, .createUpload:
             return "/api/workspace/uploads"
+        case .completeUpload:
+            return "/api/workspace/uploads/complete"
+        case .renameUpload(let id, _), .deleteUpload(let id):
+            return "/api/workspace/uploads/\(Self.pathSegment(id))"
+        case .downloadUpload(let id):
+            return "/api/workspace/uploads/\(Self.pathSegment(id))/download"
         }
     }
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .getDescription(let target):
+            return target.queryItems
+        case .listHomeworkAudit(let sectionJwId):
+            return [.init(name: "sectionJwId", value: String(sectionJwId))]
         case .actionableOverview(let atTime, let locale):
             var items: [URLQueryItem] = []
             if let atTime { items.append(.init(name: "atTime", value: atTime)) }
@@ -352,13 +383,16 @@ enum ServerEndpoint {
             ]
             if let unread { items.append(.init(name: "unread", value: unread ? "true" : "false")) }
             return items
-        case .listHomeworks(let sectionId, let page, let pageSize):
+        case .listHomeworks(let sectionId, let page, let pageSize, let sectionJwId, let sectionIds, let includeDeleted):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
+            if let sectionJwId { items.append(.init(name: "sectionJwId", value: String(sectionJwId))) }
+            if let sectionIds { items.append(.init(name: "sectionIds", value: sectionIds.map(String.init).joined(separator: ","))) }
+            if let includeDeleted { items.append(.init(name: "includeDeleted", value: includeDeleted ? "true" : "false")) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
-        case .listComments(let targetType, let targetId, let youngId, let sectionId, let teacherId, let page, let pageSize):
+        case .listComments(let targetType, let targetId, let youngId, let sectionId, let teacherId, let page, let pageSize, let sectionJwId, let courseJwId, let homeworkId, let sectionTeacherId):
             var items = [URLQueryItem(name: "targetType", value: targetType)]
             if let targetId { items.append(.init(name: "targetId", value: targetId)) }
             if let youngId { items.append(.init(name: "youngId", value: youngId)) }
@@ -366,6 +400,10 @@ enum ServerEndpoint {
             if let teacherId { items.append(.init(name: "teacherId", value: "\(teacherId)")) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            if let sectionJwId { items.append(.init(name: "sectionJwId", value: String(sectionJwId))) }
+            if let courseJwId { items.append(.init(name: "courseJwId", value: String(courseJwId))) }
+            if let homeworkId { items.append(.init(name: "homeworkId", value: homeworkId)) }
+            if let sectionTeacherId { items.append(.init(name: "sectionTeacherId", value: String(sectionTeacherId))) }
             return items
         case .listCommentReplies(_, let cursor, let pageSize):
             var items: [URLQueryItem] = []
@@ -398,6 +436,9 @@ enum ServerEndpoint {
         case .updateComment(_, let req): return req
         case .addCommentReaction(_, let req): return req
         case .createUpload(let req): return req
+        case .completeUpload(let req): return req
+        case .renameUpload(_, let req): return req
+        case .upsertDescription(let req): return req
         default: return nil
         }
     }

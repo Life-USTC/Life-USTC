@@ -226,46 +226,41 @@ extension ServerClient {
         targetId: String? = nil,
         youngId: String? = nil,
         sectionId: Int? = nil,
-        teacherId: Int? = nil
+        teacherId: Int? = nil,
+        sectionJwId: Int? = nil,
+        courseJwId: Int? = nil,
+        homeworkId: String? = nil,
+        sectionTeacherId: Int? = nil,
+        expectedRevision: UUID? = nil
     ) async throws -> ServerCommentListResponse {
-        var page = 1
-        let first: ServerCommentListResponse = try await request(
-            .listComments(
-                targetType: targetType,
-                targetId: targetId,
-                youngId: youngId,
-                sectionId: sectionId,
-                teacherId: teacherId,
-                page: page,
-                pageSize: 100
-            )
-        )
-        var comments = first.data
-        while page < first.pagination.totalPages {
-            page += 1
+        let revision = expectedRevision ?? sessionRevision
+        func load(_ page: Int) async throws -> ServerCommentListResponse {
+            try Task.checkCancellation()
             let response: ServerCommentListResponse = try await request(
-                .listComments(
-                    targetType: targetType,
-                    targetId: targetId,
-                    youngId: youngId,
-                    sectionId: sectionId,
-                    teacherId: teacherId,
-                    page: page,
-                    pageSize: 100
-                )
+                .listComments(targetType: targetType, targetId: targetId, youngId: youngId,
+                              sectionId: sectionId, teacherId: teacherId, page: page, pageSize: 100,
+                              sectionJwId: sectionJwId, courseJwId: courseJwId,
+                              homeworkId: homeworkId, sectionTeacherId: sectionTeacherId),
+                expectedRevision: revision
             )
-            comments.append(contentsOf: response.data)
+            try Task.checkCancellation()
+            guard revision == sessionRevision else { throw CancellationError() }
+            guard response.pagination.page == page else {
+                throw ServerError.serverError("Invalid pagination response")
+            }
+            return response
         }
-        return ServerCommentListResponse(
-            data: comments,
-            pagination: PaginationInfo(
-                page: first.pagination.page,
-                pageSize: first.pagination.pageSize,
-                total: first.pagination.total,
-                totalPages: first.pagination.totalPages
-            ),
-            meta: first.meta
-        )
+        let first = try await load(1)
+        var comments = first.data
+        var page = 1
+        var totalPages = first.pagination.totalPages
+        while page < totalPages {
+            page += 1
+            let response = try await load(page)
+            comments.append(contentsOf: response.data)
+            totalPages = response.pagination.totalPages
+        }
+        return ServerCommentListResponse(data: comments, pagination: first.pagination, meta: first.meta)
     }
 
     func fetchCommentReplies(

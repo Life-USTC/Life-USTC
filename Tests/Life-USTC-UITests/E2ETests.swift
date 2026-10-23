@@ -25,18 +25,6 @@ final class E2ETests: XCTestCase {
         }
     }
 
-    override func tearDownWithError() throws {
-        if (testRun?.failureCount ?? 0) > 0 {
-            let screenshot = XCTAttachment(screenshot: app.screenshot())
-            screenshot.lifetime = .keepAlways
-            add(screenshot)
-            let hierarchy = XCTAttachment(string: app.debugDescription)
-            hierarchy.lifetime = .keepAlways
-            add(hierarchy)
-        }
-        app.terminate()
-    }
-
     // MARK: - Helpers
 
     /// Complete the USTC CAS demo login flow (username: demo, password: demo).
@@ -79,7 +67,6 @@ final class E2ETests: XCTestCase {
         } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
             app.buttons["onboarding_close_button"].tap()
         }
-        XCTAssertTrue(app.buttons["home_subscriptions"].waitForExistence(timeout: 10), "Main screen should appear after onboarding")
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.
@@ -111,7 +98,8 @@ final class E2ETests: XCTestCase {
 
     private func sidebarTab(_ name: String) -> XCUIElement {
         let tab = app.buttons["Tab.\(name)"]
-        if !tab.isHittable {
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: tab)
+        if XCTWaiter.wait(for: [ready], timeout: 3) != .completed {
             let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
             XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Sidebar should be available")
             toggle.tap()

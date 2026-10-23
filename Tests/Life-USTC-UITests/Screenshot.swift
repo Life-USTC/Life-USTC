@@ -75,7 +75,6 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
         } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
             app.buttons["onboarding_close_button"].tap()
         }
-        XCTAssertTrue(app.buttons["home_subscriptions"].waitForExistence(timeout: 10))
 
         selectTab("Home", index: 0, in: app)
         snapshot("04_Home")

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CommentComposeView: View {
     @Environment(\.dismiss) private var dismiss
+    @Bindable private var account = ServerAccountStore.shared
 
     let viewModel: CommentListViewModel
     let parentId: String?
@@ -25,6 +26,8 @@ struct CommentComposeView: View {
         _commentBody = State(initialValue: editingComment?.body ?? "")
         _isAnonymous = State(initialValue: editingComment?.isAnonymous ?? false)
         _visibility = State(initialValue: editingComment?.visibility ?? "public")
+        _editorRevision = State(initialValue: viewModel.sessionRevision)
+        _attachments = State(initialValue: ServerCommentAttachmentsModel(existing: editingComment?.attachments ?? []))
     }
 
     @State private var commentBody = ""
@@ -32,6 +35,12 @@ struct CommentComposeView: View {
     @State private var visibility = "public"
     @State private var isSending = false
     @State private var error: String?
+    @State private var editorRevision: UUID
+    @State private var attachments: ServerCommentAttachmentsModel
+
+    private var isCurrentSession: Bool {
+        account.isAuthenticated && editorRevision == viewModel.sessionRevision
+    }
 
     private let visibilityOptions = [
         ("public", "Public"),
@@ -41,29 +50,51 @@ struct CommentComposeView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField("Write a comment…", text: $commentBody, axis: .vertical)
-                        .lineLimit(3...10)
-                }
-
-                Section {
-                    Picker("Visibility", selection: $visibility) {
-                        ForEach(visibilityOptions, id: \.0) { value, label in
-                            Text(label).tag(value)
+                if isCurrentSession {
+                    Section {
+                        TextField("Write a comment…", text: $commentBody, axis: .vertical)
+                            .lineLimit(3...10)
+                            .accessibilityIdentifier("comment_body")
+                        if commentBody.utf16.count > 8_000 {
+                            Text("Comments must be at most 8,000 characters.")
+                                .font(.caption).foregroundStyle(.red)
                         }
                     }
 
-                    Toggle("Post Anonymously", isOn: $isAnonymous)
-                }
-
-                if let error {
                     Section {
-                        Text(error)
-                            .foregroundStyle(.red)
-                            .font(.caption)
+                        Picker("Visibility", selection: $visibility) {
+                            ForEach(visibilityOptions, id: \.0) { value, label in
+                                Text(LocalizedStringKey(label)).tag(value)
+                            }
+                        }
+
+                        Toggle("Post Anonymously", isOn: $isAnonymous)
                     }
+
+                    ServerCommentAttachmentsView(model: attachments, isSending: isSending)
+
+                    if !viewModel.canContribute {
+                        Section {
+                            Text(viewModel.viewer?.suspensionReason ?? "Comment action unavailable".localized)
+                                .foregroundStyle(.secondary)
+                            Button("Refresh permissions") { Task { await viewModel.load() } }
+                                .disabled(viewModel.isLoading || isSending)
+                            YoungReauthorizeButton()
+                        }
+                    }
+
+                    if let error {
+                        Section {
+                            Text(error)
+                                .foregroundStyle(.red)
+                                .font(.caption)
+                        }
+                    }
+                } else {
+                    Section { Text("Your account changed. Reopen the editor to continue.") }
                 }
             }
+            .disabled(isSending)
             .navigationTitle(
                 Text(
                     (editingComment != nil
@@ -74,7 +105,7 @@ struct CommentComposeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") { dismiss() }.disabled(isSending)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
@@ -83,49 +114,50 @@ struct CommentComposeView: View {
                         Text((editingComment == nil ? "Post" : "Save").localized)
                     }
                     .disabled(
-                        commentBody.trimmingCharacters(in: .whitespaces).isEmpty
-                            || isSending
+                        !isCurrentSession || !viewModel.canContribute || !attachments.canSubmit
+                            || CommentListViewModel.bodyValidationError(commentBody) != nil || isSending
                     )
+                    .accessibilityIdentifier("comment_submit")
                 }
+            }
+            .interactiveDismissDisabled(isSending || attachments.isBusy)
+            .task(id: account.sessionRevision) {
+                attachments.invalidateIfSessionChanged()
+                if isCurrentSession { await attachments.loadQuota() }
             }
         }
     }
 
     private func send() async {
+        guard isCurrentSession, !isSending else { return }
         isSending = true
         error = nil
-
-        let request = CreateCommentRequest(
-            targetType: viewModel.targetType,
-            targetId: viewModel.targetId,
-            youngId: viewModel.youngId,
-            sectionId: viewModel.sectionId,
-            teacherId: viewModel.teacherId,
-            body: commentBody.trimmingCharacters(in: .whitespaces),
-            visibility: visibility,
-            isAnonymous: isAnonymous,
-            parentId: parentId
-        )
+        defer { isSending = false }
 
         do {
+            let attachmentIDs = try attachments.uploadIDsForSubmission()
             if let editingComment {
                 try await viewModel.updateComment(
                     editingComment,
-                    body: request.body,
+                    body: commentBody,
                     visibility: visibility,
-                    isAnonymous: isAnonymous
+                    isAnonymous: isAnonymous,
+                    attachmentIds: attachmentIDs,
+                    expectedRevision: editorRevision
                 )
             } else {
-                let _: IDResponse = try await ServerClient.shared.request(
-                    .createComment(request)
+                try await viewModel.createComment(
+                    body: commentBody, visibility: visibility, isAnonymous: isAnonymous,
+                    parentId: parentId, attachmentIds: attachmentIDs, expectedRevision: editorRevision
                 )
-                await viewModel.load()
             }
             dismiss()
+        } catch is CancellationError {
+            return
         } catch {
+            guard isCurrentSession else { return }
             self.error = error.localizedDescription
             viewModel.mutationError = error.localizedDescription
         }
-        isSending = false
     }
 }
