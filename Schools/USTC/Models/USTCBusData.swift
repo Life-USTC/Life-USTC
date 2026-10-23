@@ -70,6 +70,8 @@ struct USTCBusData: Codable, Equatable {
     var weekday_routes: [USTCRouteSchedule]
     var weekend_routes: [USTCRouteSchedule]
     var message: Message?
+    var saturday_routes: [USTCRouteSchedule]? = nil
+    var sunday_routes: [USTCRouteSchedule]? = nil
 }
 
 extension USTCBusData {
@@ -92,77 +94,52 @@ extension USTCBusData {
         return try JSONDecoder().decode(USTCBusData.self, from: data)
     }
 
-    /// Fetch from the Life@USTC server API and translate into USTCBusData format.
+    /// Fetch the complete timetable, including all three service-day types.
     static func fetchFromServer() async throws -> USTCBusData {
-        let response: ServerBusResponse = try await ServerClient.shared.request(
-            .busSchedule(originCampusId: nil, destinationCampusId: nil, dayType: nil, limit: nil)
-        )
+        let response = try await ServerClient.shared.fetchBusSchedule()
+        return USTCBusData(serverResponse: response)
+    }
 
-        // Map campuses
-        let campuses = (response.campuses ?? []).map { sc in
-            USTCCampus(id: sc.id, name: sc.nameCn, latitude: 0, longitude: 0)
+    init(serverResponse response: ServerBusResponse) {
+        let campuses = response.campuses.map {
+            USTCCampus(id: $0.id, name: $0.nameCn, latitude: $0.latitude, longitude: $0.longitude)
         }
-        let campusMap = Dictionary(uniqueKeysWithValues: campuses.map { ($0.id, $0) })
-
-        // Map routes
-        let routes = (response.routes ?? []).map { sr in
-            let routeCampuses = (sr.stops ?? [])
-                .sorted(by: { $0.stopOrder < $1.stopOrder })
-                .compactMap { stop -> USTCCampus? in
-                    guard let campus = stop.campus else { return nil }
-                    return campusMap[campus.id] ?? USTCCampus(id: campus.id, name: campus.nameCn, latitude: 0, longitude: 0)
-                }
-            return USTCRoute(id: sr.id, campuses: routeCampuses)
+        let routes = response.routes.map { route in
+            USTCRoute(id: route.id, campuses: route.stops.sorted { $0.stopOrder < $1.stopOrder }.map {
+                let campus = $0.campus
+                return USTCCampus(id: campus.id, name: campus.nameCn, latitude: campus.latitude, longitude: campus.longitude)
+            })
         }
-        let routeMap = Dictionary(uniqueKeysWithValues: routes.map { ($0.id, $0) })
 
-        // Build schedule matrices from matches
-        // Group trips by route + dayType → build time matrix
-        var weekdaySchedules: [Int: [[TimeString?]]] = [:]
-        var weekendSchedules: [Int: [[TimeString?]]] = [:]
-
-        for match in (response.matches ?? []) {
-            guard let route = match.route else { continue }
-            let trips = match.upcomingTrips ?? (match.nextTrip.map { [$0] } ?? [])
-
-            for trip in trips {
-                let isWeekend = trip.dayType == "weekend" || trip.dayType == "holiday"
-                let routeId = route.id
-
-                // Build time row: one time per stop
-                let stopTimes = (trip.stopTimes ?? [])
-                    .sorted(by: { $0.stopOrder < $1.stopOrder })
-                    .map { $0.time as TimeString? }
-
-                if isWeekend {
-                    weekendSchedules[routeId, default: []].append(stopTimes)
-                } else {
-                    weekdaySchedules[routeId, default: []].append(stopTimes)
-                }
+        func schedules(for day: ServerBusDayType) -> [USTCRouteSchedule] {
+            zip(response.routes, routes).map { serverRoute, route in
+                let stopOrders = serverRoute.stops.map(\.stopOrder).sorted()
+                let times = response.trips.filter { $0.routeId == route.id && $0.dayType == day }
+                    .sorted { $0.position < $1.position }
+                    .map { trip in
+                        stopOrders.map { order in trip.stopTimes.first { $0.stopOrder == order }?.time }
+                    }
+                return USTCRouteSchedule(id: route.id, route: route, time: times)
             }
         }
 
-        // Convert to USTCRouteSchedule arrays
-        func makeSchedules(_ dict: [Int: [[TimeString?]]]) -> [USTCRouteSchedule] {
-            dict.compactMap { (routeId, times) -> USTCRouteSchedule? in
-                guard let route = routeMap[routeId] else { return nil }
-                let sorted = times.sorted { a, b in
-                    let aMin = a.compactMap({ $0?.minutesSinceMidnight }).first ?? 0
-                    let bMin = b.compactMap({ $0?.minutesSinceMidnight }).first ?? 0
-                    return aMin < bMin
-                }
-                return USTCRouteSchedule(id: routeId, route: route, time: sorted)
-            }
-        }
-
-        let message = response.notice.map { Message(message: $0.message ?? "", url: $0.url ?? "") }
-
-        return USTCBusData(
+        self.init(
             campuses: campuses,
             routes: routes,
-            weekday_routes: makeSchedules(weekdaySchedules),
-            weekend_routes: makeSchedules(weekendSchedules),
-            message: message
+            weekday_routes: schedules(for: .weekday),
+            weekend_routes: [],
+            message: response.notice.map { Message(message: $0.message ?? "", url: $0.url ?? "") },
+            saturday_routes: schedules(for: .saturday),
+            sunday_routes: schedules(for: .sunday)
         )
+    }
+
+    func schedules(for day: ServerBusDayType) -> [USTCRouteSchedule] {
+        switch day {
+        case .weekday: weekday_routes
+        // The existing static JSON has one shared weekend timetable.
+        case .saturday: saturday_routes ?? weekend_routes
+        case .sunday: sunday_routes ?? weekend_routes
+        }
     }
 }

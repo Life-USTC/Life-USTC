@@ -73,6 +73,8 @@
 "Schedule Type" = "时刻表类型";
 "Weekday" = "工作日";
 "Weekend" = "周末";
+"Saturday" = "周六";
+"Sunday" = "周日";
 "Holiday" = "节假日";
 "Show Departed Buses" = "显示已出发校车";
 "Route Filter" = "路线筛选";

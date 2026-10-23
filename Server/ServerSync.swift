@@ -45,24 +45,9 @@ enum ServerSync {
         let lessonCodes = await extractLessonCodes()
         guard !lessonCodes.isEmpty else { return }
 
-        let matchResponse: MatchCodesResponse =
-            try await ServerClient.shared.request(
-                .matchCodes(
-                    MatchCodesRequest(
-                        codes: lessonCodes,
-                        semesterId: nil
-                    ))
-            )
-
-        let sectionIds = matchResponse.sections.map(\.id)
-        guard !sectionIds.isEmpty else { return }
-
-        let _: CalendarSubscriptionResponse =
-            try await ServerClient.shared.request(
-                .updateSubscriptions(
-                    UpdateSubscriptionRequest(sectionIds: sectionIds)
-                )
-            )
+        // Import adds matching sections without removing existing subscriptions or changing their roles.
+        let response = try await ServerClient.shared.importSubscriptions(codes: lessonCodes)
+        guard !response.matchedCodes.isEmpty else { return }
 
         UserDefaults.appGroup.set(
             Date(),

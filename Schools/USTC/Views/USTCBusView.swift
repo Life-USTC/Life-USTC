@@ -10,29 +10,24 @@ import SwiftUI
 import SwiftyJSON
 
 struct USTCBusView: View {
-    enum Selection: String, CaseIterable {
-        case weekday
-        case weekend
-    }
-
     @AppStorage("showBeforeBus") var showPassBus: Bool = true
     @AppStorage("ustcbusview_selected_routes") var selectedRouteIds: [Int] = []
 
     @State var data: USTCBusData! = nil
-    @State var selection: Selection = {
-        let dayOfWeek = Calendar.current.component(.weekday, from: Date())
-        return dayOfWeek == 1 || dayOfWeek == 7 ? .weekend : .weekday
+    @State var selection: ServerBusDayType = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        switch calendar.component(.weekday, from: Date()) {
+        case 1: return .sunday
+        case 7: return .saturday
+        default: return .weekday
+        }
     }()
     @State var showingSettings = false
     @State var currentRouteIndex = 0
 
     var allScheduleList: [USTCRouteSchedule] {
-        switch selection {
-        case .weekday:
-            return data.weekday_routes
-        case .weekend:
-            return data.weekend_routes
-        }
+        data.schedules(for: selection)
     }
 
     var calculatedScheduleList: [USTCRouteSchedule] {
@@ -213,7 +208,7 @@ struct USTCBusView: View {
             Form {
                 Section {
                     Picker("Schedule Type", selection: $selection) {
-                        ForEach(Selection.allCases, id: \.self) {
+                        ForEach(ServerBusDayType.allCases, id: \.self) {
                             Text($0.rawValue.capitalized.localized)
                         }
                     }
@@ -300,12 +295,12 @@ struct USTCBusView: View {
         VStack {
             HStack {
                 Picker("", selection: $selection) {
-                    ForEach(Selection.allCases, id: \.self) {
+                    ForEach(ServerBusDayType.allCases, id: \.self) {
                         Text($0.rawValue.capitalized.localized)
                     }
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 180)
+                .frame(maxWidth: 280)
                 .onChange(of: selection) {
                     currentRouteIndex = 0  // Reset route index when changing schedule type
                 }

@@ -396,7 +396,7 @@ final class ServerClient: @unchecked Sendable {
         logger.info("Reset to production backend")
     }
 
-    /// Fetch the current user profile via `/api/me` (Bearer-token authenticated).
+    /// Fetch the current user profile (Bearer-token authenticated).
     func fetchCurrentUser() async throws -> ServerUser? {
         guard isAuthenticated else { return nil }
         return try await request(.me)
@@ -445,19 +445,28 @@ final class ServerClient: @unchecked Sendable {
 
     func querySchedules(
         sectionId: Int? = nil, teacherId: Int? = nil,
-        room: String? = nil, date: String? = nil, weekday: Int? = nil
+        roomId: Int? = nil, dateFrom: String? = nil, dateTo: String? = nil, weekday: Int? = nil
     ) async throws -> PaginatedResponse<ServerScheduleEntry> {
-        try await request(.querySchedules(sectionId: sectionId, teacherId: teacherId, room: room, date: date, weekday: weekday))
+        try await request(.querySchedules(sectionId: sectionId, teacherId: teacherId, roomId: roomId, dateFrom: dateFrom, dateTo: dateTo, weekday: weekday))
+    }
+
+    func importSubscriptions(codes: [String], semesterId: Int? = nil) async throws -> ImportSubscriptionsResponse {
+        try await request(.importSubscriptions(MatchCodesRequest(codes: codes, semesterId: semesterId)))
     }
 
     // MARK: - Convenience: Homework
 
-    func fetchHomeworks(sectionId: Int? = nil, subscribedOnly: Bool? = nil) async throws -> ServerHomeworkListResponse {
-        try await request(.listHomeworks(sectionId: sectionId, subscribedOnly: subscribedOnly))
+    func fetchHomeworks(sectionId: Int? = nil, page: Int? = nil, pageSize: Int? = nil) async throws -> ServerHomeworkListResponse {
+        try await request(.listHomeworks(sectionId: sectionId, page: page, pageSize: pageSize))
+    }
+
+    func fetchSubscribedHomeworks(page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerHomework> {
+        try await request(.listSubscribedHomeworks(page: page, pageSize: pageSize))
     }
 
     func fetchHomework(id: String) async throws -> ServerHomework {
-        try await request(.getHomework(id: id))
+        let response: ServerHomeworkDetailResponse = try await request(.getHomework(id: id))
+        return response.homework
     }
 
     // MARK: - Convenience: Todos
@@ -468,10 +477,7 @@ final class ServerClient: @unchecked Sendable {
 
     // MARK: - Convenience: Bus
 
-    func fetchBusSchedule(
-        originCampusId: Int? = nil, destinationCampusId: Int? = nil,
-        dayType: String? = nil, limit: Int? = nil
-    ) async throws -> ServerBusResponse {
-        try await request(.busSchedule(originCampusId: originCampusId, destinationCampusId: destinationCampusId, dayType: dayType, limit: limit))
+    func fetchBusSchedule(versionKey: String? = nil) async throws -> ServerBusResponse {
+        try await request(.busSchedule(versionKey: versionKey))
     }
 }

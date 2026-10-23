@@ -39,7 +39,7 @@ final class ServerClientTests: XCTestCase {
         let request = ServerEndpoint.me.buildURLRequest(
             baseURL: URL(string: "https://test.example.com")!
         )
-        XCTAssertEqual(request.url?.path, "/api/me")
+        XCTAssertEqual(request.url?.path, "/api/account/profile")
         XCTAssertEqual(request.httpMethod, "GET")
     }
 
@@ -47,27 +47,23 @@ final class ServerClientTests: XCTestCase {
         let request = ServerEndpoint.listTodos.buildURLRequest(
             baseURL: URL(string: "https://test.example.com")!
         )
-        XCTAssertEqual(request.url?.path, "/api/todos")
+        XCTAssertEqual(request.url?.path, "/api/workspace/todos")
         XCTAssertEqual(request.httpMethod, "GET")
     }
 
     func testEndpointBuildURLRequest_busScheduleWithQuery() {
         let request = ServerEndpoint.busSchedule(
-            originCampusId: 1, destinationCampusId: 2,
-            dayType: "weekday", limit: 10
+            versionKey: "2026-autumn"
         ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
 
         let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
-        XCTAssertEqual(components.path, "/api/bus")
+        XCTAssertEqual(components.path, "/api/catalog/bus")
         XCTAssertNotNil(components.queryItems)
 
         let queryDict = Dictionary(
             uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) }
         )
-        XCTAssertEqual(queryDict["originCampusId"], "1")
-        XCTAssertEqual(queryDict["destinationCampusId"], "2")
-        XCTAssertEqual(queryDict["dayType"], "weekday")
-        XCTAssertEqual(queryDict["limit"], "10")
+        XCTAssertEqual(queryDict["versionKey"], "2026-autumn")
     }
 
     func testEndpointBuildURLRequest_youngEventUsesYoungIdAndPublicPath() {
@@ -212,7 +208,7 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(user.id, "user-123")
         XCTAssertEqual(user.email, "test@example.com")
         XCTAssertEqual(user.name, "Test User")
-        XCTAssertFalse(user.isAdmin)
+        XCTAssertEqual(user.isAdmin, false)
     }
 
     func testDecodeTodoList() async throws {
@@ -409,10 +405,10 @@ final class ServerClientTests: XCTestCase {
 
     func testUnauthenticatedRequestOmitsAuthHeader() async throws {
         tokenStore.accessToken = ""
-        MockURLProtocol.stubJSON(["campus": [], "routes": [], "trips": []])
+        MockURLProtocol.stubJSON(["campuses": [], "routes": [], "trips": []])
 
         let _: ServerBusResponse = try await client.request(
-            .busSchedule(originCampusId: nil, destinationCampusId: nil, dayType: nil, limit: nil)
+            .busSchedule(versionKey: nil)
         )
 
         let authHeader = MockURLProtocol.capturedRequests[0].value(forHTTPHeaderField: "Authorization")
@@ -495,7 +491,7 @@ final class ServerClientTests: XCTestCase {
         MockURLProtocol.requestHandler = { request in
             requestCount += 1
 
-            if request.url?.path == "/api/me" && requestCount == 1 {
+            if request.url?.path == "/api/account/profile" && requestCount == 1 {
                 // First call: 401
                 let response = HTTPURLResponse(
                     url: request.url!, statusCode: 401,
@@ -513,7 +509,7 @@ final class ServerClientTests: XCTestCase {
                 )!
                 return (response, tokenJSON)
             } else {
-                // Retry /api/me: success
+                // Retry profile: success
                 let userJSON = """
                 {"id":"u1","email":"a@b.com","name":"A","isAdmin":false}
                 """.data(using: .utf8)!

@@ -23,6 +23,16 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
     static let clientID = "life-ustc-ios"
     static let redirectURI = "dev.tiankaima.life-ustc://auth/callback"
     static let callbackScheme = "dev.tiankaima.life-ustc"
+    static let scopes = [
+        "openid", "profile", "email", "offline_access",
+        "account.profile:read",
+        "workspace.subscription:read", "workspace.subscription:write",
+        "workspace.todo:read", "workspace.todo:write",
+        "workspace.young-subscription:read", "workspace.young-subscription:write",
+        "workspace.young-notification:read", "workspace.young-notification:write",
+        "workspace.calendar:read",
+        "community.comment:read", "community.comment:write",
+    ]
 
     /// Always read the current client — don't cache, since backend can change.
     private var client: ServerClient { ServerClient.shared }
@@ -55,16 +65,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             .init(name: "code_challenge_method", value: "S256"),
             .init(
                 name: "scope",
-                value: [
-                    "openid", "profile", "email", "offline_access",
-                    "workspace.young-subscription:read",
-                    "workspace.young-subscription:write",
-                    "workspace.young-notification:read",
-                    "workspace.young-notification:write",
-                    "workspace.calendar:read",
-                    "community.comment:read",
-                    "community.comment:write",
-                ].joined(separator: " ")
+                value: Self.scopes.joined(separator: " ")
             ),
         ]
 
