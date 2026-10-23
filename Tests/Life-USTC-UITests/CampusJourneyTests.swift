@@ -131,7 +131,8 @@ final class CampusJourneyTests: XCTestCase {
         let button = app.buttons["bus_save_preferences"]
         let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == false"), object: button)
         XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 10), .completed)
-        back()
+        app.terminate()
+        launchDiscover()
         open("discover_bus")
         waitUntil { self.requestCount("GET", "/api/workspace/bus-preferences") >= 2 }
         for _ in 0..<6 {

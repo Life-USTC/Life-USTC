@@ -304,7 +304,10 @@ final class CommunityJourneyTests: XCTestCase {
         // A multiline field's centre can position the caret before its text.
         field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.9)).tap()
         field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: old.count) + new)
-        if !new.isEmpty { XCTAssertEqual(field.value as? String, new) }
+        if !new.isEmpty {
+            waitUntil { field.value as? String == new }
+            XCTAssertEqual(field.value as? String, new)
+        }
     }
 
     @MainActor
