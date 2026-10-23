@@ -128,6 +128,57 @@ struct YoungLoginRequiredView: View {
 }
 
 enum YoungFormatting {
+    static func notificationDescription(_ notification: ServerYoungNotification) -> String {
+        if notification.kind == "organizer_digest" {
+            guard let prefix = notification.body.range(of: #"^\d+ 个新活动 / new events: "#, options: .regularExpression),
+                  let count = Int(notification.body[..<prefix.upperBound].prefix(while: \.isNumber)) else {
+                return notification.body
+            }
+            let key = count == 1 ? "%d new activity: " : "%d new activities: "
+            return localizedFormat(key, count) + notification.body[prefix.upperBound...]
+        }
+        if notification.kind == "event_changed",
+           notification.body == "来源暂缺，请核实校方信息 / Source unavailable; check the official event page." {
+            return "The source is currently unavailable. Check the official event page before attending or registering.".localized
+        }
+        let key: String
+        switch notification.kind {
+        case "signup_open": key = "Registration is now open. Visit the official event page to register."
+        case "signup_deadline": key = "Registration closes within 24 hours. Check the deadline before signing up."
+        case "event_start": key = "This activity starts within an hour. Check the time and venue."
+        case "event_changed": key = "Activity details or source availability changed. Check the latest time, venue and registration status."
+        default: key = "Personal reminders from your subscribed activities and followed organizers."
+        }
+        return key.localized
+    }
+
+    static func eventStatus(_ event: ServerYoungEvent) -> String {
+        if let status = event.status?.trimmingCharacters(in: .whitespacesAndNewlines), !status.isEmpty {
+            return status
+        }
+        return (event.isActive ? "Open" : "Closed").localized
+    }
+
+    static func calendarConflicts(
+        events: [ServerYoungEvent], personal: [ServerPersonalCalendarEvent]
+    ) -> Set<String> {
+        let occupied = personal.filter {
+            guard ["schedule", "exam", "young_event"].contains($0.type),
+                  let start = $0.at, let end = $0.endsAt else { return false }
+            return end > start
+        }
+        return Set(events.filter { event in
+            guard let start = event.startAt else { return false }
+            let end = event.endAt ?? start
+            guard end >= start else { return false }
+            return occupied.contains { item in
+                guard item.youngId != event.youngId, let occupiedStart = item.at,
+                      let occupiedEnd = item.endsAt else { return false }
+                return start < occupiedEnd && (end == start ? start >= occupiedStart : end > occupiedStart)
+            }
+        }.map(\.youngId))
+    }
+
     static func localizedFormat(_ key: String, _ arguments: CVarArg...) -> String {
         String(format: key.localized, arguments: arguments)
     }
@@ -215,10 +266,11 @@ struct YoungEventRow: View {
                     Text("Source missing")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                } else if event.isActive {
-                    Text("Open")
+                } else {
+                    Text(YoungFormatting.eventStatus(event))
                         .font(.caption2.bold())
-                        .foregroundStyle(.green)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("young.status.\(event.youngId)")
                 }
             }
 
@@ -246,6 +298,7 @@ struct YoungCalendarDayAgenda: View {
     let date: Date
     let events: [ServerYoungEvent]
     let basis: YoungEventTimeBasis
+    var conflictingEventIDs: Set<String> = []
 
     var body: some View {
         Section {
@@ -258,7 +311,15 @@ struct YoungCalendarDayAgenda: View {
                     NavigationLink {
                         YoungEventDetailView(youngId: event.youngId)
                     } label: {
-                        YoungEventRow(event: event, basis: basis)
+                        VStack(alignment: .leading, spacing: 4) {
+                            YoungEventRow(event: event, basis: basis)
+                            if conflictingEventIDs.contains(event.youngId) {
+                                Label("Calendar conflict", systemImage: "calendar.badge.exclamationmark")
+                                    .font(.caption)
+                                    .foregroundStyle(.orange)
+                                    .accessibilityIdentifier("young.conflict.\(event.youngId)")
+                            }
+                        }
                     }
                 }
             }

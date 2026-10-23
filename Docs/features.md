@@ -85,20 +85,28 @@ completion requires a Life@USTC account. Markdown text currently uses native
 inline rendering; advanced math and tables still need acceptance in the final
 content-rendering pass.
 
-## Existing capabilities and remaining parity
+## Campus and activity discovery
 
-Second Classroom already has native activity/organizer browsing, calendars,
-subscriptions, follows and notification views. Comment/reply/reaction workflows
-and basic todos also exist. Their complete parity acceptance remains part of the
-inventory; an existing screen alone does not establish it.
+Discover includes server publications and source filters, searchable campus links,
+account pins, bus routes and saved boarding preferences, weather provenance and
+forecasts, and room-map lookup. Campus search opens native catalog details. The
+legacy feed reader remains under University services.
 
-Further work includes shared-homework creation and maintenance, description
-and file workflows, server publications, campus links/pins, weather,
-map and bus preferences, global discovery, and complete account/governance
-entries. Account security and administration retain their declared session-only
-Web boundaries unless a separately reviewed supported API is added. Service
-transports such as crawler ingestion, GraphQL/MCP hosting and operational
-metrics do not require mobile screens.
+Young subscriptions and organizer follows retain confirmed settings on failed
+writes. Notifications support unread filtering and refresh after marking a
+reminder read. Activity-time calendars report interval conflicts separately from
+registration windows. Private lists clear when the account changes.
+
+## Remaining parity
+
+The final acceptance pass still covers advanced content rendering, complete
+calendar export and navigation, deep links, and the remaining server presentation
+requirements. Campus search currently uses the public catalog scope; workspace
+search and counted link visits require the website's own session. Bus maps show
+routes and campuses; timetable-derived vehicle positions remain pending.
+Account security and administration retain their declared session-only Web
+boundaries. Service transports such as ingestion, GraphQL/MCP hosting and
+operational metrics do not require mobile screens.
 
 Private Blackboard data is never automatically published as shared homework.
 Undated exams cannot be represented as instants in the existing Widget cache;
@@ -120,3 +128,6 @@ Manual branch validation uses `ci.yaml` with `beta=false`; the workflow's normal
 main-branch delivery handles TestFlight. Visual changes include matched evidence
 in their PR. macOS runner configuration belongs in personal environment setup,
 not this repository's product documentation.
+
+`CampusJourneyTests` and `YoungCampusJourneyTests` cover native discovery,
+preferences, reminder recovery, publication filters and source navigation.

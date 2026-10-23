@@ -42,32 +42,41 @@
       "feature": "bus",
       "capability": "bus-timetable",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Schools/USTC/Views/USTCBusView.swift",
-        "Schools/USTC/Models/USTCBusData.swift"
+        "Views/Campus/ServerBusPlannerView.swift",
+        "Views/Campus/ServerBusPlannerModel.swift"
       ]
     },
     {
       "feature": "bus",
       "capability": "bus-route-search",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerBusPlannerView.swift",
+        "Server/ServerCampusClient.swift"
+      ]
     },
     {
       "feature": "bus",
       "capability": "bus-next-departures",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerBusPlannerView.swift",
+        "Server/ServerCampusClient.swift"
+      ]
     },
     {
       "feature": "bus",
       "capability": "bus-map",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerBusPlannerView.swift"
+      ],
+      "remaining": "Timetable-derived vehicle positions."
     },
     {
       "feature": "calendar",
@@ -84,9 +93,9 @@
       "feature": "calendar",
       "capability": "section-calendar-view",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift"
+        "Views/Catalog/ServerCatalogDetailViews.swift"
       ]
     },
     {
@@ -102,15 +111,22 @@
       "feature": "catalog-link",
       "capability": "link-browse",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerCampusLinksView.swift",
+        "Views/Campus/ServerCampusLinksModel.swift"
+      ]
     },
     {
       "feature": "catalog-link",
       "capability": "link-pin-and-visit",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerCampusLinksView.swift",
+        "Server/ServerCampusClient.swift"
+      ],
+      "remaining": "Counted visits require the website session; native links currently open their destination directly."
     },
     {
       "feature": "comment",
@@ -279,28 +295,25 @@
       "feature": "ical",
       "capability": "section-calendar-dialog",
       "surface": "native",
-      "implementation": "sdk_only",
-      "entrypoints": [
-        "Server/ServerModels.swift"
-      ]
+      "implementation": "not_present",
+      "entrypoints": []
     },
     {
       "feature": "ical",
       "capability": "personal-calendar-subscription",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerModels.swift"
+        "Views/Workspace/ServerCalendarFeedView.swift",
+        "Server/ServerWorkspaceClient.swift"
       ]
     },
     {
       "feature": "ical",
       "capability": "multi-section-ical",
       "surface": "native",
-      "implementation": "sdk_only",
-      "entrypoints": [
-        "Server/ServerModels.swift"
-      ]
+      "implementation": "not_present",
+      "entrypoints": []
     },
     {
       "feature": "mcp",
@@ -435,20 +448,20 @@
       "feature": "publications",
       "capability": "publication-read",
       "surface": "native",
-      "implementation": "not_present",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Feed/FeedView.swift",
-        "Views/Feed/AllSourceView.swift"
+        "Views/Publications/ServerPublicationsView.swift",
+        "Views/Publications/ServerPublicationDetailView.swift",
+        "Server/ServerPublicationClient.swift"
       ]
     },
     {
       "feature": "publications",
       "capability": "publication-source-directory",
       "surface": "native",
-      "implementation": "not_present",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Feed/FeedView.swift",
-        "Views/Feed/AllSourceView.swift"
+        "Views/Publications/ServerPublicationSourcesView.swift"
       ]
     },
     {
@@ -462,9 +475,9 @@
       "feature": "room-map",
       "capability": "room-map",
       "surface": "native",
-      "implementation": "not_present",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "General/Models/BuildingImgMapping.swift"
+        "Views/Campus/ServerRoomMapView.swift"
       ]
     },
     {
@@ -491,19 +504,21 @@
       "feature": "schedule",
       "capability": "section-schedule",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Server/ServerEndpoints.swift"
+        "Views/Catalog/ServerCatalogDetailViews.swift",
+        "Server/ServerLearningClient.swift"
       ]
     },
     {
       "feature": "search",
       "capability": "global-search",
       "surface": "native",
-      "implementation": "not_present",
+      "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Features/FeaturesView.swift"
-      ]
+        "Views/Campus/ServerCampusSearchView.swift"
+      ],
+      "remaining": "Authenticated workspace search uses a separate website session."
     },
     {
       "feature": "section",
@@ -527,10 +542,8 @@
       "feature": "section",
       "capability": "section-ical",
       "surface": "native",
-      "implementation": "native_entry_partial",
-      "entrypoints": [
-        "Views/Catalog/ServerCatalogDetailViews.swift"
-      ]
+      "implementation": "not_present",
+      "entrypoints": []
     },
     {
       "feature": "semester",
@@ -728,8 +741,10 @@
       "feature": "weather",
       "capability": "weather",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Campus/ServerCampusWeatherView.swift"
+      ]
     },
     {
       "feature": "webhook-login",
@@ -753,7 +768,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-event-subscription-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -764,7 +779,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-event-subscription-get",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -775,7 +790,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-organizer-subscription-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -786,7 +801,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-organizer-subscription-get",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -797,7 +812,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-notification-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -808,7 +823,7 @@
       "feature": "young-workspace",
       "capability": "workspace-calendar-event-list",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -819,7 +834,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-event-subscription-set",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -830,7 +845,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-organizer-subscription-set",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
@@ -841,7 +856,7 @@
       "feature": "young-workspace",
       "capability": "workspace-young-notification-read",
       "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Young/YoungSubscriptionViews.swift",
         "Views/Young/YoungNotificationsView.swift",
