@@ -19,6 +19,7 @@ languages([
 ])
 
 scheme("Life-USTC-UITests")
+only_testing(["Life-USTC-UITests/Life_USTC_ScreenshotTests"])
 
 output_directory("./screenshots")
 
