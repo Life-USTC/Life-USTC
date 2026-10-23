@@ -13,12 +13,11 @@ private var fontSize: Double = 10
 struct CurriculumChartView: View {
     var lectures: [Lecture]
     var referenceDate: Date
+    var behavior: CurriculumBehavior
 
     var todayStart: Date { referenceDate.stripTime() }
     var weekStart: Date { todayStart.startOfWeek() }
     var weekEnd: Date { weekStart.add(day: 7) }
-
-    var behavior: CurriculumBehavior { SchoolSystem.current.curriculumBehavior }
 
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()

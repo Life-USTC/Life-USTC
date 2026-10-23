@@ -5,13 +5,8 @@
 //  Created by Tiankai Ma on 2023/2/24.
 //
 
-import EventKit
-import SwiftUI
-import SwiftyJSON
-import WidgetKit
-
-extension USTCSchool {
-    static var ustcCurriculumBehavior: CurriculumBehavior {
+extension CurriculumBehavior {
+    static var ustc: CurriculumBehavior {
         return CurriculumBehavior(
             shownTimes: [
                 7 * 60 + 50,

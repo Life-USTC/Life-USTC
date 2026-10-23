@@ -22,7 +22,7 @@ enum USTCSchool {
             buildingimgBaseURL: URL(string: "\(Constants.ustcStaticURLPrefix)/")!,
             buildingimgMappingURL: URL(string: "\(Constants.ustcStaticURLPrefix)/building_img_rules.json")!,
 
-            curriculumBehavior: ustcCurriculumBehavior,
+            curriculumBehavior: .ustc,
 
             updateCurriculum: updateCurriculum,
             updateExam: updateExam,

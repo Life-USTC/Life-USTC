@@ -46,8 +46,23 @@ enum SwiftDataStack {
 
     static var isPresentingDemo: Bool { shouldUseDemoData }
 
+    #if DEBUG
+    private static let testContainer: ModelContainer = {
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        return try! ModelContainer(for: schema, configurations: [configuration])
+    }()
+    #endif
+
     static func container(forDemo: Bool) -> ModelContainer {
-        forDemo ? demoContainer : productionContainer
+        if forDemo { return demoContainer }
+        #if DEBUG
+        if let raw = ProcessInfo.processInfo.environment["UI_TEST_SERVER_URL"],
+            let url = URL(string: raw), url.scheme == "http",
+            ["127.0.0.1", "localhost", "::1"].contains(url.host ?? "") {
+            return testContainer
+        }
+        #endif
+        return productionContainer
     }
 
     static var modelContainer: ModelContainer {

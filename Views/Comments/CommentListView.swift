@@ -210,7 +210,7 @@ struct CommentListView: View {
     @State private var editingComment: ServerComment?
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 0) {
             if let error = viewModel.error, viewModel.comments.isEmpty && !viewModel.isLoading {
                 ContentUnavailableView {
                     Label("Unable to Load Comments", systemImage: "exclamationmark.triangle")
@@ -298,6 +298,7 @@ struct CommentListView: View {
         .sheet(item: $editingComment) { comment in
             CommentComposeView(viewModel: viewModel, editingComment: comment)
         }
+        .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
         .task(id: account.isAuthenticated) { await viewModel.load() }
         .refreshable { await viewModel.load() }
         .overlay {

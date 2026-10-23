@@ -36,6 +36,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
 
     /// Always read the current client — don't cache, since backend can change.
     private var client: ServerClient { ServerClient.shared }
+    @MainActor private var authenticationSession: ASWebAuthenticationSession?
 
     // MARK: - ASWebAuthenticationPresentationContextProviding
 
@@ -49,11 +50,15 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
 
     @MainActor
     func login() async throws {
+        guard authenticationSession == nil else { return }
+        let client = self.client
+        let authorization = client.authorizationContext
         let codeVerifier = Self.generateCodeVerifier()
         let codeChallenge = Self.generateCodeChallenge(from: codeVerifier)
+        let state = Self.generateCodeVerifier()
 
         var components = URLComponents(
-            url: client.baseURL.appendingPathComponent(
+            url: authorization.baseURL.appendingPathComponent(
                 "api/auth/oauth2/authorize"),
             resolvingAgainstBaseURL: false
         )!
@@ -63,6 +68,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             .init(name: "redirect_uri", value: Self.redirectURI),
             .init(name: "code_challenge", value: codeChallenge),
             .init(name: "code_challenge_method", value: "S256"),
+            .init(name: "state", value: state),
             .init(
                 name: "scope",
                 value: Self.scopes.joined(separator: " ")
@@ -72,6 +78,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         let authURL = components.url!
         logger.info("Starting OAuth2 PKCE flow → \(authURL.host() ?? "")")
 
+        defer { authenticationSession = nil }
         let code = try await withCheckedThrowingContinuation {
             (continuation: CheckedContinuation<String, Error>) in
 
@@ -83,27 +90,26 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
                     continuation.resume(throwing: error)
                     return
                 }
-                guard let callbackURL,
-                    let components = URLComponents(
-                        url: callbackURL, resolvingAgainstBaseURL: false),
-                    let code = components.queryItems?.first(where: {
-                        $0.name == "code"
-                    })?.value
-                else {
-                    continuation.resume(throwing: ServerError.notAuthenticated)
-                    return
+                do {
+                    let code = try Self.authorizationCode(from: callbackURL, expectedState: state)
+                    continuation.resume(returning: code)
+                } catch {
+                    continuation.resume(throwing: error)
                 }
-                continuation.resume(returning: code)
             }
 
             session.presentationContextProvider = self
             session.prefersEphemeralWebBrowserSession = false
-            session.start()
+            authenticationSession = session
+            if !session.start() {
+                continuation.resume(throwing: ServerError.notAuthenticated)
+            }
         }
 
         logger.info("Got authorization code, exchanging for tokens")
         try await exchangeCodeForTokens(
-            code: code, codeVerifier: codeVerifier
+            code: code, codeVerifier: codeVerifier, client: client,
+            baseURL: authorization.baseURL, expectedRevision: authorization.revision
         )
     }
 
@@ -117,9 +123,11 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
     // MARK: - Token Exchange
 
     private func exchangeCodeForTokens(
-        code: String, codeVerifier: String
+        code: String, codeVerifier: String, client: ServerClient,
+        baseURL: URL, expectedRevision: UUID
     ) async throws {
-        let url = client.baseURL.appendingPathComponent(
+        guard client.sessionRevision == expectedRevision else { throw CancellationError() }
+        let url = baseURL.appendingPathComponent(
             "api/auth/oauth2/token")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -149,9 +157,8 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
             httpResponse.statusCode == 200
         else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            let body = String(data: data, encoding: .utf8) ?? "<no body>"
             logger.error(
-                "Token exchange failed (\(status)): \(body)"
+                "Token exchange failed (\(status))"
             )
             throw ServerError.notAuthenticated
         }
@@ -160,16 +167,29 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         let tokenResponse = try decoder.decode(
             OAuthTokenResponse.self, from: data
         )
-        client.accessToken = tokenResponse.accessToken
-        if let refresh = tokenResponse.refreshToken {
-            client.refreshToken = refresh
-        }
+        try client.acceptAuthorization(tokenResponse, expectedRevision: expectedRevision)
         logger.info(
             "Token exchange succeeded (has refresh: \(tokenResponse.refreshToken != nil))"
         )
     }
 
     // MARK: - PKCE Helpers
+
+    static func authorizationCode(from callbackURL: URL?, expectedState: String) throws -> String {
+        guard let callbackURL,
+            callbackURL.scheme == callbackScheme,
+            callbackURL.host == "auth", callbackURL.path == "/callback",
+            callbackURL.port == nil, callbackURL.user == nil, callbackURL.password == nil,
+            callbackURL.fragment == nil,
+            let items = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false)?.queryItems,
+            items.filter({ $0.name == "state" }).count == 1,
+            items.first(where: { $0.name == "state" })?.value == expectedState,
+            !items.contains(where: { $0.name == "error" }),
+            items.filter({ $0.name == "code" }).count == 1,
+            let code = items.first(where: { $0.name == "code" })?.value, !code.isEmpty
+        else { throw ServerError.notAuthenticated }
+        return code
+    }
 
     static func generateCodeVerifier() -> String {
         var buffer = [UInt8](repeating: 0, count: 32)

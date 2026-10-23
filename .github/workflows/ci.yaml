@@ -75,6 +75,7 @@ jobs:
             -scheme Life-USTC-UITests \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -only-testing:Life-USTC-UITests/E2ETests \
+            -only-testing:Life-USTC-UITests/ServerJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet

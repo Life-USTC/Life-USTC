@@ -18,8 +18,8 @@ enum ContentViewTab: Int, CaseIterable {
         Group {
             switch self {
             case .position_1: HomeView()
-            case .position_2: FeaturesView()
-            case .position_3: AllSourceView()
+            case .position_2: WorkspaceCalendarView()
+            case .position_3: DiscoverView()
             case .position_4: SettingsView()
             }
         }
@@ -39,11 +39,11 @@ enum ContentViewTab: Int, CaseIterable {
         case .position_1:
             "Home"
         case .position_2:
-            "Features"
+            "Calendar"
         case .position_3:
-            "Feed"
+            "Discover"
         case .position_4:
-            "Settings"
+            "Account"
         }
     }
 
@@ -52,11 +52,11 @@ enum ContentViewTab: Int, CaseIterable {
         case .position_1:
             Label("Home", systemImage: "square.stack.3d.up")
         case .position_2:
-            Label("Features", systemImage: "square.grid.2x2")
+            Label("Calendar", systemImage: "calendar")
         case .position_3:
-            Label("Feed", systemImage: "doc.richtext.fill")
+            Label("Discover", systemImage: "square.grid.2x2")
         case .position_4:
-            Label("Settings", systemImage: "gearshape.fill")
+            Label("Account", systemImage: "person.crop.circle")
         }
     }
 }

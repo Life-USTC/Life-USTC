@@ -16,6 +16,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         if ProcessInfo.processInfo.arguments.contains("UI_TEST_RESET_ONBOARDING") {
             UserDefaults.standard.set(true, forKey: "firstLogin_3")
         }
+        if ServerClientConfiguration.uiTestBaseURL != nil {
+            UserDefaults.appGroup.set(false, forKey: "appShouldPresentDemo")
+            if ProcessInfo.processInfo.environment["UI_TEST_SKIP_ONBOARDING"] == "1" {
+                UserDefaults.standard.set(false, forKey: "firstLogin_3")
+            }
+        }
         #endif
         SchoolSystem.current = USTCSchool.make()
     }

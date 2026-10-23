@@ -532,6 +532,19 @@ final class ServerClientTests: XCTestCase {
 
     // MARK: - Date Decoding
 
+    func testTodoListDecodesServerProjectionWithoutOwnerIdentifier() async throws {
+        MockURLProtocol.requestHandler = { request in
+            let data = Data(#"{"counts":{"total":1,"completed":0,"pending":1},"todos":[{"id":"todo-1","title":"Read chapter 2","content":null,"priority":"medium","completed":false,"dueAt":null,"createdAt":"2026-10-23T08:00:00+08:00","updatedAt":"2026-10-23T08:00:00+08:00"}]}"#.utf8)
+            return (HTTPURLResponse(url: request.url!, statusCode: 200,
+                                    httpVersion: nil, headerFields: nil)!, data)
+        }
+        let response = try await client.fetchTodos()
+        XCTAssertEqual(response.todos.count, 1)
+        XCTAssertEqual(response.todos.first?.title, "Read chapter 2")
+        XCTAssertEqual(response.todos.first?.completed, false)
+        XCTAssertNil(response.todos.first?.dueAt)
+    }
+
     func testDateDecodingWithFractionalSeconds() throws {
         let json = """
         {"id":"t1","userId":"u1","title":"Test","priority":"low","completed":false,"createdAt":"2026-01-15T10:30:00.123Z","updatedAt":"2026-01-15T10:30:00.123Z"}

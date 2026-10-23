@@ -94,6 +94,7 @@ struct CurriculumDetailView: View {
                 CurriculumChartView(
                     lectures: lectures,
                     referenceDate: referenceDate,
+                    behavior: SchoolSystem.current.curriculumBehavior,
                 )
             } else {
                 CurriculumWeekViewVerticalNew(
