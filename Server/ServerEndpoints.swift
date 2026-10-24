@@ -22,10 +22,13 @@ enum ServerEndpoint {
     // Semesters
     case listSemesters(page: Int?, pageSize: Int?)
     case currentSemester
+    case catalogMetadata
 
     // Courses
-    case listCourses(query: String?, page: Int?, pageSize: Int?)
+    case listCourses(query: String?, educationLevelId: Int? = nil, page: Int?, pageSize: Int?)
     case getCourse(jwId: String)
+    case courseSectionHistory(jwId: Int, page: Int, pageSize: Int)
+    case teacherSectionHistory(id: Int, page: Int, pageSize: Int)
 
     // Sections
     case listSections(query: String?, semesterId: Int?, courseId: Int?, teacherId: Int? = nil, page: Int?, pageSize: Int?)
@@ -145,8 +148,8 @@ enum ServerEndpoint {
     var method: String {
         switch self {
         case .me, .clientActivity, .getPublicUser, .getDescription, .getComment, .listHomeworkAudit, .downloadUpload,
-            .currentSemester, .listSemesters,
-            .listCourses, .getCourse,
+            .currentSemester, .listSemesters, .catalogMetadata,
+            .listCourses, .getCourse, .courseSectionHistory, .teacherSectionHistory,
             .listSections, .getSection, .getSectionSchedules,
             .listTeachers, .getTeacher,
             .querySchedules,
@@ -189,12 +192,18 @@ enum ServerEndpoint {
             return "/api/community/descriptions"
         case .listSemesters:
             return "/api/catalog/semesters"
+        case .catalogMetadata:
+            return "/api/catalog/metadata"
         case .currentSemester:
             return "/api/catalog/semesters/current"
         case .listCourses:
             return "/api/catalog/courses"
         case .getCourse(let jwId):
             return "/api/catalog/courses/\(Self.pathSegment(jwId))"
+        case .courseSectionHistory(let jwId, _, _):
+            return "/api/catalog/courses/\(jwId)/sections"
+        case .teacherSectionHistory(let id, _, _):
+            return "/api/catalog/teachers/\(id)/sections"
         case .listSections:
             return "/api/catalog/sections"
         case .getSection(let jwId):
@@ -316,6 +325,8 @@ enum ServerEndpoint {
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .courseSectionHistory(_, let page, let pageSize), .teacherSectionHistory(_, let page, let pageSize):
+            return [.init(name: "page", value: "\(page)"), .init(name: "pageSize", value: "\(pageSize)")]
         case .clientActivity(let cursor, let limit):
             var items = [URLQueryItem(name: "limit", value: String(limit))]
             if let cursor { items.append(.init(name: "cursor", value: cursor)) }
@@ -354,9 +365,10 @@ enum ServerEndpoint {
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
-        case .listCourses(let query, let page, let pageSize):
+        case .listCourses(let query, let educationLevelId, let page, let pageSize):
             var items: [URLQueryItem] = []
             if let query { items.append(.init(name: "search", value: query)) }
+            if let educationLevelId { items.append(.init(name: "educationLevelId", value: "\(educationLevelId)")) }
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items

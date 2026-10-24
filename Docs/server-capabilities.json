@@ -1,5 +1,5 @@
 {
-  "serverRevision": "ff6c58eea11c85aaa1eb067fb58361dc40dc2b47",
+  "serverRevision": "923c96623c73704faa23639adeedbe7188980ca1",
   "trackingIssue": 101,
   "coverageMeaning": "Entry and source coverage only. Runtime test success is recorded per PR and does not establish complete requirement parity or production OAuth acceptance. Canonical requirements remain in the server feature files.",
   "capabilities": [
@@ -84,9 +84,9 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Campus/ServerBusPlannerView.swift"
-      ],
-      "remaining": "Timetable-derived vehicle positions."
+        "Views/Campus/ServerBusPlannerView.swift",
+        "Views/Campus/ServerBusMapTrips.swift"
+      ]
     },
     {
       "feature": "calendar",
@@ -94,8 +94,9 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Young/YoungCalendarViews.swift",
+        "Views/Workspace/WorkspaceCalendarView.swift",
         "Views/Workspace/WorkspaceCalendarModel.swift",
+        "Views/Workspace/WorkspaceCalendarRange.swift",
         "Views/Workspace/ServerCalendarFeedView.swift"
       ]
     },
@@ -136,7 +137,7 @@
         "Views/Campus/ServerCampusLinksView.swift",
         "Server/ServerCampusClient.swift"
       ],
-      "remaining": "Counted visits require the website session; native links currently open their destination directly."
+      "remaining": "Links open the canonical resolver; counted visits require the website session."
     },
     {
       "feature": "comment",
@@ -162,8 +163,11 @@
       "feature": "comment",
       "capability": "comment-auxiliary-pages",
       "surface": "public_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerSupportView.swift",
+        "Views/Comments/CommentListView.swift"
+      ]
     },
     {
       "feature": "course",
@@ -171,7 +175,7 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Catalog/ServerCatalogDetailViews.swift"
+        "Views/Catalog/ServerCatalogView.swift"
       ]
     },
     {
@@ -181,7 +185,8 @@
       "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Catalog/ServerCatalogDetailViews.swift"
-      ]
+      ],
+      "remaining": "Complete retired section history requires the server routes in Life-USTC/server#1345."
     },
     {
       "feature": "demo",
@@ -311,8 +316,10 @@
       "feature": "ical",
       "capability": "section-calendar-dialog",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Workspace/ServerSectionCalendarView.swift"
+      ]
     },
     {
       "feature": "ical",
@@ -328,8 +335,11 @@
       "feature": "ical",
       "capability": "multi-section-ical",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Workspace/ServerSectionCalendarView.swift",
+        "Views/Catalog/ServerSubscriptionsView.swift"
+      ]
     },
     {
       "feature": "mcp",
@@ -443,7 +453,8 @@
       "implementation": "native_entry_partial",
       "entrypoints": [
         "App/ContentView.swift",
-        "Views/Shared/ContentViewTab.swift"
+        "Server/ServerContentRoute.swift",
+        "Views/Shared/ServerContentDestination.swift"
       ]
     },
     {
@@ -468,10 +479,10 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Publications/ServerPublicationsView.swift",
         "Views/Publications/ServerPublicationDetailView.swift",
-        "Server/ServerPublicationClient.swift"
-      ]
+        "Views/Shared/ServerRenderedContent.swift"
+      ],
+      "remaining": "Production requires the renderedBodyHtml server contract in Life-USTC/server#1344."
     },
     {
       "feature": "publications",
@@ -536,7 +547,7 @@
       "entrypoints": [
         "Views/Campus/ServerCampusSearchView.swift"
       ],
-      "remaining": "Authenticated workspace search uses a separate website session."
+      "remaining": "Workspace search opens the website and uses its session; native OAuth search covers the catalog."
     },
     {
       "feature": "section",
@@ -544,7 +555,7 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Catalog/ServerCatalogDetailViews.swift"
+        "Views/Catalog/ServerCatalogView.swift"
       ]
     },
     {
@@ -560,8 +571,11 @@
       "feature": "section",
       "capability": "section-ical",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Workspace/ServerSectionCalendarView.swift",
+        "Views/Catalog/ServerCatalogDetailViews.swift"
+      ]
     },
     {
       "feature": "semester",
@@ -623,7 +637,7 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Catalog/ServerCatalogDetailViews.swift"
+        "Views/Catalog/ServerCatalogView.swift"
       ]
     },
     {
@@ -633,7 +647,8 @@
       "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Catalog/ServerCatalogDetailViews.swift"
-      ]
+      ],
+      "remaining": "Complete retired section history requires the server routes in Life-USTC/server#1345."
     },
     {
       "feature": "todo",
@@ -702,8 +717,10 @@
       "feature": "usage",
       "capability": "usage-guides",
       "surface": "public_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerSupportView.swift"
+      ]
     },
     {
       "feature": "user",

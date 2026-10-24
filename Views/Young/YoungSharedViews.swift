@@ -159,6 +159,26 @@ enum YoungFormatting {
         return (event.isActive ? "Open" : "Closed").localized
     }
 
+    static func calendarEvents(
+        _ events: [ServerYoungEvent], on date: Date, mode: YoungCalendarDisplayMode, basis: YoungEventTimeBasis
+    ) -> [ServerYoungEvent] {
+        let day = YoungCalendarDate.dayStart(date)
+        let next = YoungCalendarDate.calendar.date(byAdding: .day, value: 1, to: day)!
+        return events.filter { event in
+            let times = event.dateRange(for: basis)
+            guard let start = times.0 else { return false }
+            let startsToday = start >= day && start < next
+            if mode != .day { return startsToday }
+            guard let end = times.1 else { return startsToday }
+            return start < next && (end > day || (start == end && start == day))
+        }.sorted { left, right in
+            let lhs = left.dateRange(for: basis).0!
+            let rhs = right.dateRange(for: basis).0!
+            if (lhs >= day) != (rhs >= day) { return lhs >= day }
+            return lhs == rhs ? left.youngId < right.youngId : lhs < rhs
+        }
+    }
+
     static func calendarConflicts(
         events: [ServerYoungEvent], personal: [ServerPersonalCalendarEvent]
     ) -> Set<String> {
@@ -299,10 +319,11 @@ struct YoungCalendarDayAgenda: View {
     let events: [ServerYoungEvent]
     let basis: YoungEventTimeBasis
     var conflictingEventIDs: Set<String> = []
+    var showsEmptyMessage = true
 
     var body: some View {
         Section {
-            if events.isEmpty {
+            if events.isEmpty && showsEmptyMessage {
                 Text("No activities")
                     .font(.caption)
                     .foregroundStyle(.secondary)

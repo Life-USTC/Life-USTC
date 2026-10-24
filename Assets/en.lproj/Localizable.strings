@@ -46,7 +46,7 @@
 "Retry semesters" = "Retry semesters";
 "Retry" = "Retry";
 "Load more" = "Load more";
-"Search catalog" = "Search catalog";
+"Search" = "Search";
 "%lld results" = "%lld results";
 "Enrolled" = "Enrolled";
 "Auditing" = "Auditing";
@@ -476,3 +476,59 @@
 "Account Management" = "Account Management";
 
 "Sessions and Security Activity" = "Sessions and Security Activity";
+
+"In source signup list" = "In source signup list";
+
+"%d in source signup list" = "%d in source signup list";
+
+"Activities with no date for the selected time basis." = "Activities with no date for the selected time basis.";
+
+"Previous period" = "Previous period";
+"Next period" = "Next period";
+"Reload semester choices" = "Reload semester choices";
+"No events" = "No events";
+"Teaching Section Calendar" = "Teaching Section Calendar";
+"Choose up to 50 sections" = "Choose up to 50 sections";
+"Combined calendars include active teaching sections. Historical sections can be exported from their detail page." = "Combined calendars include active teaching sections. Historical sections can be exported from their detail page.";
+"Combined Section Calendar" = "Combined Section Calendar";
+"Open calendar file" = "Open calendar file";
+"Add this public link to a calendar app to follow the section's published schedule and exams." = "Add this public link to a calendar app to follow the section's published schedule and exams.";
+"Usage Guides" = "Usage Guides";
+"Community Guides" = "Community Guides";
+"Help and Guides" = "Help and Guides";
+"Mobile App" = "Mobile App";
+"Bot" = "Bot";
+"MCP" = "MCP";
+"Command Line" = "Command Line";
+"Markdown Support" = "Markdown Support";
+"Comment Guide" = "Comment Guide";
+"Search my workspace on the website" = "Search my workspace on the website";
+"Workspace search uses the account signed in on the website." = "Workspace search uses the account signed in on the website.";
+"All education levels" = "All education levels";
+"Retry education levels" = "Retry education levels";
+"Historical section" = "Historical section";
+"Export section calendar" = "Export section calendar";
+"Export section calendars" = "Export section calendars";
+"Timetable from %@" = "Timetable from %@";
+"Bus positions are timetable estimates, not GPS locations." = "Bus positions are timetable estimates, not GPS locations.";
+"Estimated bus location" = "Estimated bus location";
+"Departing within 60 minutes" = "Departing within 60 minutes";
+
+"Homework writing guide" = "Homework writing guide";
+"Suggested titles: Assignment {N} or {Topic} assignment. Avoid chapter-only titles and omit the course name or code." = "Suggested titles: Assignment {N} or {Topic} assignment. Avoid chapter-only titles and omit the course name or code.";
+"Describe the problems first, then the submission method, submission address, and notes. Write Not recorded for unknown problems; omit other unknown details." = "Describe the problems first, then the submission method, submission address, and notes. Write Not recorded for unknown problems; omit other unknown details.";
+"These are suggestions and do not prevent saving." = "These are suggestions and do not prevent saving.";
+
+"Week %lld" = "Week %lld";
+
+"Share" = "Share";
+
+"No activities" = "No activities";
+
+"Previous" = "Previous";
+
+"No personal events overlap this period." = "No personal events overlap this period.";
+
+"My Calendar" = "My Calendar";
+
+"Historical sections" = "Historical sections";

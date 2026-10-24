@@ -24,6 +24,15 @@ struct ServerHomeworkEditorView: View {
                     }
                     .disabled(!model.canEdit || model.isSaving)
                     Section {
+                        DisclosureGroup("Homework writing guide") {
+                            Text("Suggested titles: Assignment {N} or {Topic} assignment. Avoid chapter-only titles and omit the course name or code.")
+                            Text("Describe the problems first, then the submission method, submission address, and notes. Write Not recorded for unknown problems; omit other unknown details.")
+                            Text("These are suggestions and do not prevent saving.")
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityIdentifier("homework.editor.guide")
+                    }
+                    Section {
                         ServerHomeworkDateField(title: "Published", value: $model.publishedAt, identifier: "published")
                         ServerHomeworkDateField(title: "Submission opens", value: $model.submissionStartAt, identifier: "start")
                         ServerHomeworkDateField(title: "Deadline", value: $model.submissionDueAt, identifier: "due")

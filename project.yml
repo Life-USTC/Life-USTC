@@ -53,6 +53,7 @@ targets:
           - webcredentials:passport.ustc.edu.cn
           - webcredentials:id.ustc.edu.cn
           - webcredentials:life-ustc.tiankaima.dev
+          - applinks:life-ustc.tiankaima.dev
         com.apple.security.app-sandbox: true
         com.apple.security.application-groups:
           - group.dev.tiankaima.Life-USTC
@@ -83,6 +84,9 @@ targets:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.tiankaima.life-ustc
+            CFBundleURLSchemes: ["dev.tiankaima.life-ustc"]
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
           NSAllowsArbitraryLoadsForMedia: true

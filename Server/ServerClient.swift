@@ -603,8 +603,8 @@ final class ServerClient: @unchecked Sendable {
         try await request(.listSemesters(page: page, pageSize: pageSize))
     }
 
-    func searchCourses(query: String? = nil, page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerCourseSummary> {
-        try await request(.listCourses(query: query, page: page, pageSize: pageSize))
+    func searchCourses(query: String? = nil, educationLevelId: Int? = nil, page: Int? = nil, pageSize: Int? = nil) async throws -> PaginatedResponse<ServerCourseSummary> {
+        try await request(.listCourses(query: query, educationLevelId: educationLevelId, page: page, pageSize: pageSize))
     }
 
     func fetchCourseDetail(jwId: String) async throws -> ServerCourseDetail {

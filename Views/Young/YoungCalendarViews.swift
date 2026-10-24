@@ -2,10 +2,35 @@
 //  YoungCalendarViews.swift
 //  Life@USTC
 //
-//  Public activity agenda and complete personal calendar views.
+//  Public activity calendar, with Sunday as the first day of the week.
 //
 
 import SwiftUI
+
+enum YoungPublicCalendarDate {
+    static func range(for mode: YoungCalendarDisplayMode, date: Date) -> ServerCalendarRange {
+        if mode == .week {
+            let day = YoungCalendarDate.dayStart(date)
+            let weekday = YoungCalendarDate.calendar.component(.weekday, from: day)
+            let start = YoungCalendarDate.calendar.date(byAdding: .day, value: 1 - weekday, to: day)!
+            return ServerCalendarRange(start: start,
+                end: YoungCalendarDate.calendar.date(byAdding: .day, value: 6, to: start)!)
+        }
+        let value = YoungCalendarDate.range(for: mode, date: date)
+        return ServerCalendarRange(start: YoungCalendarDate.dateFormatter.date(from: value.from)!,
+                                   end: YoungCalendarDate.dateFormatter.date(from: value.to)!)
+    }
+
+    static func monthGrid(for date: Date) -> [Date] {
+        let calendar = YoungCalendarDate.calendar
+        let start = YoungCalendarDate.monthStart(date)
+        let dayCount = calendar.range(of: .day, in: .month, for: start)!.count
+        let leadingDays = calendar.component(.weekday, from: start) - 1
+        let cellCount = ((leadingDays + dayCount + 6) / 7) * 7
+        let first = calendar.date(byAdding: .day, value: -leadingDays, to: start)!
+        return (0..<cellCount).map { calendar.date(byAdding: .day, value: $0, to: first)! }
+    }
+}
 
 @Observable
 private final class YoungActivityCalendarModel {
@@ -30,7 +55,7 @@ private final class YoungActivityCalendarModel {
         let requestedMode = mode
         let requestedBasis = basis
         let requestedReferenceDate = referenceDate
-        let range = YoungCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
+        let range = YoungPublicCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
         isLoading = true
         error = nil
         events = []
@@ -38,8 +63,8 @@ private final class YoungActivityCalendarModel {
         source = nil
         do {
             let page = try await ServerClient.shared.fetchYoungEventsPage(
-                dateFrom: range.from,
-                dateTo: range.to,
+                dateFrom: YoungCalendarDate.dateString(range.start),
+                dateTo: YoungCalendarDate.dateString(range.end),
                 timeBasis: requestedBasis
             )
             guard requestGeneration == generation, !Task.isCancelled else { return }
@@ -55,35 +80,15 @@ private final class YoungActivityCalendarModel {
     }
 
     func events(on date: Date) -> [ServerYoungEvent] {
-        events
-            .filter { $0.overlaps(day: date, basis: basis) }
-            .sorted { lhs, rhs in
-                let left = lhs.dateRange(for: basis).0 ?? lhs.dateRange(for: basis).1 ?? .distantFuture
-                let right = rhs.dateRange(for: basis).0 ?? rhs.dateRange(for: basis).1 ?? .distantFuture
-                return left == right ? lhs.name < rhs.name : left < right
-            }
+        YoungFormatting.calendarEvents(events, on: date, mode: mode, basis: basis)
     }
 
     var weekDates: [Date] {
-        let start = YoungCalendarDate.weekStart(referenceDate)
-        return (0..<7).compactMap {
-            YoungCalendarDate.calendar.date(byAdding: .day, value: $0, to: start)
-        }
+        YoungPublicCalendarDate.range(for: .week, date: referenceDate).days
     }
 
     var monthGridDates: [Date] {
-        let calendar = YoungCalendarDate.calendar
-        let monthStart = YoungCalendarDate.monthStart(referenceDate)
-        let dayCount = calendar.range(of: .day, in: .month, for: monthStart)?.count ?? 0
-        let weekday = calendar.component(.weekday, from: monthStart)
-        let leadingDays = (weekday + 5) % 7
-        let cellCount = Int(ceil(Double(leadingDays + dayCount) / 7.0)) * 7
-        guard let first = calendar.date(byAdding: .day, value: -leadingDays, to: monthStart) else {
-            return []
-        }
-        return (0..<cellCount).compactMap {
-            calendar.date(byAdding: .day, value: $0, to: first)
-        }
+        YoungPublicCalendarDate.monthGrid(for: referenceDate)
     }
 }
 
@@ -93,7 +98,8 @@ struct YoungActivityCalendarView: View {
     @State private var personal = ServerWorkspaceCalendarModel()
 
     private var personalRequestID: String {
-        "\(model.mode.rawValue)-\(YoungCalendarDate.dateString(model.referenceDate))"
+        let range = YoungPublicCalendarDate.range(for: model.mode, date: model.referenceDate)
+        return "\(YoungCalendarDate.dateString(range.start))/\(YoungCalendarDate.dateString(range.end))"
     }
 
     private var conflicts: Set<String> {
@@ -135,7 +141,9 @@ struct YoungActivityCalendarView: View {
                 }
                 .accessibilityLabel("Previous period")
                 Spacer()
-                Text(YoungFormatting.rangeTitle(for: model.mode, date: model.referenceDate))
+                let range = YoungPublicCalendarDate.range(for: model.mode, date: model.referenceDate)
+                Text(model.mode == .day ? YoungCalendarDate.dateString(range.start)
+                     : "\(YoungCalendarDate.dateString(range.start)) – \(YoungCalendarDate.dateString(range.end))")
                     .font(.headline)
                 Spacer()
                 Button {
@@ -229,8 +237,7 @@ struct YoungActivityCalendarView: View {
 
     private func loadPersonalCalendar() async {
         guard model.basis == .activity else { return }
-        personal.mode = model.mode
-        personal.referenceDate = model.referenceDate
+        personal.rangeOverride = YoungPublicCalendarDate.range(for: model.mode, date: model.referenceDate)
         await personal.load()
     }
 
@@ -248,12 +255,16 @@ struct YoungActivityCalendarView: View {
             }
         case .week:
             List {
+                if model.weekDates.allSatisfy({ model.events(on: $0).isEmpty }) {
+                    Text("No activities").foregroundStyle(.secondary)
+                }
                 ForEach(model.weekDates, id: \.self) { date in
                     YoungCalendarDayAgenda(
                         date: date,
                         events: model.events(on: date),
                         basis: model.basis,
-                        conflictingEventIDs: conflicts
+                        conflictingEventIDs: conflicts,
+                        showsEmptyMessage: false
                     )
                 }
             }
@@ -283,7 +294,7 @@ struct YoungActivityCalendarView: View {
         let monthStart = YoungCalendarDate.monthStart(model.referenceDate)
         return VStack(spacing: 6) {
             HStack {
-                ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
+                ForEach(["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], id: \.self) { day in
                     Text(day.localized)
                         .font(.caption2.bold())
                         .frame(maxWidth: .infinity)
@@ -314,96 +325,5 @@ struct YoungActivityCalendarView: View {
             }
         }
         .padding(.horizontal)
-    }
-}
-
-struct WorkspaceCalendarView: View {
-    @Bindable private var account = ServerAccountStore.shared
-    @State private var model = ServerWorkspaceCalendarModel()
-
-    var body: some View {
-        Group {
-            if !account.isAuthenticated {
-                YoungLoginRequiredView()
-            } else {
-                VStack(spacing: 0) {
-                    Picker("Calendar", selection: $model.mode) {
-                        ForEach(YoungCalendarDisplayMode.allCases) { mode in
-                            Text(mode.title.localized).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding()
-                    HStack {
-                        Button {
-                            model.referenceDate = YoungCalendarDate.advance(
-                                model.referenceDate,
-                                mode: model.mode,
-                                amount: -1
-                            )
-                        } label: {
-                            Label("Previous", systemImage: "chevron.left")
-                                .labelStyle(.iconOnly)
-                        }
-                        .accessibilityLabel("Previous period")
-                        Spacer()
-                        Text(YoungFormatting.rangeTitle(for: model.mode, date: model.referenceDate))
-                            .font(.headline)
-                        Spacer()
-                        Button {
-                            model.referenceDate = YoungCalendarDate.advance(
-                                model.referenceDate,
-                                mode: model.mode
-                            )
-                        } label: {
-                            Label("Next", systemImage: "chevron.right")
-                                .labelStyle(.iconOnly)
-                        }
-                        .accessibilityLabel("Next period")
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 8)
-
-                    if let error = model.error, !model.isLoading {
-                        YoungErrorView(error: error, retry: { Task { await model.load() } }, reauthorize: true)
-                    }
-                    if model.events.isEmpty && !model.isLoading && model.error == nil {
-                        ContentUnavailableView(
-                            "Calendar Empty",
-                            systemImage: "calendar",
-                            description: Text("No personal events overlap this period.")
-                        )
-                    } else {
-                        List(model.events) { event in
-                            WorkspaceEventLink(event: event)
-                        }
-                        .overlay {
-                            if model.isLoading { ProgressView() }
-                        }
-                    }
-                }
-            }
-        }
-        .navigationTitle("My Calendar")
-        .task(id: "\(model.requestID)-\(account.sessionRevision)") { await model.load() }
-        .refreshable { await model.load() }
-        .toolbar {
-            if account.isAuthenticated {
-                ToolbarItem(placement: .primaryAction) {
-                    NavigationLink {
-                        ServerCalendarFeedView()
-                    } label: {
-                        Label("Calendar subscription", systemImage: "calendar.badge.plus")
-                    }
-                    .accessibilityIdentifier("calendar_feed")
-                }
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .serverWorkspaceDidChange)) { _ in
-            Task { await model.load() }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in
-            Task { await model.load() }
-        }
     }
 }

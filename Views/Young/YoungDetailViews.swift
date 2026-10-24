@@ -70,31 +70,34 @@ struct YoungEventDetailView: View {
                         }
                     }
 
+                    Section("Registration") {
+                        if let url = event.officialSignupURL {
+                            Link(destination: url) {
+                                Label("Open official signup", systemImage: "arrow.up.right.square")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .accessibilityIdentifier("young.signup")
+                        }
+                        Text("Registration is completed on the official Young website.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
                     Section("Reminder and calendar") {
                         YoungEventSubscriptionPanel(youngId: event.youngId)
                     }
 
-                    Section("Registration") {
-                        if let required = event.requiresSignup {
-                            Text(required ? "Registration required".localized : "No registration required".localized)
-                        }
-                        if event.requiresSignupInfo == true { Text("Additional registration information required") }
-                        if let grades = event.grades, !grades.isEmpty { LabeledContent("Eligible grades", value: grades) }
-                        if !event.allowedAttachmentTypes.isEmpty { LabeledContent("Accepted attachment formats", value: event.allowedAttachmentTypes.joined(separator: ", ").uppercased()) }
-                        if event.signupScopeCode != nil || !event.signupDepartmentIds.isEmpty { Text("Check eligibility on the official Young website.").foregroundStyle(.secondary) }
-                        Text("Registration is completed on the official Young website.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        if let url = event.officialSignupURL {
-                            Link(destination: url) {
-                                Label("Open official signup", systemImage: "arrow.up.right.square")
-                            }
-                        }
-                    }
-
                     if event.description != nil || event.participationNotes != nil {
                         Section("Activity description") {
-                            Link("Read description and participation notes", destination: ServerClient.shared.baseURL.appendingPathComponent("catalog/young-events").appendingPathComponent(event.youngId))
+                            DisclosureGroup("Read description and participation notes") {
+                                if let html = event.description, !html.isEmpty {
+                                    ServerRenderedContent(html: html)
+                                }
+                                if let html = event.participationNotes, !html.isEmpty {
+                                    ServerRenderedContent(html: html)
+                                }
+                            }
                         }
                     }
 
@@ -112,8 +115,9 @@ struct YoungEventDetailView: View {
                 ProgressView()
             }
         }
-        .navigationTitle(Text(event?.name ?? "Activity".localized))
+        .navigationTitle("Activity")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ServerContentShareButton(route: .youngEvent(youngId)) }
         .task(id: youngId) { await load() }
     }
 
@@ -136,33 +140,11 @@ struct YoungEventDetailView: View {
         if let hours = event.hours {
             LabeledContent("Hours", value: String(format: "%.1f", hours))
         }
-        if let applied = event.appliedCount { LabeledContent("Registered", value: String(applied)) }
         if let capacity = event.capacity { LabeledContent("Capacity", value: String(capacity)) }
         if let status = event.status, !status.isEmpty {
             LabeledContent("Status", value: status)
         }
-        if event.isOnline == true { Text("Online meeting available") }
-        if event.isOnline != false, let meeting = event.onlineMeetingInfo, !meeting.isEmpty {
-            LabeledContent("Online meeting information", value: meeting).textSelection(.enabled)
-        }
-        if let level = event.activityLevel { LabeledContent("Activity level", value: level) }
-        if let module = event.module { LabeledContent("Module", value: module) }
-        if let form = event.form { LabeledContent("Participation format", value: form) }
-        if let sponsor = event.sponsor { LabeledContent("Sponsor", value: sponsor) }
-        if let sponsor = event.externalSponsor { LabeledContent("External organizer", value: sponsor) }
-        if let contact = event.contactName { LabeledContent("Contact", value: contact) }
-        if let phone = event.contactTel { LabeledContent("Phone", value: phone).textSelection(.enabled) }
-        if let duration = event.duration { LabeledContent("Duration (hours)", value: String(format: "%g", duration)) }
-        if let hours = event.serviceHour { LabeledContent("Service hours", value: String(format: "%g", hours)) }
-        if let places = event.places {
-            ForEach(Array(places.enumerated()), id: \.offset) { _, place in
-                VStack(alignment: .leading, spacing: 4) {
-                    if let info = place.placeInfo { Text(info) }
-                    if let start = place.placeSt { Text(start).font(.caption).foregroundStyle(.secondary) }
-                    if let end = place.placeEt { Text(end).font(.caption).foregroundStyle(.secondary) }
-                }
-            }
-        }
+
     }
 
     private func load() async {
@@ -237,7 +219,7 @@ struct YoungOrganizerDetailView: View {
                                     Text(YoungFormatting.countText(count, key: "%d total"))
                                 }
                                 if let count = organizer.activeCount {
-                                    Text(YoungFormatting.countText(count, key: "%d open"))
+                                    Text(YoungFormatting.countText(count, key: "%d in source signup list"))
                                 }
                                 if let count = organizer.upcomingCount {
                                     Text(YoungFormatting.countText(count, key: "%d upcoming"))
@@ -277,11 +259,11 @@ struct YoungOrganizerDetailView: View {
                                 )
                             }
                         } footer: {
-                            Text("Open activities with no date for the activity time basis.")
+                            Text("Activities with no date for the selected time basis.")
                         }
                     }
 
-                    eventSection("Open activities", events: model.events.filter(\.isActive))
+                    eventSection("In source signup list", events: model.events.filter(\.isActive))
                     eventSection(
                         "Upcoming activities",
                         events: model.events.filter {
@@ -308,6 +290,7 @@ struct YoungOrganizerDetailView: View {
         }
         .navigationTitle(Text(model.organizer?.name ?? "Organizer".localized))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ServerContentShareButton(route: .organizer(organizerId)) }
         .task(id: organizerId) { await model.load(id: organizerId) }
         .refreshable { await model.load(id: organizerId) }
     }

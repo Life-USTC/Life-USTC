@@ -13,6 +13,10 @@ struct SubscriptionKindResponse: Decodable {
     let kind: ServerSubscriptionKind
 }
 
+struct ServerCatalogMetadata: Decodable {
+    let educationLevels: [NamedEntity]
+}
+
 enum ServerCatalogSectionScope: Equatable {
     case course(Int)
     case teacher(Int)
@@ -22,6 +26,7 @@ struct ServerLearningSubscription: Codable, Identifiable {
     let id: Int
     let jwId: Int
     let code: String
+    let retiredAt: Date?
     let kind: ServerSubscriptionKind
     let course: ServerCourseSummary?
     let semester: ServerSemester?
@@ -40,26 +45,24 @@ extension Notification.Name {
 }
 
 extension ServerClient {
+    func fetchCatalogMetadata() async throws -> ServerCatalogMetadata {
+        try await request(.catalogMetadata)
+    }
+
     func fetchAllCatalogSections(scope: ServerCatalogSectionScope) async throws -> [ServerSectionSummary] {
         let revision = sessionRevision
-        let courseID: Int?
-        let teacherID: Int?
-        switch scope {
-        case .course(let id):
-            courseID = id
-            teacherID = nil
-        case .teacher(let id):
-            courseID = nil
-            teacherID = id
-        }
         var sections: [ServerSectionSummary] = []
         var pageNumber = 1
         while true {
             try Task.checkCancellation()
             guard revision == sessionRevision else { throw CancellationError() }
+            let endpoint: ServerEndpoint
+            switch scope {
+            case .course(let jwID): endpoint = .courseSectionHistory(jwId: jwID, page: pageNumber, pageSize: 100)
+            case .teacher(let id): endpoint = .teacherSectionHistory(id: id, page: pageNumber, pageSize: 100)
+            }
             let page: PaginatedResponse<ServerSectionSummary> = try await request(
-                .listSections(query: nil, semesterId: nil, courseId: courseID, teacherId: teacherID,
-                              page: pageNumber, pageSize: 100),
+                endpoint,
                 retry: true, expectedRevision: revision
             )
             try Task.checkCancellation()

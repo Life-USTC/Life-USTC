@@ -20,6 +20,8 @@ struct ServerBusStopClock: Equatable {
 @MainActor @Observable
 final class ServerBusPlannerModel {
     private let client: ServerClient
+    private let defaults: UserDefaults
+    static let recentRouteKey = "serverBusRecentRoute"
     private var revision: UUID?
     private var preferencesLoaded = false
     private var selectionChanged = false
@@ -38,7 +40,10 @@ final class ServerBusPlannerModel {
     var dayType = "auto"
     var versionKey: String?
 
-    init(client: ServerClient = .shared) { self.client = client }
+    init(client: ServerClient = .shared, defaults: UserDefaults = .standard) {
+        self.client = client
+        self.defaults = defaults
+    }
 
     var canSavePreference: Bool { client.isAuthenticated && revision == client.sessionRevision && preferencesLoaded && selectionChanged && !isSavingPreference }
     var queryKey: String { "\(origin ?? 0):\(destination ?? 0):\(dayType):\(showDeparted):\(versionKey ?? "current")" }
@@ -53,10 +58,18 @@ final class ServerBusPlannerModel {
         }
     }
 
-    func selectOrigin(_ id: Int?) { origin = id; selectionChanged = true }
-    func selectDestination(_ id: Int?) { destination = id; selectionChanged = true }
+    func selectOrigin(_ id: Int?) { origin = id; selectionChanged = true; saveRecentRoute() }
+    func selectDestination(_ id: Int?) { destination = id; selectionChanged = true; saveRecentRoute() }
     func setShowDeparted(_ value: Bool) { showDeparted = value; selectionChanged = true }
-    func reverse() { (origin, destination) = (destination, origin); selectionChanged = true }
+    func reverse() { (origin, destination) = (destination, origin); selectionChanged = true; saveRecentRoute() }
+
+    private func saveRecentRoute() {
+        guard !client.isAuthenticated, let origin, let destination,
+              let routes = timetable?.routes else { return }
+        let route = ServerRecentBusRoute(origin: origin, destination: destination)
+        guard route.isTraversable(in: routes), let data = try? JSONEncoder().encode(route) else { return }
+        defaults.set(data, forKey: Self.recentRouteKey)
+    }
 
     func load() async {
         if revision != client.sessionRevision {
@@ -78,6 +91,12 @@ final class ServerBusPlannerModel {
             timetable = value
             if !value.campuses.contains(where: { $0.id == origin }) { origin = value.routes.first?.stops.first?.campus.id }
             if !value.campuses.contains(where: { $0.id == destination }) { destination = value.routes.first?.stops.last?.campus.id }
+            if !selectionChanged, !preferencesLoaded, let data = defaults.data(forKey: Self.recentRouteKey),
+               let recent = try? JSONDecoder().decode(ServerRecentBusRoute.self, from: data),
+               recent.isTraversable(in: value.routes) {
+                origin = recent.origin
+                destination = recent.destination
+            }
         } catch is CancellationError { return }
         catch { if expectedRevision == client.sessionRevision { self.error = error.localizedDescription } }
         if !preferencesLoaded { await loadPreference() }

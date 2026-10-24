@@ -69,7 +69,9 @@ struct ServerBusPlannerView: View {
                 Section {
                     Picker("Timetable Version", selection: $model.versionKey) {
                         Text("Current timetable").tag(nil as String?)
-                        ForEach(timetable.availableVersions) { version in Text(version.title).tag(Optional(version.key)) }
+                        ForEach(timetable.availableVersions) { version in
+                            Text(versionLabel(version)).tag(Optional(version.key))
+                        }
                     }
                     if let notice = timetable.notice {
                         if let message = notice.message { Text(message).font(.caption) }
@@ -108,7 +110,12 @@ struct ServerBusPlannerView: View {
         }
         .navigationTitle("Bus Timetable")
         .task(id: "\(account.sessionRevision):\(model.versionKey ?? "current")") { await model.load() }
-        .task(id: "\(model.queryKey):\(locale.identifier)") { await model.refreshDepartures(locale: campusAPILocale(locale)) }
+        .task(id: "\(model.queryKey):\(locale.identifier)") {
+            while !Task.isCancelled {
+                await model.refreshDepartures(locale: campusAPILocale(locale))
+                do { try await Task.sleep(for: .seconds(60)) } catch { return }
+            }
+        }
         .refreshable {
             await model.load()
             await model.refreshDepartures(locale: campusAPILocale(locale))
@@ -147,6 +154,15 @@ struct ServerBusPlannerView: View {
         default: "Today".localized
         }
     }
+
+    private func versionLabel(_ version: ServerCampusBusTimetable.Version) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        formatter.dateStyle = .medium
+        let date = formatter.string(from: version.effectiveFrom ?? version.importedAt)
+        return String(format: "Timetable from %@".localized, date)
+    }
 }
 
 struct ServerBusMapView: View {
@@ -154,19 +170,45 @@ struct ServerBusMapView: View {
     @Environment(\.locale) private var locale
 
     var body: some View {
-        Map {
-            ForEach(timetable.routes) { route in
-                MapPolyline(coordinates: route.stops.sorted { $0.stopOrder < $1.stopOrder }.map {
-                    CLLocationCoordinate2D(latitude: $0.campus.latitude, longitude: $0.campus.longitude)
-                })
-                .stroke(Color.accentColor, lineWidth: 3)
+        TimelineView(.periodic(from: .now, by: 60)) { timeline in
+            let trips = ServerBusActiveTrip.trips(timetable.trips, at: timeline.date)
+            Map {
+                ForEach(timetable.routes) { route in
+                    MapPolyline(coordinates: route.stops.sorted { $0.stopOrder < $1.stopOrder }.map {
+                        CLLocationCoordinate2D(latitude: $0.campus.latitude, longitude: $0.campus.longitude)
+                    })
+                    .stroke(Color.accentColor, lineWidth: 3)
+                }
+                ForEach(timetable.campuses) { campus in
+                    Marker(campusName(campus, locale: locale), coordinate: CLLocationCoordinate2D(latitude: campus.latitude, longitude: campus.longitude))
+                }
+                ForEach(trips) { trip in
+                    if let route = timetable.routes.first(where: { $0.id == trip.routeID }),
+                       let coordinate = trip.coordinate(in: route) {
+                        Annotation(trip.status == .enRoute ? "Estimated bus location".localized : "Departing within 60 minutes".localized,
+                                   coordinate: coordinate) {
+                            Image(systemName: "bus.fill")
+                                .padding(8)
+                                .foregroundStyle(.white)
+                                .background(trip.status == .enRoute ? Color.accentColor : .orange, in: Circle())
+                                .symbolEffect(.pulse, options: .repeating)
+                        }
+                    }
+                }
             }
-            ForEach(timetable.campuses) { campus in
-                Marker(campusName(campus, locale: locale), coordinate: CLLocationCoordinate2D(latitude: campus.latitude, longitude: campus.longitude))
+            .mapControls { MapCompass(); MapScaleView() }
+            .safeAreaInset(edge: .bottom) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Bus positions are timetable estimates, not GPS locations.").font(.caption)
+                    Text(String(format: "Updated at %@ (Shanghai)".localized, campusClock(timeline.date, locale: locale)))
+                        .font(.caption).foregroundStyle(Color.primary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(.regularMaterial)
             }
+            .navigationTitle("Shuttle Map")
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .mapControls { MapCompass(); MapScaleView() }
-        .navigationTitle("Shuttle Map")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

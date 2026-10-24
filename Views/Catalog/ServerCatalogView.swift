@@ -21,12 +21,15 @@ final class ServerCatalogModel {
     var search = ""
     var semesterID: Int?
     var semesters: [ServerSemester] = []
+    var educationLevelID: Int?
+    var educationLevels: [NamedEntity] = []
     var sections: [ServerSectionSummary] = []
     var courses: [ServerCourseSummary] = []
     var teachers: [ServerTeacherSummary] = []
     var isLoading = false
     var error: String?
     var semesterError: String?
+    var metadataError: String?
     var total = 0
     var hasMore = false
 
@@ -38,7 +41,7 @@ final class ServerCatalogModel {
         self.client = client
     }
 
-    var requestID: String { "\(kind.rawValue)|\(search)|\(semesterID.map(String.init) ?? "all")" }
+    var requestID: String { "\(kind.rawValue)|\(search)|\(semesterID.map(String.init) ?? "all")|\(educationLevelID.map(String.init) ?? "all")" }
 
     var isEmpty: Bool {
         switch kind {
@@ -57,6 +60,18 @@ final class ServerCatalogModel {
         } catch {
             guard !Task.isCancelled else { return }
             semesterError = error.localizedDescription
+        }
+    }
+
+    func loadMetadata() async {
+        metadataError = nil
+        do {
+            let metadata = try await client.fetchCatalogMetadata()
+            guard !Task.isCancelled else { return }
+            educationLevels = metadata.educationLevels
+        } catch {
+            guard !Task.isCancelled else { return }
+            metadataError = error.localizedDescription
         }
     }
 
@@ -93,7 +108,8 @@ final class ServerCatalogModel {
                 pagination = result.pagination
             case .courses:
                 let result = try await client.searchCourses(
-                    query: query.isEmpty ? nil : query, page: nextPage, pageSize: 30
+                    query: query.isEmpty ? nil : query, educationLevelId: educationLevelID,
+                    page: nextPage, pageSize: 30
                 )
                 guard requestGeneration == generation, !Task.isCancelled else { return }
                 courses = append ? courses + result.data : result.data
@@ -134,10 +150,26 @@ struct ServerCatalogView: View {
                     Picker("Semester", selection: $model.semesterID) {
                         Text("All semesters").tag(nil as Int?)
                         ForEach(model.semesters) { semester in
-                            Text(semester.nameCn).tag(Optional(semester.id))
+                            Text(ServerCatalogDisplay.semesterName(semester)).tag(Optional(semester.id))
                         }
                     }
                     .accessibilityIdentifier("catalog_semester")
+                }
+                if model.kind == .courses {
+                    Picker("Education level", selection: $model.educationLevelID) {
+                        Text("All education levels").tag(nil as Int?)
+                        ForEach(model.educationLevels) { level in
+                            Text(ServerCatalogDisplay.educationLevelName(level)).tag(Optional(level.id))
+                        }
+                    }
+                    .accessibilityIdentifier("catalog_education_level")
+                }
+            }
+
+            if let error = model.metadataError, model.kind == .courses {
+                Section {
+                    Text(error).foregroundStyle(.secondary)
+                    Button("Retry education levels") { Task { await model.loadMetadata() } }
                 }
             }
 
@@ -200,7 +232,7 @@ struct ServerCatalogView: View {
                     }
                 }
             } footer: {
-                if !model.isEmpty { Text("\(model.total) results") }
+                if !model.isEmpty { Text("\(model.total) results").foregroundStyle(Color.primary) }
             }
 
             if model.isLoading {
@@ -214,9 +246,10 @@ struct ServerCatalogView: View {
         .searchable(
             text: $model.search,
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Search catalog"
+            prompt: "Search"
         )
         .task { await model.loadSemesters() }
+        .task { await model.loadMetadata() }
         .task(id: model.requestID) {
             if !model.search.isEmpty {
                 do { try await Task.sleep(for: .milliseconds(250)) } catch { return }
@@ -228,6 +261,21 @@ struct ServerCatalogView: View {
 }
 
 enum ServerCatalogDisplay {
+    static func semesterName(_ semester: ServerSemester, locale: Locale = .current) -> String {
+        let name = semester.nameCn.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard locale.language.languageCode?.identifier == "en",
+              name.range(of: #"^\d{4}年(春|秋)季学期$"#, options: .regularExpression) != nil else {
+            return semester.nameCn
+        }
+        return "\(name.contains("春") ? "Spring" : "Fall") \(name.prefix(4))"
+    }
+
+    static func educationLevelName(_ level: NamedEntity, locale: Locale = .current) -> String {
+        guard locale.language.languageCode?.identifier == "en",
+              let english = level.nameEn, let first = english.first else { return level.nameCn }
+        return String(first).uppercased(with: locale) + english.dropFirst()
+    }
+
     static func name(_ chinese: String, _ english: String?) -> String {
         if Locale.current.language.languageCode?.identifier == "en", let english, !english.isEmpty {
             return english
@@ -253,7 +301,11 @@ struct ServerSectionRow: View {
             Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
             Text(section.code).font(.caption).foregroundStyle(.secondary)
             if let semester = section.semester {
-                Text(semester.nameCn).font(.caption).foregroundStyle(.secondary)
+                Text(ServerCatalogDisplay.semesterName(semester)).font(.caption).foregroundStyle(.secondary)
+            }
+            if section.retiredAt != nil {
+                Label("Historical section", systemImage: "clock.arrow.circlepath")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             if let teachers = section.teachers, !teachers.isEmpty {
                 Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))

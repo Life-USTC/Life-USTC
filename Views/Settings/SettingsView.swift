@@ -137,6 +137,8 @@ struct SettingsView: View {
             Section {
                 NavigationLink("About Life@USTC", destination: AboutPage())
                     .accessibilityIdentifier("settings_about")
+                NavigationLink("Help and Guides", destination: ServerSupportView())
+                    .accessibilityIdentifier("settings_help")
                 NavigationLink("Legal Info", destination: LegalPage())
                     .accessibilityIdentifier("settings_legal")
                 if debugEnabled {

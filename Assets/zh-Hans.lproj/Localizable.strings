@@ -447,7 +447,7 @@
 "All semesters" = "全部学期";
 "Retry semesters" = "重新加载学期";
 "Load more" = "加载更多";
-"Search catalog" = "搜索课程、教学班和教师";
+"Search" = "搜索";
 "%lld results" = "%lld 个结果";
 "Enrolled" = "修读";
 "Auditing" = "旁听";
@@ -850,3 +850,49 @@
 "Account Management" = "账号管理";
 
 "Sessions and Security Activity" = "会话与安全活动";
+
+"In source signup list" = "报名列表在列";
+
+"%d in source signup list" = "%d 项报名列表在列";
+
+"Activities with no date for the selected time basis." = "所选时间口径下日期未知的活动。";
+
+"Reload semester choices" = "重新加载学期选项";
+"No events" = "暂无日程";
+"Teaching Section Calendar" = "教学班日历";
+"Choose up to 50 sections" = "最多选择 50 个教学班";
+"Combined calendars include active teaching sections. Historical sections can be exported from their detail page." = "合并日历包含当前有效的教学班。历史教学班可在详情页单独导出。";
+"Combined Section Calendar" = "合并教学班日历";
+"Open calendar file" = "打开日历文件";
+"Add this public link to a calendar app to follow the section's published schedule and exams." = "将此公开链接添加到日历应用，可订阅该教学班已发布的课程安排与考试。";
+"Usage Guides" = "使用指南";
+"Community Guides" = "社区指南";
+"Help and Guides" = "帮助与指南";
+"Mobile App" = "移动应用";
+"Bot" = "机器人";
+"MCP" = "MCP";
+"Command Line" = "命令行";
+"Markdown Support" = "Markdown 支持";
+"Comment Guide" = "评论指南";
+"Search my workspace on the website" = "在网站中搜索我的工作区";
+"Workspace search uses the account signed in on the website." = "工作区搜索使用网站当前登录的账号。";
+"All education levels" = "全部培养层次";
+"Retry education levels" = "重试培养层次";
+"Historical section" = "历史教学班";
+"Export section calendar" = "导出教学班日历";
+"Export section calendars" = "导出教学班日历";
+"Timetable from %@" = "%@ 起的时刻表";
+"Bus positions are timetable estimates, not GPS locations." = "校车位置根据时刻表估算，并非 GPS 实时位置。";
+"Estimated bus location" = "校车估算位置";
+"Departing within 60 minutes" = "60 分钟内发车";
+
+"Homework writing guide" = "作业填写规范";
+"Suggested titles: Assignment {N} or {Topic} assignment. Avoid chapter-only titles and omit the course name or code." = "建议标题使用“第{N}次作业”或“{主题}作业”，避免仅按章节命名，不包含课程名称或代码。";
+"Describe the problems first, then the submission method, submission address, and notes. Write Not recorded for unknown problems; omit other unknown details." = "建议按题目、提交方式、提交地址、备注的顺序填写说明。题目未知时写“未记录”，其余未知项省略。";
+"These are suggestions and do not prevent saving." = "这只是填写建议，不会阻止保存。";
+
+"Week %lld" = "第 %lld 周";
+
+"Share" = "分享";
+
+"Historical sections" = "历史教学班";

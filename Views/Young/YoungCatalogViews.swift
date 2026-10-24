@@ -165,7 +165,7 @@ struct YoungEventsListView: View {
                         model.activeOnly.toggle()
                     } label: {
                         Label(
-                            model.activeOnly ? "All Activities" : "Open Signups",
+                            model.activeOnly ? "All Activities" : "In source signup list",
                             systemImage: model.activeOnly
                                 ? "line.3.horizontal.decrease.circle.fill"
                                 : "line.3.horizontal.decrease.circle"
@@ -235,7 +235,7 @@ struct YoungOrganizersListView: View {
                                     Text(YoungFormatting.countText(count, key: "%d total"))
                                 }
                                 if let count = organizer.activeCount {
-                                    Text(YoungFormatting.countText(count, key: "%d open"))
+                                    Text(YoungFormatting.countText(count, key: "%d in source signup list"))
                                 }
                                 if let count = organizer.upcomingCount {
                                     Text(YoungFormatting.countText(count, key: "%d upcoming"))
