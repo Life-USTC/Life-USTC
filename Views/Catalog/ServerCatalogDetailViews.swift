@@ -59,6 +59,7 @@ final class ServerSectionDetailModel {
     func toggleSubscription() async {
         guard !isSaving, subscriptionReadSucceeded, let section,
               let revision = subscriptionRevision, revision == client.sessionRevision else { return }
+        guard subscription != nil || section.retiredAt == nil else { return }
         let requestGeneration = generation
         isSaving = true
         subscriptionError = nil
@@ -140,7 +141,12 @@ struct ServerSectionDetailView: View {
                         NavigationLink("Course details") { ServerCourseDetailView(jwId: course.jwId) }
                     }
                     LabeledContent("Section code", value: section.code)
-                    if let semester = section.semester { LabeledContent("Semester", value: semester.nameCn) }
+                    if let semester = section.semester { LabeledContent("Semester", value: ServerCatalogDisplay.semesterName(semester)) }
+                    if section.retiredAt != nil {
+                        Label("Historical section", systemImage: "clock.arrow.circlepath")
+                            .foregroundStyle(.secondary)
+                            .accessibilityIdentifier("section_historical")
+                    }
                     if let campus = section.campus {
                         LabeledContent("Campus", value: ServerCatalogDisplay.name(campus.nameCn, campus.nameEn))
                     }
@@ -165,7 +171,7 @@ struct ServerSectionDetailView: View {
                             }
                             .disabled(model.isSaving || !model.subscriptionReadSucceeded)
                             .accessibilityIdentifier("section_unsubscribe")
-                        } else {
+                        } else if section.retiredAt == nil {
                             Button("Subscribe") { Task { await model.toggleSubscription() } }
                                 .disabled(model.isSaving || !model.subscriptionReadSucceeded)
                                 .accessibilityIdentifier("section_subscribe")
@@ -177,7 +183,7 @@ struct ServerSectionDetailView: View {
                                 Button("Retry") { Task { await model.load() } }
                             }
                         }
-                    } else {
+                    } else if section.retiredAt == nil {
                         NavigationLink("Sign in to subscribe") { ServerAccountView() }
                             .accessibilityIdentifier("section_sign_in")
                     }
@@ -208,6 +214,10 @@ struct ServerSectionDetailView: View {
                 }
 
                 Section("Schedule") {
+                    NavigationLink("Export section calendar") {
+                        ServerSectionCalendarView(sectionJWID: section.jwId)
+                    }
+                    .accessibilityIdentifier("section_calendar_export")
                     if let error = model.scheduleError {
                         Text(error).foregroundStyle(.secondary)
                         Button("Retry") { Task { await model.load() } }
@@ -218,9 +228,29 @@ struct ServerSectionDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(schedule.date.map { String($0.prefix(10)) } ?? String(localized: "Date unavailable"))
                             Text("\(ServerCatalogDisplay.time(schedule.startTime)) – \(ServerCatalogDisplay.time(schedule.endTime))")
+                            if let week = schedule.weekIndex {
+                                Text(String(format: "Week %lld".localized, Int64(week))).font(.caption)
+                            }
                             if let place = schedule.customPlace ?? schedule.room?.namePrimary ?? schedule.room?.name ?? schedule.room?.code {
                                 Label(place, systemImage: "mappin.and.ellipse").font(.caption)
                             }
+                            if let building = schedule.room?.building {
+                                if let name = building.namePrimary ?? building.name ?? building.code {
+                                    Label(name, systemImage: "building.2").font(.caption)
+                                }
+                                if let campus = building.campus {
+                                    Text(ServerCatalogDisplay.name(campus.nameCn, campus.nameEn)).font(.caption)
+                                }
+                            }
+                        }
+                        .accessibilityIdentifier("section_schedule_\(schedule.id)")
+                        ForEach(schedule.teachers ?? []) { teacher in
+                            NavigationLink {
+                                ServerTeacherDetailView(id: teacher.id)
+                            } label: {
+                                Label(ServerCatalogDisplay.name(teacher.nameCn, teacher.nameEn), systemImage: "person")
+                            }
+                            .accessibilityIdentifier("section_schedule_\(schedule.id)_teacher_\(teacher.id)")
                         }
                     }
                 }
@@ -263,6 +293,7 @@ struct ServerSectionDetailView: View {
         }
         .navigationTitle(model.section?.code ?? String(localized: "Teaching Section"))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ServerContentShareButton(route: .section(model.jwId)) }
         .task(id: accountKey) { await model.load() }
         .refreshable { await model.load() }
     }
@@ -334,13 +365,13 @@ struct ServerCourseDetailView: View {
                         LabeledContent("Category", value: ServerCatalogDisplay.name(category.nameCn, category.nameEn))
                     }
                     if let level = course.educationLevel {
-                        LabeledContent("Education level", value: ServerCatalogDisplay.name(level.nameCn, level.nameEn))
+                        LabeledContent("Education level", value: ServerCatalogDisplay.educationLevelName(level))
                     }
                 }
                 Section("Teaching Sections") {
                     if let error = sectionList.error {
                         Text(error).foregroundStyle(.secondary)
-                        Button("Retry") { Task { await sectionList.load(scope: .course(course.id)) } }
+                        Button("Retry") { Task { await sectionList.load(scope: .course(course.jwId)) } }
                             .accessibilityIdentifier("course_sections_retry")
                     }
                     ForEach(sectionList.sections) { section in
@@ -349,8 +380,12 @@ struct ServerCourseDetailView: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(section.code)
+                                if section.retiredAt != nil {
+                                    Label("Historical section", systemImage: "clock.arrow.circlepath")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
                                 if let semester = section.semester {
-                                    Text(semester.nameCn).font(.caption).foregroundStyle(.secondary)
+                                    Text(ServerCatalogDisplay.semesterName(semester)).font(.caption).foregroundStyle(.secondary)
                                 }
                                 if let teachers = section.teachers {
                                     Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
@@ -382,6 +417,7 @@ struct ServerCourseDetailView: View {
         }
         .navigationTitle("Course details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ServerContentShareButton(route: .course(jwId)) }
         .task { await load() }
         .refreshable { await load() }
     }
@@ -396,7 +432,7 @@ struct ServerCourseDetailView: View {
             guard !Task.isCancelled else { return }
             course = result
             isLoading = false
-            await sectionList.load(scope: .course(result.id))
+            await sectionList.load(scope: .course(result.jwId))
         } catch {
             guard !Task.isCancelled else { return }
             self.error = error.localizedDescription
@@ -470,6 +506,7 @@ struct ServerTeacherDetailView: View {
         }
         .navigationTitle("Teacher details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ServerContentShareButton(route: .teacher(id)) }
         .task { await load() }
         .refreshable { await load() }
     }

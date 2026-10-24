@@ -66,6 +66,7 @@ struct ServerSectionSummary: Codable, Identifiable {
     let id: Int
     let jwId: Int
     let code: String
+    let retiredAt: Date?
     let credits: Double?
     let period: Int?
     let stdCount: Int?
@@ -83,6 +84,7 @@ struct ServerSectionDetail: Codable, Identifiable {
     let id: Int
     let jwId: Int
     let code: String
+    let retiredAt: Date?
     let credits: Double?
     let period: Int?
     let stdCount: Int?

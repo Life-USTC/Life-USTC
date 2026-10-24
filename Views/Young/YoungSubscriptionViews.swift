@@ -44,7 +44,7 @@ struct YoungEventSubscriptionPanel: View {
                         Toggle("Start reminder", isOn: remindStartBinding).disabled(isSaving || isLoading)
                             .accessibilityIdentifier("young.subscription.start")
                         Text("This is a personal reminder and calendar subscription. It does not register attendance.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(Color.primary)
                     }
                 } else if isLoading {
                     ProgressView().frame(maxWidth: .infinity)

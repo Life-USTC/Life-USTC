@@ -24,21 +24,19 @@ final class ServerCatalogDetailTests: XCTestCase {
         super.tearDown()
     }
 
-    func testCourseAndTeacherScopesLoadEveryPageUsingInternalIDs() async throws {
+    func testCourseJWIDAndTeacherIDScopesLoadEveryHistoryPage() async throws {
         for scope in [ServerCatalogSectionScope.course(11), .teacher(3)] {
             MockURLProtocol.reset()
             MockURLProtocol.requestHandler = { request in
                 let query = self.query(request)
-                XCTAssertEqual(request.url?.path, "/api/catalog/sections")
                 XCTAssertEqual(query["pageSize"], "100")
                 switch scope {
                 case .course(let id):
-                    XCTAssertEqual(query["courseId"], String(id))
-                    XCTAssertEqual(Set(query.keys), ["courseId", "page", "pageSize"])
+                    XCTAssertEqual(request.url?.path, "/api/catalog/courses/\(id)/sections")
                 case .teacher(let id):
-                    XCTAssertEqual(query["teacherId"], String(id))
-                    XCTAssertEqual(Set(query.keys), ["teacherId", "page", "pageSize"])
+                    XCTAssertEqual(request.url?.path, "/api/catalog/teachers/\(id)/sections")
                 }
+                XCTAssertEqual(Set(query.keys), ["page", "pageSize"])
                 XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer catalog-owner")
                 return try self.page(request)
             }

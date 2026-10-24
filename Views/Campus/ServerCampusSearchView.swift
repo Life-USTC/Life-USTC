@@ -81,6 +81,13 @@ struct ServerCampusSearchView: View {
                 }
             }
             Section {
+                Link("Search my workspace on the website",
+                     destination: ServerWebLinks.workspaceSearch(trimmedQuery, baseURL: ServerClient.shared.baseURL))
+                    .accessibilityIdentifier("search_workspace_web")
+            } footer: {
+                Text("Workspace search uses the account signed in on the website.")
+            }
+            Section {
                 NavigationLink { ServerCatalogView() } label: { Label("Course catalog", systemImage: "books.vertical") }
             }
         }

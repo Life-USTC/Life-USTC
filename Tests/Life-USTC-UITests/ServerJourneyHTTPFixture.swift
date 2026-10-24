@@ -34,9 +34,12 @@ final class ServerJourneyHTTPFixture {
     private var campus: CampusHTTPState?
     private var youngCampus: YoungCampusHTTPState?
     private var accountJourney: AccountJourneyHTTPState?
+    private let catalogHistory: Bool
     private var failedRequest: (method: String, path: String)?
 
-    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false, accountJourney: Bool = false) {
+    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false, accountJourney: Bool = false, catalogHistory: Bool = false) {
+        self.catalogHistory = catalogHistory
+        if catalogHistory { membership = [42: "regular", 43: "teaching_assistant"] }
         if workspace { self.workspace = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState()) }
         if community { self.community = CommunityHTTPState() }
         if campus { self.campus = CampusHTTPState() }
@@ -53,6 +56,8 @@ final class ServerJourneyHTTPFixture {
     var communityUploads: [[String: Any]] { queue.sync { community?.uploads ?? [] } }
 
     func hideCommunityComments() { queue.sync { community?.hideAllComments() } }
+    func enableBusParityFixture() { queue.sync { campus?.busParity = true } }
+    func includeHistoricalSubscription() { queue.sync { membership[44] = "regular" } }
 
     func failNextRequest(method: String, path: String) {
         queue.sync { failedRequest = (method, path) }
@@ -197,11 +202,17 @@ final class ServerJourneyHTTPFixture {
         case ("GET", "/api/catalog/semesters/current"):
             return (200, Self.semester)
         case ("GET", "/api/catalog/semesters"):
-            return (200, Self.page([Self.semester], pageSize: 100))
+            return (200, Self.page(catalogHistory ? [Self.semester, Self.springSemester] : [Self.semester], pageSize: 100))
+        case ("GET", "/api/catalog/metadata"):
+            return (200, ["educationLevels": [
+                ["id": 1, "nameCn": "本科生", "nameEn": "Undergraduate"],
+                ["id": 2, "nameCn": "研究生", "nameEn": "Graduate"],
+            ]])
         case ("GET", "/api/catalog/courses"):
             let search = request.query["search"]?.lowercased() ?? ""
             let courses = [Self.course(1001), Self.course(1002)].filter {
-                search.isEmpty || ($0["nameCn"] as? String ?? "").lowercased().contains(search)
+                (request.query["educationLevelId"] == nil || String($0["educationLevelId"] as? Int ?? -1) == request.query["educationLevelId"])
+                    && (search.isEmpty || ($0["nameCn"] as? String ?? "").lowercased().contains(search))
             }
             return (200, Self.page(courses, pageSize: 30))
         case ("GET", "/api/catalog/courses/1001"), ("GET", "/api/catalog/courses/1002"):
@@ -209,6 +220,12 @@ final class ServerJourneyHTTPFixture {
             var course = Self.course(calculus ? 1001 : 1002)
             course["sections"] = [Self.section(calculus ? 42 : 43)]
             return (200, course)
+        case ("GET", "/api/catalog/courses/1001/sections"):
+            return (200, Self.page(catalogHistory ? [catalogSection(42), catalogSection(44)] : [Self.section(42)], pageSize: 100))
+        case ("GET", "/api/catalog/courses/1002/sections"):
+            return (200, Self.page([catalogSection(43)], pageSize: 100))
+        case ("GET", "/api/catalog/teachers/3/sections"):
+            return (200, Self.page(catalogHistory ? [catalogSection(42), catalogSection(43), catalogSection(44)] : [Self.section(42), Self.section(43)], pageSize: 100))
         case ("GET", "/api/catalog/teachers"):
             let search = request.query["search"]?.lowercased() ?? ""
             let teachers = [Self.teacher].filter {
@@ -240,8 +257,10 @@ final class ServerJourneyHTTPFixture {
             return (200, Self.page(filtered, pageSize: Int(request.query["pageSize"] ?? "30") ?? 30))
         case ("GET", "/api/catalog/sections/42"), ("GET", "/api/catalog/sections/43"):
             let jwID = request.path.hasSuffix("42") ? 42 : 43
-            return (200, Self.section(jwID))
-        case ("GET", "/api/catalog/sections/42/schedules"), ("GET", "/api/catalog/sections/43/schedules"):
+            return (200, catalogSection(jwID))
+        case ("GET", "/api/catalog/sections/44") where catalogHistory:
+            return (200, catalogSection(44))
+        case ("GET", "/api/catalog/sections/42/schedules"), ("GET", "/api/catalog/sections/43/schedules"), ("GET", "/api/catalog/sections/44/schedules"):
             if request.query["page"] != nil || request.query["pageSize"] != nil {
                 guard request.query["page"] == "1", request.query["pageSize"] == "100"
                 else { return (400, ["error": "Expected the section's first schedule page"]) }
@@ -290,7 +309,7 @@ final class ServerJourneyHTTPFixture {
 
     private var subscription: [String: Any] {
         let sections = membership.keys.sorted().map { jwID -> [String: Any] in
-            var section = Self.section(jwID)
+            var section = catalogSection(jwID)
             section["kind"] = membership[jwID]
             return section
         }
@@ -310,10 +329,32 @@ final class ServerJourneyHTTPFixture {
         "startDate": "2026-09-01T00:00:00+08:00", "endDate": "2027-01-31T00:00:00+08:00",
     ]
 
+    private static let springSemester: [String: Any] = [
+        "id": 2, "jwId": 102, "code": "2026-SPRING", "nameCn": "2026年春季学期",
+        "startDate": "2026-02-01T00:00:00+08:00", "endDate": "2026-07-31T00:00:00+08:00",
+    ]
+
+    private func catalogSection(_ jwID: Int) -> [String: Any] {
+        guard catalogHistory else { return Self.section(jwID) }
+        var section = Self.section(jwID == 44 ? 42 : jwID)
+        if jwID == 43 || jwID == 44 { section["semester"] = Self.springSemester }
+        if jwID == 44 {
+            section["id"] = 9
+            section["jwId"] = 44
+            section["code"] = "MATH101.OLD"
+            section["retiredAt"] = "2026-08-01T00:00:00+08:00"
+        }
+        return section
+    }
+
     private static let schedule: [String: Any] = [
         "id": 901, "periods": 1.5, "date": "2026-10-23T00:00:00+08:00", "weekday": 5,
         "startTime": "08:15", "endTime": "09:45", "weekIndex": 1,
         "startUnit": 1, "endUnit": 2, "customPlace": "East Campus 2201",
+        "room": ["id": 61, "namePrimary": "East Campus 2201",
+                 "building": ["id": 62, "namePrimary": "Teaching Building 2",
+                              "campus": ["id": 1, "nameCn": "East Campus", "nameEn": "East Campus"]]],
+        "teachers": [["id": 3, "nameCn": "Ada Teacher", "nameEn": "Ada Teacher"]],
     ]
 
     private static let teacher: [String: Any] = [
@@ -334,6 +375,7 @@ final class ServerJourneyHTTPFixture {
         return [
             "id": calculus ? 11 : 12, "jwId": calculus ? 1001 : 1002,
             "code": calculus ? "MATH101" : "PHYS101",
+            "educationLevelId": calculus ? 1 : 2,
             "nameCn": calculus ? "Calculus" : "Physics", "nameEn": calculus ? "Calculus" : "Physics",
         ]
     }

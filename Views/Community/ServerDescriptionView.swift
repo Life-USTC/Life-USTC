@@ -22,7 +22,7 @@ struct ServerDescriptionView: View {
                     if description.content.isEmpty {
                         Text("No description.").foregroundStyle(.secondary)
                     } else {
-                        ServerCommunityMarkdown(content: description.content)
+                        ServerRenderedContent(html: description.renderedHtml)
                             .accessibilityIdentifier("description.content")
                     }
                     if let editedAt = description.lastEditedAt {
@@ -54,9 +54,9 @@ struct ServerDescriptionView: View {
                         DisclosureGroup("View changes") {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Previous description").font(.caption.bold())
-                                ServerCommunityMarkdown(content: edit.previousContent ?? "")
+                                Text(edit.previousContent ?? "").textSelection(.enabled)
                                 Text("Updated description").font(.caption.bold())
-                                ServerCommunityMarkdown(content: edit.nextContent)
+                                Text(edit.nextContent).textSelection(.enabled)
                             }
                         }
                     }
@@ -138,21 +138,6 @@ private struct ServerDescriptionEditorView: View {
             }
         }
         .interactiveDismissDisabled(model.isSaving)
-    }
-}
-
-struct ServerCommunityMarkdown: View {
-    let content: String
-
-    var body: some View {
-        if content.isEmpty {
-            Text("Empty description").foregroundStyle(.secondary)
-        } else {
-            Text((try? AttributedString(markdown: content,
-                                       options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)))
-                 ?? AttributedString(content))
-                .textSelection(.enabled)
-        }
     }
 }
 

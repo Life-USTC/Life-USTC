@@ -70,6 +70,7 @@ private struct WorkspaceEventDestination: View {
 
 struct WorkspaceEventLabel: View {
     let event: ServerPersonalCalendarEvent
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var typeTitle: String {
         switch event.type {
@@ -84,10 +85,15 @@ struct WorkspaceEventLabel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline) {
+            if dynamicTypeSize.isAccessibilitySize {
                 Text(event.title).font(.headline)
-                Spacer()
-                Text(LocalizedStringKey(typeTitle)).font(.caption2).foregroundStyle(.secondary)
+                Text(LocalizedStringKey(typeTitle)).font(.subheadline)
+            } else {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(event.title).font(.headline)
+                    Spacer()
+                    Text(LocalizedStringKey(typeTitle)).font(.caption2).foregroundStyle(.secondary)
+                }
             }
             if let at = event.at {
                 if event.hasTime == false {
@@ -95,7 +101,7 @@ struct WorkspaceEventLabel: View {
                     Text("Time unavailable").font(.caption).foregroundStyle(.secondary)
                 } else {
                     Text(YoungFormatting.dateRange(at, event.endsAt, includeYear: true))
-                        .font(.subheadline).foregroundStyle(.secondary)
+                        .font(.subheadline).foregroundStyle(.primary)
                 }
             } else {
                 Text("Date unavailable").font(.subheadline).foregroundStyle(.secondary)

@@ -66,6 +66,7 @@ final class ServerPublicationTests: XCTestCase {
         MockURLProtocol.stubJSON(detail())
         let value = try await client.fetchPublication(id: "article")
         XCTAssertEqual(value.revision.bodyMarkdown, "# Heading\n\n**Verified article**")
+        XCTAssertEqual(value.renderedBodyHtml, "<h1>Heading</h1><p><strong>Verified article</strong></p>")
         XCTAssertEqual(value.revision.bodyText, "Plain text must not replace the Markdown body")
         XCTAssertEqual(value.revision.author, "Author")
         XCTAssertEqual(value.revision.images?.first?.caption, "Photo caption")
@@ -82,6 +83,7 @@ final class ServerPublicationTests: XCTestCase {
         MockURLProtocol.stubJSON(detail(markdown: nil))
         let value = try await client.fetchPublication(id: "article")
         XCTAssertNil(value.revision.bodyMarkdown)
+        XCTAssertEqual(value.renderedBodyHtml, "")
         XCTAssertEqual(value.revision.bodyText, "Plain text must not replace the Markdown body")
         XCTAssertNotNil(value.revision.sourcePageUrl)
     }
@@ -211,6 +213,7 @@ final class ServerPublicationTests: XCTestCase {
                               "status": "verified", "url": "/api/publications/objects/asset/\(publicationHash)", "filename": "notice.pdf"]]
         return ["id": "article", "canonicalUrl": "https://news.ustc.edu.cn/article", "publicationType": "news",
                 "source": source(), "revision": body,
+                "renderedBodyHtml": markdown == nil ? "" : "<h1>Heading</h1><p><strong>Verified article</strong></p>",
                 "alsoPublishedIn": [["id": "sibling", "canonicalUrl": "https://office.ustc.edu.cn/article",
                                       "source": source("student-office"), "publishedAt": NSNull()]]]
     }

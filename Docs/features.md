@@ -28,13 +28,18 @@ establish production authentication.
 ## Catalog and subscriptions
 
 - Courses, teaching sections and teachers have public searchable, paginated
-  native lists and details. Sections can be filtered by semester.
+  native lists and details. Sections can be filtered by semester; courses by
+  education level. Course and teacher histories include retired sections through
+  the dedicated history routes. Historical detail retains calendar export and
+  suppresses new subscriptions.
 - Section details use stable server IDs for schedules, exams and subscription
   actions. Meeting lists exhaust the scoped section-schedules pagination,
   including retired sections. No course-name search fallback chooses a write target.
 - Owners can inspect all subscribed semesters, append/remove one membership,
   and change its regular, auditor or teaching-assistant kind. These changes do
   not alter official university enrollment or replace other memberships.
+- Subscriptions group by semester and show teachers. Meeting rows retain their
+  teaching week, teacher links and available campus/building context.
 - A complete subscribed-section snapshot refreshes the existing timetable and
   exam cache. Explicit meeting dates win over weekly patterns; failed partial
   reads retain the preceding snapshot. An empty subscription set clears it.
@@ -65,6 +70,12 @@ The calendar subscription screen copies or shares the private URL supplied by
 the server. Missing access and failed reads have explicit recovery states; the
 app does not construct a feed token or place that URL in logs.
 
+Personal calendars provide day, Monday-first week, month and subscribed-semester
+agendas, period navigation and Today. Weeks retain all seven day headings.
+Section details share or copy the public iCal URL using the section JW identity;
+combined exports select up to 50 subscriptions and use sorted, unique internal
+section IDs.
+
 ## Community and files
 
 Course, section, teacher, teaching-assignment and homework entries lead to their
@@ -81,9 +92,13 @@ previews. Public profiles show the server's public contribution projection.
 Descriptions expose collaborative editing and the latest 20 changes. Teaching
 sections expose shared-homework creation, editing, creator deletion and up to
 50 audit entries. Public homework text can be read while signed out; personal
-completion requires a Life@USTC account. Markdown text currently uses native
-inline rendering; advanced math and tables still need acceptance in the final
-content-rendering pass.
+completion requires a Life@USTC account. Section homework editors include
+collapsible writing suggestions that do not add validation restrictions.
+
+Current comments and descriptions consume the canonical server HTML through
+the shared native WebKit reader. Publications use the server's rendered body,
+retaining block content and image order. Description history keeps exact source
+Markdown because its API does not provide historical rendered HTML.
 
 ## Campus and activity discovery
 
@@ -96,6 +111,13 @@ Young subscriptions and organizer follows retain confirmed settings on failed
 writes. Notifications support unread filtering and refresh after marking a
 reminder read. Activity-time calendars report interval conflicts separately from
 registration windows. Private lists clear when the account changes.
+Public Young week/month views use Sunday-first start-day grouping; the day view
+also retains continuing events. Source signup-list membership is distinct from
+registration status, and official signup remains the primary action.
+
+Bus maps show timetable estimates and refresh each minute; they do not report
+GPS positions. Valid recent local routes are restored, while authenticated bus
+preferences take priority. Version selection uses localized effective dates.
 
 ## Account management
 
@@ -114,11 +136,17 @@ acceptance.
 
 ## Remaining parity
 
-The final acceptance pass still covers advanced content rendering, complete
-calendar export and navigation, deep links, and the remaining server presentation
-requirements. Campus search currently uses the public catalog scope; workspace
-search and counted link visits require the website's own session. Bus maps show
-routes and campuses; timetable-derived vehicle positions remain pending.
+The final acceptance pass verifies native rendering, calendar exports, content
+links and the remaining presentation requirements on iPhone and iPad. Public
+details share canonical website URLs; registered custom URLs and associated
+website links route to native destinations. Production associated-link delivery
+requires the server association file, and publication rendering and complete
+catalog history require their companion server routes to be deployed.
+
+Campus search uses the public catalog scope and provides a workspace-search
+website entry. Campus links use the canonical resolver; workspace search and
+counted link visits require the website's own session. Help links open the public
+mobile, bot, MCP, CLI, Markdown and comment guides.
 Account security and administration retain their declared session-only Web
 boundaries. Service transports such as ingestion, GraphQL/MCP hosting and
 operational metrics do not require mobile screens.
@@ -146,3 +174,5 @@ not this repository's product documentation.
 
 `CampusJourneyTests` and `YoungCampusJourneyTests` cover native discovery,
 preferences, reminder recovery, publication filters and source navigation.
+`CatalogParityJourneyTests` and `ParityNavigationJourneyTests` cover historical
+catalog presentation, calendar modes and exports, sharing and guide handoff.

@@ -34,6 +34,68 @@ final class YoungCampusJourneyTests: XCTestCase {
     }
 
     @MainActor
+    func testActivityFactsPrioritizeOfficialSignupAndLabelSourceListAccurately() throws {
+        app.launch()
+        openYoung()
+        open("Activities")
+        openText("Science Communication Workshop")
+        assertText("Activity time")
+        assertText("Registration starts soon")
+        captureM6("YoungDetail")
+        let signup = app.links["young.signup"]
+        reveal(signup)
+        XCTAssertTrue(signup.exists)
+        let subscription = switchControl("young.subscription.enabled")
+        XCTAssertLessThan(signup.frame.minY, subscription.frame.minY)
+        for hidden in ["Registered", "Graduate students only", "800-414-186", "External sponsor fixture",
+                       "Additional registration information required", "Accepted attachment formats"] {
+            XCTAssertFalse(app.staticTexts[hidden].exists, "Unexpected default participation field: \(hidden)")
+        }
+        captureM6("YoungDetailParticipation")
+        back()
+        back()
+        open("Followed Organizers")
+        openText("Student Science Association")
+        assertText("1 in source signup list")
+        XCTAssertFalse(app.staticTexts["1 open"].exists)
+        captureM6("YoungOrganizer")
+    }
+
+    @MainActor
+    func testPublicationRendersCanonicalImageOrderTableAndUsefulAttribution() throws {
+        app.launch()
+        selectDiscover()
+        open("discover_publications")
+        open("publication.row.\(YoungCampusHTTPState.publicationID)")
+        assertText("Before the campus demonstration.")
+        captureM6("PublicationDetail")
+        assertText("Students share their laboratory work.")
+        waitForRequest("GET", "/api/publications/images/" + String(repeating: "b", count: 64))
+        let before = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Before the campus demonstration.")).firstMatch
+        let caption = app.webViews.staticTexts["Students share their laboratory work."]
+        let after = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "After the campus demonstration.")).firstMatch
+        XCTAssertTrue(before.exists && caption.exists && after.exists)
+        XCTAssertLessThan(before.frame.minY, caption.frame.minY)
+        XCTAssertLessThan(caption.frame.minY, after.frame.minY)
+        captureM6("PublicationImage")
+        assertText("East 101")
+        XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "| --- | --- |")).firstMatch.exists)
+        assertText("Campus Newsroom")
+        XCTAssertFalse(app.staticTexts["栏目"].exists)
+        XCTAssertFalse(app.staticTexts["https://example.org/editor"].exists)
+        XCTAssertFalse(app.staticTexts["—"].exists)
+        captureM6("PublicationAttribution")
+    }
+
+    @MainActor
+    private func captureM6(_ page: String) {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "after-m6-\(page)" + (app.frame.width > 700 ? "-iPad" : "")
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    @MainActor
     func testUpstreamStatusAndReminderFailurePreserveSettingsUntilRetry() throws {
         let path = "/api/workspace/young-event-subscriptions/\(YoungCampusHTTPState.eventID)"
         fixture.failNextRequest(method: "PUT", path: path)

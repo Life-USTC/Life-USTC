@@ -168,4 +168,5 @@ struct ServerPublicationDetail: Codable, Identifiable {
     let source: ServerPublicationSource
     let revision: ServerPublicationRevision
     let alsoPublishedIn: [ServerPublicationSibling]
+    let renderedBodyHtml: String
 }

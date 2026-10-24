@@ -1,5 +1,11 @@
 import SwiftUI
 
+struct ServerSubscriptionSemesterGroup: Identifiable {
+    let semester: ServerSemester?
+    let sections: [ServerLearningSubscription]
+    var id: Int { semester?.id ?? -1 }
+}
+
 extension ServerSubscriptionKind {
     static var catalogKinds: [Self] { [.regular, .auditor, .teachingAssistant] }
 
@@ -36,6 +42,17 @@ final class ServerSubscriptionsModel {
     var filteredSections: [ServerLearningSubscription] {
         guard let semesterID else { return sections }
         return sections.filter { $0.semester?.id == semesterID }
+    }
+
+    var groups: [ServerSubscriptionSemesterGroup] {
+        let sections = filteredSections
+        var result = semesters.compactMap { semester -> ServerSubscriptionSemesterGroup? in
+            let matching = sections.filter { $0.semester?.id == semester.id }
+            return matching.isEmpty ? nil : .init(semester: semester, sections: matching)
+        }
+        let unknown = sections.filter { $0.semester == nil }
+        if !unknown.isEmpty { result.append(.init(semester: nil, sections: unknown)) }
+        return result
     }
 
     func load() async {
@@ -118,11 +135,17 @@ struct ServerSubscriptionsView: View {
                     Picker("Semester", selection: $model.semesterID) {
                         Text("All semesters").tag(nil as Int?)
                         ForEach(model.semesters) { semester in
-                            Text(semester.nameCn).tag(Optional(semester.id))
+                            Text(ServerCatalogDisplay.semesterName(semester)).tag(Optional(semester.id))
                         }
                     }
                     .accessibilityIdentifier("subscriptions_semester")
                     NavigationLink("Find teaching sections") { ServerCatalogView() }
+                    if !model.sections.isEmpty {
+                        NavigationLink("Export section calendars") {
+                            ServerMultiSectionCalendarView(sections: model.sections)
+                        }
+                        .accessibilityIdentifier("subscriptions_calendar_export")
+                    }
                 } footer: {
                     Text("Subscriptions organize your workspace and do not change official course enrollment.")
                 }
@@ -135,37 +158,47 @@ struct ServerSubscriptionsView: View {
                     }
                 }
 
-                ForEach(model.filteredSections) { section in
+                ForEach(model.groups) { group in
                     Section {
-                        NavigationLink {
-                            ServerSectionDetailView(jwId: section.jwId)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
-                                Text(section.code).font(.caption).foregroundStyle(.secondary)
-                                if let semester = section.semester {
-                                    Text(semester.nameCn).font(.caption).foregroundStyle(.secondary)
+                        ForEach(group.sections) { section in
+                            NavigationLink {
+                                ServerSectionDetailView(jwId: section.jwId)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
+                                    Text(section.code).font(.caption.monospaced()).foregroundStyle(.secondary)
+                                    if section.retiredAt != nil {
+                                        Label("Historical section", systemImage: "clock.arrow.circlepath")
+                                            .font(.caption).foregroundStyle(.secondary)
+                                            .accessibilityIdentifier("subscription_historical_\(section.jwId)")
+                                    }
+                                    if let teachers = section.teachers, !teachers.isEmpty {
+                                        Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
+                                            .font(.caption).foregroundStyle(.secondary)
+                                    }
                                 }
                             }
-                        }
-                        .accessibilityIdentifier("subscription_\(section.jwId)")
-                        .swipeActions {
-                            Button("Unsubscribe", role: .destructive) {
-                                Task { await model.remove(section) }
+                            .accessibilityIdentifier("subscription_\(section.jwId)")
+                            .swipeActions {
+                                Button("Unsubscribe", role: .destructive) {
+                                    Task { await model.remove(section) }
+                                }
+                                .disabled(model.isSaving)
+                            }
+
+                            Menu {
+                                ForEach(ServerSubscriptionKind.catalogKinds, id: \.self) { kind in
+                                    Button(kind.title) { Task { await model.setKind(kind, for: section) } }
+                                        .accessibilityIdentifier("subscription_kind_\(kind.rawValue)")
+                                }
+                            } label: {
+                                LabeledContent("Subscription role", value: section.kind.title)
                             }
                             .disabled(model.isSaving)
+                            .accessibilityIdentifier("subscription_kind_\(section.jwId)")
                         }
-
-                        Menu {
-                            ForEach(ServerSubscriptionKind.catalogKinds, id: \.self) { kind in
-                                Button(kind.title) { Task { await model.setKind(kind, for: section) } }
-                                    .accessibilityIdentifier("subscription_kind_\(kind.rawValue)")
-                            }
-                        } label: {
-                            LabeledContent("Subscription role", value: section.kind.title)
-                        }
-                        .disabled(model.isSaving)
-                        .accessibilityIdentifier("subscription_kind_\(section.jwId)")
+                    } header: {
+                        Text("\(group.semester.map { ServerCatalogDisplay.semesterName($0) } ?? "Semester unavailable".localized) · \(group.sections.count)")
                     }
                 }
 

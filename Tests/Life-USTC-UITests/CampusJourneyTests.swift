@@ -177,6 +177,50 @@ final class CampusJourneyTests: XCTestCase {
     }
 
     @MainActor
+    func testAnonymousBusRoutePersistsAfterLeavingThePlannerWithoutPrivateRequests() throws {
+        fixture.enableBusParityFixture()
+        app.launchEnvironment["UI_TEST_SERVER_ACCESS_TOKEN"] = nil
+        launchDiscover()
+        open("discover_bus")
+        open("bus_origin")
+        open("East Campus")
+        open("bus_destination")
+        open("Gaoxin Campus")
+        open("bus_reverse")
+        waitForRequest("GET", "/api/catalog/bus/next", query: ["originCampusId": "2", "destinationCampusId": "1"])
+        back()
+        open("discover_bus")
+        waitUntil {
+            self.fixture.requests.filter {
+                $0.path == "/api/catalog/bus/next" && $0.query["originCampusId"] == "2" && $0.query["destinationCampusId"] == "1"
+            }.count >= 2
+        }
+        XCTAssertFalse(fixture.requests.contains { $0.path.hasPrefix("/api/workspace/") })
+        XCTAssertFalse(app.buttons["bus_save_preferences"].exists)
+        captureM6("BusRecentRoute")
+    }
+
+    @MainActor
+    func testBusMapShowsEstimatedVehicleAndExplainsTimetableProvenance() throws {
+        fixture.enableBusParityFixture()
+        launchDiscover()
+        open("discover_bus")
+        open("Shuttle Map")
+        assertText("Bus positions are timetable estimates, not GPS locations.")
+        let estimate = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Estimated bus location")).firstMatch
+        XCTAssertTrue(estimate.waitForExistence(timeout: 10))
+        captureM6("BusMap")
+    }
+
+    @MainActor
+    private func captureM6(_ page: String) {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "after-m6-\(page)" + (app.frame.width > 700 ? "-iPad" : "")
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    @MainActor
     private func launchDiscover() {
         XCUIDevice.shared.orientation = .portrait
         app.launch()

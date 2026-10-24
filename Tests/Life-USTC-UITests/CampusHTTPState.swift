@@ -2,6 +2,7 @@ import Foundation
 
 /// Canonical campus wire responses, with private preferences retained across reads.
 final class CampusHTTPState {
+    var busParity = false
     private var pinnedSlugs = ["academic"]
     private var busPreference: [String: Any] = ["preferredOriginCampusId": 1, "preferredDestinationCampusId": 2,
                                                 "showDepartedTrips": false]
@@ -41,13 +42,38 @@ final class CampusHTTPState {
             if action == "pin" { pinnedSlugs.append(slug) }
             return (200, pins)
         case ("GET", "/api/catalog/bus"):
-            return (200, Self.timetable)
+            return (200, busParity ? parityTimetable : Self.timetable)
         case ("GET", "/api/catalog/bus/routes"):
+            if busParity, request.query["originCampusId"] == "2", request.query["destinationCampusId"] == "1" {
+                var response = Self.routes
+                let origin = response["originCampus"]
+                response["originCampus"] = response["destinationCampus"]
+                response["destinationCampus"] = origin
+                var route = Self.reverseRoute
+                route["originCampus"] = response["originCampus"]
+                route["destinationCampus"] = response["destinationCampus"]
+                route["stopCount"] = 2
+                route["weekdayTrips"] = 1
+                route["saturdayTrips"] = 1
+                route["sundayTrips"] = 1
+                response["routes"] = [route]
+                return (200, response)
+            }
             guard request.query["originCampusId"] == "1", request.query["destinationCampusId"] == "2" else {
                 return (400, ["error": "Expected East to Gaoxin route"])
             }
             return (200, Self.routes)
         case ("GET", "/api/catalog/bus/next"):
+            if busParity, request.query["originCampusId"] == "2", request.query["destinationCampusId"] == "1" {
+                var response = Self.next
+                let origin = response["originCampus"]
+                response["originCampus"] = response["destinationCampus"]
+                response["destinationCampus"] = origin
+                response["departures"] = []
+                response["message"] = "No upcoming departures"
+                response["totalRoutes"] = 1
+                return (200, response)
+            }
             guard request.query["originCampusId"] == "1", request.query["destinationCampusId"] == "2" else {
                 return (400, ["error": "Expected explicit boarding campuses"])
             }
@@ -75,6 +101,40 @@ final class CampusHTTPState {
     }
 
     private var pins: [String: Any] { ["pinnedSlugs": pinnedSlugs, "maxPinnedLinks": 4, "error": NSNull()] }
+
+    private static var reverseRoute: [String: Any] {
+        var route = (timetable["routes"] as! [[String: Any]])[0]
+        route["id"] = 102
+        route["nameCn"] = "Gaoxin Campus → East Campus"
+        route["nameEn"] = "Gaoxin Campus → East Campus"
+        route["descriptionPrimary"] = "Return campus shuttle"
+        route["stops"] = (route["stops"] as! [[String: Any]]).reversed().enumerated().map { index, item in
+            var stop = item
+            stop["stopOrder"] = index
+            return stop
+        }
+        return route
+    }
+
+    private var parityTimetable: [String: Any] {
+        var body = Self.timetable
+        body["routes"] = (body["routes"] as! [[String: Any]]) + [Self.reverseRoute]
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        let now = Date()
+        let minute = calendar.component(.hour, from: now) * 60 + calendar.component(.minute, from: now)
+        let weekday = calendar.component(.weekday, from: now)
+        let day = weekday == 1 ? "sunday" : weekday == 7 ? "saturday" : "weekday"
+        let start = max(0, minute - 15)
+        let end = min(1439, minute + 15)
+        let clock: (Int) -> String = { String(format: "%02d:%02d", $0 / 60, $0 % 60) }
+        body["trips"] = [["id": 201, "routeId": 101, "dayType": day, "position": 0,
+                          "departureTime": clock(start), "departureMinutes": start,
+                          "arrivalTime": clock(end), "arrivalMinutes": end,
+                          "stopTimes": [["stopOrder": 0, "campusId": 1, "time": clock(start), "minutesSinceMidnight": start],
+                                        ["stopOrder": 1, "campusId": 2, "time": clock(end), "minutesSinceMidnight": end]]]]
+        return body
+    }
 
     private func weather(_ key: String) -> [String: Any] {
         ["location": ["key": key, "name": key == "ustc-main" ? "Main Campus" : "Gaoxin Campus", "adcode": "340100"],

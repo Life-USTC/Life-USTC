@@ -271,9 +271,11 @@ private struct CommentNodeView: View {
             }
 
             if comment.isAncestryPlaceholder != true {
-                Text((try? AttributedString(markdown: comment.body,
-                    options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(comment.body))
-                    .font(.body).textSelection(.enabled)
+                if let html = comment.renderedBody, !html.isEmpty {
+                    ServerRenderedContent(html: html)
+                } else {
+                    Text(comment.body).textSelection(.enabled)
+                }
             }
 
             if let attachments = comment.attachments, !attachments.isEmpty {

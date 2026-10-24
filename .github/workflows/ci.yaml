@@ -79,6 +79,8 @@ jobs:
             -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
             -only-testing:Life-USTC-UITests/CommunityJourneyTests \
             -only-testing:Life-USTC-UITests/CampusJourneyTests \
+            -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
+            -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
             -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
             -only-testing:Life-USTC-UITests/AccountJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \

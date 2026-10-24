@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
     @State private var learningRefresh = UUID()
+    @State private var contentRoute: ServerContentRoute?
 
     var iPhoneView: some View {
         Group {
@@ -132,6 +133,30 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .serverSessionDidChange).receive(on: RunLoop.main)) { notification in
             guard let client = notification.object as? ServerClient, client === ServerClient.shared else { return }
             account.onSessionChanged()
+        }
+        .environment(\.openURL, OpenURLAction { url in
+            guard let route = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL) else { return .systemAction }
+            contentRoute = route
+            return .handled
+        })
+        .onOpenURL { url in
+            contentRoute = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL)
+        }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL {
+                contentRoute = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL)
+            }
+        }
+        .sheet(item: $contentRoute) { route in
+            NavigationStack {
+                ServerContentDestination(route: route)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { contentRoute = nil }
+                        }
+                    }
+            }
+            .id(route)
         }
         .modifier(USTCBaseModifier())
     }

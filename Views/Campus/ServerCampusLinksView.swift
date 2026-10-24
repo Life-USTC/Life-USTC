@@ -55,8 +55,8 @@ struct ServerCampusLinksView: View {
 
     private func linkRow(_ link: ServerCampusLink) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            if let url = URL(string: link.url) {
-                Link(destination: url) {
+            if URL(string: link.url) != nil {
+                Link(destination: ServerWebLinks.campusLink(link.slug, baseURL: ServerClient.shared.baseURL)) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(link.title).foregroundStyle(.primary)
                         Text(link.description).font(.caption).foregroundStyle(.secondary)
