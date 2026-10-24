@@ -7,36 +7,46 @@
       "feature": "admin",
       "capability": "admin-entry",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "admin",
       "capability": "moderation",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "admin",
       "capability": "user-management",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "admin",
       "capability": "oauth-client-management",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "admin",
       "capability": "bus-management",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "bus",
@@ -143,8 +153,10 @@
       "feature": "comment",
       "capability": "comment-governance",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "comment",
@@ -195,8 +207,10 @@
       "feature": "description",
       "capability": "description-governance",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "exam",
@@ -278,8 +292,10 @@
       "feature": "homework",
       "capability": "homework-governance",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "homework",
@@ -332,10 +348,10 @@
     {
       "feature": "media",
       "capability": "profile-avatar",
-      "surface": "native",
-      "implementation": "existing_native_entry_partial",
+      "surface": "authenticated_web",
+      "implementation": "web_entry_partial",
       "entrypoints": [
-        "Views/Settings/ServerAccountView.swift"
+        "Views/Settings/ServerAccountManagementView.swift"
       ]
     },
     {
@@ -353,8 +369,10 @@
       "feature": "oauth",
       "capability": "authorization-management",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "oauth",
@@ -727,15 +745,20 @@
       "feature": "user",
       "capability": "settings",
       "surface": "authenticated_web",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "web_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountManagementView.swift"
+      ]
     },
     {
       "feature": "user",
       "capability": "oauth-client-activity",
       "surface": "native",
-      "implementation": "not_present",
-      "entrypoints": []
+      "implementation": "native_entry_partial",
+      "entrypoints": [
+        "Views/Settings/ServerAccountActivityView.swift",
+        "Server/ServerAccountActivity.swift"
+      ]
     },
     {
       "feature": "weather",

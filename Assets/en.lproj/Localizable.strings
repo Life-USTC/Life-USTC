@@ -444,3 +444,35 @@
 "No unread reminders" = "No unread reminders";
 "Mark as read" = "Mark as read";
 "Unable to mark this reminder as read." = "Unable to mark this reminder as read.";
+
+"Comment posted" = "Comment posted";
+"Comment edited" = "Comment edited";
+"Comment deleted" = "Comment deleted";
+"Comment reaction changed" = "Comment reaction changed";
+"Description edited" = "Description edited";
+"File deleted" = "File deleted";
+"Homework created" = "Homework created";
+"Homework updated" = "Homework updated";
+"Homework deleted" = "Homework deleted";
+"App authorized" = "App authorized";
+"App authorization updated" = "App authorization updated";
+"App authorization revoked" = "App authorization revoked";
+"No app activity yet." = "No app activity yet.";
+"This App's Activity" = "This App's Activity";
+"Activity performed by this app with your current authorization. Manage all authorized apps on the website." = "Activity performed by this app with your current authorization. Manage all authorized apps on the website.";
+"Succeeded" = "Succeeded";
+"Denied" = "Denied";
+"Failed" = "Failed";
+"Profile and Avatar" = "Profile and Avatar";
+"Website Preferences" = "Website Preferences";
+"Linked Accounts and Passkeys" = "Linked Accounts and Passkeys";
+"Authorized Apps" = "Authorized Apps";
+"Delete Account" = "Delete Account";
+"Administration" = "Administration";
+"These settings open the Life@USTC website. Sign in there if asked, and check which account you are managing." = "These settings open the Life@USTC website. Sign in there if asked, and check which account you are managing.";
+"The website verifies administrator access for moderation and management." = "The website verifies administrator access for moderation and management.";
+"Account deletion requires confirmation on the website." = "Account deletion requires confirmation on the website.";
+"Refresh Account" = "Refresh Account";
+"Account Management" = "Account Management";
+
+"Sessions and Security Activity" = "Sessions and Security Activity";

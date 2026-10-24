@@ -33,13 +33,15 @@ final class ServerJourneyHTTPFixture {
     private var community: CommunityHTTPState?
     private var campus: CampusHTTPState?
     private var youngCampus: YoungCampusHTTPState?
+    private var accountJourney: AccountJourneyHTTPState?
     private var failedRequest: (method: String, path: String)?
 
-    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false) {
+    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false, accountJourney: Bool = false) {
         if workspace { self.workspace = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState()) }
         if community { self.community = CommunityHTTPState() }
         if campus { self.campus = CampusHTTPState() }
         if youngCampus { self.youngCampus = YoungCampusHTTPState() }
+        if accountJourney { self.accountJourney = AccountJourneyHTTPState() }
     }
 
     var requests: [Request] { queue.sync { received } }
@@ -174,6 +176,7 @@ final class ServerJourneyHTTPFixture {
             self.failedRequest = nil
             return (503, ["error": "Workspace fixture unavailable"])
         }
+        if let response = accountJourney?.response(to: request) { return response }
         if let response = campus?.response(to: request) { return response }
         if let response = youngCampus?.response(to: request) { return response }
         if let response = community?.response(to: request) { return response }

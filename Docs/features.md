@@ -97,6 +97,21 @@ writes. Notifications support unread filtering and refresh after marking a
 reminder read. Activity-time calendars report interval conflicts separately from
 registration windows. Private lists clear when the account changes.
 
+## Account management
+
+Account management opens the supported website pages for profile/avatar,
+preferences, linked logins and passkeys, sessions and security activity,
+authorizations, and account deletion. The website authenticates its own session
+and confirms destructive actions. Administration uses the same supported Web
+entry; an ordinary app grant does not confer administrator rights. Returning
+refreshes the account and notifies workspace views to reload changed state.
+
+This App's Activity reads only the current OAuth authorization's activity and
+paginates using the server cursor. Failed pages retain already loaded history.
+`AccountJourneyTests` exercises website handoff, return refresh, activity-page
+retry and signed-out access; production account actions still need real-account
+acceptance.
+
 ## Remaining parity
 
 The final acceptance pass still covers advanced content rendering, complete

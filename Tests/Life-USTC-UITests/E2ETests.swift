@@ -34,13 +34,11 @@ final class E2ETests: XCTestCase {
         university.tap()
         let username = app.textFields["login_username_field"]
         XCTAssertTrue(username.waitForExistence(timeout: 10), "Login screen should appear")
-        username.tap()
-        username.typeText("demo")
+        replaceLoginText(username, with: "demo")
 
         let password = app.secureTextFields["login_password_field"]
         XCTAssertTrue(password.waitForExistence(timeout: 5))
-        password.tap()
-        password.typeText("demo")
+        replaceLoginText(password, with: "demo")
 
         // Dismiss keyboard
         app.tap()
@@ -51,6 +49,21 @@ final class E2ETests: XCTestCase {
         _ = app.wait(for: .runningBackground, timeout: 5)
         app.activate()
         _ = app.wait(for: .runningForeground, timeout: 5)
+    }
+
+    private func replaceLoginText(_ field: XCUIElement, with text: String) {
+        // CAS credentials persist in Keychain between launches.
+        field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+        let previous = field.value as? String ?? ""
+        if !previous.isEmpty && previous != field.placeholderValue {
+            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: previous.count))
+        }
+        field.typeText(text)
+        if field.elementType == .secureTextField {
+            XCTAssertEqual((field.value as? String)?.count, text.count)
+        } else {
+            XCTAssertEqual(field.value as? String, text)
+        }
     }
 
     /// Complete the onboarding flow after login.

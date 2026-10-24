@@ -89,6 +89,12 @@ struct SettingsView: View {
             if account.isAuthenticated {
                 Section {
                     NavigationLink {
+                        ServerAccountManagementView()
+                    } label: {
+                        Label("Account Management", systemImage: "person.crop.circle.badge.gearshape")
+                    }
+                    .accessibilityIdentifier("settings_account_management")
+                    NavigationLink {
                         ServerOwnedFilesView()
                     } label: {
                         Label("My Files", systemImage: "folder")
