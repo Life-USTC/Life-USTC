@@ -817,3 +817,36 @@
 "No unread reminders" = "已读完所有提醒";
 "Mark as read" = "标为已读";
 "Unable to mark this reminder as read." = "无法将此提醒标为已读。";
+
+"Comment posted" = "评论已发布";
+"Comment edited" = "评论已编辑";
+"Comment deleted" = "评论已删除";
+"Comment reaction changed" = "评论回应已更改";
+"Description edited" = "描述已编辑";
+"File deleted" = "文件已删除";
+"Homework created" = "作业已创建";
+"Homework updated" = "作业已更新";
+"Homework deleted" = "作业已删除";
+"App authorized" = "应用已授权";
+"App authorization updated" = "应用授权已更新";
+"App authorization revoked" = "应用授权已撤销";
+"No app activity yet." = "暂无应用操作记录。";
+"This App's Activity" = "此应用的操作记录";
+"Activity performed by this app with your current authorization. Manage all authorized apps on the website." = "此处显示应用在当前授权下的操作记录。你可以在网站上管理所有已授权的应用。";
+"Succeeded" = "成功";
+"Denied" = "已拒绝";
+"Failed" = "失败";
+"Profile and Avatar" = "资料与头像";
+"Website Preferences" = "网站偏好";
+"Linked Accounts and Passkeys" = "绑定账号与通行密钥";
+"Security Activity" = "安全记录";
+"Authorized Apps" = "已授权的应用";
+"Delete Account" = "删除账号";
+"Administration" = "管理后台";
+"These settings open the Life@USTC website. Sign in there if asked, and check which account you are managing." = "这些设置在 Life@USTC 网站中打开。如有提示，请登录并确认当前管理的账号。";
+"The website verifies administrator access for moderation and management." = "网站会验证内容审核和管理操作所需的管理员权限。";
+"Account deletion requires confirmation on the website." = "删除账号需要在网站上确认。";
+"Refresh Account" = "刷新账号";
+"Account Management" = "账号管理";
+
+"Sessions and Security Activity" = "会话与安全活动";

@@ -12,6 +12,7 @@ import Foundation
 enum ServerEndpoint {
     // User
     case me
+    case clientActivity(cursor: String?, limit: Int)
     case getPublicUser(identifier: String)
 
     // Shared descriptions
@@ -143,7 +144,7 @@ enum ServerEndpoint {
 
     var method: String {
         switch self {
-        case .me, .getPublicUser, .getDescription, .getComment, .listHomeworkAudit, .downloadUpload,
+        case .me, .clientActivity, .getPublicUser, .getDescription, .getComment, .listHomeworkAudit, .downloadUpload,
             .currentSemester, .listSemesters,
             .listCourses, .getCourse,
             .listSections, .getSection, .getSectionSchedules,
@@ -180,6 +181,8 @@ enum ServerEndpoint {
         switch self {
         case .me:
             return "/api/account/profile"
+        case .clientActivity:
+            return "/api/account/client-activity"
         case .getPublicUser(let identifier):
             return "/api/community/users/\(Self.pathSegment(identifier))"
         case .getDescription, .upsertDescription:
@@ -313,6 +316,10 @@ enum ServerEndpoint {
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .clientActivity(let cursor, let limit):
+            var items = [URLQueryItem(name: "limit", value: String(limit))]
+            if let cursor { items.append(.init(name: "cursor", value: cursor)) }
+            return items
         case .getDescription(let target):
             return target.queryItems
         case .listHomeworkAudit(let sectionJwId):

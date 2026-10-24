@@ -26,6 +26,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
     static let scopes = [
         "openid", "profile", "email", "offline_access",
         "account.profile:read",
+        "account.client-activity:read",
         "workspace.subscription:read", "workspace.subscription:write",
         "workspace.todo:read", "workspace.todo:write",
         "workspace.overview:read",

@@ -45,6 +45,21 @@ struct ServerAccountView: View {
                 }
 
                 Section {
+                    NavigationLink {
+                        ServerAccountManagementView()
+                    } label: {
+                        Label("Account Management", systemImage: "person.crop.circle.badge.gearshape")
+                    }
+                    .accessibilityIdentifier("server_account_management")
+                    NavigationLink {
+                        ServerAccountActivityView()
+                    } label: {
+                        Label("This App's Activity", systemImage: "list.bullet.rectangle")
+                    }
+                    .accessibilityIdentifier("server_account_activity")
+                }
+
+                Section {
                     Button(role: .destructive) {
                         store.logout()
                     } label: {
