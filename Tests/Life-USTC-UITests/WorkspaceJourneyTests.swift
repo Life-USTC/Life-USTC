@@ -67,6 +67,15 @@ final class WorkspaceJourneyTests: XCTestCase {
         app.launch()
         selectTab("Calendar", index: 1)
         waitForRequest("GET", "/api/workspace/calendar/events")
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        let tomorrow = String(formatter.string(from: Date().addingTimeInterval(86400)).prefix(10))
+        let day = app.segmentedControls["workspace_calendar_mode"].buttons["Day"]
+        XCTAssertTrue(day.waitForExistence(timeout: 10))
+        day.tap()
+        open("Next period")
+        waitForRequest("GET", "/api/workspace/calendar/events",
+                       query: ["dateFrom": tomorrow, "dateTo": tomorrow])
         let originalCalendarReads = requestCount("GET", "/api/workspace/calendar/events")
         selectTab("Home", index: 0)
         open("home_todos")
