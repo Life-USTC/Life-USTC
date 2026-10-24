@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LifeClientCore
 
 enum YoungEventTimeBasis: String, CaseIterable, Identifiable, Codable {
     case activity
@@ -59,36 +60,28 @@ enum YoungCalendarDate {
     }
 
     static func weekStart(_ date: Date) -> Date {
-        let day = dayStart(date)
-        let weekday = calendar.component(.weekday, from: day)
-        let mondayOffset = (weekday + 5) % 7
-        return calendar.date(byAdding: .day, value: -mondayOffset, to: day) ?? day
+        dateFormatter.date(from: range(for: .week, date: date).from)!
     }
 
     static func monthStart(_ date: Date) -> Date {
-        let components = calendar.dateComponents([.year, .month], from: date)
-        return calendar.date(from: components) ?? dayStart(date)
+        dateFormatter.date(from: range(for: .month, date: date).from)!
     }
 
     static func dateString(_ date: Date) -> String {
-        dateFormatter.string(from: date)
+        ClientCalendar.shanghaiDate(at: date)
     }
 
-    static func range(for mode: YoungCalendarDisplayMode, date: Date) -> (from: String, to: String) {
-        let start: Date
-        let end: Date
-        switch mode {
-        case .day:
-            start = dayStart(date)
-            end = calendar.date(byAdding: .day, value: 1, to: start)!.addingTimeInterval(-1)
-        case .week:
-            start = weekStart(date)
-            end = calendar.date(byAdding: .day, value: 7, to: start)!.addingTimeInterval(-1)
-        case .month:
-            start = monthStart(date)
-            end = calendar.date(byAdding: .month, value: 1, to: start)!.addingTimeInterval(-1)
+    static func range(
+        for mode: YoungCalendarDisplayMode, date: Date,
+        firstWeekday: CalendarWeekday = .monday
+    ) -> (from: String, to: String) {
+        let period: CalendarPeriod = switch mode {
+        case .day: .day
+        case .week: .week
+        case .month: .month
         }
-        return (dateString(start), dateString(end))
+        let value = try! ClientCalendar.bounds(period: period, at: date, firstWeekday: firstWeekday)
+        return (value.from, value.to)
     }
 
     static func advance(_ date: Date, mode: YoungCalendarDisplayMode, amount: Int = 1) -> Date {

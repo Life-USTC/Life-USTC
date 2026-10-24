@@ -9,14 +9,7 @@ import SwiftUI
 
 enum YoungPublicCalendarDate {
     static func range(for mode: YoungCalendarDisplayMode, date: Date) -> ServerCalendarRange {
-        if mode == .week {
-            let day = YoungCalendarDate.dayStart(date)
-            let weekday = YoungCalendarDate.calendar.component(.weekday, from: day)
-            let start = YoungCalendarDate.calendar.date(byAdding: .day, value: 1 - weekday, to: day)!
-            return ServerCalendarRange(start: start,
-                end: YoungCalendarDate.calendar.date(byAdding: .day, value: 6, to: start)!)
-        }
-        let value = YoungCalendarDate.range(for: mode, date: date)
+        let value = YoungCalendarDate.range(for: mode, date: date, firstWeekday: .sunday)
         return ServerCalendarRange(start: YoungCalendarDate.dateFormatter.date(from: value.from)!,
                                    end: YoungCalendarDate.dateFormatter.date(from: value.to)!)
     }
