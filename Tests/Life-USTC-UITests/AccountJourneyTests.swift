@@ -117,7 +117,10 @@ final class AccountJourneyTests: XCTestCase {
     private func closeWebsite() {
         let done = app.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
         XCTAssertTrue(done.waitForExistence(timeout: 10))
-        done.tap()
+        let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
+        XCTAssertTrue(browser.waitForExistence(timeout: 10))
+        done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        waitUntil { !browser.exists }
         XCTAssertTrue(app.navigationBars["Account Management"].waitForExistence(timeout: 10))
     }
 
