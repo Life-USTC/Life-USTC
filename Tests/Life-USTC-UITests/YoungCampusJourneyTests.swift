@@ -42,7 +42,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         assertText("Activity time")
         assertText("Registration starts soon")
         captureM6("YoungDetail")
-        let signup = app.links["young.signup"]
+        let signup = app.descendants(matching: .any).matching(identifier: "young.signup").firstMatch
         reveal(signup)
         XCTAssertTrue(signup.exists)
         let subscription = switchControl("young.subscription.enabled")

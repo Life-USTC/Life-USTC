@@ -146,12 +146,12 @@ final class ParityNavigationJourneyTests: XCTestCase {
         selectAccount()
         open("Help and Guides")
         for path in ["usage/mobile", "usage/bot", "usage/mcp", "usage/cli", "guides/markdown-support", "community/comments/guide"] {
-            let link = app.links["guide_\(path)"]
+            let link = app.descendants(matching: .any).matching(identifier: "guide_\(path)").firstMatch
             reveal(link)
             XCTAssertTrue(link.exists)
         }
         capture("HelpGuides")
-        open(app.links["guide_usage/mobile"])
+        open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
         waitUntil { self.fixture.requests.contains { $0.path == "/usage/mobile" } }
         let request = try XCTUnwrap(fixture.requests.last { $0.path == "/usage/mobile" })
         XCTAssertNil(request.headers["authorization"])
