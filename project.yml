@@ -68,6 +68,7 @@ targets:
       - sdk: Security.framework
       - sdk: SystemConfiguration.framework
       - sdk: AuthenticationServices.framework
+      - package: LifeClientCore
       - package: Oklch
       - package: FeedKit
       - package: Introspect
@@ -214,6 +215,9 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
 
 packages:
+  LifeClientCore:
+    url: https://github.com/Life-USTC/client-core
+    revision: 4919c2656a6fa5aa98ac85f6ae37c7e9c9d6d20a
   Oklch:
     url: https://github.com/nikstar/swift-oklch
     revision: f0ee82f950ff3fc2d7e6f2a968941378139c1d71 # main @ 2026-10-17

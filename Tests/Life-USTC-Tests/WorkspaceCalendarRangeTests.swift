@@ -20,6 +20,12 @@ final class WorkspaceCalendarRangeTests: XCTestCase {
         XCTAssertEqual(range.requestWindows[1].to, "2025-01-02")
     }
 
+    func testReversedRangeRetainsEmptyDaysAndRequestWindows() {
+        let range = ServerCalendarRange(start: date("2026-10-25"), end: date("2026-10-24"))
+        XCTAssertTrue(range.days.isEmpty)
+        XCTAssertTrue(range.requestWindows.isEmpty)
+    }
+
     @MainActor
     func testWeekRetainsSevenMondayToSundayGroupsAndTodayNavigation() {
         let model = ServerWorkspaceCalendarModel()

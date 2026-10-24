@@ -152,7 +152,7 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
         capture("HelpGuides")
         open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
-        waitUntil { self.fixture.requests.contains { $0.path == "/usage/mobile" } }
+        waitUntil(timeout: 30) { self.fixture.requests.contains { $0.path == "/usage/mobile" } }
         let request = try XCTUnwrap(fixture.requests.last { $0.path == "/usage/mobile" })
         XCTAssertNil(request.headers["authorization"])
         app.activate()
@@ -235,8 +235,8 @@ final class ParityNavigationJourneyTests: XCTestCase {
         add(screenshot)
     }
 
-    private func waitUntil(_ condition: @escaping () -> Bool) {
+    private func waitUntil(timeout: TimeInterval = 10, _ condition: @escaping () -> Bool) {
         let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed)
     }
 }

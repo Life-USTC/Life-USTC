@@ -1,4 +1,5 @@
 import Foundation
+import LifeClientCore
 
 enum WorkspaceCalendarMode: String, CaseIterable, Identifiable {
     case day, week, month, semester
@@ -32,13 +33,10 @@ struct ServerCalendarRange {
     }
 
     var requestWindows: [(from: String, to: String)] {
-        var windows: [(String, String)] = []
-        var day = start
-        while day <= end {
-            let last = min(YoungCalendarDate.calendar.date(byAdding: .day, value: 365, to: day)!, end)
-            windows.append((YoungCalendarDate.dateString(day), YoungCalendarDate.dateString(last)))
-            day = YoungCalendarDate.calendar.date(byAdding: .day, value: 1, to: last)!
-        }
-        return windows
+        guard start <= end else { return [] }
+        let windows = try! ClientCalendar.requestWindows(
+            from: YoungCalendarDate.dateString(start), to: YoungCalendarDate.dateString(end)
+        )
+        return windows.map { (from: $0.from, to: $0.to) }
     }
 }
