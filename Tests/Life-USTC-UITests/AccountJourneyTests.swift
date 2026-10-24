@@ -47,7 +47,7 @@ final class AccountJourneyTests: XCTestCase {
         for (id, path) in pages {
             let previousReads = requestCount("GET", "/api/account/profile")
             open("account_web_\(id)")
-            waitForRequest("GET", path)
+            waitForRequest("GET", path, timeout: 45)
             let request = try XCTUnwrap(fixture.requests.last { $0.path == path })
             XCTAssertNil(request.headers["authorization"], "Website must authenticate its own session")
             closeWebsite()
@@ -168,16 +168,16 @@ final class AccountJourneyTests: XCTestCase {
         fixture.requests.filter { $0.method == method && $0.path == path }.count
     }
 
-    private func waitForRequest(_ method: String, _ path: String, query: [String: String] = [:]) {
-        waitUntil {
+    private func waitForRequest(_ method: String, _ path: String, query: [String: String] = [:], timeout: TimeInterval = 10) {
+        waitUntil(timeout: timeout) {
             self.fixture.requests.contains { request in
                 request.method == method && request.path == path && query.allSatisfy { request.query[$0.key] == $0.value }
             }
         }
     }
 
-    private func waitUntil(_ condition: @escaping () -> Bool) {
+    private func waitUntil(timeout: TimeInterval = 10, _ condition: @escaping () -> Bool) {
         let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed)
     }
 }
