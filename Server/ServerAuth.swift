@@ -38,6 +38,10 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
         "community.section-homework:read", "community.section-homework:write",
         "community.description:read", "community.description:write",
         "workspace.upload:read", "workspace.upload:write",
+        "workspace.link-pin:read",
+        "workspace.link-pin:write",
+        "workspace.bus-preferences:read",
+        "workspace.bus-preferences:write",
     ]
 
     /// Always read the current client — don't cache, since backend can change.

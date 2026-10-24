@@ -88,7 +88,19 @@ private final class YoungActivityCalendarModel {
 }
 
 struct YoungActivityCalendarView: View {
+    @Bindable private var account = ServerAccountStore.shared
     @State private var model = YoungActivityCalendarModel()
+    @State private var personal = ServerWorkspaceCalendarModel()
+
+    private var personalRequestID: String {
+        "\(model.mode.rawValue)-\(YoungCalendarDate.dateString(model.referenceDate))"
+    }
+
+    private var conflicts: Set<String> {
+        guard model.basis == .activity, personal.requestID == personalRequestID,
+              !personal.isLoading, personal.error == nil else { return [] }
+        return YoungFormatting.calendarConflicts(events: model.events, personal: personal.events)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -145,6 +157,13 @@ struct YoungActivityCalendarView: View {
                     .padding(.bottom, 4)
             }
 
+            conflictStatus
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                .padding(.bottom, 6)
+
             if model.unknownDateCount > 0 {
                 HStack {
                     NavigationLink {
@@ -176,7 +195,43 @@ struct YoungActivityCalendarView: View {
         }
         .navigationTitle("Activity Calendar")
         .task(id: model.requestID) { await model.load() }
-        .refreshable { await model.load() }
+        .task(id: "\(model.requestID)-\(account.sessionRevision)") { await loadPersonalCalendar() }
+        .refreshable {
+            await model.load()
+            await loadPersonalCalendar()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .serverWorkspaceDidChange)) { _ in
+            Task { await loadPersonalCalendar() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in
+            Task { await loadPersonalCalendar() }
+        }
+    }
+
+    @ViewBuilder
+    private var conflictStatus: some View {
+        if model.basis != .activity {
+            Text("Switch to activity times to check calendar conflicts.")
+        } else if !account.isAuthenticated {
+            Text("Sign in to check conflicts with your personal calendar.")
+        } else if personal.isLoading || personal.requestID != personalRequestID {
+            Label("Checking calendar conflicts…", systemImage: "clock")
+        } else if let error = personal.error {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Calendar conflicts are unavailable.")
+                Text(error)
+                Button("Retry") { Task { await loadPersonalCalendar() } }
+            }
+        } else {
+            Text("Conflicts compare known class, exam, and activity times. Deadlines are not occupied time.")
+        }
+    }
+
+    private func loadPersonalCalendar() async {
+        guard model.basis == .activity else { return }
+        personal.mode = model.mode
+        personal.referenceDate = model.referenceDate
+        await personal.load()
     }
 
     @ViewBuilder
@@ -187,7 +242,8 @@ struct YoungActivityCalendarView: View {
                 YoungCalendarDayAgenda(
                     date: YoungCalendarDate.dayStart(model.referenceDate),
                     events: model.events(on: model.referenceDate),
-                    basis: model.basis
+                    basis: model.basis,
+                    conflictingEventIDs: conflicts
                 )
             }
         case .week:
@@ -196,7 +252,8 @@ struct YoungActivityCalendarView: View {
                     YoungCalendarDayAgenda(
                         date: date,
                         events: model.events(on: date),
-                        basis: model.basis
+                        basis: model.basis,
+                        conflictingEventIDs: conflicts
                     )
                 }
             }
@@ -210,7 +267,8 @@ struct YoungActivityCalendarView: View {
                         YoungCalendarDayAgenda(
                             date: YoungCalendarDate.dayStart(model.referenceDate),
                             events: model.events(on: model.referenceDate),
-                            basis: model.basis
+                            basis: model.basis,
+                            conflictingEventIDs: conflicts
                         )
                         .padding(.horizontal)
                     }

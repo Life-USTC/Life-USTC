@@ -112,6 +112,21 @@ enum ServerEndpoint {
 
     // Bus
     case busSchedule(versionKey: String?)
+    case busRoutes(origin: Int?, destination: Int?, versionKey: String?, locale: String)
+    case busNext(ServerBusNextQuery)
+    case busPreferences
+    case setBusPreferences(ServerBusPreference)
+
+    // Campus discovery
+    case campusLinks(locale: String)
+    case linkPins
+    case setLinkPins(ServerLinkPinBatchRequest)
+    case campusWeather(ServerWeatherLocation)
+    case roomMap(code: String)
+    case campusSearch(query: String, locale: String)
+    case listPublications(filters: ServerPublicationFilters, page: Int, pageSize: Int)
+    case getPublication(id: String)
+    case listPublicationSources
 
     // Metadata
     case metadata
@@ -142,11 +157,14 @@ enum ServerEndpoint {
             .overview, .actionableOverview, .listSubscribedExams, .listTodosPage,
             .listHomeworks, .listSubscribedHomeworks, .getHomework, .listTodos,
             .listComments, .listCommentReplies,
-            .busSchedule, .metadata, .listUploads:
+            .busSchedule, .busRoutes, .busNext, .busPreferences,
+            .campusLinks, .linkPins, .campusWeather, .roomMap, .campusSearch,
+            .listPublications, .getPublication, .listPublicationSources, .metadata, .listUploads:
             return "GET"
         case .matchCodes, .importSubscriptions, .createHomework,
             .createTodo, .createComment, .addCommentReaction,
-            .markYoungNotificationRead, .createUpload, .completeUpload, .upsertDescription:
+            .markYoungNotificationRead, .createUpload, .completeUpload, .upsertDescription,
+            .setLinkPins, .setBusPreferences:
             return "POST"
         case .updateYoungEventSubscription, .updateYoungOrganizerSubscription, .setHomeworkCompletion:
             return "PUT"
@@ -256,6 +274,30 @@ enum ServerEndpoint {
             return "/api/community/comments/\(Self.pathSegment(id))/reactions"
         case .busSchedule:
             return "/api/catalog/bus"
+        case .busRoutes:
+            return "/api/catalog/bus/routes"
+        case .busNext:
+            return "/api/catalog/bus/next"
+        case .busPreferences, .setBusPreferences:
+            return "/api/workspace/bus-preferences"
+        case .campusLinks:
+            return "/api/catalog/links"
+        case .linkPins:
+            return "/api/workspace/link-pins"
+        case .setLinkPins:
+            return "/api/workspace/link-pins/batch"
+        case .campusWeather:
+            return "/api/catalog/weather"
+        case .roomMap(let code):
+            return "/api/catalog/rooms/\(Self.pathSegment(code))/map"
+        case .campusSearch:
+            return "/api/search"
+        case .listPublications:
+            return "/api/publications"
+        case .getPublication(let id):
+            return "/api/publications/\(Self.pathSegment(id))"
+        case .listPublicationSources:
+            return "/api/publications/sources"
         case .metadata:
             return "/api/catalog/metadata"
         case .listUploads, .createUpload:
@@ -414,6 +456,33 @@ enum ServerEndpoint {
             return [.init(name: "type", value: type)]
         case .busSchedule(let versionKey):
             return versionKey.map { [.init(name: "versionKey", value: $0)] }
+        case .busRoutes(let origin, let destination, let versionKey, let locale):
+            var items = [URLQueryItem(name: "locale", value: locale)]
+            if let origin { items.append(.init(name: "originCampusId", value: String(origin))) }
+            if let destination { items.append(.init(name: "destinationCampusId", value: String(destination))) }
+            if let versionKey { items.append(.init(name: "versionKey", value: versionKey)) }
+            return items
+        case .busNext(let query):
+            var items = [
+                URLQueryItem(name: "originCampusId", value: String(query.originCampusId)),
+                .init(name: "destinationCampusId", value: String(query.destinationCampusId)),
+                .init(name: "dayType", value: query.dayType),
+                .init(name: "includeDeparted", value: query.includeDeparted ? "true" : "false"),
+                .init(name: "limit", value: String(query.limit)),
+                .init(name: "locale", value: query.locale),
+            ]
+            if let versionKey = query.versionKey { items.append(.init(name: "versionKey", value: versionKey)) }
+            if let atTime = query.atTime { items.append(.init(name: "atTime", value: atTime)) }
+            return items
+        case .campusLinks(let locale):
+            return [.init(name: "locale", value: locale)]
+        case .campusWeather(let location):
+            return [.init(name: "locationKey", value: location.rawValue)]
+        case .campusSearch(let query, let locale):
+            return [.init(name: "q", value: query), .init(name: "scope", value: "catalog"),
+                    .init(name: "limit", value: "25"), .init(name: "locale", value: locale)]
+        case .listPublications(let filters, let page, let pageSize):
+            return filters.queryItems + [.init(name: "page", value: String(page)), .init(name: "pageSize", value: String(pageSize))]
         default:
             return nil
         }
@@ -439,6 +508,8 @@ enum ServerEndpoint {
         case .completeUpload(let req): return req
         case .renameUpload(_, let req): return req
         case .upsertDescription(let req): return req
+        case .setLinkPins(let req): return req
+        case .setBusPreferences(let req): return req
         default: return nil
         }
     }

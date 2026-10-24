@@ -78,6 +78,8 @@ jobs:
             -only-testing:Life-USTC-UITests/ServerJourneyTests \
             -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
             -only-testing:Life-USTC-UITests/CommunityJourneyTests \
+            -only-testing:Life-USTC-UITests/CampusJourneyTests \
+            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet

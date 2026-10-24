@@ -162,9 +162,11 @@ extension ServerClient {
         subscribed: Bool,
         remindSignup: Bool,
         remindDeadline: Bool,
-        remindStart: Bool
+        remindStart: Bool,
+        expectedRevision: UUID? = nil
     ) async throws -> ServerYoungEventSubscriptionState {
-        try await request(
+        let revision = expectedRevision ?? sessionRevision
+        let response: ServerYoungEventSubscriptionState = try await request(
             .updateYoungEventSubscription(
                 youngId: youngId,
                 YoungEventSubscriptionRequest(
@@ -173,8 +175,10 @@ extension ServerClient {
                     remindDeadline: remindDeadline,
                     remindStart: remindStart
                 )
-            )
+            ), expectedRevision: revision
         )
+        try await notifyYoungChange(.serverSubscriptionsDidChange, revision: revision)
+        return response
     }
 
     // MARK: - Organizer subscriptions
@@ -195,28 +199,46 @@ extension ServerClient {
 
     func updateYoungOrganizerSubscription(
         organizerId: String,
-        subscribed: Bool
+        subscribed: Bool,
+        expectedRevision: UUID? = nil
     ) async throws -> ServerYoungOrganizerSubscriptionState {
-        try await request(
+        let revision = expectedRevision ?? sessionRevision
+        let response: ServerYoungOrganizerSubscriptionState = try await request(
             .updateYoungOrganizerSubscription(
                 organizerId: organizerId,
                 YoungOrganizerSubscriptionRequest(subscribed: subscribed)
-            )
+            ), expectedRevision: revision
         )
+        try await notifyYoungChange(.serverSubscriptionsDidChange, revision: revision)
+        return response
     }
 
     // MARK: - Notifications
 
-    func fetchYoungNotifications() async throws -> [ServerYoungNotification] {
+    func fetchYoungNotifications(unread: Bool? = nil) async throws -> [ServerYoungNotification] {
         try await fetchAllPages { page, pageSize in
             try await request(
-                .listYoungNotifications(page: page, pageSize: pageSize, unread: nil)
+                .listYoungNotifications(page: page, pageSize: pageSize, unread: unread)
             )
         }
     }
 
-    func markYoungNotificationRead(id: String) async throws -> ServerYoungNotificationRead {
-        try await request(.markYoungNotificationRead(id: id))
+    func markYoungNotificationRead(id: String, expectedRevision: UUID? = nil) async throws -> ServerYoungNotificationRead {
+        let revision = expectedRevision ?? sessionRevision
+        let response: ServerYoungNotificationRead = try await request(.markYoungNotificationRead(id: id), expectedRevision: revision)
+        guard response.id == id, response.success else {
+            throw ServerError.serverError("Unable to mark this reminder as read.".localized)
+        }
+        try await notifyYoungChange(.serverWorkspaceDidChange, revision: revision)
+        return response
+    }
+
+    private func notifyYoungChange(_ name: Notification.Name, revision: UUID) async throws {
+        try await MainActor.run {
+            try Task.checkCancellation()
+            guard revision == sessionRevision else { throw CancellationError() }
+            NotificationCenter.default.post(name: name, object: nil)
+        }
     }
 
     // MARK: - Community comments
