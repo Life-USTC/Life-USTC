@@ -136,7 +136,12 @@ final class ServerBusPlannerModel {
 
     func refreshDepartures(locale: String) async {
         let key = queryKey
-        guard let origin, let destination, origin != destination else { next = nil; routeResult = nil; return }
+        guard let origin, let destination, origin != destination else {
+            isLoadingDepartures = false
+            next = nil
+            routeResult = nil
+            return
+        }
         let expectedRevision = client.sessionRevision
         isLoadingDepartures = true
         departureError = nil

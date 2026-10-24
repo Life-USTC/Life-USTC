@@ -185,6 +185,53 @@ final class ServerCampusTests: XCTestCase {
         XCTAssertEqual(MockURLProtocol.capturedRequests.last?.httpMethod, "POST")
     }
 
+    @MainActor
+    func testInvalidBusSelectionClearsLoadingBeforePreviousRequestsFinish() async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [DeferredBusURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        let client = ServerClient(configuration: .init(baseURL: URL(string: "https://campus.example")!,
+                                                      session: session, tokenStore: MockTokenStore()))
+        defer {
+            session.invalidateAndCancel()
+            DeferredBusURLProtocol.requests = []
+            DeferredBusURLProtocol.onRequest = nil
+        }
+        let invalidDestinations: [Int?] = [1, nil]
+        for destination in invalidDestinations {
+            DeferredBusURLProtocol.requests = []
+            let started = expectation(description: "Both departure requests started")
+            started.expectedFulfillmentCount = 2
+            DeferredBusURLProtocol.onRequest = { started.fulfill() }
+            let model = ServerBusPlannerModel(client: client)
+            model.selectOrigin(1)
+            model.selectDestination(2)
+            let previous = Task { await model.refreshDepartures(locale: "en-us") }
+            defer { previous.cancel() }
+            await fulfillment(of: [started], timeout: 2)
+            DeferredBusURLProtocol.onRequest = nil
+            XCTAssertTrue(model.isLoadingDepartures)
+
+            model.selectDestination(destination)
+            await model.refreshDepartures(locale: "en-us")
+            XCTAssertFalse(model.isLoadingDepartures, "Invalid selection must stop loading immediately")
+            XCTAssertEqual(DeferredBusURLProtocol.requests.count, 2)
+            XCTAssertNil(model.next)
+            XCTAssertNil(model.routeResult)
+
+            for request in DeferredBusURLProtocol.requests {
+                let body: [String: Any] = request.request.url?.path == "/api/catalog/bus/routes"
+                    ? ["total": 0, "routes": []]
+                    : ["atTime": "2035-09-15T10:30:00+08:00", "dayType": "weekday", "totalRoutes": 0, "departures": []]
+                try request.complete(body)
+            }
+            await previous.value
+            XCTAssertFalse(model.isLoadingDepartures, "The previous query must not leave loading active")
+            XCTAssertNil(model.next)
+            XCTAssertNil(model.routeResult)
+        }
+    }
+
     func testWeatherRetainsAbsentObservationAndUnknownTemperature() throws {
         let snapshot: [String: Any] = ["location": ["key": "ustc-main", "name": "Main", "adcode": "340100"],
             "fetchedAt": "2035-09-15T10:30:00+08:00", "providers": ["open-meteo"],
@@ -350,5 +397,31 @@ final class ServerCampusTests: XCTestCase {
     private func response(_ request: URLRequest, _ object: [String: Any], status: Int = 200) throws -> (HTTPURLResponse, Data) {
         (HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!,
          try JSONSerialization.data(withJSONObject: object))
+    }
+}
+
+private final class DeferredBusURLProtocol: URLProtocol {
+    @MainActor static var requests: [DeferredBusURLProtocol] = []
+    @MainActor static var onRequest: (() -> Void)?
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        Task { @MainActor in
+            Self.requests.append(self)
+            Self.onRequest?()
+        }
+    }
+
+    override func stopLoading() {}
+
+    @MainActor
+    func complete(_ json: [String: Any]) throws {
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200,
+                                       httpVersion: nil, headerFields: nil)!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: try JSONSerialization.data(withJSONObject: json))
+        client?.urlProtocolDidFinishLoading(self)
     }
 }
