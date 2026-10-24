@@ -45,7 +45,12 @@ final class WorkspaceLearningHTTPState {
         case ("GET", "/api/workspace/calendar/events"):
             let events = ([scheduleEvent] + homeworkEvents + todoEvents + [examEvent]).filter { event in
                 guard let at = event["at"] as? String else { return false }
-                let day = String(at.prefix(10))
+                let formatter = ISO8601DateFormatter()
+                let parsed = formatter.date(from: at)
+                formatter.formatOptions.insert(.withFractionalSeconds)
+                guard let date = parsed ?? formatter.date(from: at) else { return false }
+                formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+                let day = String(formatter.string(from: date).prefix(10))
                 if let from = request.query["dateFrom"], day < String(from.prefix(10)) { return false }
                 if let to = request.query["dateTo"], day > String(to.prefix(10)) { return false }
                 return true
