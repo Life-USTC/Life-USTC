@@ -26,50 +26,30 @@ enum YoungPublicCalendarDate {
 }
 
 @Observable
-private final class YoungActivityCalendarModel {
+final class YoungActivityCalendarModel {
     var mode: YoungCalendarDisplayMode = .week
     var basis: YoungEventTimeBasis = .activity
     var referenceDate = Date()
-    var events: [ServerYoungEvent] = []
-    var unknownDateCount = 0
-    var source: ServerYoungCatalogSource?
-    var isLoading = false
-    var error: String?
+    let pages: YoungEventsPageModel
+    var events: [ServerYoungEvent] { pages.events }
+    var unknownDateCount: Int { pages.unknownDateCount }
+    var source: ServerYoungCatalogSource? { pages.source }
+    var isLoading: Bool { pages.isLoading }
+    var error: String? { pages.error }
 
-    private var generation = 0
+    init(client: ServerClient = .shared) {
+        pages = YoungEventsPageModel(client: client)
+    }
 
     var requestID: String {
         "\(mode.rawValue)-\(basis.rawValue)-\(YoungCalendarDate.dateString(referenceDate))"
     }
 
     func load() async {
-        generation += 1
-        let requestGeneration = generation
-        let requestedMode = mode
-        let requestedBasis = basis
-        let requestedReferenceDate = referenceDate
-        let range = YoungPublicCalendarDate.range(for: requestedMode, date: requestedReferenceDate)
-        isLoading = true
-        error = nil
-        events = []
-        unknownDateCount = 0
-        source = nil
-        do {
-            let page = try await ServerClient.shared.fetchYoungEventsPage(
-                .init(dateFrom: YoungCalendarDate.dateString(range.start),
-                      dateTo: YoungCalendarDate.dateString(range.end),
-                      timeBasis: requestedBasis.queryValue)
-            )
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            events = page.data
-            unknownDateCount = page.unknownDateCount
-            source = page.source
-        } catch {
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            self.error = error.localizedDescription
-        }
-        guard requestGeneration == generation else { return }
-        isLoading = false
+        let range = YoungPublicCalendarDate.range(for: mode, date: referenceDate)
+        await pages.load(.init(dateFrom: YoungCalendarDate.dateString(range.start),
+                               dateTo: YoungCalendarDate.dateString(range.end),
+                               timeBasis: basis.queryValue))
     }
 
     func events(on date: Date) -> [ServerYoungEvent] {
@@ -185,12 +165,14 @@ struct YoungActivityCalendarView: View {
                 .padding(.bottom, 4)
             }
 
-            if let error = model.error, !model.isLoading {
+            if let error = model.error, model.events.isEmpty && !model.isLoading {
                 YoungErrorView(error: error, retry: { Task { await model.load() } })
             } else {
+                YoungEventsLoadingStatus(model: model.pages)
+                    .padding(.horizontal)
                 calendarContent
                     .overlay {
-                        if model.isLoading { ProgressView() }
+                        if model.isLoading && model.events.isEmpty { ProgressView() }
                     }
             }
         }
@@ -243,12 +225,13 @@ struct YoungActivityCalendarView: View {
                     date: YoungCalendarDate.dayStart(model.referenceDate),
                     events: model.events(on: model.referenceDate),
                     basis: model.basis,
-                    conflictingEventIDs: conflicts
+                    conflictingEventIDs: conflicts,
+                    showsEmptyMessage: model.pages.isComplete
                 )
             }
         case .week:
             List {
-                if model.weekDates.allSatisfy({ model.events(on: $0).isEmpty }) {
+                if model.pages.isComplete && model.weekDates.allSatisfy({ model.events(on: $0).isEmpty }) {
                     Text("No activities").foregroundStyle(.secondary)
                 }
                 ForEach(model.weekDates, id: \.self) { date in
@@ -272,7 +255,8 @@ struct YoungActivityCalendarView: View {
                             date: YoungCalendarDate.dayStart(model.referenceDate),
                             events: model.events(on: model.referenceDate),
                             basis: model.basis,
-                            conflictingEventIDs: conflicts
+                            conflictingEventIDs: conflicts,
+                            showsEmptyMessage: model.pages.isComplete
                         )
                         .padding(.horizontal)
                     }

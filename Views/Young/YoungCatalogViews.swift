@@ -10,16 +10,14 @@ import SwiftUI
 @Observable
 final class YoungEventsViewModel {
     let dateUnknown: Bool
-    private let client: ServerClient
+    let pages: YoungEventsPageModel
 
-    var events: [ServerYoungEvent] = []
-    var unknownDateCount = 0
-    var source: ServerYoungCatalogSource?
-    var isLoading = false
-    var error: String?
+    var events: [ServerYoungEvent] { pages.events }
+    var unknownDateCount: Int { pages.unknownDateCount }
+    var source: ServerYoungCatalogSource? { pages.source }
+    var isLoading: Bool { pages.isLoading }
+    var error: String? { pages.error }
     var filters: YoungBrowseFilters
-
-    private var generation = 0
 
     init(
         dateUnknown: Bool = false,
@@ -28,32 +26,12 @@ final class YoungEventsViewModel {
     ) {
         self.dateUnknown = dateUnknown
         self.filters = filters
-        self.client = client
+        pages = YoungEventsPageModel(client: client)
     }
 
     func load() async {
-        generation += 1
-        let requestGeneration = generation
-        isLoading = true
-        error = nil
-        events = []
-        unknownDateCount = 0
-        source = nil
-        do {
-            let query = filters.query
-            let page = try await client.fetchYoungEventsPage(
-                dateUnknown ? query.forUnknownDates() : query
-            )
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            events = page.data
-            unknownDateCount = page.unknownDateCount
-            source = page.source
-        } catch {
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            self.error = error.localizedDescription
-        }
-        guard requestGeneration == generation else { return }
-        isLoading = false
+        let query = filters.query
+        await pages.load(dateUnknown ? query.forUnknownDates() : query)
     }
 }
 
@@ -84,7 +62,8 @@ struct YoungEventsListView: View {
                 if let source = model.source {
                     YoungSourceFreshnessView(source: source)
                 }
-                if model.events.isEmpty && !model.isLoading && model.unknownDateCount == 0 {
+                YoungEventsLoadingStatus(model: model.pages)
+                if model.events.isEmpty && model.pages.isComplete && model.unknownDateCount == 0 {
                     ContentUnavailableView {
                         Label(
                             model.dateUnknown
@@ -132,7 +111,7 @@ struct YoungEventsListView: View {
             }
         }
         .overlay {
-            if model.isLoading { ProgressView() }
+            if model.isLoading && model.events.isEmpty { ProgressView() }
         }
         .navigationTitle(
             Text(

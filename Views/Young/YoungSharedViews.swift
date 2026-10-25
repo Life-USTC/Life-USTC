@@ -8,6 +8,26 @@
 import Foundation
 import SwiftUI
 
+struct YoungEventsLoadingStatus: View {
+    let model: YoungEventsPageModel
+
+    var body: some View {
+        if !model.events.isEmpty {
+            if model.isLoading {
+                ProgressView("Loading more activities…")
+                    .accessibilityIdentifier("young.loadingMore")
+            } else if let error = model.error {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Some activities have not loaded yet.")
+                    Text(error).font(.caption).foregroundStyle(.secondary)
+                    Button("Continue loading") { Task { await model.continueLoading() } }
+                        .accessibilityIdentifier("young.continueLoading")
+                }
+            }
+        }
+    }
+}
+
 struct YoungErrorView: View {
     let error: String
     let retry: () -> Void

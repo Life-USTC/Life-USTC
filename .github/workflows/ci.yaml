@@ -83,6 +83,7 @@ jobs:
             -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
             -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
             -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
+            -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
             -only-testing:Life-USTC-UITests/AccountJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \

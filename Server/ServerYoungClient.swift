@@ -38,6 +38,10 @@ extension ServerClient {
         return page.data
     }
 
+    func fetchYoungEventsBatch(_ query: YoungEventQuery, page: Int) async throws -> ServerYoungEventsPage {
+        try await request(.listYoungEvents(query: query, page: page, pageSize: 100))
+    }
+
     func fetchYoungEventsPage(_ query: YoungEventQuery = .init()) async throws -> ServerYoungEventsPage {
         var page = 1
         let firstResponse: ServerYoungEventsPage = try await request(

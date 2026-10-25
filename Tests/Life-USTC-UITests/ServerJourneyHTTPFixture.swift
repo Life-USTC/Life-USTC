@@ -33,6 +33,8 @@ final class ServerJourneyHTTPFixture {
     private var community: CommunityHTTPState?
     private var campus: CampusHTTPState?
     private var youngCampus: YoungCampusHTTPState?
+    private var youngIncremental: YoungIncrementalHTTPState?
+    private var pendingYoungPages: [(request: Request, connection: NWConnection)] = []
     private var publicDiscovery: PublicDiscoveryHTTPState?
     private var accountJourney: AccountJourneyHTTPState?
     private let catalogHistory: Bool
@@ -55,9 +57,24 @@ final class ServerJourneyHTTPFixture {
     var communityComments: [[String: Any]] { queue.sync { community?.comments ?? [] } }
     var communityHomeworks: [[String: Any]] { queue.sync { community?.homeworks ?? [] } }
     var communityUploads: [[String: Any]] { queue.sync { community?.uploads ?? [] } }
+    var heldYoungPages: [Request] { queue.sync { pendingYoungPages.map(\.request) } }
 
     func hideCommunityComments() { queue.sync { community?.hideAllComments() } }
     func enablePublicDiscoveryFixture() { queue.sync { publicDiscovery = PublicDiscoveryHTTPState() } }
+    func enableYoungIncrementalFixture() { queue.sync { youngIncremental = YoungIncrementalHTTPState() } }
+
+    func releaseYoungPages(status: Int = 200) {
+        queue.sync {
+            youngIncremental?.holdsSecondPage = false
+            let pending = pendingYoungPages
+            pendingYoungPages.removeAll()
+            for page in pending {
+                let response = status == 200 ? response(to: page.request)
+                    : (status: status, body: ["error": "Next activity page unavailable"] as Any)
+                send(response.body, status: response.status, to: page.connection)
+            }
+        }
+    }
 
     func enableBusParityFixture() { queue.sync { campus?.busParity = true } }
     func includeHistoricalSubscription() { queue.sync { membership[44] = "regular" } }
@@ -110,6 +127,7 @@ final class ServerJourneyHTTPFixture {
         queue.sync {
             connections.forEach { $0.cancel() }
             connections.removeAll()
+            pendingYoungPages.removeAll()
             listener?.cancel()
             listener = nil
         }
@@ -126,6 +144,10 @@ final class ServerJourneyHTTPFixture {
             }
             if let request = self.parseRequest(buffer) {
                 self.received.append(request)
+                if self.youngIncremental?.shouldHold(request) == true {
+                    self.pendingYoungPages.append((request, connection))
+                    return
+                }
                 let response = self.response(to: request)
                 self.send(response.body, status: response.status, to: connection)
             } else if !finished && error == nil {
@@ -189,6 +211,7 @@ final class ServerJourneyHTTPFixture {
         if let response = accountJourney?.response(to: request) { return response }
         if let response = campus?.response(to: request) { return response }
         if let response = publicDiscovery?.response(to: request) { return response }
+        if let response = youngIncremental?.response(to: request) { return response }
         if let response = youngCampus?.response(to: request) { return response }
         if let response = community?.response(to: request) { return response }
         if let response = workspace?.response(to: request) { return response }

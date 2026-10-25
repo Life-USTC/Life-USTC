@@ -126,6 +126,12 @@ organizer, source signup-list membership and time context across pagination and
 undated results. Activity rows preserve upstream category, module and level
 values; publication source rows identify their allowed hosts.
 
+Public activity lists and calendars display each received page while remaining
+pages load. An interrupted read keeps received activities visible; Continue
+loading retries the unfinished page. Changing filters or calendar periods starts
+a fresh read. Empty-calendar messages appear only after a successful complete
+read. Complete cache replacement and export still require complete results.
+
 Young subscriptions and organizer follows retain confirmed settings on failed
 writes. Notifications support unread filtering and refresh after marking a
 reminder read. Activity-time calendars report interval conflicts separately from

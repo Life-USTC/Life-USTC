@@ -952,3 +952,6 @@
 "Teaching periods: %@" = "授课学时：%@";
 "Exercise class" = "习题课";
 "Not an exercise class" = "非习题课";
+"Loading more activities…" = "正在加载更多活动…";
+"Some activities have not loaded yet." = "部分活动尚未加载，已加载的内容仍可查看。";
+"Continue loading" = "继续加载";
