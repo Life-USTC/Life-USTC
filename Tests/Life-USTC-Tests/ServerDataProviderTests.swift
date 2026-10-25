@@ -40,6 +40,54 @@ final class ServerDataProviderTests: XCTestCase {
     }
 
     @MainActor
+    func testUndatedMeetingsUseMondayWeeksAndInclusiveSemesterBounds() async throws {
+        let context = try makeContext()
+        var detail = section(42, date: "2026-09-01", weekIndex: 1)
+        var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
+        semester["startDate"] = "2026-09-01T00:00:00+08:00"
+        semester["endDate"] = "2026-09-07T00:00:00+08:00"
+        detail["semester"] = semester
+        let template = try XCTUnwrap((detail["schedules"] as? [[String: Any]])?.first)
+        detail["schedules"] = [(1, 1), (1, 2), (1, 7), (2, 1), (2, 2), (0, 3)].enumerated().map { index, position in
+            var meeting = template
+            meeting["id"] = 300 + index
+            meeting["date"] = NSNull()
+            meeting["weekIndex"] = position.0
+            meeting["weekday"] = position.1
+            return meeting
+        }
+        stubSections([42: detail])
+
+        try await ServerDataProvider.updateCurriculum(client: makeClient(), context: context)
+
+        let starts = try context.fetch(FetchDescriptor<Lecture>()).map(\.startDate).sorted()
+        XCTAssertEqual(starts, [
+            date("2026-09-01T00:15:00Z"), date("2026-09-06T00:15:00Z"), date("2026-09-07T00:15:00Z"),
+        ])
+    }
+
+    @MainActor
+    func testUndatedMeetingWithoutSemesterEndRetainsLaterTeachingWeek() async throws {
+        let context = try makeContext()
+        var detail = section(42, date: "2026-09-01", weekIndex: 4)
+        var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
+        semester["startDate"] = "2026-09-01T00:00:00+08:00"
+        semester["endDate"] = NSNull()
+        detail["semester"] = semester
+        var meeting = try XCTUnwrap((detail["schedules"] as? [[String: Any]])?.first)
+        meeting["date"] = NSNull()
+        meeting["weekday"] = 3
+        detail["schedules"] = [meeting]
+        stubSections([42: detail])
+
+        try await ServerDataProvider.updateCurriculum(client: makeClient(), context: context)
+
+        let lectures = try context.fetch(FetchDescriptor<Lecture>())
+        XCTAssertEqual(lectures.count, 1)
+        XCTAssertEqual(lectures.first?.startDate, date("2026-09-23T00:15:00Z"))
+    }
+
+    @MainActor
     func testOfferingsOfOneCourseKeepDistinctIdentityAndSemesters() async throws {
         let context = try makeContext()
         stubSections([

@@ -1,4 +1,5 @@
 import Foundation
+import LifeClientCore
 import SwiftData
 
 /// Stores complete server learning snapshots for the timetable and widgets.
@@ -205,10 +206,11 @@ enum ServerDataProvider {
               let weekIndex = schedule.weekIndex, weekIndex >= 1 else { return nil }
         let calendar = shanghaiCalendar
         let startDay = calendar.startOfDay(for: start)
-        let weekday = calendar.component(.weekday, from: startDay)
-        let mondayOffset = weekday == 1 ? -6 : 2 - weekday
-        let dayOffset = mondayOffset + (weekIndex - 1) * 7 + schedule.weekday - 1
-        guard let date = calendar.date(byAdding: .day, value: dayOffset, to: startDay),
+        guard let week = try? ClientCalendar.teachingWeekBounds(
+            semesterStart: ClientCalendar.shanghaiDate(at: start), weekIndex: weekIndex, firstWeekday: .monday
+        ),
+              let weekStart = parseDate(week.from),
+              let date = calendar.date(byAdding: .day, value: schedule.weekday - 1, to: weekStart),
               date >= startDay,
               semester?.endDate.map({ date <= calendar.startOfDay(for: $0) }) ?? true
         else { return nil }
