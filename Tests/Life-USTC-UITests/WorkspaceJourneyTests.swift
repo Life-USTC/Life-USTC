@@ -216,6 +216,12 @@ final class WorkspaceJourneyTests: XCTestCase {
         open("home_todos")
         XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
         selectTab("Calendar", index: 1)
+        let mode = app.segmentedControls["workspace_calendar_mode"]
+        XCTAssertTrue(mode.buttons["Semester"].waitForExistence(timeout: 10))
+        mode.buttons["Semester"].tap()
+        open("calendar_semester")
+        open("2026 Fall")
+        XCTAssertEqual(app.staticTexts["calendar_range"].label, "2026-09-01 – 2027-01-31")
         XCTAssertTrue(app.buttons["workspace_event_schedule:901"].waitForExistence(timeout: 10))
         capture("Calendar")
         open("calendar_feed")
