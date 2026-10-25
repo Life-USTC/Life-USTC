@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 final class CatalogParityJourneyTests: XCTestCase {
     private var fixture: ServerJourneyHTTPFixture!
@@ -103,6 +104,126 @@ final class CatalogParityJourneyTests: XCTestCase {
         open("section_calendar_export")
         XCTAssertTrue(app.navigationBars["Teaching Section Calendar"].waitForExistence(timeout: 10))
         capture("HistoricalCalendarExport")
+    }
+
+    @MainActor
+    func testAnonymousPublicScheduleEnglishEntryAndTeacherIdentity() throws {
+        try publicScheduleEntry(language: "en", locale: "en_US")
+        assertText("Room 2201")
+        assertText("Teaching Building 2")
+        assertText("East Campus")
+        XCTAssertTrue(app.buttons["public_schedule_1001_teacher_3"].exists)
+        XCTAssertTrue(app.buttons["public_schedule_1001_teacher_4"].exists)
+        open("public_schedule_1001_teacher_4")
+        waitForRequest("/api/catalog/teachers/4")
+        assertText("Professor")
+        XCTAssertFalse(fixture.requests.contains { $0.headers["authorization"] != nil })
+        XCTAssertTrue(fixture.requests.allSatisfy { $0.method == "GET" })
+    }
+
+    @MainActor
+    func testAnonymousPublicScheduleChineseEntryAndSectionNavigation() throws {
+        try publicScheduleEntry(language: "zh-Hans", locale: "zh_CN")
+        assertText("2201 教室")
+        assertText("第二教学楼")
+        assertText("东校区")
+        open("public_schedule_1001_section")
+        waitForRequest("/api/catalog/sections/42")
+        XCTAssertFalse(fixture.requests.contains { $0.headers["authorization"] != nil })
+        XCTAssertTrue(fixture.requests.allSatisfy { $0.method == "GET" })
+    }
+
+    @MainActor
+    func testPublicScheduleFiltersPaginationEmptyAndRetry() throws {
+        XCUIDevice.shared.orientation = UIDevice.current.userInterfaceIdiom == .pad ? .landscapeLeft : .portrait
+        app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
+        app.launch()
+        open("home_catalog")
+        open("catalog_public_schedule")
+        XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
+        open("public_schedule_filters")
+        type("MATH101.01", into: "public_schedule_section_code")
+        type("T003", into: "public_schedule_teacher_code")
+        type("2201", into: "public_schedule_room_code")
+        open("public_schedule_weekday")
+        open("Monday")
+        open("public_schedule_apply")
+        waitForRequest("/api/catalog/schedules", query: [
+            "sectionCode": "MATH101.01", "teacherCode": "T003", "roomJwId": "2201", "weekday": "1",
+        ])
+        open("public_schedule_filters")
+        publicScheduleCapture("Filters", language: "en")
+        open("public_schedule_cancel")
+        let more = app.buttons["public_schedule_load_more"]
+        for _ in 0..<40 {
+            if more.exists && more.isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(more.isHittable)
+        fixture.failNextRequest(method: "GET", path: "/api/catalog/schedules")
+        more.tap()
+        let retry = app.buttons["public_schedule_retry"]
+        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        reveal(retry)
+        retry.tap()
+        waitForRequest("/api/catalog/schedules", query: ["page": "2", "sectionCode": "MATH101.01"])
+        let last = app.buttons["public_schedule_1031_section"]
+        for _ in 0..<8 {
+            if last.exists && last.isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(last.waitForExistence(timeout: 10))
+        XCTAssertFalse(more.exists)
+        open("public_schedule_filters")
+        let section = app.textFields["public_schedule_section_code"]
+        section.tap()
+        XCTAssertEqual(section.value as? String, "MATH101.01")
+        section.press(forDuration: 1)
+        let selectAll = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Select All")).firstMatch
+        XCTAssertTrue(selectAll.waitForExistence(timeout: 5))
+        selectAll.tap()
+        section.typeText("MISSING")
+        XCTAssertEqual(section.value as? String, "MISSING")
+        open("public_schedule_apply")
+        XCTAssertTrue(app.staticTexts["No schedules match these filters."].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["public_schedule_1001_section"].exists)
+        open("public_schedule_filters")
+        XCTAssertEqual(app.textFields["public_schedule_section_code"].value as? String, "MISSING")
+        open("public_schedule_reset")
+        open("public_schedule_apply")
+        XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
+        XCTAssertFalse(fixture.requests.contains { $0.headers["authorization"] != nil })
+    }
+
+    @MainActor
+    private func publicScheduleEntry(language: String, locale: String) throws {
+        XCUIDevice.shared.orientation = UIDevice.current.userInterfaceIdiom == .pad ? .landscapeLeft : .portrait
+        app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
+        app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "UI_TEST_SKIP_ONBOARDING"]
+        app.launch()
+        open("home_catalog")
+        XCTAssertTrue(app.buttons["catalog_section_42"].waitForExistence(timeout: 10))
+        publicScheduleCapture("Catalog", language: language)
+        open("catalog_public_schedule")
+        XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
+        waitForRequest("/api/catalog/schedules", query: ["page": "1", "pageSize": "30", "locale": language == "en" ? "en-us" : "zh-cn"])
+        publicScheduleCapture("Results", language: language)
+    }
+
+    @MainActor
+    private func publicScheduleCapture(_ page: String, language: String) {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "after-public-schedule-\(page)-\(language)-\(app.frame.width > 700 ? "iPad" : "iPhone")"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    @MainActor
+    private func type(_ value: String, into id: String) {
+        let field = app.textFields[id]
+        XCTAssertTrue(field.waitForExistence(timeout: 10))
+        field.tap()
+        field.typeText(value)
     }
 
     @MainActor

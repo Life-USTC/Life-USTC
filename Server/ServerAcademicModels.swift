@@ -226,6 +226,15 @@ struct ServerScheduleEntry: Codable, Identifiable {
     let teachers: [ServerTeacherRef]?
     let section: ServerScheduleSectionRef?
     let scheduleGroup: ServerScheduleGroup?
+    let teacherParticipations: [ServerScheduleTeacherParticipation]?
+}
+
+struct ServerScheduleTeacherParticipation: Codable, Identifiable {
+    let teacher: ServerTeacherRef
+    let periods: Double?
+    let exerciseClass: Bool?
+
+    var id: Int { teacher.id }
 }
 
 struct ServerRoom: Codable, Identifiable {

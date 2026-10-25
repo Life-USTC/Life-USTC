@@ -14,6 +14,13 @@ enum YoungEventTimeBasis: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
+    var queryValue: YoungTimeBasis {
+        switch self {
+        case .activity: .activity
+        case .registration: .registration
+        }
+    }
+
     var title: String {
         switch self {
         case .activity: "Activity time"
@@ -180,22 +187,17 @@ struct ServerYoungCatalogSource: Codable, Hashable {
 }
 
 struct ServerYoungEventsPage: Codable {
+    struct Metadata: Codable {
+        let unknownDateCount: Int
+        let source: ServerYoungCatalogSource
+    }
+
     let data: [ServerYoungEvent]
     let pagination: PaginationInfo
-    let unknownDateCount: Int
-    let source: ServerYoungCatalogSource
+    let meta: Metadata
 
-    init(
-        data: [ServerYoungEvent],
-        pagination: PaginationInfo,
-        unknownDateCount: Int,
-        source: ServerYoungCatalogSource
-    ) {
-        self.data = data
-        self.pagination = pagination
-        self.unknownDateCount = unknownDateCount
-        self.source = source
-    }
+    var unknownDateCount: Int { meta.unknownDateCount }
+    var source: ServerYoungCatalogSource { meta.source }
 }
 
 struct ServerYoungOrganizer: Codable, Identifiable, Hashable {

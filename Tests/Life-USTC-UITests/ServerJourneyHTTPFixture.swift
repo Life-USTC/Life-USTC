@@ -33,6 +33,9 @@ final class ServerJourneyHTTPFixture {
     private var community: CommunityHTTPState?
     private var campus: CampusHTTPState?
     private var youngCampus: YoungCampusHTTPState?
+    private var youngIncremental: YoungIncrementalHTTPState?
+    private var pendingYoungPages: [(request: Request, connection: NWConnection)] = []
+    private var publicDiscovery: PublicDiscoveryHTTPState?
     private var accountJourney: AccountJourneyHTTPState?
     private let catalogHistory: Bool
     private var failedRequest: (method: String, path: String)?
@@ -54,10 +57,28 @@ final class ServerJourneyHTTPFixture {
     var communityComments: [[String: Any]] { queue.sync { community?.comments ?? [] } }
     var communityHomeworks: [[String: Any]] { queue.sync { community?.homeworks ?? [] } }
     var communityUploads: [[String: Any]] { queue.sync { community?.uploads ?? [] } }
+    var heldYoungPages: [Request] { queue.sync { pendingYoungPages.map(\.request) } }
 
     func hideCommunityComments() { queue.sync { community?.hideAllComments() } }
+    func enablePublicDiscoveryFixture() { queue.sync { publicDiscovery = PublicDiscoveryHTTPState() } }
+    func enableYoungIncrementalFixture() { queue.sync { youngIncremental = YoungIncrementalHTTPState() } }
+
+    func releaseYoungPages(status: Int = 200) {
+        queue.sync {
+            youngIncremental?.holdsSecondPage = false
+            let pending = pendingYoungPages
+            pendingYoungPages.removeAll()
+            for page in pending {
+                let response = status == 200 ? response(to: page.request)
+                    : (status: status, body: ["error": "Next activity page unavailable"] as Any)
+                send(response.body, status: response.status, to: page.connection)
+            }
+        }
+    }
+
     func enableBusParityFixture() { queue.sync { campus?.busParity = true } }
     func includeHistoricalSubscription() { queue.sync { membership[44] = "regular" } }
+    func includeConcurrentImportSubscription() { queue.sync { membership[47] = "auditor" } }
 
     func failNextRequest(method: String, path: String) {
         queue.sync { failedRequest = (method, path) }
@@ -106,6 +127,7 @@ final class ServerJourneyHTTPFixture {
         queue.sync {
             connections.forEach { $0.cancel() }
             connections.removeAll()
+            pendingYoungPages.removeAll()
             listener?.cancel()
             listener = nil
         }
@@ -122,6 +144,10 @@ final class ServerJourneyHTTPFixture {
             }
             if let request = self.parseRequest(buffer) {
                 self.received.append(request)
+                if self.youngIncremental?.shouldHold(request) == true {
+                    self.pendingYoungPages.append((request, connection))
+                    return
+                }
                 let response = self.response(to: request)
                 self.send(response.body, status: response.status, to: connection)
             } else if !finished && error == nil {
@@ -139,7 +165,7 @@ final class ServerJourneyHTTPFixture {
         let lines = head.components(separatedBy: "\r\n")
         let requestLine = lines[0].split(separator: " ")
         guard requestLine.count == 3,
-              let url = URLComponents(string: "http://127.0.0.1\(requestLine[1])")
+              var url = URLComponents(string: "http://127.0.0.1\(requestLine[1])")
         else { return nil }
         var headers: [String: String] = [:]
         for line in lines.dropFirst() {
@@ -150,6 +176,7 @@ final class ServerJourneyHTTPFixture {
         let body = Data(data[boundary.upperBound...])
         let length = Int(headers["content-length"] ?? "0") ?? 0
         guard body.count >= length else { return nil }
+        url.percentEncodedQuery = url.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%20")
         var query: [String: String] = [:]
         for item in url.queryItems ?? [] { query[item.name] = item.value }
         return Request(
@@ -183,6 +210,8 @@ final class ServerJourneyHTTPFixture {
         }
         if let response = accountJourney?.response(to: request) { return response }
         if let response = campus?.response(to: request) { return response }
+        if let response = publicDiscovery?.response(to: request) { return response }
+        if let response = youngIncremental?.response(to: request) { return response }
         if let response = youngCampus?.response(to: request) { return response }
         if let response = community?.response(to: request) { return response }
         if let response = workspace?.response(to: request) { return response }
@@ -236,6 +265,16 @@ final class ServerJourneyHTTPFixture {
             var teacher = Self.teacher
             teacher["sections"] = [Self.section(42), Self.section(43)]
             return (200, teacher)
+        case ("GET", "/api/catalog/teachers/4"):
+            var teacher = Self.teacher
+            teacher["id"] = 4
+            teacher["code"] = "T004"
+            teacher["sections"] = [Self.section(42)]
+            return (200, teacher)
+        case ("GET", "/api/catalog/teachers/4/sections"):
+            return (200, Self.page([Self.section(42)], pageSize: 100))
+        case ("GET", "/api/catalog/schedules"):
+            return Self.publicSchedules(request)
         case ("GET", "/api/catalog/sections"):
             if pendingCatalogFailure {
                 pendingCatalogFailure = false
@@ -269,6 +308,44 @@ final class ServerJourneyHTTPFixture {
             return (200, [Self.schedule])
         case ("GET", "/api/workspace/subscriptions/current"):
             return (200, ["subscription": subscription])
+        case ("POST", "/api/workspace/subscriptions/query"):
+            guard let codes = request.jsonBody["codes"] as? [String], !codes.isEmpty, codes.count <= 500,
+                  let semesterID = request.jsonBody["semesterId"] as? Int, [1, 2].contains(semesterID),
+                  request.jsonBody["sectionIds"] == nil
+            else { return (400, ["error": "Expected codes and an internal semester ID"]) }
+            let available = [42, 43, 45, 46].map(catalogSection).filter {
+                ($0["semester"] as? [String: Any])?["id"] as? Int == semesterID
+            }
+            func matches(_ section: [String: Any], code: String) -> Bool {
+                let course = section["course"] as? [String: Any]
+                return (section["code"] as? String)?.uppercased() == code.uppercased()
+                    || (course?["code"] as? String)?.uppercased() == code.uppercased()
+            }
+            let sections = available.filter { section in codes.contains { matches(section, code: $0) } }
+            let matched = codes.filter { code in available.contains { matches($0, code: code) } }
+            let unmatched = codes.filter { !matched.contains($0) }
+            let suggestions: [String: [String]] = unmatched.contains("PHYS101.09") && semesterID == 2
+                ? ["PHYS101.09": ["PHYS101.01"]] : [:]
+            return (200, ["semester": semesterID == 1 ? Self.semester : Self.springSemester,
+                          "matchedCodes": matched, "unmatchedCodes": unmatched, "suggestions": suggestions,
+                          "sections": sections, "total": sections.count])
+        case ("POST", "/api/workspace/subscriptions/batch"):
+            guard request.jsonBody["action"] as? String == "add",
+                  let sectionIDs = request.jsonBody["sectionIds"] as? [Int],
+                  !sectionIDs.isEmpty, sectionIDs.count <= 500, sectionIDs.allSatisfy({ $0 > 0 }),
+                  Set(request.jsonBody.keys) == ["action", "sectionIds"]
+            else { return (400, ["error": "Expected selected internal section IDs and action add"]) }
+            let universityIDs = [7: 42, 8: 43, 10: 45, 11: 46, 12: 47]
+            var added = 0
+            var unchanged = 0
+            var unmatched: [Int] = []
+            for sectionID in Set(sectionIDs).sorted() {
+                guard let jwID = universityIDs[sectionID] else { unmatched.append(sectionID); continue }
+                if membership[jwID] == nil { membership[jwID] = "regular"; added += 1 }
+                else { unchanged += 1 }
+            }
+            return (200, ["addedCount": added, "unchangedCount": unchanged,
+                          "unmatchedSectionIds": unmatched, "subscription": subscription])
         case ("PATCH", "/api/workspace/subscriptions"):
             if pendingSubscriptionFailure {
                 pendingSubscriptionFailure = false
@@ -324,6 +401,47 @@ final class ServerJourneyHTTPFixture {
                                       "total": data.count, "totalPages": data.isEmpty ? 0 : 1]]
     }
 
+    private static func publicSchedules(_ request: Request) -> (status: Int, body: Any) {
+        guard let page = Int(request.query["page"] ?? ""), (1...100).contains(page),
+              request.query["pageSize"] == "30",
+              let locale = request.query["locale"], ["en-us", "zh-cn"].contains(locale)
+        else { return (400, ["error": "Expected explicit schedule pagination and locale"]) }
+        let exact = ["sectionCode": "MATH101.01", "teacherCode": "T003", "roomJwId": "2201", "weekday": "1"]
+        let matches = exact.allSatisfy { request.query[$0.key] == nil || request.query[$0.key] == $0.value }
+            && (request.query["dateFrom"] ?? "0000-00-00") <= "2026-10-26"
+            && (request.query["dateTo"] ?? "9999-99-99") >= "2026-10-26"
+        let total = matches ? 31 : 0
+        let first = (page - 1) * 30 + 1
+        let last = min(page * 30, total)
+        let english = locale == "en-us"
+        let rows: [[String: Any]] = first <= last ? (first...last).map { number in
+            var row = schedule
+            row["id"] = 1000 + number
+            row["date"] = "2026-10-26"
+            row["weekday"] = 1
+            row["customPlace"] = NSNull()
+            var course = Self.course(1001)
+            course["nameCn"] = "微积分"
+            var section = Self.section(42)
+            section["course"] = course
+            row["section"] = section
+            row["room"] = ["id": 61, "namePrimary": english ? "Room 2201" : "2201 教室",
+                           "building": ["id": 62, "namePrimary": english ? "Teaching Building 2" : "第二教学楼",
+                                        "campus": ["id": 1, "nameCn": "东校区", "nameEn": "East Campus"]]]
+            var other = teacher
+            other["id"] = 4
+            other["code"] = "T004"
+            row["teachers"] = [teacher, other]
+            row["teacherParticipations"] = [
+                ["teacher": teacher, "periods": 1.5, "exerciseClass": true],
+                ["teacher": other, "periods": NSNull(), "exerciseClass": NSNull()],
+            ]
+            return row
+        } : []
+        return (200, ["data": rows, "pagination": ["page": page, "pageSize": 30,
+                                                     "total": total, "totalPages": (total + 29) / 30]])
+    }
+
     private static let semester: [String: Any] = [
         "id": 1, "jwId": 101, "code": "2026-FALL", "nameCn": "2026 Fall",
         "startDate": "2026-09-01T00:00:00+08:00", "endDate": "2027-01-31T00:00:00+08:00",
@@ -335,6 +453,14 @@ final class ServerJourneyHTTPFixture {
     ]
 
     private func catalogSection(_ jwID: Int) -> [String: Any] {
+        if [45, 46, 47].contains(jwID) {
+            var section = Self.section(jwID == 47 ? 42 : 43)
+            section["id"] = jwID - 35
+            section["jwId"] = jwID
+            section["code"] = jwID == 47 ? "MATH101.02" : "PHYS101.0\(jwID - 43)"
+            section["semester"] = jwID == 47 ? Self.semester : Self.springSemester
+            return section
+        }
         guard catalogHistory else { return Self.section(jwID) }
         var section = Self.section(jwID == 44 ? 42 : jwID)
         if jwID == 43 || jwID == 44 { section["semester"] = Self.springSemester }

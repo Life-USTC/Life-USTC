@@ -165,10 +165,12 @@ final class YoungCampusHTTPState {
       "total": 1,
       "totalPages": 1
     },
-    "unknownDateCount": 0,
-    "source": {
-      "status": "fresh",
-      "lastSyncedAt": "2026-10-23T10:30:00+08:00"
+    "meta": {
+      "unknownDateCount": 0,
+      "source": {
+        "status": "fresh",
+        "lastSyncedAt": "2026-10-23T10:30:00+08:00"
+      }
     }
   },
   "GET /api/catalog/young-events/fixture-young-m4": {

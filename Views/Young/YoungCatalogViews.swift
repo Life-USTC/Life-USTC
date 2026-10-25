@@ -8,147 +8,110 @@
 import SwiftUI
 
 @Observable
-private final class YoungEventsViewModel {
+final class YoungEventsViewModel {
     let dateUnknown: Bool
-    let organizerId: String?
-    let basis: YoungEventTimeBasis
+    let pages: YoungEventsPageModel
 
-    var events: [ServerYoungEvent] = []
-    var unknownDateCount = 0
-    var source: ServerYoungCatalogSource?
-    var isLoading = false
-    var error: String?
-    var search = ""
-    var activeOnly = false
-
-    private var generation = 0
+    var events: [ServerYoungEvent] { pages.events }
+    var unknownDateCount: Int { pages.unknownDateCount }
+    var source: ServerYoungCatalogSource? { pages.source }
+    var isLoading: Bool { pages.isLoading }
+    var error: String? { pages.error }
+    var filters: YoungBrowseFilters
 
     init(
         dateUnknown: Bool = false,
-        organizerId: String? = nil,
-        basis: YoungEventTimeBasis = .activity
+        filters: YoungBrowseFilters = .init(),
+        client: ServerClient = .shared
     ) {
         self.dateUnknown = dateUnknown
-        self.organizerId = organizerId
-        self.basis = basis
-    }
-
-    var requestID: String {
-        [
-            dateUnknown ? "unknown" : "dated",
-            organizerId ?? "all",
-            basis.rawValue,
-            activeOnly ? "active" : "all",
-            search,
-        ].joined(separator: "|")
+        self.filters = filters
+        pages = YoungEventsPageModel(client: client)
     }
 
     func load() async {
-        generation += 1
-        let requestGeneration = generation
-        isLoading = true
-        error = nil
-        events = []
-        unknownDateCount = 0
-        source = nil
-        do {
-            let page = try await ServerClient.shared.fetchYoungEventsPage(
-                dateUnknown: dateUnknown ? true : nil,
-                active: activeOnly ? true : nil,
-                search: search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    ? nil : search.trimmingCharacters(in: .whitespacesAndNewlines),
-                organizerId: organizerId,
-                timeBasis: basis
-            )
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            events = page.data
-            unknownDateCount = page.unknownDateCount
-            source = page.source
-        } catch {
-            guard requestGeneration == generation, !Task.isCancelled else { return }
-            self.error = error.localizedDescription
-        }
-        guard requestGeneration == generation else { return }
-        isLoading = false
+        let query = filters.query
+        await pages.load(dateUnknown ? query.forUnknownDates() : query)
     }
 }
 
 struct YoungEventsListView: View {
-    private let organizerId: String?
     @State private var model: YoungEventsViewModel
+    @State private var showingFilters = false
 
-    init(
-        organizerId: String? = nil,
-        dateUnknown: Bool = false,
-        basis: YoungEventTimeBasis = .activity
-    ) {
-        self.organizerId = organizerId
-        _model = State(
-            initialValue: YoungEventsViewModel(
-                dateUnknown: dateUnknown,
-                organizerId: organizerId,
-                basis: basis
-            )
-        )
+    init(dateUnknown: Bool = false, filters: YoungBrowseFilters = .init()) {
+        _model = State(initialValue: YoungEventsViewModel(dateUnknown: dateUnknown, filters: filters))
     }
 
     var body: some View {
-        Group {
+        List {
+            Button { showingFilters = true } label: {
+                HStack {
+                    Text("Activity filters")
+                    Spacer()
+                    Text(model.filters.basis.title.localized).foregroundStyle(.secondary)
+                    Image(systemName: model.filters.hasSelections
+                          ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                }
+                .foregroundStyle(.primary)
+            }
+            .accessibilityIdentifier("young.filters")
             if let error = model.error, model.events.isEmpty && !model.isLoading {
                 YoungErrorView(error: error) { Task { await model.load() } }
-            } else if model.events.isEmpty && !model.isLoading && model.unknownDateCount == 0 && model.source == nil {
-                ContentUnavailableView {
-                    Label(
-                        model.dateUnknown
-                            ? "No Activities with Unknown Dates".localized
-                            : "No Activities".localized,
-                        systemImage: "figure.run"
-                    )
-                } description: {
-                    Text(
-                        model.dateUnknown
-                            ? "Every matching activity has a date.".localized
-                            : "There are no activities matching this filter.".localized
-                    )
-                }
             } else {
-                List {
-                    if let source = model.source {
-                        YoungSourceFreshnessView(source: source)
-                    }
-                    if !model.dateUnknown, model.unknownDateCount > 0 {
-                        Section {
-                            NavigationLink {
-                                YoungEventsListView(
-                                    organizerId: organizerId,
-                                    dateUnknown: true,
-                                    basis: model.basis
-                                )
-                            } label: {
-                                Label(
-                                    YoungFormatting.countText(
-                                        model.unknownDateCount,
-                                        key: "%d activities have unknown dates"
-                                    ),
-                                    systemImage: "questionmark.circle"
-                                )
-                            }
-                        } footer: {
-                            Text("These activities are retained even when the source has no date for the selected time basis.")
-                        }
-                    }
-                    ForEach(model.events) { event in
-                        NavigationLink {
-                            YoungEventDetailView(youngId: event.youngId)
-                        } label: {
-                            YoungEventRow(event: event, basis: model.basis)
-                        }
+                if let source = model.source {
+                    YoungSourceFreshnessView(source: source)
+                }
+                YoungEventsLoadingStatus(model: model.pages)
+                if model.events.isEmpty && model.pages.isComplete && model.unknownDateCount == 0 {
+                    ContentUnavailableView {
+                        Label(
+                            model.dateUnknown
+                                ? "No Activities with Unknown Dates".localized
+                                : "No Activities".localized,
+                            systemImage: "figure.run"
+                        )
+                    } description: {
+                        Text(
+                            model.dateUnknown
+                                ? "Every matching activity has a date.".localized
+                                : "There are no activities matching this filter.".localized
+                        )
                     }
                 }
-                .overlay {
-                    if model.isLoading { ProgressView() }
+                if !model.dateUnknown, model.unknownDateCount > 0 {
+                    Section {
+                        NavigationLink {
+                            YoungEventsListView(
+                                dateUnknown: true,
+                                filters: model.filters
+                            )
+                        } label: {
+                            Label(
+                                YoungFormatting.countText(
+                                    model.unknownDateCount,
+                                    key: "%d activities have unknown dates"
+                                ),
+                                systemImage: "questionmark.circle"
+                            )
+                        }
+                        .accessibilityIdentifier("young.unknownDates")
+                    } footer: {
+                        Text("These activities are retained even when the source has no date for the selected time basis.")
+                    }
+                }
+                ForEach(model.events) { event in
+                    NavigationLink {
+                        YoungEventDetailView(youngId: event.youngId)
+                    } label: {
+                        YoungEventRow(event: event, basis: model.filters.basis)
+                    }
+                    .accessibilityIdentifier("young.event.\(event.youngId)")
                 }
             }
+        }
+        .overlay {
+            if model.isLoading && model.events.isEmpty { ProgressView() }
         }
         .navigationTitle(
             Text(
@@ -157,30 +120,17 @@ struct YoungEventsListView: View {
                     : "Activities".localized
             )
         )
-        .searchable(text: $model.search, prompt: "Search activities")
-        .toolbar {
-            if !model.dateUnknown {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        model.activeOnly.toggle()
-                    } label: {
-                        Label(
-                            model.activeOnly ? "All Activities" : "In source signup list",
-                            systemImage: model.activeOnly
-                                ? "line.3.horizontal.decrease.circle.fill"
-                                : "line.3.horizontal.decrease.circle"
-                        )
-                    }
-                }
-            }
+        .searchable(text: $model.filters.search, prompt: "Search activities")
+        .sheet(isPresented: $showingFilters) {
+            YoungBrowseFiltersView(filters: model.filters, dateUnknown: model.dateUnknown) { model.filters = $0 }
         }
-        .task(id: model.requestID) { await model.load() }
+        .task(id: model.filters) { await model.load() }
         .refreshable { await model.load() }
     }
 }
 
 @Observable
-private final class YoungOrganizersViewModel {
+final class YoungOrganizersViewModel {
     var organizers: [ServerYoungOrganizer] = []
     var isLoading = false
     var error: String?

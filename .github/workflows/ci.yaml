@@ -41,7 +41,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: macos-26
-    timeout-minutes: 75
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -80,8 +80,10 @@ jobs:
             -only-testing:Life-USTC-UITests/CommunityJourneyTests \
             -only-testing:Life-USTC-UITests/CampusJourneyTests \
             -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
+            -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
             -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
             -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
+            -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
             -only-testing:Life-USTC-UITests/AccountJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \

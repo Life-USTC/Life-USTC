@@ -80,14 +80,7 @@ final class ServerClientTests: XCTestCase {
 
     func testEndpointBuildURLRequest_youngCalendarUsesShanghaiRangeAndPagination() {
         let request = ServerEndpoint.listYoungEvents(
-            dateUnknown: nil,
-            active: nil,
-            category: nil,
-            search: nil,
-            organizerId: nil,
-            dateFrom: "2026-09-14",
-            dateTo: "2026-09-20",
-            timeBasis: .activity,
+            query: .init(dateFrom: "2026-09-14", dateTo: "2026-09-20", timeBasis: .activity),
             page: 2,
             pageSize: 100
         ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
@@ -104,14 +97,7 @@ final class ServerClientTests: XCTestCase {
 
     func testEndpointBuildURLRequest_youngUnknownDateFilter() {
         let request = ServerEndpoint.listYoungEvents(
-            dateUnknown: true,
-            active: nil,
-            category: nil,
-            search: nil,
-            organizerId: "org-42",
-            dateFrom: nil,
-            dateTo: nil,
-            timeBasis: .registration,
+            query: .init(organizerID: "org-42", dateUnknown: true, timeBasis: .registration),
             page: 1,
             pageSize: 100
         ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
@@ -123,6 +109,23 @@ final class ServerClientTests: XCTestCase {
         XCTAssertEqual(query["timeBasis"], "registration")
         XCTAssertNil(query["dateFrom"])
         XCTAssertNil(query["dateTo"])
+    }
+
+    func testEndpointBuildURLRequest_youngSharedProjectionPreservesFalseAndOpaqueFilters() {
+        let request = ServerEndpoint.listYoungEvents(
+            query: .init(search: "  Science & Art+夏  ", category: "Campus workshop", module: "智",
+                         activityLevel: "校级", organizerID: "org/1?tag=a&b=中", active: false,
+                         dateUnknown: false, timeBasis: .registration),
+            page: 2,
+            pageSize: 100
+        ).buildURLRequest(baseURL: URL(string: "https://test.example.com")!)
+
+        let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+        XCTAssertFalse(components.percentEncodedQuery!.contains("+"), "Form query decoding must preserve literal plus signs")
+        let query = Dictionary(uniqueKeysWithValues: components.queryItems!.map { ($0.name, $0.value) })
+        XCTAssertEqual(query, ["search": "Science & Art+夏", "category": "Campus workshop", "module": "智",
+                               "activityLevel": "校级", "organizerId": "org/1?tag=a&b=中", "active": "false",
+                               "dateUnknown": "false", "timeBasis": "registration", "page": "2", "pageSize": "100"])
     }
 
     func testEndpointBuildURLRequest_youngCommentUsesYoungId() {
@@ -313,8 +316,8 @@ final class ServerClientTests: XCTestCase {
                     "createdAt": NSNull(),
                 ]],
                 "pagination": ["page": Int(page)!, "pageSize": 1, "total": 2, "totalPages": 2],
-                "unknownDateCount": 3,
-                "source": ["status": "fresh", "lastSyncedAt": "2026-09-15T00:00:00Z"],
+                "meta": ["unknownDateCount": 3,
+                         "source": ["status": "fresh", "lastSyncedAt": "2026-09-15T00:00:00Z"]],
             ]
             let data = try JSONSerialization.data(withJSONObject: body)
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!

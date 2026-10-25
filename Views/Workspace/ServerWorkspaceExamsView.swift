@@ -61,6 +61,10 @@ struct ServerWorkspaceExamsView: View {
                             Text(ServerCatalogDisplay.name(exam.section.course.nameCn, exam.section.course.nameEn))
                                 .font(.headline)
                             Text(exam.section.code).font(.caption).foregroundStyle(.secondary)
+                            if let semester = exam.section.semester {
+                                Text(ServerCatalogDisplay.semesterName(semester))
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
                             ServerWorkspaceExamTimeView(exam: exam)
                             let rooms = exam.examRooms.compactMap(\.room).joined(separator: ", ")
                             if !rooms.isEmpty { Label(rooms, systemImage: "mappin.and.ellipse").font(.caption) }

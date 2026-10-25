@@ -140,6 +140,8 @@ struct ServerSubscriptionsView: View {
                     }
                     .accessibilityIdentifier("subscriptions_semester")
                     NavigationLink("Find teaching sections") { ServerCatalogView() }
+                    NavigationLink("Import course codes") { ServerSubscriptionImportView() }
+                        .accessibilityIdentifier("subscriptions_import_codes")
                     if !model.sections.isEmpty {
                         NavigationLink("Export section calendars") {
                             ServerMultiSectionCalendarView(sections: model.sections)
@@ -215,5 +217,8 @@ struct ServerSubscriptionsView: View {
         .navigationTitle("Section Subscriptions")
         .task(id: accountKey) { await model.load() }
         .refreshable { await model.load() }
+        .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in
+            Task { await model.load() }
+        }
     }
 }

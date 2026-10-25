@@ -466,6 +466,8 @@ struct ServerTeacherDetailView: View {
                         Link(email, destination: url)
                     }
                     if let address = teacher.address, !address.isEmpty { LabeledContent("Address", value: address) }
+                    if let telephone = teacher.telephone, !telephone.isEmpty { LabeledContent("Telephone", value: telephone) }
+                    if let mobile = teacher.mobile, !mobile.isEmpty { LabeledContent("Mobile", value: mobile) }
                 }
                 Section("Teaching Sections") {
                     if let error = sectionList.error {

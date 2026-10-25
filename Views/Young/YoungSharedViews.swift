@@ -8,6 +8,26 @@
 import Foundation
 import SwiftUI
 
+struct YoungEventsLoadingStatus: View {
+    let model: YoungEventsPageModel
+
+    var body: some View {
+        if !model.events.isEmpty {
+            if model.isLoading {
+                ProgressView("Loading more activities…")
+                    .accessibilityIdentifier("young.loadingMore")
+            } else if let error = model.error {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Some activities have not loaded yet.")
+                    Text(error).font(.caption).foregroundStyle(.secondary)
+                    Button("Continue loading") { Task { await model.continueLoading() } }
+                        .accessibilityIdentifier("young.continueLoading")
+                }
+            }
+        }
+    }
+}
+
 struct YoungErrorView: View {
     let error: String
     let retry: () -> Void
@@ -299,16 +319,19 @@ struct YoungEventRow: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            HStack(spacing: 8) {
-                if let category = event.category, !category.isEmpty {
-                    Text(category)
-                }
-                if let location = event.location, !location.isEmpty {
-                    Label(location, systemImage: "mappin.and.ellipse")
-                }
+            let facts = [event.category, event.module, event.activityLevel]
+                .compactMap { $0 }.filter { !$0.isEmpty }
+            if !facts.isEmpty {
+                Text(facts.joined(separator: " · "))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("young.facts.\(event.youngId)")
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            if let location = event.location, !location.isEmpty {
+                Label(location, systemImage: "mappin.and.ellipse")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(.vertical, 4)
     }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LifeClientCore
 
 extension ServerClient {
     private func fetchAllPages<T: Codable>(
@@ -32,78 +33,32 @@ extension ServerClient {
 
     // MARK: - Public catalog
 
-    func fetchYoungEvents(
-        dateUnknown: Bool? = nil,
-        active: Bool? = nil,
-        category: String? = nil,
-        search: String? = nil,
-        organizerId: String? = nil,
-        dateFrom: String? = nil,
-        dateTo: String? = nil,
-        timeBasis: YoungEventTimeBasis? = nil
-    ) async throws -> [ServerYoungEvent] {
-        let page = try await fetchYoungEventsPage(
-            dateUnknown: dateUnknown,
-            active: active,
-            category: category,
-            search: search,
-            organizerId: organizerId,
-            dateFrom: dateFrom,
-            dateTo: dateTo,
-            timeBasis: timeBasis
-        )
+    func fetchYoungEvents(_ query: YoungEventQuery = .init()) async throws -> [ServerYoungEvent] {
+        let page = try await fetchYoungEventsPage(query)
         return page.data
     }
 
-    func fetchYoungEventsPage(
-        dateUnknown: Bool? = nil,
-        active: Bool? = nil,
-        category: String? = nil,
-        search: String? = nil,
-        organizerId: String? = nil,
-        dateFrom: String? = nil,
-        dateTo: String? = nil,
-        timeBasis: YoungEventTimeBasis? = nil
-    ) async throws -> ServerYoungEventsPage {
+    func fetchYoungEventsBatch(_ query: YoungEventQuery, page: Int) async throws -> ServerYoungEventsPage {
+        try await request(.listYoungEvents(query: query, page: page, pageSize: 100))
+    }
+
+    func fetchYoungEventsPage(_ query: YoungEventQuery = .init()) async throws -> ServerYoungEventsPage {
         var page = 1
         let firstResponse: ServerYoungEventsPage = try await request(
-            .listYoungEvents(
-                dateUnknown: dateUnknown,
-                active: active,
-                category: category,
-                search: search,
-                organizerId: organizerId,
-                dateFrom: dateFrom,
-                dateTo: dateTo,
-                timeBasis: timeBasis,
-                page: page,
-                pageSize: 100
-            )
+            .listYoungEvents(query: query, page: page, pageSize: 100)
         )
         var events = firstResponse.data
         while page < firstResponse.pagination.totalPages {
             page += 1
             let next: ServerYoungEventsPage = try await request(
-                .listYoungEvents(
-                    dateUnknown: dateUnknown,
-                    active: active,
-                    category: category,
-                    search: search,
-                    organizerId: organizerId,
-                    dateFrom: dateFrom,
-                    dateTo: dateTo,
-                    timeBasis: timeBasis,
-                    page: page,
-                    pageSize: 100
-                )
+                .listYoungEvents(query: query, page: page, pageSize: 100)
             )
             events.append(contentsOf: next.data)
         }
         return ServerYoungEventsPage(
             data: events,
             pagination: firstResponse.pagination,
-            unknownDateCount: firstResponse.unknownDateCount,
-            source: firstResponse.source
+            meta: firstResponse.meta
         )
     }
 
