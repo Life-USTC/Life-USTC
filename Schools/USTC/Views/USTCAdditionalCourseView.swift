@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftyJSON
 
 struct USTCAdditionalCourseView: View {
     @State var semesters: [Semester] = []
@@ -54,17 +53,13 @@ struct USTCAdditionalCourseView: View {
         }
         .task {
             Task {
-                let url = URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/semesters.json")
-                let (data, _) = try await URLSession.shared.data(from: url!)
-
-                let json = try JSON(data: data)
-                semesters = json.arrayValue
+                semesters = try await USTCStaticService().fetchSemesters()
                     .map { item in
                         Semester(
-                            jw_id: item["id"].stringValue,
-                            name: item["name"].stringValue,
-                            startDate: Date(timeIntervalSince1970: item["startDate"].doubleValue),
-                            endDate: Date(timeIntervalSince1970: item["endDate"].doubleValue)
+                            jw_id: item.id,
+                            name: item.name,
+                            startDate: Date(timeIntervalSince1970: item.startDate),
+                            endDate: Date(timeIntervalSince1970: item.endDate)
                         )
                     }
                     .sorted(by: { $0.startDate > $1.startDate })
@@ -160,18 +155,14 @@ struct USTCAdditionalCourseSemesterView: View {
     }
 
     func updateCourses() async throws {
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
-        )
-
-        let json = try JSON(data: data)
-        courses = json.arrayValue.map { item in
+        let items = try await USTCStaticService().fetchCourseList(semesterId: semester.jw_id)
+        courses = items.map { item in
             Course(
-                jw_id: item["id"].intValue,
-                name: item["name"].stringValue,
-                courseCode: item["courseCode"].stringValue,
-                lessonCode: item["lessonCode"].stringValue,
-                teacherName: item["teacherName"].stringValue,
+                jw_id: item.id,
+                name: item.name,
+                courseCode: item.courseCode,
+                lessonCode: item.lessonCode,
+                teacherName: item.teacherName,
             )
         }
     }

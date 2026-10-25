@@ -1,79 +1,74 @@
 import Foundation
+import LifeClientCore
 import SwiftData
 import SwiftUI
-import SwiftyJSON
 
 @MainActor
-func updateCourse(semester: Semester, courseIDs: [Int]) async throws {
+func updateCourse(
+    semester: Semester,
+    courseIDs: [Int],
+    service: USTCStaticService = USTCStaticService(),
+    context: ModelContext? = nil
+) async throws {
     for courseID in courseIDs {
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/\(courseID).json")!
-        )
-        let json = try JSON(data: data)
+        let parsed = try await service.fetchCourse(semesterId: semester.jw_id, courseId: courseID)
+        let courseID = parsed.id
+        let context = context ?? SwiftDataStack.modelContext
 
-        let courseID = Int(json["id"].intValue)
-        let courseName = json["name"].stringValue
-        let courseCode = json["courseCode"].stringValue
-        let lessonCode = json["lessonCode"].stringValue
-        let teacherName = json["teacherName"].stringValue
-        let detailText = json["detailText"].string
-        let credit = json["credit"].doubleValue
-        let dateTimePlacePersonText = json["dateTimePlacePersonText"].string
-
-        let course = try SwiftDataStack.modelContext.upsert(
+        let course = try context.upsert(
             predicate: #Predicate<Course> { $0.jw_id == courseID },
             update: { existing in
-                existing.name = courseName
-                existing.courseCode = courseCode
-                existing.lessonCode = lessonCode
-                existing.teacherName = teacherName
-                existing.detailText = detailText
-                existing.credit = credit
+                existing.name = parsed.name
+                existing.courseCode = parsed.courseCode
+                existing.lessonCode = parsed.lessonCode
+                existing.teacherName = parsed.teacherName
+                existing.detailText = parsed.detailText
+                existing.credit = parsed.credit
                 existing.additionalInfo = [:]
-                existing.dateTimePlacePersonText = dateTimePlacePersonText
+                existing.dateTimePlacePersonText = parsed.dateTimePlacePersonText
                 existing.semester = semester
 
                 for lecture in existing.lectures {
-                    SwiftDataStack.modelContext.delete(lecture)
+                    context.delete(lecture)
                 }
                 existing.lectures = []
             },
             create: {
                 let newCourse = Course(
                     jw_id: courseID,
-                    name: courseName,
-                    courseCode: courseCode,
-                    lessonCode: lessonCode,
-                    teacherName: teacherName,
-                    description: detailText,
-                    credit: credit,
+                    name: parsed.name,
+                    courseCode: parsed.courseCode,
+                    lessonCode: parsed.lessonCode,
+                    teacherName: parsed.teacherName,
+                    description: parsed.detailText,
+                    credit: parsed.credit,
                     additionalInfo: [:],
-                    dateTimePlacePersonText: dateTimePlacePersonText
+                    dateTimePlacePersonText: parsed.dateTimePlacePersonText
                 )
                 newCourse.semester = semester
                 return newCourse
             }
         )
 
-        for lectureJSON in json["lectures"].arrayValue {
+        for item in parsed.lectures {
             let lecture = Lecture(
-                startDate: Date(timeIntervalSince1970: lectureJSON["startDate"].doubleValue),
-                endDate: Date(timeIntervalSince1970: lectureJSON["endDate"].doubleValue),
-                name: lectureJSON["name"].stringValue,
-                location: lectureJSON["location"].stringValue,
-                teacherName: lectureJSON["teacherName"].stringValue,
-                periods: lectureJSON["periods"].doubleValue,
+                startDate: Date(timeIntervalSince1970: item.startDate),
+                endDate: Date(timeIntervalSince1970: item.endDate),
+                name: item.name,
+                location: item.location,
+                teacherName: item.teacherName,
+                periods: item.periods,
                 additionalInfo: [:],
-                startIndex: lectureJSON["startIndex"].int,
-                endIndex: lectureJSON["endIndex"].int
+                startIndex: item.startIndex,
+                endIndex: item.endIndex
             )
 
-            SwiftDataStack.modelContext.insert(lecture)
+            context.insert(lecture)
             lecture.course = course
             course.lectures.append(lecture)
         }
 
-        try! SwiftDataStack.modelContext.save()
+        try! context.save()
     }
 }
 
@@ -124,38 +119,8 @@ func updateGraduateCurriculum(semester: Semester) async throws {
         )!
     )
 
-    let course_names = try await {
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(
-                string:
-                    "https://app.ustc.edu.cn/xkjg/wap/default/get-index"
-            )!
-        )
-        let json = try JSON(data: data)
-        return json["d"]["lists"].arrayValue.map { $0["course_name"].stringValue }
-    }()
-
-    let courseCodeRegex = /\((.*?)\)/
-
-    let courseCodes = course_names.compactMap { name -> String? in
-        let match = try? courseCodeRegex.firstMatch(in: name)
-        return match.map { String($0.1) }
-    }
-
     let courseIDs = try await {
-        let (semester_data, _) = try await URLSession.shared.data(
-            from:
-                URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/\(semester.jw_id)/courses.json")!
-        )
-        let json = try JSON(data: semester_data)
-        let allCourses = json.arrayValue
-        var courseIDs =
-            allCourses
-            .filter {
-                courseCodes.contains($0["lessonCode"].stringValue)
-                    || courseCodes.contains($0["lesson_code"].stringValue)
-            }
-            .map { $0["id"].intValue }
+        var courseIDs = try await USTCStaticService().fetchGraduateCourseIDs(semesterId: semester.jw_id)
 
         if additionalCourseIDList.keys.contains(semester.jw_id) {
             courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.jw_id]!))
@@ -193,17 +158,14 @@ extension USTCSchool {
             update: { _ in },
             create: { Curriculum() }
         )
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(string: "\(Constants.ustcStaticURLPrefix)/curriculum/semesters.json")!
-        )
+        let data = try await USTCStaticService().fetchSemestersData()
         try! SwiftDataStack.modelContext.save()
 
-        let json = try JSON(data: data)
-        for semesterJSON in json.arrayValue {
-            let semesterID = semesterJSON["id"].stringValue
-            let semesterName = semesterJSON["name"].stringValue
-            let semesterStartDate = Date(timeIntervalSince1970: semesterJSON["startDate"].doubleValue)
-            let semesterEndDate = Date(timeIntervalSince1970: semesterJSON["endDate"].doubleValue)
+        for item in try USTCStatic.parseSemesters(data) {
+            let semesterID = item.id
+            let semesterName = item.name
+            let semesterStartDate = Date(timeIntervalSince1970: item.startDate)
+            let semesterEndDate = Date(timeIntervalSince1970: item.endDate)
 
             let semester = try SwiftDataStack.modelContext.upsert(
                 predicate: #Predicate<Semester> { $0.jw_id == semesterID },

@@ -100,7 +100,7 @@ final class USTCModelTests: XCTestCase {
 
     // MARK: - Static Semester
 
-    func testDecodeStaticSemesters() throws {
+    func testStaticServiceParsesSemesters() async throws {
         let json = """
         [
             {"id": "301", "name": "2025秋", "startDate": 1725148800, "endDate": 1737014400},
@@ -108,7 +108,10 @@ final class USTCModelTests: XCTestCase {
         ]
         """.data(using: .utf8)!
 
-        let semesters = try JSONDecoder().decode([StaticSemesterDTO].self, from: json)
+        MockURLProtocol.reset()
+        defer { MockURLProtocol.reset() }
+        MockURLProtocol.stubData(json)
+        let semesters = try await USTCStaticService(session: MockURLProtocol.mockSession()).fetchSemesters()
         XCTAssertEqual(semesters.count, 2)
         XCTAssertEqual(semesters[0].id, "301")
         XCTAssertEqual(semesters[0].name, "2025秋")
@@ -116,7 +119,7 @@ final class USTCModelTests: XCTestCase {
 
     // MARK: - Static Course
 
-    func testDecodeStaticCourse() throws {
+    func testStaticServiceParsesCourse() async throws {
         let json = """
         {
             "id": 5001,
@@ -142,12 +145,16 @@ final class USTCModelTests: XCTestCase {
         }
         """.data(using: .utf8)!
 
-        let course = try JSONDecoder().decode(StaticCourseDTO.self, from: json)
+        MockURLProtocol.reset()
+        defer { MockURLProtocol.reset() }
+        MockURLProtocol.stubData(json)
+        let course = try await USTCStaticService(session: MockURLProtocol.mockSession())
+            .fetchCourse(semesterId: "301", courseId: 5001)
         XCTAssertEqual(course.name, "线性代数")
         XCTAssertEqual(course.lessonCode, "MATH2001.01")
-        XCTAssertEqual(course.lectures?.count, 1)
-        XCTAssertEqual(course.lectures?[0].location, "3A409")
-        XCTAssertEqual(course.lectures?[0].startIndex, 5)
+        XCTAssertEqual(course.lectures.count, 1)
+        XCTAssertEqual(course.lectures[0].location, "3A409")
+        XCTAssertEqual(course.lectures[0].startIndex, 5)
     }
 
     // MARK: - Score Response
