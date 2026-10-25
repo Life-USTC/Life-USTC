@@ -186,6 +186,7 @@ final class CampusJourneyTests: XCTestCase {
         open("East Campus")
         open("bus_destination")
         open("Gaoxin Campus")
+        assertText("23:00")
         open("bus_reverse")
         waitForRequest("GET", "/api/catalog/bus/next", query: ["originCampusId": "2", "destinationCampusId": "1"])
         back()
