@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import LifeClientCore
+import SwiftData
 
 extension USTCSchool {
     @MainActor
@@ -19,9 +21,13 @@ extension USTCSchool {
         }
 
         let events = try await USTCBlackboardService().fetchCalendarEvents()
+        try replaceHomework(with: events, in: SwiftDataStack.modelContext)
+    }
 
+    @MainActor
+    static func replaceHomework(with events: [USTCBlackboardSelectedCalendarEvent], in context: ModelContext) throws {
         // remove all old homework entries
-        try! SwiftDataStack.modelContext.delete(model: Homework.self)
+        try! context.delete(model: Homework.self)
 
         for event in events {
             guard let dueDate = USTCBlackboardService.parseDate(event.endDate) else {
@@ -31,7 +37,7 @@ extension USTCSchool {
             let title = event.title
             let courseName = event.courseName
 
-            try SwiftDataStack.modelContext.upsert(
+            try context.upsert(
                 predicate: #Predicate<Homework> { $0.title == title && $0.courseName == courseName },
                 update: { homework in
                     homework.dueDate = dueDate

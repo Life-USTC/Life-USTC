@@ -217,7 +217,7 @@ targets:
 packages:
   LifeClientCore:
     url: https://github.com/Life-USTC/client-core
-    revision: 67790629ce6eb8298de873caa05f9a8c52fa7f02
+    revision: d1cce748057ad1c7735405f181ea68907c90ae6f
   Oklch:
     url: https://github.com/nikstar/swift-oklch
     revision: f0ee82f950ff3fc2d7e6f2a968941378139c1d71 # main @ 2026-10-17

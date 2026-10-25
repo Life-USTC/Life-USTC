@@ -102,18 +102,3 @@ actor LoginStateActor {
         return try await loginTask!.value
     }
 }
-
-extension URL {
-    /// Mark self for the CAS service to identify as a service
-    ///
-    ///  - Parameters:
-    ///    - casServer: URL to the CAS server, NOT the service URL(which is URL.self)
-    func CASLoginMarkup(casServer: URL) -> URL {
-        var components = URLComponents(
-            url: casServer.appendingPathComponent("login"),
-            resolvingAgainstBaseURL: false
-        )!
-        components.queryItems = [.init(name: "service", value: absoluteString)]
-        return components.url!
-    }
-}

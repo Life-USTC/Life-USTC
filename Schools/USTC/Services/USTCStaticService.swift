@@ -46,6 +46,12 @@ struct USTCStaticService {
         return try USTCStatic.parseCourseList(data)
     }
 
+    /// Requires CAS login before establishing the graduate app session.
+    func establishGraduateAppSession() async throws {
+        _ = try await session.data(from: USTCCAS.graduateAppSessionURL)
+        _ = try await session.data(from: USTCCAS.graduateAppCASLoginURL)
+    }
+
     /// Requires the graduate app login cookies to be established on the session.
     func fetchGraduateCourseIDs(semesterId: String) async throws -> [Int] {
         let (data, _) = try await session.data(from: USTCStatic.graduateAppCoursesURL)

@@ -10,12 +10,19 @@ import Foundation
 import LifeClientCore
 
 /// Provides typed access to jw.ustc.edu.cn APIs.
-/// Requires that CAS → AAS login has been performed on the shared URLSession.
+/// Establish the AAS session after CAS login before fetching authenticated data.
 struct USTCAASService {
     let session: URLSession
 
     init(session: URLSession = .shared) {
         self.session = session
+    }
+
+    func establishSession() async throws -> Bool {
+        _ = try await session.data(from: USTCCAS.aasSSOURL)
+        _ = try await session.data(from: USTCCAS.aasCASLoginURL)
+        let (_, response) = try await session.data(from: USTCCAS.aasRootURL)
+        return response.url?.absoluteString == USTCCAS.aasHomeURL.absoluteString
     }
 
     // MARK: - Student ID

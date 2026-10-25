@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/15.
 //
 
+import LifeClientCore
 import Reeeed
 import SwiftUI
 import UIKit
@@ -76,11 +77,11 @@ final class Coordinator: NSObject, WKNavigationDelegate {
         }
 
         if ["http", "https"].contains(scheme) {
-            if url.host == "id.ustc.edu.cn" && url.absoluteString.hasPrefix("https://id.ustc.edu.cn/gate/cas-success") {
+            if USTCCAS.isBrowserSuccess(url) {
                 webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
                     HTTPCookieStorage.shared.setCookies(
                         cookies,
-                        for: URL(string: "https://id.ustc.edu.cn"),
+                        for: USTCCAS.cookieURL,
                         mainDocumentURL: nil
                     )
                     USTCCASClient.shared.loginSuccess()
@@ -100,7 +101,7 @@ final class Coordinator: NSObject, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard let currentURL = webView.url else { return }
-        if currentURL.host == "id.ustc.edu.cn" && currentURL.path.hasPrefix("/cas/login") {
+        if USTCCAS.isBrowserLoginPage(currentURL) {
             injectCASCredentials(into: webView)
         }
     }

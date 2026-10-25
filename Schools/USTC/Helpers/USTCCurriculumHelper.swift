@@ -105,22 +105,11 @@ func updateGraduateCurriculum(semester: Semester) async throws {
         throw BaseError.runtimeError("UstcCAS Not logined")
     }
 
-    _ = try await URLSession.shared.data(
-        from: URL(
-            string:
-                "https://app.ustc.edu.cn/a_ustc/api/cas/index?redirect=https://app.ustc.edu.cn/site/examManage/index&from=wap"
-        )!
-    )
-
-    _ = try await URLSession.shared.data(
-        from: URL(
-            string:
-                "https://id.ustc.edu.cn/cas/login?service=https://app.ustc.edu.cn/a_ustc/api/cas/index?redirect=https%3A%2F%2Fapp.ustc.edu.cn%2Fsite%2FtimeTableQuery%2Findex&from=wap"
-        )!
-    )
+    let service = USTCStaticService()
+    try await service.establishGraduateAppSession()
 
     let courseIDs = try await {
-        var courseIDs = try await USTCStaticService().fetchGraduateCourseIDs(semesterId: semester.jw_id)
+        var courseIDs = try await service.fetchGraduateCourseIDs(semesterId: semester.jw_id)
 
         if additionalCourseIDList.keys.contains(semester.jw_id) {
             courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.jw_id]!))
