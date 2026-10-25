@@ -86,32 +86,10 @@ func updateUnderGraduateCurriculum(semester: Semester) async throws {
         throw BaseError.runtimeError("UstcUgAAS Not logined")
     }
 
-    let studentID = try await {
-        let (_, response) = try await URLSession.shared.data(
-            from: URL(
-                string: "https://jw.ustc.edu.cn/for-std/course-table"
-            )!
-        )
-
-        return response.url?.absoluteString
-            .matches(of: try! Regex(#"\d+"#))
-            .first
-            .map({ String($0.0) })
-    }()
-
-    guard let studentID else {
-        throw BaseError.runtimeError("Cannot get student ID")
-    }
-
+    let service = USTCAASService()
+    let studentID = try await service.fetchStudentID()
     let courseIDs = try await {
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(
-                string:
-                    "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(semester.jw_id)&dataId=\(studentID)"
-            )!
-        )
-        let json = try JSON(data: data)
-        var courseIDs = json["lessonIds"].arrayValue.map(\.intValue)
+        var courseIDs = try await service.fetchLessonIDs(semesterID: semester.jw_id, studentID: studentID)
 
         if additionalCourseIDList.keys.contains(semester.jw_id) {
             courseIDs = Array(Set(courseIDs + additionalCourseIDList[semester.jw_id]!))

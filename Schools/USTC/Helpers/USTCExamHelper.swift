@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftSoup
 
 extension USTCSchool {
     @MainActor
@@ -50,35 +49,19 @@ extension USTCSchool {
 
         @LoginClient(.ustcAAS) var ustcAASClient: USTCAASClient
 
-        let examURL = URL(
-            string: "https://jw.ustc.edu.cn/for-std/exam-arrange"
-        )!
         if try await !_ustcAASClient.requireLogin() {
             throw BaseError.runtimeError("UstcUgAAS Not logined")
         }
 
-        let (data, _) = try await URLSession.shared.data(from: examURL)
-
-        guard let dataString = String(data: data, encoding: .utf8) else {
-            throw DecodingError.dataCorrupted(
-                .init(codingPath: [], debugDescription: "")
-            )
-        }
-
-        let document: Document = try SwiftSoup.parse(dataString)
-        let examsParsed: Elements = try document.select("#exams > tbody > tr")
-
-        for examParsed: Element in examsParsed.array() {
-            let textList: [String] = examParsed.children().array()
-                .map { $0.ownText() }
-
-            guard let parsed = parseDate(from: textList[3]) else {
+        let exams = try await USTCAASService().fetchExams()
+        for examData in exams {
+            guard let parsed = parseDate(from: examData.dateTime) else {
                 continue
             }
 
-            let lessonCode = textList[0]
-            let courseName = textList[2]
-            let typeName = textList[1]
+            let lessonCode = examData.lessonCode
+            let courseName = examData.courseName
+            let typeName = examData.examType
 
             try SwiftDataStack.modelContext.upsert(
                 predicate: #Predicate<Exam> {
@@ -87,10 +70,10 @@ extension USTCSchool {
                 update: { exam in
                     exam.startDate = parsed.startTime
                     exam.endDate = parsed.endTime
-                    exam.classRoomName = textList[4]
-                    exam.classRoomBuildingName = textList[5]
-                    exam.classRoomDistrict = textList[6]
-                    exam.detailText = textList[7]
+                    exam.classRoomName = examData.roomName
+                    exam.classRoomBuildingName = examData.buildingName
+                    exam.classRoomDistrict = examData.district
+                    exam.detailText = examData.detail
                 },
                 create: {
                     Exam(
@@ -99,10 +82,10 @@ extension USTCSchool {
                         typeName: typeName,
                         startDate: parsed.startTime,
                         endDate: parsed.endTime,
-                        classRoomName: textList[4],
-                        classRoomBuildingName: textList[5],
-                        classRoomDistrict: textList[6],
-                        description: textList[7]
+                        classRoomName: examData.roomName,
+                        classRoomBuildingName: examData.buildingName,
+                        classRoomDistrict: examData.district,
+                        description: examData.detail
                     )
                 }
             )

@@ -10,17 +10,6 @@ import Foundation
 
 // MARK: - AAS (jw.ustc.edu.cn)
 
-/// Course table response from jw.ustc.edu.cn/for-std/course-table/get-data
-struct AASCourseTableDTO: Codable {
-    let lessonIds: [Int]?
-    let studentTableVm: StudentTableVM?
-
-    struct StudentTableVM: Codable {
-        let semesterId: Int?
-        let id: Int?
-    }
-}
-
 /// Lesson search result from jw.ustc.edu.cn/for-std/lesson-search
 struct AASLessonSearchDTO: Codable {
     let data: [AASLessonDTO]?
@@ -85,35 +74,6 @@ struct AASScoreEntryDTO: Codable {
     let credits: String?
     let gp: String?
     let scoreCh: String?
-}
-
-/// Exam data parsed from HTML at jw.ustc.edu.cn/for-std/exam-arrange
-struct AASExamDTO {
-    let lessonCode: String
-    let typeName: String
-    let courseName: String
-    let dateTimeString: String
-    let classRoomName: String
-    let classRoomBuildingName: String
-    let classRoomDistrict: String
-    let detail: String
-}
-
-// MARK: - Blackboard (bb.ustc.edu.cn)
-
-/// Calendar event from bb.ustc.edu.cn/webapps/calendar/calendarData/selectedCalendarEvents
-struct BBCalendarEventDTO: Codable {
-    let id: String?
-    let title: String?
-    let start: String?
-    let end: String?
-    let startDate: String?
-    let endDate: String?
-    let calendarNameLocalizable: CalendarName?
-
-    struct CalendarName: Codable {
-        let rawValue: String?
-    }
 }
 
 // MARK: - Catalog (catalog.ustc.edu.cn)

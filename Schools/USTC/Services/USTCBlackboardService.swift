@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import LifeClientCore
 
 private let logger = AppLogger.logger(for: "USTCBlackboard")
 
@@ -21,16 +22,9 @@ struct USTCBlackboardService {
     // MARK: - Calendar Events (Homework)
 
     /// Fetch homework/calendar events from Blackboard.
-    func fetchCalendarEvents() async throws -> [BBCalendarEventDTO] {
-        let url = URL(
-            string: "https://www.bb.ustc.edu.cn/webapps/calendar/calendarData/selectedCalendarEvents?start=&end=&course_id=&mode=personal?start=&end=&course_id=&mode=personal"
-        )!
-
-        let (data, _) = try await session.data(from: url)
-
-        let decoder = JSONDecoder()
-        let events = try decoder.decode([BBCalendarEventDTO].self, from: data)
-
+    func fetchCalendarEvents() async throws -> [USTCBlackboardSelectedCalendarEvent] {
+        let (data, _) = try await session.data(from: USTCBlackboard.selectedCalendarEventsURL)
+        let events = try USTCBlackboard.parseSelectedCalendarEvents(data)
         logger.debug("Fetched \(events.count) BB calendar events")
         return events
     }
