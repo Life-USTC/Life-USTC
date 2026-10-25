@@ -42,6 +42,7 @@ final class WorkspaceJourneyTests: XCTestCase {
         waitForRequest("GET", "/api/workspace/overview/actionable", query: ["locale": "en-us"])
         XCTAssertTrue(app.staticTexts["Happening now"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Needs attention"].exists)
+        capture("Home")
         open("workspace_event_schedule:901")
         waitForRequest("GET", "/api/catalog/sections/42")
         XCTAssertTrue(app.buttons["section_subscribe"].waitForExistence(timeout: 10))
@@ -79,9 +80,12 @@ final class WorkspaceJourneyTests: XCTestCase {
         let originalCalendarReads = requestCount("GET", "/api/workspace/calendar/events")
         selectTab("Home", index: 0)
         open("home_todos")
+        XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
+        capture("Todos")
         open("todo.create")
         replaceText("todo.title", old: "", new: "Prepare native journey notes")
         replaceText("todo.notes", old: "", new: "Created through the app")
+        capture("TodoEditor")
         setDueDate(true)
         open("todo.save")
         waitForRequest("POST", "/api/workspace/todos")
@@ -94,6 +98,7 @@ final class WorkspaceJourneyTests: XCTestCase {
         open("workspace_event_todo_due:\(id)")
         XCTAssertTrue(app.staticTexts["todo.detail.title"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["todo.detail.title"].label, "Prepare native journey notes")
+        capture("TodoDetail")
         selectTab("Calendar", index: 1)
         open("workspace_event_todo_due:\(id)")
         XCTAssertGreaterThan(requestCount("GET", "/api/workspace/calendar/events"), originalCalendarReads)
@@ -163,6 +168,8 @@ final class WorkspaceJourneyTests: XCTestCase {
         app.segmentedControls["homework.status"].buttons["All"].tap()
         let taID = WorkspaceLearningHTTPState.taHomeworkID
         XCTAssertFalse(app.buttons["homework.complete.\(taID)"].exists)
+        XCTAssertTrue(app.buttons["homework.row.\(homeworkID)"].waitForExistence(timeout: 10))
+        capture("Homeworks")
         open("homework.complete.\(homeworkID)")
         XCTAssertTrue(app.staticTexts["Workspace fixture unavailable"].waitForExistence(timeout: 10))
         XCTAssertTrue(fixture.workspaceHomeworks.first { $0["id"] as? String == homeworkID }?["completion"] is NSNull)
@@ -173,6 +180,7 @@ final class WorkspaceJourneyTests: XCTestCase {
         }
         open("homework.row.\(homeworkID)")
         assertText("10:03")
+        capture("HomeworkDetail")
         XCTAssertEqual(requestCount("PUT", path), 2)
         XCTAssertEqual(fixture.requests.first { $0.method == "PUT" && $0.path == path }?.jsonBody["completed"] as? Bool, true)
         back()
@@ -190,10 +198,12 @@ final class WorkspaceJourneyTests: XCTestCase {
         open("home_exams")
         waitForRequest("GET", "/api/workspace/exams", query: ["includeDateUnknown": "true"])
         XCTAssertTrue(app.buttons["workspace.exam.\(WorkspaceLearningHTTPState.datedExamID)"].waitForExistence(timeout: 10))
+        capture("Exams")
         open("workspace.exam.\(WorkspaceLearningHTTPState.undatedExamID)")
         assertText("Date unavailable")
         assertText("Time unavailable")
         assertText("Exam Hall 2")
+        capture("ExamDetail")
         open("workspace.exam.detail.section")
         waitForRequest("GET", "/api/catalog/sections/42")
         XCTAssertTrue(app.buttons["section_subscribe"].waitForExistence(timeout: 10))
@@ -207,9 +217,11 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
         selectTab("Calendar", index: 1)
         XCTAssertTrue(app.buttons["workspace_event_schedule:901"].waitForExistence(timeout: 10))
+        capture("Calendar")
         open("calendar_feed")
         open("calendar_feed_copy")
         XCTAssertTrue(app.buttons["calendar_feed_copy"].label.contains("Copied"))
+        capture("CalendarFeed")
         XCTAssertTrue(fixture.requests.allSatisfy { $0.method == "GET" })
         let request = try XCTUnwrap(fixture.requests.first { $0.path == "/api/workspace/calendar/events" })
         XCTAssertTrue(request.headers["accept-language"]?.lowercased().hasPrefix("en") == true,
@@ -227,6 +239,14 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertFalse(app.buttons["workspace_event_schedule:901"].exists)
         XCTAssertFalse(app.buttons["calendar_feed_copy"].exists)
         XCTAssertEqual(fixture.requests.filter { $0.path.hasPrefix("/api/workspace/") }.count, privateReads)
+    }
+
+    @MainActor
+    private func capture(_ page: String) {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "after-workspace-\(page)" + (app.frame.width > 700 ? "-iPad" : "-iPhone")
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     @MainActor
