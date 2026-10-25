@@ -206,3 +206,16 @@ not this repository's product documentation.
 preferences, reminder recovery, publication filters and source navigation.
 `CatalogParityJourneyTests` and `ParityNavigationJourneyTests` cover historical
 catalog presentation, calendar modes and exports, sharing and guide handoff.
+
+The same CI UI run exports its named `after-*` PNG attachments into
+`ios-server-screenshots-<run-id>`. Download the artifact from the Run Tests job
+summary, extract it, and open `index.html` to browse by feature. Original PNG
+bytes, including EXIF metadata, remain unchanged; the report records each
+capture's test, device, attachment name and hash. The readable
+[`required capture list`](../scripts/server_screenshot_coverage.json) covers 93
+current iPhone states, including the existing English and Chinese journeys.
+Missing captures or failed exports fail CI while preserving the partial gallery
+and its missing-capture report. The UI test outcome is reported separately.
+This is fixture evidence from the existing iPhone suite; it does not establish
+all-screen, all-locale, iPad or production-account coverage. Fastlane snapshots
+continue in their existing workflow.
