@@ -636,9 +636,16 @@ final class ServerClient: @unchecked Sendable {
 
     func querySchedules(
         sectionId: Int? = nil, teacherId: Int? = nil,
-        roomId: Int? = nil, dateFrom: String? = nil, dateTo: String? = nil, weekday: Int? = nil
+        roomId: Int? = nil, dateFrom: String? = nil, dateTo: String? = nil, weekday: Int? = nil,
+        sectionJwId: Int? = nil, sectionCode: String? = nil, teacherCode: String? = nil, roomJwId: Int? = nil,
+        page: Int? = nil, pageSize: Int? = nil, locale: String? = nil
     ) async throws -> PaginatedResponse<ServerScheduleEntry> {
-        try await request(.querySchedules(sectionId: sectionId, teacherId: teacherId, roomId: roomId, dateFrom: dateFrom, dateTo: dateTo, weekday: weekday))
+        try await request(.querySchedules(
+            sectionId: sectionId, teacherId: teacherId, roomId: roomId,
+            dateFrom: dateFrom, dateTo: dateTo, weekday: weekday,
+            sectionJwId: sectionJwId, sectionCode: sectionCode, teacherCode: teacherCode, roomJwId: roomJwId,
+            page: page, pageSize: pageSize, locale: locale
+        ))
     }
 
     func importSubscriptions(codes: [String], semesterId: Int? = nil) async throws -> ImportSubscriptionsResponse {

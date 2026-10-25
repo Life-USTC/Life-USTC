@@ -68,6 +68,13 @@ struct ServerHomeworkListView: View {
                                         Text("\(ServerCatalogDisplay.name(section.course.nameCn, section.course.nameEn)) · \(section.code)")
                                             .font(.caption).foregroundStyle(.secondary)
                                     }
+                                    if homework.isMajor || homework.requiresTeam {
+                                        HStack(spacing: 8) {
+                                            if homework.isMajor { Label("Major assignment", systemImage: "star") }
+                                            if homework.requiresTeam { Label("Group work", systemImage: "person.2") }
+                                        }
+                                        .font(.caption).foregroundStyle(.secondary)
+                                    }
                                     ServerHomeworkStateView(homework: homework, referenceDate: context.date)
                                     if let dueAt = homework.submissionDueAt {
                                         HStack(spacing: 4) {

@@ -1,5 +1,5 @@
 {
-  "serverRevision": "923c96623c73704faa23639adeedbe7188980ca1",
+  "serverRevision": "fb0242bac33c99c2de4b2f29b307d5c9e061a411",
   "trackingIssue": 101,
   "coverageMeaning": "Entry and source coverage only. Runtime test success is recorded per PR and does not establish complete requirement parity or production OAuth acceptance. Canonical requirements remain in the server feature files.",
   "capabilities": [
@@ -185,18 +185,31 @@
       "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Catalog/ServerCatalogDetailViews.swift"
-      ],
-      "remaining": "Complete retired section history requires the server routes in Life-USTC/server#1345."
+      ]
     },
     {
       "feature": "demo",
       "capability": "demo-bootstrap",
-      "surface": "native",
-      "implementation": "existing_native_entry_partial",
-      "entrypoints": [
-        "General/DemoData.swift",
-        "General/SwiftDataStack.swift"
-      ]
+      "surface": "public_web",
+      "implementation": "deployment_gated_web",
+      "entrypoints": [],
+      "boundary": "The server demo requires its own explicitly enabled website and demo cookie. It grants no native OAuth identity. The app’s existing local university demo is a separate data source."
+    },
+    {
+      "feature": "demo",
+      "capability": "demo-todos",
+      "surface": "public_web",
+      "implementation": "deployment_gated_web",
+      "entrypoints": [],
+      "boundary": "Read-only fixtures belong to the explicitly enabled website demo and its separate cookie. No OAuth or agent identity is supplied."
+    },
+    {
+      "feature": "demo",
+      "capability": "demo-subscriptions",
+      "surface": "public_web",
+      "implementation": "deployment_gated_web",
+      "entrypoints": [],
+      "boundary": "Read-only fixtures belong to the explicitly enabled website demo and its separate cookie. No OAuth or agent identity is supplied."
     },
     {
       "feature": "description",
@@ -481,8 +494,7 @@
       "entrypoints": [
         "Views/Publications/ServerPublicationDetailView.swift",
         "Views/Shared/ServerRenderedContent.swift"
-      ],
-      "remaining": "Production requires the renderedBodyHtml server contract in Life-USTC/server#1344."
+      ]
     },
     {
       "feature": "publications",
@@ -524,10 +536,14 @@
       "feature": "schedule",
       "capability": "public-schedule-query",
       "surface": "native",
-      "implementation": "sdk_only",
+      "implementation": "native_entry_partial",
       "entrypoints": [
+        "Views/Catalog/ServerCatalogView.swift",
+        "Views/Catalog/ServerPublicScheduleView.swift",
+        "Views/Catalog/ServerPublicScheduleModel.swift",
         "Server/ServerEndpoints.swift"
-      ]
+      ],
+      "remaining": "The server caps queries at 100 pages; narrow filters to reach further results."
     },
     {
       "feature": "schedule",
@@ -619,7 +635,11 @@
       "surface": "native",
       "implementation": "native_entry_partial",
       "entrypoints": [
-        "Views/Catalog/ServerSubscriptionsView.swift"
+        "Views/Catalog/ServerSubscriptionsView.swift",
+        "Views/Catalog/ServerSubscriptionImportView.swift",
+        "Views/Catalog/ServerSubscriptionImportModel.swift",
+        "Server/ServerSubscriptionImport.swift",
+        "Server/ServerEndpoints.swift"
       ]
     },
     {
@@ -647,8 +667,7 @@
       "implementation": "native_entry_partial",
       "entrypoints": [
         "Views/Catalog/ServerCatalogDetailViews.swift"
-      ],
-      "remaining": "Complete retired section history requires the server routes in Life-USTC/server#1345."
+      ]
     },
     {
       "feature": "todo",

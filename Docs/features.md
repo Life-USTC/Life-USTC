@@ -31,13 +31,23 @@ establish production authentication.
   native lists and details. Sections can be filtered by semester; courses by
   education level. Course and teacher histories include retired sections through
   the dedicated history routes. Historical detail retains calendar export and
-  suppresses new subscriptions.
+  suppresses new subscriptions. Teacher details include returned telephone and
+  mobile values.
+- Catalog includes an anonymous public schedule query with exact section and
+  teacher codes, university room ID, weekday and Shanghai date filters. Results
+  retain separate teacher identities and participation facts and open native
+  section and teacher details. Pages load on request; reaching the server's
+  100-page limit asks the user to narrow the filters.
 - Section details use stable server IDs for schedules, exams and subscription
   actions. Meeting lists exhaust the scoped section-schedules pagination,
   including retired sections. No course-name search fallback chooses a write target.
 - Owners can inspect all subscribed semesters, append/remove one membership,
   and change its regular, auditor or teaching-assistant kind. These changes do
   not alter official university enrollment or replace other memberships.
+- Subscriptions accept pasted course or teaching-section codes for a selected
+  semester. The preview shows matches, unmatched codes and suggestions; users
+  confirm selected sections before appending them. Existing memberships and
+  their kinds are preserved.
 - Subscriptions group by semester and show teachers. Meeting rows retain their
   teaching week, teacher links and available campus/building context.
 - A complete subscribed-section snapshot refreshes the existing timetable and
@@ -48,8 +58,10 @@ establish production authentication.
 
 The native subscription journey uses `/api/workspace/subscriptions/current`,
 PATCH/DELETE `/api/workspace/subscriptions`, and PATCH
-`/api/workspace/subscriptions/{jwId}`. Catalog identities and permissions follow
-the pinned OpenAPI contract.
+`/api/workspace/subscriptions/{jwId}`. Code import previews with POST
+`/api/workspace/subscriptions/query` and appends confirmed internal section IDs
+with POST `/api/workspace/subscriptions/batch`. Catalog identities and permissions
+follow the pinned OpenAPI contract.
 
 ## Learning workspace
 
@@ -64,7 +76,9 @@ Editors send only changed fields and can explicitly clear notes or due dates;
 mutation failures retain the draft or confirmed state. Shared homework includes
 complete subscription coverage, server completion timestamps and the
 teaching-assistant rule that a passed deadline archives work without manual
-completion. The exam list retains past semesters and unknown dates.
+completion. Compact homework rows show major assignment and group work flags
+when set. The exam list shows each returned semester and retains past semesters
+and unknown dates.
 
 The calendar subscription screen copies or shares the private URL supplied by
 the server. Missing access and failed reads have explicit recovery states; the
@@ -107,6 +121,11 @@ account pins, bus routes and saved boarding preferences, weather provenance and
 forecasts, and room-map lookup. Campus search opens native catalog details. The
 legacy feed reader remains under University services.
 
+Public activity filters retain search, category, module, activity level,
+organizer, source signup-list membership and time context across pagination and
+undated results. Activity rows preserve upstream category, module and level
+values; publication source rows identify their allowed hosts.
+
 Young subscriptions and organizer follows retain confirmed settings on failed
 writes. Notifications support unread filtering and refresh after marking a
 reminder read. Activity-time calendars report interval conflicts separately from
@@ -141,7 +160,7 @@ links and the remaining presentation requirements on iPhone and iPad. Public
 details share canonical website URLs; registered custom URLs and associated
 website links route to native destinations. Production associated-link delivery
 requires the server association file, and publication rendering and complete
-catalog history require their companion server routes to be deployed.
+catalog history use their dedicated server routes.
 
 Campus search uses the public catalog scope and provides a workspace-search
 website entry. Campus links use the canonical resolver; workspace search and
@@ -150,6 +169,11 @@ mobile, bot, MCP, CLI, Markdown and comment guides.
 Account security and administration retain their declared session-only Web
 boundaries. Service transports such as ingestion, GraphQL/MCP hosting and
 operational metrics do not require mobile screens.
+
+The pinned server inventory also includes a deployment-gated, read-only website
+demo. It uses a separate demo cookie and grants no OAuth or agent authority.
+Its Todos and subscriptions fixtures remain website capabilities; the app's
+existing local university demo is a separate data source.
 
 Private Blackboard data is never automatically published as shared homework.
 Undated exams cannot be represented as instants in the existing Widget cache;

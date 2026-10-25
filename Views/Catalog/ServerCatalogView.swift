@@ -164,6 +164,12 @@ struct ServerCatalogView: View {
                     }
                     .accessibilityIdentifier("catalog_education_level")
                 }
+                NavigationLink {
+                    ServerPublicScheduleView()
+                } label: {
+                    Label("Public schedule", systemImage: "calendar")
+                }
+                .accessibilityIdentifier("catalog_public_schedule")
             }
 
             if let error = model.metadataError, model.kind == .courses {

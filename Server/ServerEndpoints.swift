@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LifeClientCore
 
 // MARK: - Endpoint Definition
 
@@ -41,11 +42,17 @@ enum ServerEndpoint {
     case getTeacher(id: Int)
 
     // Schedules
-    case querySchedules(sectionId: Int?, teacherId: Int?, roomId: Int?, dateFrom: String?, dateTo: String?, weekday: Int?)
+    case querySchedules(
+        sectionId: Int?, teacherId: Int?, roomId: Int?, dateFrom: String?, dateTo: String?, weekday: Int?,
+        sectionJwId: Int? = nil, sectionCode: String? = nil, teacherCode: String? = nil, roomJwId: Int? = nil,
+        page: Int? = nil, pageSize: Int? = nil, locale: String? = nil
+    )
 
     // Calendar Subscriptions
     case getSubscriptions
     case importSubscriptions(MatchCodesRequest)
+    case querySubscriptionCodes(MatchCodesRequest, locale: String)
+    case appendMatchedSubscriptions(SubscriptionBatchAddRequest, locale: String)
     case appendSubscriptions(SectionSubscriptionRequest)
     case removeSubscriptions(SectionSubscriptionRequest)
     case setSubscriptionKind(jwId: Int, SubscriptionKindRequest)
@@ -54,11 +61,7 @@ enum ServerEndpoint {
     case listCalendarEvents(dateFrom: String, dateTo: String, page: Int, pageSize: Int)
 
     // Second Classroom (public catalog)
-    case listYoungEvents(
-        dateUnknown: Bool?, active: Bool?, category: String?, search: String?, organizerId: String?,
-        dateFrom: String?, dateTo: String?, timeBasis: YoungEventTimeBasis?,
-        page: Int?, pageSize: Int?
-    )
+    case listYoungEvents(query: YoungEventQuery, page: Int?, pageSize: Int?)
     case getYoungEvent(youngId: String)
     case listYoungOrganizers(search: String?, page: Int?, pageSize: Int?)
     case getYoungOrganizer(organizerId: String)
@@ -165,7 +168,7 @@ enum ServerEndpoint {
             .campusLinks, .linkPins, .campusWeather, .roomMap, .campusSearch,
             .listPublications, .getPublication, .listPublicationSources, .metadata, .listUploads:
             return "GET"
-        case .matchCodes, .importSubscriptions, .createHomework,
+        case .matchCodes, .importSubscriptions, .querySubscriptionCodes, .appendMatchedSubscriptions, .createHomework,
             .createTodo, .createComment, .addCommentReaction,
             .markYoungNotificationRead, .createUpload, .completeUpload, .upsertDescription,
             .setLinkPins, .setBusPreferences:
@@ -226,6 +229,10 @@ enum ServerEndpoint {
             return "/api/workspace/subscriptions/\(jwId)"
         case .importSubscriptions:
             return "/api/workspace/subscriptions/import-codes"
+        case .querySubscriptionCodes:
+            return "/api/workspace/subscriptions/query"
+        case .appendMatchedSubscriptions:
+            return "/api/workspace/subscriptions/batch"
         case .listCalendarEvents:
             return "/api/workspace/calendar/events"
         case .listYoungEvents:
@@ -333,6 +340,8 @@ enum ServerEndpoint {
             return items
         case .getDescription(let target):
             return target.queryItems
+        case .querySubscriptionCodes(_, let locale), .appendMatchedSubscriptions(_, let locale):
+            return [.init(name: "locale", value: locale)]
         case .listHomeworkAudit(let sectionJwId):
             return [.init(name: "sectionJwId", value: String(sectionJwId))]
         case .actionableOverview(let atTime, let locale):
@@ -397,7 +406,9 @@ enum ServerEndpoint {
             if let page { items.append(.init(name: "page", value: "\(page)")) }
             if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
             return items.isEmpty ? nil : items
-        case .querySchedules(let sectionId, let teacherId, let roomId, let dateFrom, let dateTo, let weekday):
+        case .querySchedules(let sectionId, let teacherId, let roomId, let dateFrom, let dateTo, let weekday,
+                             let sectionJwId, let sectionCode, let teacherCode, let roomJwId,
+                             let page, let pageSize, let locale):
             var items: [URLQueryItem] = []
             if let sectionId { items.append(.init(name: "sectionId", value: "\(sectionId)")) }
             if let teacherId { items.append(.init(name: "teacherId", value: "\(teacherId)")) }
@@ -405,6 +416,13 @@ enum ServerEndpoint {
             if let dateFrom { items.append(.init(name: "dateFrom", value: dateFrom)) }
             if let dateTo { items.append(.init(name: "dateTo", value: dateTo)) }
             if let weekday { items.append(.init(name: "weekday", value: "\(weekday)")) }
+            if let sectionJwId { items.append(.init(name: "sectionJwId", value: "\(sectionJwId)")) }
+            if let sectionCode { items.append(.init(name: "sectionCode", value: sectionCode)) }
+            if let teacherCode { items.append(.init(name: "teacherCode", value: teacherCode)) }
+            if let roomJwId { items.append(.init(name: "roomJwId", value: "\(roomJwId)")) }
+            if let page { items.append(.init(name: "page", value: "\(page)")) }
+            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+            if let locale { items.append(.init(name: "locale", value: locale)) }
             return items.isEmpty ? nil : items
         case .listCalendarEvents(let dateFrom, let dateTo, let page, let pageSize):
             return [
@@ -413,21 +431,8 @@ enum ServerEndpoint {
                 .init(name: "page", value: "\(page)"),
                 .init(name: "pageSize", value: "\(pageSize)"),
             ]
-        case .listYoungEvents(
-            let dateUnknown, let active, let category, let search, let organizerId,
-            let dateFrom, let dateTo, let timeBasis, let page, let pageSize
-        ):
-            var items: [URLQueryItem] = []
-            if let dateUnknown { items.append(.init(name: "dateUnknown", value: dateUnknown ? "true" : "false")) }
-            if let active { items.append(.init(name: "active", value: active ? "true" : "false")) }
-            if let category { items.append(.init(name: "category", value: category)) }
-            if let search { items.append(.init(name: "search", value: search)) }
-            if let organizerId { items.append(.init(name: "organizerId", value: organizerId)) }
-            if let dateFrom { items.append(.init(name: "dateFrom", value: dateFrom)) }
-            if let dateTo { items.append(.init(name: "dateTo", value: dateTo)) }
-            if let timeBasis { items.append(.init(name: "timeBasis", value: timeBasis.rawValue)) }
-            if let page { items.append(.init(name: "page", value: "\(page)")) }
-            if let pageSize { items.append(.init(name: "pageSize", value: "\(pageSize)")) }
+        case .listYoungEvents(let query, let page, let pageSize):
+            let items = query.queryItems(page: page, pageSize: pageSize)
             return items.isEmpty ? nil : items
         case .listYoungOrganizers(let search, let page, let pageSize):
             var items: [URLQueryItem] = []
@@ -511,6 +516,8 @@ enum ServerEndpoint {
         switch self {
         case .matchCodes(let req): return req
         case .importSubscriptions(let req): return req
+        case .querySubscriptionCodes(let req, _): return req
+        case .appendMatchedSubscriptions(let req, _): return req
         case .appendSubscriptions(let req), .removeSubscriptions(let req): return req
         case .setSubscriptionKind(_, let req): return req
         case .updateYoungEventSubscription(_, let req): return req
@@ -542,6 +549,8 @@ enum ServerEndpoint {
             : components.percentEncodedPath
         components.percentEncodedPath = basePath + path
         components.queryItems = queryItems
+        // The server decodes query parameters as form data, where a bare plus means a space.
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
 
         var request = URLRequest(url: components.url!)
         request.httpMethod = method

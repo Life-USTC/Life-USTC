@@ -80,6 +80,7 @@ jobs:
             -only-testing:Life-USTC-UITests/CommunityJourneyTests \
             -only-testing:Life-USTC-UITests/CampusJourneyTests \
             -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
+            -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
             -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
             -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
             -only-testing:Life-USTC-UITests/AccountJourneyTests \

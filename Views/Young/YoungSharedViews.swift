@@ -299,16 +299,19 @@ struct YoungEventRow: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            HStack(spacing: 8) {
-                if let category = event.category, !category.isEmpty {
-                    Text(category)
-                }
-                if let location = event.location, !location.isEmpty {
-                    Label(location, systemImage: "mappin.and.ellipse")
-                }
+            let facts = [event.category, event.module, event.activityLevel]
+                .compactMap { $0 }.filter { !$0.isEmpty }
+            if !facts.isEmpty {
+                Text(facts.joined(separator: " · "))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("young.facts.\(event.youngId)")
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            if let location = event.location, !location.isEmpty {
+                Label(location, systemImage: "mappin.and.ellipse")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(.vertical, 4)
     }

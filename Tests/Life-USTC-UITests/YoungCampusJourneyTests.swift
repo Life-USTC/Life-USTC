@@ -34,6 +34,115 @@ final class YoungCampusJourneyTests: XCTestCase {
     }
 
     @MainActor
+    func testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext() throws {
+        fixture.enablePublicDiscoveryFixture()
+        app.launch()
+        openYoung()
+        open("Activities")
+        assertText("Campus workshop · 智 · 校级")
+        assertText("Campus workshop · 未来模块 · 国际级")
+        let search = app.searchFields.firstMatch
+        reveal(search)
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        search.tap()
+        search.typeText("Science\n")
+        waitForRequest("GET", "/api/catalog/young-events", query: ["search": "Science"])
+
+        open("young.filters")
+        let category = app.textFields["young.filters.category"]
+        XCTAssertTrue(category.waitForExistence(timeout: 10))
+        category.tap()
+        category.typeText("Campus workshop\n")
+        chooseFilter("module", value: "智")
+        chooseFilter("activityLevel", value: "校级")
+        chooseFilter("timeBasis", value: "Registration window")
+        toggle("young.filters.dateRange")
+        chooseFilter("active", value: "In source signup list")
+        chooseFilter("organizer", value: "Student Science Association")
+        capture("YoungFilters")
+        open("young.filters.apply")
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let today = dateFormatter.string(from: Date())
+        let expected = ["search": "Science", "category": "Campus workshop", "module": "智",
+                        "activityLevel": "校级", "timeBasis": "registration", "active": "true",
+                        "organizerId": PublicDiscoveryHTTPState.scienceOrganizer, "dateFrom": today, "dateTo": today]
+        waitForRequest("GET", "/api/catalog/young-events", query: expected)
+        assertText("1 activities have unknown dates")
+        XCTAssertFalse(app.staticTexts["Science Alumni Forum"].exists)
+        open("young.unknownDates")
+        var unknown = expected
+        unknown["dateUnknown"] = "true"
+        unknown.removeValue(forKey: "dateFrom")
+        unknown.removeValue(forKey: "dateTo")
+        waitForRequest("GET", "/api/catalog/young-events", query: unknown)
+        assertText("Science Undated Workshop")
+        XCTAssertFalse(app.staticTexts["Music Undated Circle"].exists)
+        XCTAssertFalse(app.staticTexts["Science Unlisted Seminar"].exists)
+        let request = try XCTUnwrap(fixture.requests.last { $0.path == "/api/catalog/young-events" })
+        XCTAssertNil(request.query["dateFrom"])
+        XCTAssertNil(request.query["dateTo"])
+        capture("YoungFilteredUnknownDates")
+
+        open("young.filters")
+        assertText("Date ranges do not apply to activities with unknown dates.")
+        XCTAssertFalse(app.switches["young.filters.dateRange"].exists)
+        chooseFilter("active", value: "Not in source signup list")
+        open("young.filters.cancel")
+        assertText("Science Undated Workshop")
+        XCTAssertFalse(fixture.requests.contains { $0.path == "/api/catalog/young-events" && $0.query["active"] == "false" })
+        open("young.filters")
+        chooseFilter("active", value: "Not in source signup list")
+        open("young.filters.apply")
+        unknown["active"] = "false"
+        waitForRequest("GET", "/api/catalog/young-events", query: unknown)
+        assertText("Science Unlisted Seminar")
+        XCTAssertFalse(app.staticTexts["Science Undated Workshop"].exists)
+
+        open("young.filters")
+        open("young.filters.clear")
+        open("young.filters.apply")
+        waitUntil {
+            self.fixture.requests.contains { $0.path == "/api/catalog/young-events" && $0.query["dateUnknown"] == "true"
+                && $0.query["search"] == "Science" && $0.query["timeBasis"] == "activity" && $0.query["active"] == nil }
+        }
+        assertText("Science Undated Workshop")
+        assertText("Science Unlisted Seminar")
+        XCTAssertFalse(app.staticTexts["Music Undated Circle"].exists)
+        back()
+        open("young.filters")
+        XCTAssertEqual(switchControl("young.filters.dateRange").value as? String, "1")
+        open("young.filters.cancel")
+    }
+
+    @MainActor
+    func testActivityFilterOrganizerRetryAndEmptyResultRecovery() throws {
+        fixture.enablePublicDiscoveryFixture()
+        app.launch()
+        openYoung()
+        open("Activities")
+        fixture.failNextRequest(method: "GET", path: "/api/catalog/young-organizers")
+        open("young.filters")
+        assertText("Workspace fixture unavailable")
+        open("young.filters.organizers.retry")
+        chooseFilter("organizer", value: "Student Arts Association")
+        chooseFilter("module", value: "智")
+        open("young.filters.apply")
+        waitForRequest("GET", "/api/catalog/young-events", query: ["organizerId": PublicDiscoveryHTTPState.artsOrganizer, "module": "智"])
+        assertText("There are no activities matching this filter.")
+        open("young.filters")
+        let organizer = app.buttons["young.filters.organizer"]
+        XCTAssertTrue(organizer.label.contains("Student Arts Association")
+                      || (organizer.value as? String)?.contains("Student Arts Association") == true)
+        open("young.filters.clear")
+        open("young.filters.apply")
+        assertText("Science Communication Workshop")
+        assertText("Arts Practice Workshop")
+    }
+
+    @MainActor
     func testActivityFactsPrioritizeOfficialSignupAndLabelSourceListAccurately() throws {
         app.launch()
         openYoung()
@@ -67,11 +176,12 @@ final class YoungCampusJourneyTests: XCTestCase {
         selectDiscover()
         open("discover_publications")
         open("publication.row.\(YoungCampusHTTPState.publicationID)")
+        let before = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Before the campus demonstration.")).firstMatch
+        XCTAssertTrue(before.waitForExistence(timeout: 10))
         assertText("Before the campus demonstration.")
         captureM6("PublicationDetail")
         assertText("Students share their laboratory work.")
         waitForRequest("GET", "/api/publications/images/" + String(repeating: "b", count: 64))
-        let before = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Before the campus demonstration.")).firstMatch
         let caption = app.webViews.staticTexts["Students share their laboratory work."]
         let after = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "After the campus demonstration.")).firstMatch
         XCTAssertTrue(before.exists && caption.exists && after.exists)
@@ -204,6 +314,8 @@ final class YoungCampusJourneyTests: XCTestCase {
         waitForRequest("GET", "/api/publications/sources")
         assertText("USTC News")
         assertText("Student Office")
+        assertText("news.ustc.edu.cn")
+        assertText("office.ustc.edu.cn")
         capture("PublicationSources")
         open("publication.source.student-office")
         waitForRequest("GET", "/api/publications", query: ["source": "student-office"])
@@ -220,6 +332,12 @@ final class YoungCampusJourneyTests: XCTestCase {
     private func openYoung() {
         selectDiscover()
         open("Second Classroom")
+    }
+
+    @MainActor
+    private func chooseFilter(_ field: String, value: String) {
+        open("young.filters.\(field)")
+        open(value)
     }
 
     @MainActor

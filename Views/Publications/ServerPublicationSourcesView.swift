@@ -24,6 +24,11 @@ struct ServerPublicationSourcesView: View {
                             } label: {
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(source.name).font(.headline)
+                                    if !source.hosts.isEmpty {
+                                        Text(source.hosts.joined(separator: " · "))
+                                            .font(.caption).foregroundStyle(.secondary)
+                                            .accessibilityIdentifier("publication.source.hosts.\(source.id)")
+                                    }
                                     LabeledContent("Publications", value: source.publicationCount.formatted())
                                         .font(.caption).foregroundStyle(.secondary)
                                     if let lastPublishedAt = source.lastPublishedAt {

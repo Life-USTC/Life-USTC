@@ -56,9 +56,9 @@ private final class YoungActivityCalendarModel {
         source = nil
         do {
             let page = try await ServerClient.shared.fetchYoungEventsPage(
-                dateFrom: YoungCalendarDate.dateString(range.start),
-                dateTo: YoungCalendarDate.dateString(range.end),
-                timeBasis: requestedBasis
+                .init(dateFrom: YoungCalendarDate.dateString(range.start),
+                      dateTo: YoungCalendarDate.dateString(range.end),
+                      timeBasis: requestedBasis.queryValue)
             )
             guard requestGeneration == generation, !Task.isCancelled else { return }
             events = page.data
@@ -168,7 +168,7 @@ struct YoungActivityCalendarView: View {
             if model.unknownDateCount > 0 {
                 HStack {
                     NavigationLink {
-                        YoungEventsListView(dateUnknown: true, basis: model.basis)
+                        YoungEventsListView(dateUnknown: true, filters: .init(basis: model.basis))
                     } label: {
                         Label(
                             YoungFormatting.countText(

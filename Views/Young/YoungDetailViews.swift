@@ -178,7 +178,7 @@ private final class YoungOrganizerDetailModel {
         error = nil
         do {
             async let organizerRequest = ServerClient.shared.fetchYoungOrganizer(organizerId: id)
-            async let eventsRequest = ServerClient.shared.fetchYoungEventsPage(organizerId: id)
+            async let eventsRequest = ServerClient.shared.fetchYoungEventsPage(.init(organizerID: id))
             let organizer = try await organizerRequest
             let page = try await eventsRequest
             guard requestGeneration == generation, !Task.isCancelled else { return }
@@ -245,9 +245,8 @@ struct YoungOrganizerDetailView: View {
                         Section {
                             NavigationLink {
                                 YoungEventsListView(
-                                    organizerId: organizer.id,
                                     dateUnknown: true,
-                                    basis: .activity
+                                    filters: .init(organizerId: organizer.id)
                                 )
                             } label: {
                                 Label(
