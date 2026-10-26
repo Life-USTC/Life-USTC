@@ -803,7 +803,7 @@
 "Sign in to check conflicts with your personal calendar." = "登录后检查与个人日历的时间冲突。";
 "Checking calendar conflicts…" = "正在检查日历冲突…";
 "Calendar conflicts are unavailable." = "暂时无法检查日历冲突。";
-"Conflicts compare known class, exam, and activity times. Deadlines are not occupied time." = "仅比较已知的课程、考试和活动时段；截止时间不算占用时间。";
+"Conflicts use known occupied times from synced classes, exams, and subscribed activities. Confirm unknown times and broad activity windows separately; no warning does not establish availability or signup eligibility." = "冲突提示仅核对已同步课程、考试和已订阅活动中可确定的占用时段；时间未知或仅有整体活动范围时需自行确认，无提示不代表空闲或具备报名资格。";
 "%d new activity: " = "%d 个新活动：";
 "%d new activities: " = "%d 个新活动：";
 "The source is currently unavailable. Check the official event page before attending or registering." = "活动来源暂缺，请前往校方活动页面核实信息后再报名或参加。";

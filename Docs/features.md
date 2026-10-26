@@ -134,8 +134,9 @@ read. Complete cache replacement and export still require complete results.
 
 Young subscriptions and organizer follows retain confirmed settings on failed
 writes. Notifications support unread filtering and refresh after marking a
-reminder read. Activity-time calendars report interval conflicts separately from
-registration windows. Private lists clear when the account changes.
+reminder read. Activity-time calendars compare only server-provided known occupied
+intervals, separately from registration windows; unknown times and broad activity
+windows do not establish availability. Private lists clear when the account changes.
 Public Young week/month views use Sunday-first start-day grouping; the day view
 also retains continuing events. Source signup-list membership is distinct from
 registration status, and official signup remains the primary action.

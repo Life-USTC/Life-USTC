@@ -203,18 +203,18 @@ enum YoungFormatting {
         events: [ServerYoungEvent], personal: [ServerPersonalCalendarEvent]
     ) -> Set<String> {
         let occupied = personal.filter {
-            guard ["schedule", "exam", "young_event"].contains($0.type),
-                  let start = $0.at, let end = $0.endsAt else { return false }
-            return end > start
+            ["schedule", "exam", "young_event"].contains($0.type) && $0.hasTime != false
+        }.flatMap { item in
+            (item.conflictIntervals ?? []).filter { $0.endAt > $0.startAt }
+                .map { (youngId: item.youngId, interval: $0) }
         }
         return Set(events.filter { event in
-            guard let start = event.startAt else { return false }
-            let end = event.endAt ?? start
-            guard end >= start else { return false }
-            return occupied.contains { item in
-                guard item.youngId != event.youngId, let occupiedStart = item.at,
-                      let occupiedEnd = item.endsAt else { return false }
-                return start < occupiedEnd && (end == start ? start >= occupiedStart : end > occupiedStart)
+            (event.conflictIntervals ?? []).contains { interval in
+                guard interval.endAt > interval.startAt else { return false }
+                return occupied.contains { item in
+                    item.youngId != event.youngId && interval.startAt < item.interval.endAt
+                        && interval.endAt > item.interval.startAt
+                }
             }
         }.map(\.youngId))
     }

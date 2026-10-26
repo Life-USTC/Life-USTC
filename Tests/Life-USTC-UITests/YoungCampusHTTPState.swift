@@ -3,6 +3,7 @@ import Foundation
 /// Stateful Young and publication wire responses for native UI journeys.
 final class YoungCampusHTTPState {
     static let eventID = "fixture-young-m4"
+    static let broadWindowEventID = "fixture-young-window"
     static let organizerID = "fixture-organizer-m4"
     static let notificationID = "fixture-young-notice-m4"
     static let publicationID = "fixture-publication-m4"
@@ -31,17 +32,30 @@ final class YoungCampusHTTPState {
         case ("GET", "/api/catalog/young-events"):
             var response = fixtures["GET \(path)"] as! [String: Any]
             var event = eventRecord
+            var events = [event]
             if let day = request.query["dateFrom"] {
                 event["startAt"] = "\(day)T09:00:00+08:00"
                 event["endAt"] = "\(day)T11:00:00+08:00"
+                event["conflictIntervals"] = [["startAt": "\(day)T09:00:00+08:00",
+                                               "endAt": "\(day)T11:00:00+08:00"]]
+                var broadWindow = event
+                broadWindow["youngId"] = Self.broadWindowEventID
+                broadWindow["name"] = "Afternoon workshop"
+                broadWindow["endAt"] = "\(day)T17:00:00+08:00"
+                broadWindow["conflictIntervals"] = [["startAt": "\(day)T15:00:00+08:00",
+                                                     "endAt": "\(day)T16:00:00+08:00"]]
+                events = [event, broadWindow]
             }
-            response["data"] = [event]
+            response["data"] = events
+            response["pagination"] = page(events, request: request)["pagination"]
             return (200, response)
         case ("GET", "/api/workspace/calendar/events"):
             guard signedIn else { return (401, ["error": "Sign in required"]) }
             let day = request.query["dateFrom"] ?? "2026-10-23"
             let occupied: [String: Any] = ["id": "schedule:fixture-conflict", "type": "schedule",
                 "title": "Morning seminar", "at": "\(day)T08:15:00+08:00", "endsAt": "\(day)T09:45:00+08:00",
+                "conflictIntervals": [["startAt": "\(day)T08:15:00+08:00", "endAt": "\(day)T09:45:00+08:00"]],
+                "hasTime": true,
                 "url": "/catalog/sections/42", "location": "East Campus", "youngId": NSNull()]
             return (200, page([occupied], request: request))
         case ("GET", "/api/workspace/young-event-subscriptions"):

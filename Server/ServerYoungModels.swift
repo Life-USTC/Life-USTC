@@ -106,6 +106,11 @@ struct ServerYoungEventPlace: Codable, Hashable {
     let placeEt: String?
 }
 
+struct ServerCalendarConflictInterval: Codable, Hashable {
+    let startAt: Date
+    let endAt: Date
+}
+
 struct ServerYoungEvent: Codable, Identifiable, Hashable {
     let youngId: String
     let name: String
@@ -159,6 +164,7 @@ struct ServerYoungEvent: Codable, Identifiable, Hashable {
     let appliedCount: Int?
     let startAt: Date?
     let endAt: Date?
+    let conflictIntervals: [ServerCalendarConflictInterval]?
     let applyStartAt: Date?
     let applyEndAt: Date?
     let isActive: Bool
@@ -225,6 +231,7 @@ struct ServerPersonalCalendarEvent: Codable, Identifiable, Hashable {
     let type: String
     let at: Date?
     let endsAt: Date?
+    let conflictIntervals: [ServerCalendarConflictInterval]?
     let title: String
     let location: String?
     let url: String
