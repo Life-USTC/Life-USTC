@@ -90,7 +90,10 @@ final class E2ETests: XCTestCase {
             // iPhone: use the tab bar
             let tabs = ["Home": 0, "Calendar": 1, "Discover": 2, "Account": 3]
             if let index = tabs[destination] {
-                tabBar.buttons.element(boundBy: index).tap()
+                let tab = tabBar.buttons.element(boundBy: index)
+                let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: tab)
+                XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, "Tab \(destination) should be reachable")
+                tab.tap()
             }
         } else {
             // iPad: use sidebar buttons
