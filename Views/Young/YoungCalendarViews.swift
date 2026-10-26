@@ -25,6 +25,7 @@ enum YoungPublicCalendarDate {
     }
 }
 
+@MainActor
 @Observable
 final class YoungActivityCalendarModel {
     var mode: YoungCalendarDisplayMode = .week

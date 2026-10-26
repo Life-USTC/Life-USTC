@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import LifeClientCore
 
+@MainActor
 @Observable
 final class YoungEventsPageModel {
     private let client: ServerClient
