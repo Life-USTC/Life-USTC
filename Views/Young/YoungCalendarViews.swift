@@ -206,7 +206,7 @@ struct YoungActivityCalendarView: View {
                 Button("Retry") { Task { await loadPersonalCalendar() } }
             }
         } else {
-            Text("Conflicts compare known class, exam, and activity times. Deadlines are not occupied time.")
+            Text("Conflicts use known occupied times from synced classes, exams, and subscribed activities. Confirm unknown times and broad activity windows separately; no warning does not establish availability or signup eligibility.")
         }
     }
 
