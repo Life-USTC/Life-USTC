@@ -29,9 +29,9 @@ final class ParityNavigationJourneyTests: XCTestCase {
     }
 
     @MainActor
-    func testWeekAgendaTodayAndSemesterUseVisibleDateRanges() throws {
+    func testWeekAgendaTodayAndSemesterUseVisibleDateRanges() async throws {
         app.launch()
-        open("home_calendar")
+        await open("home_calendar")
         waitUntil { self.fixture.requests.contains { $0.path == "/api/workspace/calendar/events" } }
         let first = try XCTUnwrap(fixture.requests.last { $0.path == "/api/workspace/calendar/events" })
         let formatter = DateFormatter()
@@ -49,15 +49,15 @@ final class ParityNavigationJourneyTests: XCTestCase {
             XCTAssertTrue(header.exists, "The week agenda retains all seven day headings")
         }
         let originalRange = app.staticTexts["calendar_range"].label
-        open("Previous period")
+        await open("Previous period")
         waitUntil { self.app.staticTexts["calendar_range"].label != originalRange }
-        open("calendar_today")
+        await open("calendar_today")
         waitUntil { self.app.staticTexts["calendar_range"].label == originalRange }
         let mode = app.segmentedControls["workspace_calendar_mode"]
         XCTAssertTrue(mode.buttons["Semester"].waitForExistence(timeout: 10))
         mode.buttons["Semester"].tap()
-        open("calendar_semester")
-        open("Spring 2026")
+        await open("calendar_semester")
+        await open("Spring 2026")
         waitUntil {
             self.fixture.requests.contains {
                 $0.path == "/api/workspace/calendar/events"
@@ -67,62 +67,62 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
         XCTAssertEqual(app.staticTexts["calendar_range"].label, "2026-02-01 – 2026-07-31")
         capture("SemesterCalendar")
-        open("calendar_today")
+        await open("calendar_today")
         waitUntil { self.app.staticTexts["calendar_range"].label != "2026-02-01 – 2026-07-31" }
     }
 
     @MainActor
-    func testSectionCalendarCopyAndShareRetainPublicJWIdentity() throws {
+    func testSectionCalendarCopyAndShareRetainPublicJWIdentity() async throws {
         app.launch()
-        open("home_catalog")
-        open("catalog_section_42")
-        open("section_calendar_export")
+        await open("home_catalog")
+        await open("catalog_section_42")
+        await open("section_calendar_export")
         XCTAssertTrue(app.navigationBars["Teaching Section Calendar"].waitForExistence(timeout: 10))
-        open("section_calendar_copy")
+        await open("section_calendar_copy")
         XCTAssertTrue(app.buttons["section_calendar_copy"].label.contains("Copied"))
-        open("section_calendar_share")
+        await open("section_calendar_share")
         assertShareSheet()
         capture("SectionCalendarShare")
         XCTAssertFalse(fixture.requests.contains { $0.method != "GET" })
     }
 
     @MainActor
-    func testCombinedCalendarSelectionAndCourseSharing() throws {
+    func testCombinedCalendarSelectionAndCourseSharing() async throws {
         app.launch()
-        open("home_subscriptions")
-        open("subscriptions_calendar_export")
+        await open("home_subscriptions")
+        await open("subscriptions_calendar_export")
         XCTAssertFalse(app.buttons["section_calendar_copy"].exists)
         selectCalendarSection(7)
         selectCalendarSection(8)
-        open("section_calendar_copy")
+        await open("section_calendar_copy")
         XCTAssertTrue(app.buttons["section_calendar_copy"].label.contains("Copied"))
         capture("CombinedCalendar")
         back()
         back()
-        open("home_catalog")
+        await open("home_catalog")
         app.segmentedControls["catalog_kind"].buttons["Courses"].tap()
-        open("catalog_course_1001")
-        open("share_content")
+        await open("catalog_course_1001")
+        await open("share_content")
         assertShareSheet()
         capture("CourseShare")
     }
 
     @MainActor
-    func testSectionHomeworkGuideCollapsesAndDoesNotRestrictTheTitle() throws {
+    func testSectionHomeworkGuideCollapsesAndDoesNotRestrictTheTitle() async throws {
         app.launch()
-        open("home_catalog")
-        open("catalog_section_42")
-        open("Shared Homework")
-        open("section.homeworks.create")
-        open("homework.editor.guide")
+        await open("home_catalog")
+        await open("catalog_section_42")
+        await open("Shared Homework")
+        await open("section.homeworks.create")
+        await open("homework.editor.guide")
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
         capture("HomeworkGuide")
-        open("homework.editor.guide")
+        await open("homework.editor.guide")
         let title = app.textFields["homework.editor.title"]
         reveal(title)
         title.tap()
         title.typeText("Prepare a worked example")
-        open("homework.editor.save")
+        await open("homework.editor.save")
         waitUntil {
             self.fixture.requests.contains {
                 $0.method == "POST" && $0.path == "/api/community/section-homeworks"
@@ -131,27 +131,27 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
         let created = try XCTUnwrap(fixture.communityHomeworks.first { $0["title"] as? String == "Prepare a worked example" })
         let id = try XCTUnwrap(created["id"] as? String)
-        open(app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@",
+        await open(app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@",
                                              "section.homeworks.row.\(id)", "Homework actions")).firstMatch)
-        open("Edit")
-        open("homework.editor.guide")
+        await open("Edit")
+        await open("homework.editor.guide")
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
-        open("homework.editor.guide")
+        await open("homework.editor.guide")
         XCTAssertTrue(app.buttons["homework.editor.save"].exists)
     }
 
     @MainActor
-    func testUsageGuideOpensTheWebsiteWithoutNativeBearerCredentials() throws {
+    func testUsageGuideOpensTheWebsiteWithoutNativeBearerCredentials() async throws {
         app.launch()
         selectAccount()
-        open("Help and Guides")
+        await open("Help and Guides")
         for path in ["usage/mobile", "usage/bot", "usage/mcp", "usage/cli", "guides/markdown-support", "community/comments/guide"] {
             let link = app.descendants(matching: .any).matching(identifier: "guide_\(path)").firstMatch
             reveal(link)
             XCTAssertTrue(link.exists)
         }
         capture("HelpGuides")
-        open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
+        await open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
         waitUntil(timeout: 30) { self.fixture.requests.contains { $0.path == "/usage/mobile" } }
         let request = try XCTUnwrap(fixture.requests.last { $0.path == "/usage/mobile" })
         XCTAssertNil(request.headers["authorization"])
@@ -206,17 +206,18 @@ final class ParityNavigationJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) {
-        open(app.buttons.matching(identifier: id).firstMatch, file: file, line: line)
+    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) async {
+        await open(app.buttons.matching(identifier: id).firstMatch, file: file, line: line)
     }
 
     @MainActor
-    private func open(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
+    private func open(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) async {
         _ = element.waitForExistence(timeout: 2)
         reveal(element)
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing control: \(element)", file: file, line: line)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed, file: file, line: line)
+        let result = await XCTWaiter.fulfillment(of: [ready], timeout: 10)
+        XCTAssertEqual(result, .completed, file: file, line: line)
         element.tap()
     }
 
