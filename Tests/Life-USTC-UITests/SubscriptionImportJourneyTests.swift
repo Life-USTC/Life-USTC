@@ -49,7 +49,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         try await open("home_subscriptions")
         try await open("subscriptions_import_codes")
         try await chooseSemester("Spring 2026")
-        setCodes("PHYS101")
+        try await setCodes("PHYS101")
         try await open("subscription_import_preview")
         let selected = app.switches["subscription_import_section_10"]
         reveal(selected)
@@ -79,7 +79,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         try await open("subscriptions_import_codes")
         XCTAssertFalse(app.buttons["subscription_import_preview"].isEnabled)
         try await chooseSemester("Spring 2026")
-        setCodes("PHYS101")
+        try await setCodes("PHYS101")
         fixture.failNextRequest(method: "POST", path: "/api/workspace/subscriptions/query")
         try await open("subscription_import_preview")
         let error = app.staticTexts["subscription_import_error"]
@@ -97,7 +97,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         let empty = app.staticTexts["subscription_import_empty"]
         reveal(empty)
         XCTAssertTrue(empty.waitForExistence(timeout: 10))
-        setCodes("UNKNOWN.01")
+        try await setCodes("UNKNOWN.01")
         try await open("subscription_import_preview")
         let unmatched = app.otherElements["subscription_import_unmatched_UNKNOWN.01"]
         let unmatchedText = app.staticTexts["UNKNOWN.01"]
@@ -121,7 +121,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         try await open("subscriptions_import_codes")
         try await chooseSemester(language == "en" ? "Spring 2026" : "2026年春季学期")
         let codes = "PHYS101 PHYS101.01 PHYS101.09"
-        setCodes(codes)
+        try await setCodes(codes)
         capture("Entry", language: language)
         try await open("subscription_import_preview")
         let existing = app.switches["subscription_import_section_8"]
@@ -192,16 +192,35 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func setCodes(_ text: String) {
+    private func setCodes(_ text: String) async throws {
         let field = app.textViews["subscription_import_input"]
         reveal(field)
-        XCTAssertTrue(field.waitForExistence(timeout: 10))
+        guard field.waitForExistence(timeout: 10) else {
+            XCTFail("Missing course-code input")
+            throw InteractionFailure.unavailableControl
+        }
         let previous = field.value as? String ?? ""
         field.tap()
-        field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: previous.count) + text)
-        let updated = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", text), object: field)
-        XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 10), .completed)
-        XCTAssertEqual(field.value as? String, text)
+        if !previous.isEmpty {
+            field.press(forDuration: 1)
+            let selectAll = app.descendants(matching: .any)
+                .matching(NSPredicate(format: "label == %@", "Select All")).firstMatch
+            guard selectAll.waitForExistence(timeout: 5) else {
+                XCTFail("Missing Select All action for existing course codes")
+                throw InteractionFailure.unavailableControl
+            }
+            selectAll.tap()
+            field.typeText(XCUIKeyboardKey.delete.rawValue)
+            try await waitFor(field, predicate: "value == ''")
+        }
+        field.typeText(text)
+        let expected = NSPredicate(format: "value == %@", text)
+        let updated = XCTNSPredicateExpectation(predicate: expected, object: field)
+        let result = await XCTWaiter.fulfillment(of: [updated], timeout: 10)
+        guard result == .completed, field.value as? String == text else {
+            XCTFail("Course codes were not replaced with the requested text")
+            throw InteractionFailure.unavailableControl
+        }
     }
 
     @MainActor
@@ -253,7 +272,11 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     @MainActor
     private func waitFor(_ element: XCUIElement, predicate: String,
                          file: StaticString = #filePath, line: UInt = #line) async throws {
-        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: predicate), object: element)
+        let condition = NSPredicate(format: predicate)
+        // A native accessibility query can itself take longer than the polling
+        // deadline. Accept an already-satisfied condition before starting it.
+        if condition.evaluate(with: element) { return }
+        let expectation = XCTNSPredicateExpectation(predicate: condition, object: element)
         let result = await XCTWaiter.fulfillment(of: [expectation], timeout: 10)
         guard result == .completed else {
             XCTFail("Control did not satisfy \(predicate): \(element)", file: file, line: line)
