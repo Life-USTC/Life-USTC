@@ -235,11 +235,10 @@ final class SubscriptionImportJourneyTests: XCTestCase {
             XCTFail("Expected section \(id) to be selected", file: file, line: line)
             throw InteractionFailure.unexpectedSelection
         }
-        let nested = field.switches.firstMatch
-        let control = nested.exists ? nested : field
-        reveal(control)
-        try await waitFor(control, predicate: "enabled == true AND hittable == true", file: file, line: line)
-        control.tap()
+        // Activate the labelled SwiftUI Toggle. Its nested UIKit switch can
+        // receive a synthesized tap without changing the bound selection.
+        try await waitFor(field, predicate: "enabled == true AND hittable == true", file: file, line: line)
+        field.tap()
         try await waitFor(field, predicate: "value == '0'", file: file, line: line)
     }
 

@@ -35,9 +35,9 @@ final class AccountJourneyTests: XCTestCase {
     func testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn() throws {
         launchAccount()
         capture("Settings")
-        open("settings_server_account")
+        try open("settings_server_account")
         capture("ServerAccount")
-        open("server_account_management")
+        try open("server_account_management")
         assertText("These settings open the Life@USTC website.")
         capture("AccountManagement")
         let pages = [("profile", "/account/settings/profile"), ("preferences", "/account/settings/preferences"),
@@ -46,7 +46,7 @@ final class AccountJourneyTests: XCTestCase {
                      ("danger", "/account/settings/danger")]
         for (id, path) in pages {
             let previousReads = requestCount("GET", "/api/account/profile")
-            open("account_web_\(id)")
+            try open("account_web_\(id)")
             waitForRequest("GET", path, timeout: 45)
             let request = try XCTUnwrap(fixture.requests.last { $0.path == path })
             XCTAssertNil(request.headers["authorization"], "Website must authenticate its own session")
@@ -60,16 +60,16 @@ final class AccountJourneyTests: XCTestCase {
     @MainActor
     func testActivityPaginationFailureRetainsHistoryAndRetriesTheSameCursor() throws {
         launchAccount()
-        open("settings_account_management")
-        open("account_app_activity")
+        try open("settings_account_management")
+        try open("account_app_activity")
         waitForRequest("GET", "/api/account/client-activity", query: ["limit": "30"])
         assertText("Comment posted")
         assertText("Succeeded")
         fixture.failNextRequest(method: "GET", path: "/api/account/client-activity")
-        open("account_activity_load_more")
+        try open("account_activity_load_more")
         assertText("Workspace fixture unavailable")
         assertText("Comment posted")
-        open("Retry")
+        try open("Retry")
         assertText("File deleted")
         assertText("Denied")
         assertText("Comment posted")
@@ -132,8 +132,12 @@ final class AccountJourneyTests: XCTestCase {
         add(screenshot)
     }
 
+    private enum InteractionFailure: Error {
+        case unavailableControl
+    }
+
     @MainActor
-    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) {
+    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) throws {
         let button = app.buttons.matching(identifier: id).firstMatch
         _ = button.waitForExistence(timeout: 2)
         for _ in 0..<8 {
@@ -144,9 +148,18 @@ final class AccountJourneyTests: XCTestCase {
             if button.exists && button.isHittable { break }
             app.swipeDown()
         }
-        XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing control: \(id)", file: file, line: line)
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: button)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed, "Unavailable control: \(id)", file: file, line: line)
+        guard button.waitForExistence(timeout: 10) else {
+            XCTFail("Missing control: \(id)", file: file, line: line)
+            throw InteractionFailure.unavailableControl
+        }
+        let condition = NSPredicate(format: "enabled == true AND hittable == true")
+        if !condition.evaluate(with: button) {
+            let ready = XCTNSPredicateExpectation(predicate: condition, object: button)
+            guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+                XCTFail("Unavailable control: \(id)", file: file, line: line)
+                throw InteractionFailure.unavailableControl
+            }
+        }
         button.tap()
     }
 
