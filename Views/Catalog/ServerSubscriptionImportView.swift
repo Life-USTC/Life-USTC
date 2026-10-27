@@ -4,6 +4,7 @@ struct ServerSubscriptionImportView: View {
     @State private var model = ServerSubscriptionImportModel()
     @Bindable private var account = ServerAccountStore.shared
     @Environment(\.locale) private var locale
+    @FocusState private var isInputFocused: Bool
 
     private var accountKey: String {
         "\(ServerClient.shared.baseURL.absoluteString)|\(account.user?.id ?? (account.isAuthenticated ? "signed-in" : "anonymous"))"
@@ -53,6 +54,7 @@ struct ServerSubscriptionImportView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Course or teaching-section codes").font(.subheadline)
                 TextEditor(text: $model.input)
+                    .focused($isInputFocused)
                     .frame(minHeight: 100)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
@@ -64,6 +66,7 @@ struct ServerSubscriptionImportView: View {
                 Text(inputError).font(.caption).foregroundStyle(.secondary)
             }
             Button {
+                isInputFocused = false
                 Task { await model.match(locale: apiLocale) }
             } label: {
                 HStack {
