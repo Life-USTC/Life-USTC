@@ -235,10 +235,16 @@ final class SubscriptionImportJourneyTests: XCTestCase {
             XCTFail("Expected section \(id) to be selected", file: file, line: line)
             throw InteractionFailure.unexpectedSelection
         }
-        // Activate the labelled SwiftUI Toggle. Its nested UIKit switch can
-        // receive a synthesized tap without changing the bound selection.
-        try await waitFor(field, predicate: "enabled == true AND hittable == true", file: file, line: line)
-        field.tap()
+        let control = field.switches.firstMatch
+        guard control.waitForExistence(timeout: 10) else {
+            XCTFail("Missing native switch for section \(id)", file: file, line: line)
+            throw InteractionFailure.unavailableControl
+        }
+        reveal(control)
+        try await waitFor(control, predicate: "enabled == true AND hittable == true", file: file, line: line)
+        // The labelled row activates its text, while the native switch's center
+        // can miss the selected thumb. Use the thumb inside the switch bounds.
+        control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)).tap()
         try await waitFor(field, predicate: "value == '0'", file: file, line: line)
     }
 
