@@ -44,8 +44,10 @@ final class ServerJourneyTests: XCTestCase {
 
         let section = app.buttons["catalog_section_42"]
         XCTAssertTrue(section.waitForExistence(timeout: 10))
+        capture("Catalog")
         section.tap()
         XCTAssertTrue(app.staticTexts["MATH101.01"].firstMatch.waitForExistence(timeout: 10))
+        capture("Section")
         waitForRequest(method: "GET", path: "/api/catalog/sections/42")
         XCTAssertFalse(fixture.requests.contains { $0.headers["authorization"] != nil })
         XCTAssertFalse(fixture.requests.contains { $0.method != "GET" })
@@ -61,6 +63,8 @@ final class ServerJourneyTests: XCTestCase {
         open("catalog_course_1001")
         waitForRequest(method: "GET", path: "/api/catalog/courses/1001")
         waitForRequest(method: "GET", path: "/api/catalog/courses/1001/sections", query: ["page": "1", "pageSize": "100"])
+        XCTAssertTrue(app.buttons["catalog_section_42"].waitForExistence(timeout: 10))
+        capture("Course")
         open("catalog_section_42")
         XCTAssertTrue(app.buttons["section_sign_in"].waitForExistence(timeout: 10))
         waitForRequest(method: "GET", path: "/api/catalog/sections/42")
@@ -74,6 +78,7 @@ final class ServerJourneyTests: XCTestCase {
         waitForRequest(method: "GET", path: "/api/catalog/teachers/3/sections", query: ["page": "1", "pageSize": "100"])
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Professor"))
             .firstMatch.waitForExistence(timeout: 10))
+        capture("Teacher")
         open("catalog_section_43")
         XCTAssertTrue(app.buttons["section_sign_in"].waitForExistence(timeout: 10))
         waitForRequest(method: "GET", path: "/api/catalog/sections/43")
@@ -213,6 +218,14 @@ final class ServerJourneyTests: XCTestCase {
             fixture.requests.filter { $0.path == "/api/workspace/subscriptions/current" }.count,
             readsAfterSignOut
         )
+    }
+
+    @MainActor
+    private func capture(_ page: String) {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "after-catalog-\(page)" + (app.frame.width > 700 ? "-iPad" : "-iPhone")
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     @MainActor

@@ -430,7 +430,7 @@
 "Sign in to check conflicts with your personal calendar." = "Sign in to check conflicts with your personal calendar.";
 "Checking calendar conflicts…" = "Checking calendar conflicts…";
 "Calendar conflicts are unavailable." = "Calendar conflicts are unavailable.";
-"Conflicts compare known class, exam, and activity times. Deadlines are not occupied time." = "Conflicts compare known class, exam, and activity times. Deadlines are not occupied time.";
+"Conflicts use known occupied times from synced classes, exams, and subscribed activities. Confirm unknown times and broad activity windows separately; no warning does not establish availability or signup eligibility." = "Conflicts use known occupied times from synced classes, exams, and subscribed activities. Confirm unknown times and broad activity windows separately; no warning does not establish availability or signup eligibility.";
 "%d new activity: " = "%d new activity: ";
 "%d new activities: " = "%d new activities: ";
 "The source is currently unavailable. Check the official event page before attending or registering." = "The source is currently unavailable. Check the official event page before attending or registering.";

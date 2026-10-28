@@ -6,19 +6,13 @@
 //
 
 import Foundation
-import SwiftyJSON
+import LifeClientCore
+import SwiftData
 
 extension USTCSchool {
     @MainActor
     static func updateHomework() async throws {
         if SwiftDataStack.isPresentingDemo { return }
-
-        func decodeDate(from raw: String) -> Date? {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            return dateFormatter.date(from: raw)
-        }
 
         @LoginClient(.ustcBlackboard) var blackboardClient
 
@@ -26,26 +20,24 @@ extension USTCSchool {
             throw BaseError.runtimeError("UstcBlackboard Not logined")
         }
 
-        let (data, _) = try await URLSession.shared.data(
-            from: URL(
-                string:
-                    "https://www.bb.ustc.edu.cn/webapps/calendar/calendarData/selectedCalendarEvents?start=&end=&course_id=&mode=personal?start=&end=&course_id=&mode=personal"
-            )!
-        )
-        let cache = try JSON(data: data)
+        let events = try await USTCBlackboardService().fetchCalendarEvents()
+        try replaceHomework(with: events, in: SwiftDataStack.modelContext)
+    }
 
+    @MainActor
+    static func replaceHomework(with events: [USTCBlackboardSelectedCalendarEvent], in context: ModelContext) throws {
         // remove all old homework entries
-        try! SwiftDataStack.modelContext.delete(model: Homework.self)
+        try! context.delete(model: Homework.self)
 
-        for homeworkJSON in cache.arrayValue {
-            guard let dueDate = decodeDate(from: homeworkJSON["endDate"].stringValue) else {
+        for event in events {
+            guard let dueDate = USTCBlackboardService.parseDate(event.endDate) else {
                 continue
             }
 
-            let title = homeworkJSON["title"].stringValue
-            let courseName = homeworkJSON["calendarNameLocalizable"]["rawValue"].stringValue
+            let title = event.title
+            let courseName = event.courseName
 
-            try SwiftDataStack.modelContext.upsert(
+            try context.upsert(
                 predicate: #Predicate<Homework> { $0.title == title && $0.courseName == courseName },
                 update: { homework in
                     homework.dueDate = dueDate

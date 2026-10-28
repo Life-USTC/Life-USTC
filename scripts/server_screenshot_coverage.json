@@ -1,0 +1,137 @@
+[
+  {
+    "id": "workspace",
+    "title": "Learning workspace and calendars",
+    "required": [
+      "after-m6-CombinedCalendar",
+      "after-m6-SemesterCalendar",
+      "after-workspace-Calendar-iPhone",
+      "after-workspace-CalendarFeed-iPhone",
+      "after-workspace-ExamDetail-iPhone",
+      "after-workspace-Exams-iPhone",
+      "after-workspace-Home-iPhone",
+      "after-workspace-HomeworkDetail-iPhone",
+      "after-workspace-Homeworks-iPhone",
+      "after-workspace-TodoDetail-iPhone",
+      "after-workspace-TodoEditor-iPhone",
+      "after-workspace-Todos-iPhone"
+    ]
+  },
+  {
+    "id": "catalog",
+    "title": "Catalog, public schedules and subscriptions",
+    "required": [
+      "after-catalog-Catalog-iPhone",
+      "after-catalog-Course-iPhone",
+      "after-catalog-Section-iPhone",
+      "after-catalog-Teacher-iPhone",
+      "after-m6-CatalogEducation",
+      "after-m6-CourseShare",
+      "after-m6-HistoricalCalendarExport",
+      "after-m6-HistoricalSection",
+      "after-m6-Schedule",
+      "after-m6-SectionCalendarShare",
+      "after-m6-Subscriptions",
+      "after-public-schedule-Catalog-en-iPhone",
+      "after-public-schedule-Catalog-zh-Hans-iPhone",
+      "after-public-schedule-Filters-en-iPhone",
+      "after-public-schedule-Results-en-iPhone",
+      "after-public-schedule-Results-zh-Hans-iPhone",
+      "after-subscription-import-en-Entry-iPhone",
+      "after-subscription-import-en-FailedAppend-iPhone",
+      "after-subscription-import-en-Preview-iPhone",
+      "after-subscription-import-en-Result-iPhone",
+      "after-subscription-import-en-Subscriptions-iPhone",
+      "after-subscription-import-en-Unmatched-iPhone",
+      "after-subscription-import-zh-Hans-Entry-iPhone",
+      "after-subscription-import-zh-Hans-Preview-iPhone",
+      "after-subscription-import-zh-Hans-Result-iPhone",
+      "after-subscription-import-zh-Hans-Subscriptions-iPhone"
+    ]
+  },
+  {
+    "id": "community",
+    "title": "Community, files and shared homework",
+    "required": [
+      "after-m3-AnonymousComments",
+      "after-m3-Attachment",
+      "after-m3-Comments",
+      "after-m3-Description",
+      "after-m3-Files",
+      "after-m3-HiddenComments",
+      "after-m3-Homework",
+      "after-m3-HomeworkHistory",
+      "after-m3-Profile",
+      "after-m3-Section",
+      "after-m3-Thread",
+      "after-m6-HomeworkGuide"
+    ]
+  },
+  {
+    "id": "campus",
+    "title": "Campus discovery and publications",
+    "required": [
+      "after-m4-Bus",
+      "after-m4-Discover",
+      "after-m4-Links",
+      "after-m4-PublicationDetail",
+      "after-m4-PublicationFilters",
+      "after-m4-PublicationSources",
+      "after-m4-Publications",
+      "after-m4-RoomMap",
+      "after-m4-Search",
+      "after-m4-Weather",
+      "after-m6-BusMap",
+      "after-m6-BusRecentRoute",
+      "after-m6-PublicationAttribution",
+      "after-m6-PublicationDetail",
+      "after-m6-PublicationImage"
+    ]
+  },
+  {
+    "id": "young",
+    "title": "Activities, organizers and reminders",
+    "required": [
+      "after-m4-MyActivities",
+      "after-m4-Young",
+      "after-m4-YoungActivities",
+      "after-m4-YoungCalendar",
+      "after-m4-YoungFilteredUnknownDates",
+      "after-m4-YoungFilters",
+      "after-m4-YoungNotifications",
+      "after-m4-YoungOrganizer",
+      "after-m4-YoungReminder",
+      "after-m6-YoungDetail",
+      "after-m6-YoungDetailParticipation",
+      "after-m6-YoungOrganizer"
+    ]
+  },
+  {
+    "id": "incremental",
+    "title": "Incremental activity loading and recovery",
+    "required": [
+      "after-incremental-YoungCalendar-Complete-iPhone",
+      "after-incremental-YoungCalendar-Pending-iPhone",
+      "after-incremental-YoungCalendarInterrupted-Complete-iPhone",
+      "after-incremental-YoungCalendarInterrupted-Failure-iPhone",
+      "after-incremental-YoungCalendarInterrupted-Pending-iPhone",
+      "after-incremental-YoungList-Complete-iPhone",
+      "after-incremental-YoungList-Pending-iPhone",
+      "after-incremental-YoungListInterrupted-Complete-iPhone",
+      "after-incremental-YoungListInterrupted-Failure-iPhone",
+      "after-incremental-YoungListInterrupted-Pending-iPhone"
+    ]
+  },
+  {
+    "id": "account",
+    "title": "Account and help",
+    "required": [
+      "after-m3-Account",
+      "after-m5-AccountActivity",
+      "after-m5-AccountManagement",
+      "after-m5-ServerAccount",
+      "after-m5-Settings",
+      "after-m6-HelpGuides"
+    ]
+  }
+]

@@ -5,6 +5,7 @@
 //  Created by TiankaiMa on 2022/12/17.
 //
 
+import LifeClientCore
 import SwiftUI
 import UIKit
 import WebKit
@@ -63,7 +64,7 @@ class USTCCASClient: LoginClientProtocol {
                 useReeed: false,
                 prepared: true,
                 reeedMode: .never,
-                url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
+                url: USTCCAS.loginURL,
                 title: LocalizedStringKey("CAS Login")
             )
         )
@@ -119,7 +120,7 @@ class USTCCASClient: LoginClientProtocol {
             useReeed: false,
             prepared: true,
             reeedMode: .never,
-            url: URL(string: "https://id.ustc.edu.cn/cas/login")!,
+            url: USTCCAS.loginURL,
             title: LocalizedStringKey("CAS Login")
         )
         let hosting = UIHostingController(rootView: browser)
@@ -165,8 +166,6 @@ extension LoginClientProtocol {
 
 extension URL {
     func ustcCASLoginMarkup() -> URL {
-        // https://passport.ustc.edu.cn is the old url used for redirecting
-        // owing to the fact that many system still uses this endpoint, we still mark with this url
-        CASLoginMarkup(casServer: URL(string: "https://passport.ustc.edu.cn")!)
+        USTCCAS.legacyServiceLoginURL(for: self)
     }
 }

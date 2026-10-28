@@ -41,9 +41,12 @@ jobs:
   test:
     name: Run Tests
     runs-on: macos-26
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Test server screenshot exporter
+        run: python3 -B -m unittest discover -s scripts/tests -p 'test_*.py'
 
       - name: Cache Swift packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -69,6 +72,7 @@ jobs:
             -quiet
 
       - name: Run UI Tests
+        id: ui_tests
         run: |
           xcodebuild test \
             -project Life-USTC.xcodeproj \
@@ -95,6 +99,44 @@ jobs:
         with:
           name: test-results
           path: TestResults/
+
+      - name: Export server feature screenshots
+        if: always()
+        env:
+          UI_OUTCOME: ${{ steps.ui_tests.outcome }}
+        run: |
+          python3 scripts/export_server_screenshots.py \
+            --xcresult TestResults/ui.xcresult \
+            --output ServerScreenshots \
+            --ui-outcome "$UI_OUTCOME" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --revision "$(git rev-parse HEAD)"
+
+      - name: Upload server feature screenshots
+        id: upload_server_screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ios-server-screenshots-${{ github.run_id }}
+          path: ServerScreenshots/
+          if-no-files-found: error
+
+      - name: Summarize server feature screenshots
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.upload_server_screenshots.outputs.artifact-url }}
+        run: |
+          if [[ -f ServerScreenshots/summary.md ]]; then
+            cat ServerScreenshots/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '## Server feature screenshots' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Incomplete: the exporter did not produce a report.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ -n "$ARTIFACT_URL" ]]; then
+            printf '\n[Download the gallery and original PNGs](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '\nArtifact upload failed; no download link is available.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   build:
     name: Build IPA

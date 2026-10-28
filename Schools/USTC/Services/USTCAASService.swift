@@ -7,12 +7,10 @@
 //
 
 import Foundation
-import SwiftSoup
-
-private let logger = AppLogger.logger(for: "USTCAAS")
+import LifeClientCore
 
 /// Provides typed access to jw.ustc.edu.cn APIs.
-/// Requires that CAS → AAS login has been performed on the shared URLSession.
+/// Establish the AAS session after CAS login before fetching authenticated data.
 struct USTCAASService {
     let session: URLSession
 
@@ -20,88 +18,49 @@ struct USTCAASService {
         self.session = session
     }
 
+    func establishSession() async throws -> Bool {
+        _ = try await session.data(from: USTCCAS.aasSSOURL)
+        _ = try await session.data(from: USTCCAS.aasCASLoginURL)
+        let (_, response) = try await session.data(from: USTCCAS.aasRootURL)
+        return response.url?.absoluteString == USTCCAS.aasHomeURL.absoluteString
+    }
+
     // MARK: - Student ID
 
     /// Extract the student ID from the course-table redirect URL.
     func fetchStudentID() async throws -> String {
-        let url = URL(string: "https://jw.ustc.edu.cn/for-std/course-table")!
-        let (_, response) = try await session.data(from: url)
-
-        guard let finalURL = response.url?.absoluteString,
-              let match = finalURL.firstMatch(of: /(\d+)/)
-        else {
-            logger.error("Failed to extract student ID from redirect")
+        let (_, response) = try await session.data(from: USTCCourseTable.pageURL)
+        guard let finalURL = response.url else {
             throw USTCServiceError.parseError("Cannot extract student ID")
         }
-
-        let studentID = String(match.1)
-        logger.debug("Got student ID: \(studentID)")
-        return studentID
+        return try USTCCourseTable.studentID(from: finalURL)
     }
 
     // MARK: - Course Table
 
     /// Fetch lesson IDs for a given semester.
     func fetchLessonIDs(semesterID: String, studentID: String) async throws -> [Int] {
-        let url = URL(
-            string: "https://jw.ustc.edu.cn/for-std/course-table/get-data?bizTypeId=2&semesterId=\(semesterID)&dataId=\(studentID)"
-        )!
+        guard let semester = Int(semesterID) else {
+            throw USTCServiceError.parseError("Invalid semester ID")
+        }
+        let url = USTCCourseTable.dataURL(semesterID: semester, studentID: studentID)
         let (data, _) = try await session.data(from: url)
-
-        let decoder = JSONDecoder()
-        let response = try decoder.decode(AASCourseTableDTO.self, from: data)
-
-        let ids = response.lessonIds ?? []
-        logger.debug("Fetched \(ids.count) lesson IDs for semester \(semesterID)")
-        return ids
+        return try USTCCourseTable.parse(data)
     }
 
     // MARK: - Exams
 
     /// Parse exam data from the HTML table at /for-std/exam-arrange.
-    func fetchExams() async throws -> [AASExamDTO] {
-        let url = URL(string: "https://jw.ustc.edu.cn/for-std/exam-arrange")!
-        let (data, _) = try await session.data(from: url)
-
-        guard let html = String(data: data, encoding: .utf8) else {
-            throw USTCServiceError.parseError("Cannot decode exam HTML")
-        }
-
-        let document = try SwiftSoup.parse(html)
-        let rows = try document.select("#exams > tbody > tr")
-
-        var exams: [AASExamDTO] = []
-        for row in rows.array() {
-            let cols = row.children().array().map { $0.ownText() }
-            guard cols.count >= 8 else { continue }
-
-            exams.append(AASExamDTO(
-                lessonCode: cols[0],
-                typeName: cols[1],
-                courseName: cols[2],
-                dateTimeString: cols[3],
-                classRoomName: cols[4],
-                classRoomBuildingName: cols[5],
-                classRoomDistrict: cols[6],
-                detail: cols[7]
-            ))
-        }
-
-        logger.debug("Parsed \(exams.count) exams from HTML")
-        return exams
+    func fetchExams() async throws -> [USTCExamEntry] {
+        let (data, _) = try await session.data(from: USTCAcademic.examURL)
+        return try USTCAcademic.parseExams(data)
     }
 
     // MARK: - Scores
 
-    /// Fetch grade list as JSON.
-    func fetchScores(trainTypeId: Int = 1) async throws -> Data {
-        let url = URL(
-            string: "https://jw.ustc.edu.cn/for-std/grade/sheet/getGradeList?trainTypeId=\(trainTypeId)&semesterIds"
-        )!
-        let (data, _) = try await session.data(from: url)
-
-        logger.debug("Fetched score data (\(data.count) bytes)")
-        return data
+    func fetchScores(trainTypeId: Int = 1) async throws -> USTCScoreReport {
+        let (data, _) = try await session.data(from: USTCAcademic.scoreURL(trainTypeID: trainTypeId))
+        return try USTCAcademic.parseScores(data)
     }
 
     // MARK: - Schedule Table (POST)

@@ -134,8 +134,9 @@ read. Complete cache replacement and export still require complete results.
 
 Young subscriptions and organizer follows retain confirmed settings on failed
 writes. Notifications support unread filtering and refresh after marking a
-reminder read. Activity-time calendars report interval conflicts separately from
-registration windows. Private lists clear when the account changes.
+reminder read. Activity-time calendars compare only server-provided known occupied
+intervals, separately from registration windows; unknown times and broad activity
+windows do not establish availability. Private lists clear when the account changes.
 Public Young week/month views use Sunday-first start-day grouping; the day view
 also retains continuing events. Source signup-list membership is distinct from
 registration status, and official signup remains the primary action.
@@ -206,3 +207,16 @@ not this repository's product documentation.
 preferences, reminder recovery, publication filters and source navigation.
 `CatalogParityJourneyTests` and `ParityNavigationJourneyTests` cover historical
 catalog presentation, calendar modes and exports, sharing and guide handoff.
+
+The same CI UI run exports its named `after-*` PNG attachments into
+`ios-server-screenshots-<run-id>`. Download the artifact from the Run Tests job
+summary, extract it, and open `index.html` to browse by feature. Original PNG
+bytes, including EXIF metadata, remain unchanged; the report records each
+capture's test, device, attachment name and hash. The readable
+[`required capture list`](../scripts/server_screenshot_coverage.json) covers 93
+current iPhone states, including the existing English and Chinese journeys.
+Missing captures or failed exports fail CI while preserving the partial gallery
+and its missing-capture report. The UI test outcome is reported separately.
+This is fixture evidence from the existing iPhone suite; it does not establish
+all-screen, all-locale, iPad or production-account coverage. Fastlane snapshots
+continue in their existing workflow.
