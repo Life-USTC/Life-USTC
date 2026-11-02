@@ -19,6 +19,15 @@ GENERATED_SUFFIX = re.compile(
 )
 
 
+def coverage_for_device(coverage, device_family):
+    """Match the existing journey capture conventions for each device family."""
+    if device_family == "iPhone":
+        return coverage
+    return [{**group, "required": [
+        name.removesuffix("-iPhone") + "-iPad" for name in group["required"]
+    ]} for group in coverage]
+
+
 def collect_screenshots(attachments, output, coverage):
     """Keep every named PNG and its test/device provenance, including duplicates."""
     manifest_path = attachments / "manifest.json"
@@ -64,7 +73,7 @@ def collect_screenshots(attachments, output, coverage):
 
 
 def write_gallery(output, coverage, screenshots, attachment_count, errors,
-                  ui_outcome, run_url, revision):
+                  ui_outcome, run_url, revision, device_family="iPhone"):
     required = [name for group in coverage for name in group["required"]]
     observed = {item["name"] for item in screenshots}
     missing = [name for name in required if name not in observed]
@@ -72,6 +81,7 @@ def write_gallery(output, coverage, screenshots, attachment_count, errors,
     report = {
         "status": "complete" if complete else "incomplete",
         "ui_test_outcome": ui_outcome,
+        "device_family": device_family,
         "run_url": run_url,
         "revision": revision,
         "attachment_count": attachment_count,
@@ -94,10 +104,10 @@ body{font:16px system-ui,sans-serif;line-height:1.5;margin:0 auto;padding:24px;m
 a{color:#1556a0}nav{display:flex;flex-wrap:wrap;gap:16px}.status{padding:16px;border:2px solid;border-radius:8px}.complete{border-color:#23763b;background:#edf8ef}.incomplete{border-color:#b42318;background:#fff0ee}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}figure{margin:0;padding:16px;background:white;border:1px solid #ccd1d8;border-radius:8px;overflow-wrap:anywhere}figure img{display:block;max-width:100%;max-height:720px;width:auto;height:auto;margin:auto;image-orientation:from-image}figcaption{margin-top:12px}details{font-size:13px}dt{font-weight:600}dd{margin:0 0 8px}code{overflow-wrap:anywhere}section{margin-top:32px}
 </style><h1>Server feature screenshots</h1>
-<p>Named captures from the existing iPhone fixture UI journeys. Open an image to view its original PNG.</p>"""
+<p>Named captures from the native fixture UI journeys. Open an image to view its original PNG.</p>"""
     ]
     parts.append(f'<div class="status {report["status"]}"><strong>{status}: {count}</strong>'
-                 f'<br>UI test step: {escape(ui_outcome)}. Exported {len(screenshots)} named PNGs'
+                 f'<br>Device family: {escape(device_family)}. UI test step: {escape(ui_outcome)}. Exported {len(screenshots)} named PNGs'
                  f' from {attachment_count} attachments.</div>')
     if run_url:
         parts.append(f'<p><a href="{escape(run_url, quote=True)}">Workflow run</a></p>')
@@ -144,7 +154,7 @@ a{color:#1556a0}nav{display:flex;flex-wrap:wrap;gap:16px}.status{padding:16px;bo
     parts.append('<p><a href="report.json">Coverage and provenance JSON</a></p></html>')
     (output / "index.html").write_text("\n".join(parts) + "\n")
     summary = ["## Server feature screenshots", "", f"**{status}: {count}.**",
-               f"UI test step: `{ui_outcome}`. Exported {len(screenshots)} named PNGs.", "",
+               f"Device family: `{device_family}`. UI test step: `{ui_outcome}`. Exported {len(screenshots)} named PNGs.", "",
                "Download the artifact, extract it, and open `index.html`. PNG bytes and metadata are unchanged."]
     if missing:
         summary += ["", "Missing required captures:", ""] + [f"- `{name}`" for name in missing]
@@ -162,10 +172,11 @@ def main(argv=None):
                         default=Path(__file__).with_name("server_screenshot_coverage.json"))
     parser.add_argument("--ui-outcome", default="unknown",
                         choices=["success", "failure", "cancelled", "skipped", "unknown"])
+    parser.add_argument("--device-family", choices=["iPhone", "iPad"], default="iPhone")
     parser.add_argument("--run-url", default="")
     parser.add_argument("--revision", default="")
     args = parser.parse_args(argv)
-    coverage = json.loads(args.coverage.read_text())
+    coverage = coverage_for_device(json.loads(args.coverage.read_text()), args.device_family)
     args.output.mkdir(parents=True, exist_ok=True)
     screenshots, attachment_count, errors = [], 0, []
     with tempfile.TemporaryDirectory(prefix="server-screenshots-") as temporary:
@@ -185,7 +196,7 @@ def main(argv=None):
         except (OSError, ValueError, KeyError) as error:
             errors.append(str(error))
     report = write_gallery(args.output, coverage, screenshots, attachment_count, errors,
-                           args.ui_outcome, args.run_url, args.revision)
+                           args.ui_outcome, args.run_url, args.revision, args.device_family)
     print(f'{report["status"]}: {report["matched_required_count"]}/{report["required_count"]}'
           f' required captures; {report["screenshot_count"]} PNGs')
     return 0 if report["status"] == "complete" else 1
