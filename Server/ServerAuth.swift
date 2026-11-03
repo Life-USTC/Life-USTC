@@ -20,7 +20,7 @@ final class ServerAuth: NSObject, ASWebAuthenticationPresentationContextProvidin
 {
     static let shared = ServerAuth()
 
-    static let clientID = "life-ustc-ios"
+    nonisolated static let clientID = "life-ustc-ios"
     static let redirectURI = "dev.tiankaima.life-ustc://auth/callback"
     static let callbackScheme = "dev.tiankaima.life-ustc"
     static let scopes = [
