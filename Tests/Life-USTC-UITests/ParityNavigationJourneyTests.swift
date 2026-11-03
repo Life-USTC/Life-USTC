@@ -31,7 +31,7 @@ final class ParityNavigationJourneyTests: XCTestCase {
     @MainActor
     func testWeekAgendaTodayAndSemesterUseVisibleDateRanges() async throws {
         app.launch()
-        await open("home_calendar")
+        try await open("home_calendar")
         waitUntil { self.fixture.requests.contains { $0.path == "/api/workspace/calendar/events" } }
         let first = try XCTUnwrap(fixture.requests.last { $0.path == "/api/workspace/calendar/events" })
         let formatter = DateFormatter()
@@ -49,15 +49,15 @@ final class ParityNavigationJourneyTests: XCTestCase {
             XCTAssertTrue(header.exists, "The week agenda retains all seven day headings")
         }
         let originalRange = app.staticTexts["calendar_range"].label
-        await open("Previous period")
+        try await open("Previous period")
         waitUntil { self.app.staticTexts["calendar_range"].label != originalRange }
-        await open("calendar_today")
+        try await open("calendar_today")
         waitUntil { self.app.staticTexts["calendar_range"].label == originalRange }
         let mode = app.segmentedControls["workspace_calendar_mode"]
         XCTAssertTrue(mode.buttons["Semester"].waitForExistence(timeout: 10))
         mode.buttons["Semester"].tap()
-        await open("calendar_semester")
-        await open("Spring 2026")
+        try await open("calendar_semester")
+        try await open("Spring 2026")
         waitUntil {
             self.fixture.requests.contains {
                 $0.path == "/api/workspace/calendar/events"
@@ -67,20 +67,20 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
         XCTAssertEqual(app.staticTexts["calendar_range"].label, "2026-02-01 – 2026-07-31")
         capture("SemesterCalendar")
-        await open("calendar_today")
+        try await open("calendar_today")
         waitUntil { self.app.staticTexts["calendar_range"].label != "2026-02-01 – 2026-07-31" }
     }
 
     @MainActor
     func testSectionCalendarCopyAndShareRetainPublicJWIdentity() async throws {
         app.launch()
-        await open("home_catalog")
-        await open("catalog_section_42")
-        await open("section_calendar_export")
+        try await open("home_catalog")
+        try await open("catalog_section_42")
+        try await open("section_calendar_export")
         XCTAssertTrue(app.navigationBars["Teaching Section Calendar"].waitForExistence(timeout: 10))
-        await open("section_calendar_copy")
+        try await open("section_calendar_copy")
         XCTAssertTrue(app.buttons["section_calendar_copy"].label.contains("Copied"))
-        await open("section_calendar_share")
+        try await open("section_calendar_share")
         assertShareSheet()
         capture("SectionCalendarShare")
         XCTAssertFalse(fixture.requests.contains { $0.method != "GET" })
@@ -89,20 +89,20 @@ final class ParityNavigationJourneyTests: XCTestCase {
     @MainActor
     func testCombinedCalendarSelectionAndCourseSharing() async throws {
         app.launch()
-        await open("home_subscriptions")
-        await open("subscriptions_calendar_export")
+        try await open("home_subscriptions")
+        try await open("subscriptions_calendar_export")
         XCTAssertFalse(app.buttons["section_calendar_copy"].exists)
         selectCalendarSection(7)
         selectCalendarSection(8)
-        await open("section_calendar_copy")
+        try await open("section_calendar_copy")
         XCTAssertTrue(app.buttons["section_calendar_copy"].label.contains("Copied"))
         capture("CombinedCalendar")
         back()
         back()
-        await open("home_catalog")
+        try await open("home_catalog")
         app.segmentedControls["catalog_kind"].buttons["Courses"].tap()
-        await open("catalog_course_1001")
-        await open("share_content")
+        try await open("catalog_course_1001")
+        try await open("share_content")
         assertShareSheet()
         capture("CourseShare")
     }
@@ -110,19 +110,19 @@ final class ParityNavigationJourneyTests: XCTestCase {
     @MainActor
     func testSectionHomeworkGuideCollapsesAndDoesNotRestrictTheTitle() async throws {
         app.launch()
-        await open("home_catalog")
-        await open("catalog_section_42")
-        await open("Shared Homework")
-        await open("section.homeworks.create")
-        await open("homework.editor.guide")
+        try await open("home_catalog")
+        try await open("catalog_section_42")
+        try await open("Shared Homework")
+        try await open("section.homeworks.create")
+        try await setHomeworkGuide(expanded: true)
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
         capture("HomeworkGuide")
-        await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: false)
         let title = app.textFields["homework.editor.title"]
         reveal(title)
         title.tap()
         title.typeText("Prepare a worked example")
-        await open("homework.editor.save")
+        try await open("homework.editor.save")
         waitUntil {
             self.fixture.requests.contains {
                 $0.method == "POST" && $0.path == "/api/community/section-homeworks"
@@ -131,12 +131,12 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
         let created = try XCTUnwrap(fixture.communityHomeworks.first { $0["title"] as? String == "Prepare a worked example" })
         let id = try XCTUnwrap(created["id"] as? String)
-        await open(app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@",
+        try await open(app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@",
                                              "section.homeworks.row.\(id)", "Homework actions")).firstMatch)
-        await open("Edit")
-        await open("homework.editor.guide")
+        try await open("Edit")
+        try await setHomeworkGuide(expanded: true)
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
-        await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: false)
         XCTAssertTrue(app.buttons["homework.editor.save"].exists)
     }
 
@@ -144,14 +144,14 @@ final class ParityNavigationJourneyTests: XCTestCase {
     func testUsageGuideOpensTheWebsiteWithoutNativeBearerCredentials() async throws {
         app.launch()
         selectAccount()
-        await open("Help and Guides")
+        try await open("Help and Guides")
         for path in ["usage/mobile", "usage/bot", "usage/mcp", "usage/cli", "guides/markdown-support", "community/comments/guide"] {
             let link = app.descendants(matching: .any).matching(identifier: "guide_\(path)").firstMatch
             reveal(link)
             XCTAssertTrue(link.exists)
         }
         capture("HelpGuides")
-        await open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
+        try await open(app.descendants(matching: .any).matching(identifier: "guide_usage/mobile").firstMatch)
         waitUntil(timeout: 30) { self.fixture.requests.contains { $0.path == "/usage/mobile" } }
         let request = try XCTUnwrap(fixture.requests.last { $0.path == "/usage/mobile" })
         XCTAssertNil(request.headers["authorization"])
@@ -206,19 +206,49 @@ final class ParityNavigationJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) async {
-        await open(app.buttons.matching(identifier: id).firstMatch, file: file, line: line)
+    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) async throws {
+        try await open(app.buttons.matching(identifier: id).firstMatch, file: file, line: line)
     }
 
     @MainActor
-    private func open(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) async {
+    private func open(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) async throws {
         _ = element.waitForExistence(timeout: 2)
         reveal(element)
-        XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing control: \(element)", file: file, line: line)
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: element)
-        let result = await XCTWaiter.fulfillment(of: [ready], timeout: 10)
-        XCTAssertEqual(result, .completed, file: file, line: line)
+        guard element.waitForExistence(timeout: 10) else {
+            XCTFail("Missing control: \(element)", file: file, line: line)
+            throw InteractionFailure.unavailableControl
+        }
+        try await waitFor(element, predicate: "enabled == true AND hittable == true", file: file, line: line)
         element.tap()
+    }
+
+    private enum InteractionFailure: Error {
+        case unavailableControl
+    }
+
+    @MainActor
+    private func waitFor(_ element: XCUIElement, predicate: String,
+                         file: StaticString = #filePath, line: UInt = #line) async throws {
+        let condition = NSPredicate(format: predicate)
+        // Accessibility snapshots can outlast the polling deadline even when ready.
+        if condition.evaluate(with: element) { return }
+        let expectation = XCTNSPredicateExpectation(predicate: condition, object: element)
+        guard await XCTWaiter.fulfillment(of: [expectation], timeout: 10) == .completed else {
+            XCTFail("Control did not satisfy \(predicate): \(element)", file: file, line: line)
+            throw InteractionFailure.unavailableControl
+        }
+    }
+
+    @MainActor
+    private func setHomeworkGuide(expanded: Bool, file: StaticString = #filePath, line: UInt = #line) async throws {
+        let guide = app.buttons["homework.editor.guide"]
+        reveal(guide)
+        try await waitFor(guide, predicate: "exists == true AND enabled == true AND hittable == true", file: file, line: line)
+        let label = guide.staticTexts["Homework writing guide"]
+        try await waitFor(label, predicate: "exists == true AND hittable == true", file: file, line: line)
+        label.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let explanation = app.staticTexts["These are suggestions and do not prevent saving."]
+        try await waitFor(explanation, predicate: expanded ? "exists == true" : "exists == false", file: file, line: line)
     }
 
     @MainActor

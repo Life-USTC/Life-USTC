@@ -197,7 +197,11 @@ final class CatalogParityJourneyTests: XCTestCase {
         XCTAssertEqual(section.value as? String, "MATH101.01")
         section.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
         section.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "MATH101.01".count))
-        XCTAssertTrue(["", section.placeholderValue].contains(section.value as? String))
+        let cleared = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let value = section.value as? String else { return false }
+            return value.isEmpty || value == section.placeholderValue
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [cleared], timeout: 5), .completed)
         section.typeText("MISSING")
         XCTAssertEqual(section.value as? String, "MISSING")
         open("public_schedule_apply")
