@@ -310,7 +310,11 @@ final class WorkspaceJourneyTests: XCTestCase {
         let value = enabled ? "1" : "0"
         if row.value as? String != value {
             let control = row.switches.firstMatch
-            (control.exists ? control : row).tap()
+            let target = control.exists ? control : row
+            let ready = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: target)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+            target.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         }
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: row)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)

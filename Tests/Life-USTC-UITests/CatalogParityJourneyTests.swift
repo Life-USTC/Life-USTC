@@ -139,14 +139,32 @@ final class CatalogParityJourneyTests: XCTestCase {
         app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
         app.launch()
         open("home_catalog")
-        open("catalog_public_schedule")
+        openPublicSchedule()
         XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
         open("public_schedule_filters")
         type("MATH101.01", into: "public_schedule_section_code")
         type("T003", into: "public_schedule_teacher_code")
         type("2201", into: "public_schedule_room_code")
-        open("public_schedule_weekday")
+        // The first touch while editing may dismiss the keyboard. Keep this
+        // interaction as crash coverage, then select the intended weekday.
         open("Monday")
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 5))
+        let keyboard = app.keyboards.firstMatch
+        let done = app.buttons["public_schedule_keyboard_done"]
+        let settledKeyboard = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            if done.exists && done.isHittable { return true }
+            return !keyboard.exists || !keyboard.frame.intersects(self.app.frame) || keyboard.frame.height == 0
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [settledKeyboard], timeout: 10), .completed)
+        if done.exists && done.isHittable { done.tap() }
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !keyboard.exists || !keyboard.frame.intersects(self.app.frame) || keyboard.frame.height == 0
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+        let monday = app.buttons["Monday"]
+        if !monday.isSelected { open("Monday") }
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: monday)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
         open("public_schedule_apply")
         waitForRequest("/api/catalog/schedules", query: [
             "sectionCode": "MATH101.01", "teacherCode": "T003", "roomJwId": "2201", "weekday": "1",
@@ -204,10 +222,22 @@ final class CatalogParityJourneyTests: XCTestCase {
         open("home_catalog")
         XCTAssertTrue(app.buttons["catalog_section_42"].waitForExistence(timeout: 10))
         publicScheduleCapture("Catalog", language: language)
-        open("catalog_public_schedule")
+        openPublicSchedule()
         XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
         waitForRequest("/api/catalog/schedules", query: ["page": "1", "pageSize": "30", "locale": language == "en" ? "en-us" : "zh-cn"])
         publicScheduleCapture("Results", language: language)
+    }
+
+    @MainActor
+    private func openPublicSchedule() {
+        let link = app.buttons["catalog_public_schedule"]
+        reveal(link)
+        let label = link.staticTexts.firstMatch
+        XCTAssertTrue(label.waitForExistence(timeout: 10))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: label)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
+        label.tap()
+        XCTAssertTrue(app.buttons["public_schedule_filters"].waitForExistence(timeout: 10))
     }
 
     @MainActor
