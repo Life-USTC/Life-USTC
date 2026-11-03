@@ -94,11 +94,18 @@ final class CampusJourneyTests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 10))
         field.tap()
         field.typeText("jiaowu")
+        field.typeText("\n")
+        waitUntil { !self.app.keyboards.firstMatch.exists }
+        XCTAssertEqual(field.value as? String, "jiaowu")
         assertText("Academic Portal")
         XCTAssertFalse(app.staticTexts["University Library"].exists)
+        XCTAssertEqual(requestCount("GET", "/api/workspace/link-pins"), 1)
         XCTAssertEqual(requestCount("POST", "/api/workspace/link-pins/batch"), 0)
         open("Retry")
+        waitUntil { self.requestCount("GET", "/api/workspace/link-pins") == 2 }
         XCTAssertTrue(app.buttons.matching(identifier: "campus_pin_academic").firstMatch.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["Workspace fixture unavailable"].exists)
+        XCTAssertEqual(requestCount("POST", "/api/workspace/link-pins/batch"), 0)
     }
 
     @MainActor
