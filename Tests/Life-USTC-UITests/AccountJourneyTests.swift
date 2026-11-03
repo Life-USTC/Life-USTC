@@ -120,8 +120,9 @@ final class AccountJourneyTests: XCTestCase {
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        waitUntil { !browser.exists }
-        XCTAssertTrue(app.navigationBars["Account Management"].waitForExistence(timeout: 10))
+        let management = app.navigationBars["Account Management"]
+        waitUntil { management.exists && management.isHittable && !browser.isHittable }
+        XCTAssertTrue(management.waitForExistence(timeout: 10))
     }
 
     @MainActor

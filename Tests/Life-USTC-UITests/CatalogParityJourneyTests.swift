@@ -194,12 +194,10 @@ final class CatalogParityJourneyTests: XCTestCase {
         XCTAssertFalse(more.exists)
         open("public_schedule_filters")
         let section = app.textFields["public_schedule_section_code"]
-        section.tap()
         XCTAssertEqual(section.value as? String, "MATH101.01")
-        section.press(forDuration: 1)
-        let selectAll = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Select All")).firstMatch
-        XCTAssertTrue(selectAll.waitForExistence(timeout: 5))
-        selectAll.tap()
+        section.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+        section.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "MATH101.01".count))
+        XCTAssertTrue(["", section.placeholderValue].contains(section.value as? String))
         section.typeText("MISSING")
         XCTAssertEqual(section.value as? String, "MISSING")
         open("public_schedule_apply")
