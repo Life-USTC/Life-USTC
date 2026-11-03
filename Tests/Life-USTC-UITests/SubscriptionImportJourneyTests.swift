@@ -242,9 +242,10 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         }
         reveal(control)
         try await waitFor(control, predicate: "enabled == true AND hittable == true", file: file, line: line)
-        // The labelled row activates its text, while the native switch's center
-        // can miss the selected thumb. Use the thumb inside the switch bounds.
-        control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)).tap()
+        // Move the selected thumb to the off position within the native switch.
+        let selectedThumb = control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+        let offPosition = control.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
+        selectedThumb.press(forDuration: 0.05, thenDragTo: offPosition)
         try await waitFor(field, predicate: "value == '0'", file: file, line: line)
     }
 

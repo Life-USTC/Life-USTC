@@ -121,7 +121,10 @@ final class AccountJourneyTests: XCTestCase {
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let management = app.navigationBars["Account Management"]
-        waitUntil { management.exists && self.app.buttons["account_web_profile"].isHittable && !browser.isHittable }
+        waitUntil {
+            management.exists && self.app.buttons["account_web_profile"].isHittable
+                && (!browser.exists || !browser.isHittable)
+        }
         XCTAssertTrue(management.waitForExistence(timeout: 10))
     }
 
