@@ -305,6 +305,19 @@ final class WorkspaceJourneyTests: XCTestCase {
 
     @MainActor
     private func setDueDate(_ enabled: Bool) {
+        if app.keyboards.firstMatch.exists {
+            let title = app.textFields["todo.title"]
+            let notes = app.descendants(matching: .any).matching(identifier: "todo.notes").firstMatch
+            let savedTitle = title.value as? String
+            let savedNotes = notes.value as? String
+            title.tap()
+            title.typeText("\n")
+            let dismissed = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
+            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
+            XCTAssertEqual(title.value as? String, savedTitle)
+            XCTAssertEqual(notes.value as? String, savedNotes)
+        }
         let row = app.switches["todo.hasDueDate"]
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         let value = enabled ? "1" : "0"
