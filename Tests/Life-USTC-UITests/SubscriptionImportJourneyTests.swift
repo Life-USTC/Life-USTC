@@ -47,7 +47,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     func testFailedAppendPreservesSelectionAndAllowsExplicitRetry() async throws {
         launch(language: "en", locale: "en_US")
         try await open("home_subscriptions")
-        try await open("subscriptions_import_codes")
+        try await openImport()
         try await chooseSemester("Spring 2026")
         try await setCodes("PHYS101")
         try await open("subscription_import_preview")
@@ -76,7 +76,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     func testQueryRetryAndChangedSemesterOrCodesRequireFreshPreview() async throws {
         launch(language: "en", locale: "en_US")
         try await open("home_subscriptions")
-        try await open("subscriptions_import_codes")
+        try await openImport()
         XCTAssertFalse(app.buttons["subscription_import_preview"].isEnabled)
         try await chooseSemester("Spring 2026")
         try await setCodes("PHYS101")
@@ -118,7 +118,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["subscription_42"].waitForExistence(timeout: 10))
         XCTAssertEqual(fixture.subscriptionKinds, [42: "regular", 43: "teaching_assistant", 44: "regular"])
         capture("Subscriptions", language: language)
-        try await open("subscriptions_import_codes")
+        try await openImport()
         try await chooseSemester(language == "en" ? "Spring 2026" : "2026年春季学期")
         let codes = "PHYS101 PHYS101.01 PHYS101.09"
         try await setCodes(codes)
@@ -183,6 +183,20 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         XCUIDevice.shared.orientation = UIDevice.current.userInterfaceIdiom == .pad ? .landscapeLeft : .portrait
         app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "UI_TEST_SKIP_ONBOARDING"]
         app.launch()
+    }
+
+    @MainActor
+    private func openImport() async throws {
+        let semester = app.buttons["subscription_import_semester"]
+        for _ in 0..<2 {
+            try await open("subscriptions_import_codes")
+            if semester.waitForExistence(timeout: 10) { return }
+            // Repeat navigation only while its source remains visible.
+            guard !app.textViews["subscription_import_input"].exists
+                && app.buttons["subscriptions_import_codes"].isHittable else { break }
+        }
+        XCTFail("Course-code import should open before choosing a semester")
+        throw InteractionFailure.unavailableControl
     }
 
     @MainActor

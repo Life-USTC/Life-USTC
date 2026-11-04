@@ -296,11 +296,11 @@ final class WorkspaceJourneyTests: XCTestCase {
             selectAll.tap()
         }
         field.typeText(new.isEmpty ? XCUIKeyboardKey.delete.rawValue : new)
-        if new.isEmpty {
-            XCTAssertTrue(["", "Notes"].contains(field.value as? String ?? "<missing>"))
-        } else {
-            XCTAssertEqual(field.value as? String, new)
-        }
+        let updated = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let value = field.value as? String else { return false }
+            return new.isEmpty ? ["", "Notes"].contains(value) : value == new
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 10), .completed)
     }
 
     @MainActor
