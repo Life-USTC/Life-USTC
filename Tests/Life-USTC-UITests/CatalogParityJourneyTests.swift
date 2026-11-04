@@ -183,8 +183,37 @@ final class CatalogParityJourneyTests: XCTestCase {
         let retry = app.buttons["public_schedule_retry"]
         XCTAssertTrue(retry.waitForExistence(timeout: 10))
         reveal(retry)
-        retry.tap()
-        waitForRequest("/api/catalog/schedules", query: ["page": "2", "sectionCode": "MATH101.01"])
+        // A partially visible row can be hittable at the bottom screen edge.
+        // Keep the tap inside the list and above the floating iPhone tab bar.
+        let list = app.collectionViews.firstMatch
+        func retryViewport() -> CGRect {
+            var viewport = list.frame.intersection(app.frame.insetBy(dx: 0, dy: 40))
+            if app.tabBars.firstMatch.exists {
+                viewport.size.height = max(0, min(viewport.maxY, app.tabBars.firstMatch.frame.minY - 8) - viewport.minY)
+            }
+            return viewport
+        }
+        for _ in 0..<8 {
+            if retry.exists && retry.isHittable
+                && retryViewport().contains(retry.frame) { break }
+            list.swipeUp()
+        }
+        XCTAssertTrue(retry.isHittable)
+        XCTAssertTrue(retryViewport().contains(retry.frame))
+        let failedRequest = try XCTUnwrap(fixture.requests.last { $0.path == "/api/catalog/schedules" })
+        let previousRequests = fixture.requests.filter { $0.path == "/api/catalog/schedules" }.count
+        retry.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let retried = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.fixture.requests.filter { $0.path == "/api/catalog/schedules" }.count == previousRequests + 1
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [retried], timeout: 10), .completed)
+        let retryRequest = try XCTUnwrap(fixture.requests.last { $0.path == "/api/catalog/schedules" })
+        XCTAssertEqual(retryRequest.method, "GET")
+        XCTAssertEqual(retryRequest.query, failedRequest.query)
+        XCTAssertEqual(retryRequest.query["page"], "2")
+        XCTAssertEqual(retryRequest.query["sectionCode"], "MATH101.01")
+        let recovered = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: retry)
+        XCTAssertEqual(XCTWaiter.wait(for: [recovered], timeout: 10), .completed)
         let last = app.buttons["public_schedule_1031_section"]
         for _ in 0..<8 {
             if last.exists && last.isHittable { break }

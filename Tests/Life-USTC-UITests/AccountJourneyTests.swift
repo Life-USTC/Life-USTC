@@ -50,7 +50,7 @@ final class AccountJourneyTests: XCTestCase {
             waitForRequest("GET", path, timeout: 45)
             let request = try XCTUnwrap(fixture.requests.last { $0.path == path })
             XCTAssertNil(request.headers["authorization"], "Website must authenticate its own session")
-            closeWebsite()
+            closeWebsite(returningTo: "account_web_\(id)")
             waitUntil { self.requestCount("GET", "/api/account/profile") > previousReads }
         }
         back()
@@ -114,15 +114,29 @@ final class AccountJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func closeWebsite() {
+    private func closeWebsite(returningTo pageID: String) {
         let done = app.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
         XCTAssertTrue(done.waitForExistence(timeout: 10))
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
-        done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        for _ in 0..<2 {
+            let ready = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
+            guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+                XCTFail("The website close control should be actionable")
+                return
+            }
+            done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                !browser.exists || !browser.isHittable
+            }, object: nil)
+            if XCTWaiter.wait(for: [dismissed], timeout: 10) == .completed { break }
+            // Retry only while the browser and its close control remain actionable.
+            guard browser.exists && browser.isHittable && done.exists && done.isHittable else { break }
+        }
         let management = app.navigationBars["Account Management"]
         waitUntil {
-            management.exists && self.app.buttons["account_web_profile"].isHittable
+            management.exists && self.app.buttons[pageID].isHittable
                 && (!browser.exists || !browser.isHittable)
         }
         XCTAssertTrue(management.waitForExistence(timeout: 10))
