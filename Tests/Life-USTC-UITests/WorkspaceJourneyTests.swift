@@ -322,12 +322,15 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         let value = enabled ? "1" : "0"
         if row.value as? String != value {
-            let control = row.switches.firstMatch
-            let target = control.exists ? control : row
+            let target = row.switches.firstMatch
+            XCTAssertTrue(target.waitForExistence(timeout: 5), "Missing native Due Date switch")
             let ready = XCTNSPredicateExpectation(
                 predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: target)
             XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
-            target.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            // Move the thumb once from its current position to the requested state.
+            let thumb = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.2 : 0.8, dy: 0.5))
+            let destination = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.8 : 0.2, dy: 0.5))
+            thumb.press(forDuration: 0.05, thenDragTo: destination)
         }
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: row)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)
