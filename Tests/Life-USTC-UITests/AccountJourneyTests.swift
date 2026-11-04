@@ -149,8 +149,10 @@ final class AccountJourneyTests: XCTestCase {
             guard browser.exists && browser.isHittable && done.exists && done.isHittable else { break }
         }
         let management = app.navigationBars["Account Management"]
+        let page = app.buttons[pageID]
         waitUntil {
-            management.exists && self.app.buttons[pageID].isHittable
+            management.exists && page.exists && page.isEnabled
+                && !page.frame.isEmpty && page.frame.intersects(self.app.frame)
                 && (!browser.exists || !browser.isHittable)
         }
         XCTAssertTrue(management.waitForExistence(timeout: 10))
