@@ -62,7 +62,21 @@ final class AccountJourneyTests: XCTestCase {
         launchAccount()
         try open("settings_account_management")
         try open("account_app_activity")
+        let activityPath = "/api/account/client-activity"
+        let entered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.requestCount("GET", activityPath) > 0
+        }, object: nil)
+        if XCTWaiter.wait(for: [entered], timeout: 10) != .completed {
+            // Navigation can leave the source page mounted after an unapplied tap.
+            // Repeat only before any activity read and while still on that page.
+            if requestCount("GET", activityPath) == 0
+                && app.navigationBars["Account Management"].exists
+                && app.buttons["account_app_activity"].isHittable {
+                try open("account_app_activity")
+            }
+        }
         waitForRequest("GET", "/api/account/client-activity", query: ["limit": "30"])
+        XCTAssertTrue(app.navigationBars["This App's Activity"].waitForExistence(timeout: 10))
         assertText("Comment posted")
         assertText("Succeeded")
         fixture.failNextRequest(method: "GET", path: "/api/account/client-activity")
