@@ -141,10 +141,9 @@ final class CampusJourneyTests: XCTestCase {
             XCTFail("Unavailable native departed-trips switch")
             return
         }
-        // Use the same single native thumb gesture as Todo and import switches.
+        // Keep the input stationary: a horizontal drag can navigate back from this pushed page.
         let thumb = control.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
-        let destination = control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
-        thumb.press(forDuration: 0.05, thenDragTo: destination)
+        thumb.tap()
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '1'"), object: toggle)
         guard XCTWaiter.wait(for: [changed], timeout: 5) == .completed else {
             XCTFail("Departed-trips switch did not turn on")
