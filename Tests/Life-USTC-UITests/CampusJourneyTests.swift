@@ -122,9 +122,34 @@ final class CampusJourneyTests: XCTestCase {
             if toggle.exists && toggle.isHittable { break }
             app.swipeUp()
         }
-        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        guard toggle.waitForExistence(timeout: 10) else {
+            XCTFail("Missing departed-trips switch")
+            return
+        }
         let control = toggle.switches.firstMatch
-        (control.exists ? control : toggle).tap()
+        guard control.waitForExistence(timeout: 5) else {
+            XCTFail("Missing native departed-trips switch")
+            return
+        }
+        guard control.value as? String == "0" else {
+            XCTFail("Expected departed trips to start hidden")
+            return
+        }
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: control)
+        guard XCTWaiter.wait(for: [ready], timeout: 5) == .completed else {
+            XCTFail("Unavailable native departed-trips switch")
+            return
+        }
+        // Use the same single native thumb gesture as Todo and import switches.
+        let thumb = control.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
+        let destination = control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+        thumb.press(forDuration: 0.05, thenDragTo: destination)
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '1'"), object: toggle)
+        guard XCTWaiter.wait(for: [changed], timeout: 5) == .completed else {
+            XCTFail("Departed-trips switch did not turn on")
+            return
+        }
         XCTAssertEqual(requestCount("POST", "/api/workspace/bus-preferences"), 0)
         fixture.failNextRequest(method: "POST", path: "/api/workspace/bus-preferences")
         open("bus_save_preferences")
