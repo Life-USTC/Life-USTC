@@ -1,6 +1,6 @@
 # Catalog identity presentation
 
-This is the native implementation contract for [UI task #144](https://github.com/Life-USTC/Life-USTC/issues/144), aligned with the server's model-first prototype. Field order is shared across platforms; native controls and list navigation remain native.
+This is the native implementation contract for [UI task #144](https://github.com/Life-USTC/Life-USTC/issues/144), aligned with the [server's model-first prototype](https://github.com/Life-USTC/server/issues/1472). Field order is shared across platforms; native controls and list navigation remain native.
 
 | Model | Identity | Supporting context | State/actions |
 | --- | --- | --- | --- |
