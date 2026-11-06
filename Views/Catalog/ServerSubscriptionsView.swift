@@ -167,16 +167,16 @@ struct ServerSubscriptionsView: View {
                                 ServerSectionDetailView(jwId: section.jwId)
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
-                                    Text(section.code).font(.caption.monospaced()).foregroundStyle(.secondary)
+                                    ServerSectionIdentityView(
+                                        courseName: section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                                        teachers: (section.teachers ?? []).map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                                        code: section.code,
+                                        semester: section.semester.map { ServerCatalogDisplay.semesterName($0) }
+                                    )
                                     if section.retiredAt != nil {
                                         Label("Historical section", systemImage: "clock.arrow.circlepath")
                                             .font(.caption).foregroundStyle(.secondary)
                                             .accessibilityIdentifier("subscription_historical_\(section.jwId)")
-                                    }
-                                    if let teachers = section.teachers, !teachers.isEmpty {
-                                        Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
-                                            .font(.caption).foregroundStyle(.secondary)
                                     }
                                 }
                             }

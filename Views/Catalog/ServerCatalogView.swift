@@ -7,7 +7,7 @@ enum ServerCatalogKind: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .sections: String(localized: "Teaching Sections")
+        case .sections: String(localized: "Sections")
         case .courses: String(localized: "Courses")
         case .teachers: String(localized: "Teachers")
         }
@@ -214,10 +214,10 @@ struct ServerCatalogView: View {
                         NavigationLink {
                             ServerCourseDetailView(jwId: course.jwId)
                         } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(ServerCatalogDisplay.name(course.nameCn, course.nameEn))
-                                Text(course.code).font(.caption).foregroundStyle(.secondary)
-                            }
+                            ServerCourseIdentityView(
+                                code: course.code,
+                                name: ServerCatalogDisplay.name(course.nameCn, course.nameEn)
+                            )
                         }
                         .accessibilityIdentifier("catalog_course_\(course.jwId)")
                     }
@@ -304,17 +304,14 @@ struct ServerSectionRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
-            Text(section.code).font(.caption).foregroundStyle(.secondary)
-            if let semester = section.semester {
-                Text(ServerCatalogDisplay.semesterName(semester)).font(.caption).foregroundStyle(.secondary)
-            }
+            ServerSectionIdentityView(
+                courseName: section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                teachers: (section.teachers ?? []).map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                code: section.code,
+                semester: section.semester.map { ServerCatalogDisplay.semesterName($0) }
+            )
             if section.retiredAt != nil {
                 Label("Historical section", systemImage: "clock.arrow.circlepath")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            if let teachers = section.teachers, !teachers.isEmpty {
-                Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
