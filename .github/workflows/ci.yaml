@@ -72,12 +72,20 @@ jobs:
           brew install xcodegen
           xcodegen --spec project.yml
 
+      - name: Create native test simulator
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          TEST_DEVICE_ID=$(xcrun simctl create "Life-USTC CI $TEST_DEVICE" "$TEST_DEVICE")
+          echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
+          xcrun simctl list devices available
+
       - name: Run Unit Tests
         run: |
           xcodebuild test \
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-Tests \
-            -destination "platform=iOS Simulator,name=$TEST_DEVICE" \
+            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/unit.xcresult \
             -quiet
@@ -88,7 +96,7 @@ jobs:
           xcodebuild test \
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-UITests \
-            -destination "platform=iOS Simulator,name=$TEST_DEVICE" \
+            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
             -only-testing:Life-USTC-UITests/E2ETests \
             -only-testing:Life-USTC-UITests/ServerJourneyTests \
             -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
@@ -149,6 +157,13 @@ jobs:
           else
             printf '\nArtifact upload failed; no download link is available.\n' >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      - name: Dispose native test simulator
+        if: always() && env.TEST_DEVICE_ID != ''
+        run: |
+          # The test runner may already have shut it down; deletion must succeed.
+          xcrun simctl shutdown "$TEST_DEVICE_ID" || true
+          xcrun simctl delete "$TEST_DEVICE_ID"
 
   # Preserve the required branch-protection check while gating both matrix jobs.
   test:
