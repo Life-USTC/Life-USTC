@@ -136,12 +136,16 @@ struct ServerSectionDetailView: View {
 
             if let section = model.section {
                 Section {
+                    ServerSectionIdentityView(
+                        courseName: section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                        teachers: (section.teachers ?? []).map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                        code: section.code,
+                        semester: section.semester.map { ServerCatalogDisplay.semesterName($0) },
+                        prominence: .detail
+                    )
                     if let course = section.course {
-                        Text(ServerCatalogDisplay.name(course.nameCn, course.nameEn)).font(.title2.bold())
                         NavigationLink("Course details") { ServerCourseDetailView(jwId: course.jwId) }
                     }
-                    LabeledContent("Section code", value: section.code)
-                    if let semester = section.semester { LabeledContent("Semester", value: ServerCatalogDisplay.semesterName(semester)) }
                     if section.retiredAt != nil {
                         Label("Historical section", systemImage: "clock.arrow.circlepath")
                             .foregroundStyle(.secondary)
@@ -359,8 +363,11 @@ struct ServerCourseDetailView: View {
             }
             if let course {
                 Section {
-                    Text(ServerCatalogDisplay.name(course.nameCn, course.nameEn)).font(.title2.bold())
-                    LabeledContent("Course code", value: course.code)
+                    ServerCourseIdentityView(
+                        code: course.code,
+                        name: ServerCatalogDisplay.name(course.nameCn, course.nameEn),
+                        prominence: .detail
+                    )
                     if let category = course.category {
                         LabeledContent("Category", value: ServerCatalogDisplay.name(category.nameCn, category.nameEn))
                     }
@@ -378,20 +385,7 @@ struct ServerCourseDetailView: View {
                         NavigationLink {
                             ServerSectionDetailView(jwId: section.jwId)
                         } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(section.code)
-                                if section.retiredAt != nil {
-                                    Label("Historical section", systemImage: "clock.arrow.circlepath")
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                                if let semester = section.semester {
-                                    Text(ServerCatalogDisplay.semesterName(semester)).font(.caption).foregroundStyle(.secondary)
-                                }
-                                if let teachers = section.teachers {
-                                    Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
+                            ServerSectionRow(section: section)
                         }
                         .accessibilityIdentifier("catalog_section_\(section.jwId)")
                     }
