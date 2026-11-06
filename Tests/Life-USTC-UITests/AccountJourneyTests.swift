@@ -129,10 +129,10 @@ final class AccountJourneyTests: XCTestCase {
 
     @MainActor
     private func closeWebsite(returningTo pageID: String) {
+        let done = app.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
+        XCTAssertTrue(done.waitForExistence(timeout: 10))
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
-        let done = browser.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).element
-        XCTAssertTrue(done.waitForExistence(timeout: 10))
         for _ in 0..<2 {
             let ready = XCTNSPredicateExpectation(
                 predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
