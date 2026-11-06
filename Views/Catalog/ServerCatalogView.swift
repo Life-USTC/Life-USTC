@@ -7,7 +7,7 @@ enum ServerCatalogKind: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .sections: String(localized: "Teaching Sections")
+        case .sections: String(localized: "Sections")
         case .courses: String(localized: "Courses")
         case .teachers: String(localized: "Teachers")
         }
