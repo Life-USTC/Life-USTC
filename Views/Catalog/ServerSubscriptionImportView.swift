@@ -105,16 +105,7 @@ struct ServerSubscriptionImportView: View {
                     }
                 )) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) } ?? section.code)
-                            .font(.headline)
-                        Text(section.code).font(.caption.monospaced()).foregroundStyle(.secondary)
-                        if let semester = section.semester {
-                            Text(ServerCatalogDisplay.semesterName(semester)).font(.caption).foregroundStyle(.secondary)
-                        }
-                        if let teachers = section.teachers, !teachers.isEmpty {
-                            Text(teachers.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) }.joined(separator: ", "))
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
+                        ServerSectionRow(section: section)
                         if let kind = model.subscribedKinds[section.id] {
                             Text("Already subscribed · \(kind.title)").font(.caption).foregroundStyle(.secondary)
                         }
