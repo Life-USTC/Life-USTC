@@ -92,15 +92,13 @@ struct ServerPublicScheduleView: View {
 
     private func scheduleLabel(_ schedule: ServerScheduleEntry) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            if let course = schedule.section?.course {
-                Text(ServerCatalogDisplay.name(course.nameCn, course.nameEn)).font(.headline)
-            }
             if let section = schedule.section {
-                Text(section.code).font(.caption).foregroundStyle(.secondary)
-                if let semester = section.semester {
-                    Text(ServerCatalogDisplay.semesterName(semester, locale: locale))
-                        .font(.caption).foregroundStyle(.secondary)
-                }
+                ServerSectionIdentityView(
+                    courseName: section.course.map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                    teachers: (schedule.teachers ?? []).map { ServerCatalogDisplay.name($0.nameCn, $0.nameEn) },
+                    code: section.code,
+                    semester: section.semester.map { ServerCatalogDisplay.semesterName($0, locale: locale) }
+                )
             }
             Text(schedule.date.map { String($0.prefix(10)) } ?? String(localized: "Date unavailable"))
             Text("\(ServerCatalogDisplay.time(schedule.startTime)) – \(ServerCatalogDisplay.time(schedule.endTime))")
