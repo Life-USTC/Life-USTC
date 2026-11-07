@@ -44,13 +44,15 @@ final class AccountJourneyTests: XCTestCase {
                      ("accounts", "/account/settings/accounts"), ("security", "/account/settings/security"),
                      ("authorizations", "/account/settings/authorizations"), ("administration", "/admin"),
                      ("danger", "/account/settings/danger")]
+        let applicationFrame = app.frame
+        XCTAssertFalse(applicationFrame.isEmpty)
         for (id, path) in pages {
             let previousReads = requestCount("GET", "/api/account/profile")
             try open("account_web_\(id)")
             waitForRequest("GET", path, timeout: 45)
             let request = try XCTUnwrap(fixture.requests.last { $0.path == path })
             XCTAssertNil(request.headers["authorization"], "Website must authenticate its own session")
-            closeWebsite(returningTo: "account_web_\(id)")
+            closeWebsite(returningTo: "account_web_\(id)", applicationFrame: applicationFrame)
             waitUntil { self.requestCount("GET", "/api/account/profile") > previousReads }
         }
         back()
@@ -115,10 +117,10 @@ final class AccountJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func closeWebsite(returningTo pageID: String) {
-        let done = app.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
-        XCTAssertTrue(done.waitForExistence(timeout: 10))
+    private func closeWebsite(returningTo pageID: String, applicationFrame: CGRect) {
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
+        let done = browser.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
+        XCTAssertTrue(done.waitForExistence(timeout: 10))
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
@@ -131,7 +133,7 @@ final class AccountJourneyTests: XCTestCase {
         let page = app.buttons[pageID]
         waitUntil {
             management.exists && page.exists && page.isEnabled
-                && !page.frame.isEmpty && page.frame.intersects(self.app.frame)
+                && !page.frame.isEmpty && page.frame.intersects(applicationFrame)
                 && (!browser.exists || !browser.isHittable)
         }
         // The composite wait above already includes this exact presence check.
