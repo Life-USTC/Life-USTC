@@ -56,7 +56,9 @@ jobs:
           else
             device_type="iPhone 17"
           fi
-          TEST_DEVICE_ID=$(xcrun simctl create "Life-USTC visual $VISUAL_DEVICE $VISUAL_LOCALE" "$device_type")
+          owned_name="Life-USTC visual $GITHUB_RUN_ID $GITHUB_RUN_ATTEMPT $VISUAL_DEVICE $VISUAL_LOCALE"
+          printf '%s\n' "$owned_name" > "$RUNNER_TEMP/ios150-owned-simulator-name.txt"
+          TEST_DEVICE_ID=$(xcrun simctl create "$owned_name" "$device_type")
           echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
           xcrun simctl boot "$TEST_DEVICE_ID"
           xcrun simctl bootstatus "$TEST_DEVICE_ID" -b
@@ -75,7 +77,33 @@ jobs:
           if-no-files-found: error
 
       - name: Dispose the owned simulator
-        if: always() && env.TEST_DEVICE_ID != ''
+        if: always()
+        env:
+          VISUAL_DEVICE: ${{ matrix.device }}
         run: |
-          xcrun simctl shutdown "$TEST_DEVICE_ID" || true
-          xcrun simctl delete "$TEST_DEVICE_ID"
+          # The exact owned name is persisted before create, covering the
+          # cancellation window before UUID export. Never delete other devices.
+          python3 - <<'PY_CLEANUP'
+          import json, os, subprocess
+          from pathlib import Path
+          owned_id = os.environ.get('TEST_DEVICE_ID', '')
+          if not owned_id:
+              expected = f"Life-USTC visual {os.environ['GITHUB_RUN_ID']} {os.environ['GITHUB_RUN_ATTEMPT']} {os.environ['VISUAL_DEVICE']} {os.environ['VISUAL_LOCALE']}"
+              name_file = Path(os.environ['RUNNER_TEMP'], 'ios150-owned-simulator-name.txt')
+              if not name_file.exists():
+                  print('No owned simulator creation attempted', flush=True)
+                  raise SystemExit(0)
+              assert name_file.read_text().strip() == expected
+              devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', '--json']))
+              matches = [device['udid'] for group in devices['devices'].values()
+                         for device in group if device['name'] == expected]
+              if len(matches) > 1:
+                  raise RuntimeError('Ambiguous exact owned simulator name; refusing deletion')
+              owned_id = matches[0] if matches else ''
+          if owned_id:
+              print('Disposing owned simulator', owned_id, flush=True)
+              subprocess.run(['xcrun', 'simctl', 'shutdown', owned_id], check=False)
+              subprocess.run(['xcrun', 'simctl', 'delete', owned_id], check=True)
+          else:
+              print('No matching owned simulator exists', flush=True)
+          PY_CLEANUP

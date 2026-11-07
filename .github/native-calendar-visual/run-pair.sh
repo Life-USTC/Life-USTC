@@ -66,7 +66,7 @@ text = text.replace(marker, marker + '      - path: "Widget/CurriculumWeekWidget
 # its own app with its existing, live loopback fixture URL.
 marker = '  "Life-USTC-Tests":\n    build:\n      targets:\n        Life-USTC-Tests: [test]\n        Life-USTC: [test]\n    test:\n'
 assert text.count(marker) == 1
-text = text.replace(marker, marker + '      environmentVariables:\n        UI_TEST_SERVER_URL: "http://127.0.0.1:9"\n        UI_TEST_SKIP_ONBOARDING: "1"\n', 1)
+text = text.replace(marker, marker + '      environmentVariables:\n        UI_TEST_SERVER_URL: "http://127.0.0.1:9"\n        UI_TEST_SERVER_ACCESS_TOKEN: "native-visual-isolation-token"\n        UI_TEST_SKIP_ONBOARDING: "1"\n', 1)
 p.write_text(text)
 PY
   git diff -- project.yml > "$results_dir/qa-target-membership.diff"
