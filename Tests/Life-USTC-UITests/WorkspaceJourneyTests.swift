@@ -296,21 +296,41 @@ final class WorkspaceJourneyTests: XCTestCase {
             selectAll.tap()
         }
         field.typeText(new.isEmpty ? XCUIKeyboardKey.delete.rawValue : new)
-        if new.isEmpty {
-            XCTAssertTrue(["", "Notes"].contains(field.value as? String ?? "<missing>"))
-        } else {
-            XCTAssertEqual(field.value as? String, new)
-        }
+        let updated = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let value = field.value as? String else { return false }
+            return new.isEmpty ? ["", "Notes"].contains(value) : value == new
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 10), .completed)
     }
 
     @MainActor
     private func setDueDate(_ enabled: Bool) {
+        if app.keyboards.firstMatch.exists {
+            let title = app.textFields["todo.title"]
+            let notes = app.descendants(matching: .any).matching(identifier: "todo.notes").firstMatch
+            let savedTitle = title.value as? String
+            let savedNotes = notes.value as? String
+            title.tap()
+            title.typeText("\n")
+            let dismissed = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
+            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
+            XCTAssertEqual(title.value as? String, savedTitle)
+            XCTAssertEqual(notes.value as? String, savedNotes)
+        }
         let row = app.switches["todo.hasDueDate"]
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         let value = enabled ? "1" : "0"
         if row.value as? String != value {
-            let control = row.switches.firstMatch
-            (control.exists ? control : row).tap()
+            let target = row.switches.firstMatch
+            XCTAssertTrue(target.waitForExistence(timeout: 5), "Missing native Due Date switch")
+            let ready = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: target)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+            // Move the thumb once from its current position to the requested state.
+            let thumb = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.2 : 0.8, dy: 0.5))
+            let destination = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.8 : 0.2, dy: 0.5))
+            thumb.press(forDuration: 0.05, thenDragTo: destination)
         }
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: row)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)
