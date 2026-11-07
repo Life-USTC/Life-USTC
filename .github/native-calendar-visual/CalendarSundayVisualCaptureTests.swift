@@ -53,6 +53,7 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         fixture = ServerJourneyHTTPFixture(workspace: true)
         app.launchEnvironment["UI_TEST_SERVER_URL"] = try fixture.start().absoluteString
         config["personalFixture"] = "workspace-only-fixed-record"
+        config["responseEvidence"] = "Deterministic routed-handler reconstruction using the actual observed app query; not a captured HTTP response"
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         try tap(app.buttons["home_calendar"])
@@ -76,7 +77,7 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
             let expected = formatter.string(from: current)
             // Each action navigates one actual period, and must produce its
             // own exact query. An unapplied action fails; it is never repeated.
-            try tap(app.buttons[direction < 0 ? "Previous period" : "Next period"])
+            try tap(app.buttons[periodLabel(direction)])
             try waitUntil {
                 let last = self.fixture.requests.last { $0.path == "/api/workspace/calendar/events" }
                 return String((last?.query["dateFrom"] ?? "").prefix(10)) == expected
@@ -111,7 +112,7 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         XCTAssertEqual(record["endsAt"] as? String, "2026-10-23T09:45:00+08:00")
         config["fixedRecord"] = record
         let wire = XCTAttachment(data: try JSONSerialization.data(withJSONObject: body, options: [.prettyPrinted, .sortedKeys]), uniformTypeIdentifier: "public.json")
-        wire.name = "fixed-workspace-handler-response"
+        wire.name = "reconstructed-workspace-handler-response"
         wire.lifetime = .keepAlways
         add(wire)
         let card = app.buttons["workspace_event_schedule:901"]
@@ -126,6 +127,8 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
 
     @MainActor
     func testPublicYoungWeekAndMonthNativeCapture() throws {
+        config["publicFixture"] = PublicDiscoveryHTTPState.calendarVisualFixtureID
+        config["responseEvidence"] = "Deterministic routed-handler reconstruction using the actual observed app query; not a captured HTTP response"
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         try openYoung()
@@ -133,21 +136,90 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         try waitUntil {
             self.fixture.requests.contains { $0.path == "/api/catalog/young-events" && $0.query["dateFrom"] != nil }
         }
-        try waitUntil { !self.app.activityIndicators.firstMatch.exists }
-        try capture("public-young-week")
-        let previousReads = fixture.requests.filter { $0.path == "/api/catalog/young-events" }.count
+        let first = try XCTUnwrap(fixture.requests.last { $0.path == "/api/catalog/young-events" && $0.query["dateFrom"] != nil })
+        let formatter = civilFormatter()
+        let initial = try XCTUnwrap(formatter.date(from: String(try XCTUnwrap(first.query["dateFrom"]).prefix(10))))
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
-        let month = try XCTUnwrap(calendar.dateInterval(of: .month, for: Date()))
-        let from = civilFormatter().string(from: month.start)
-        let to = civilFormatter().string(from: calendar.date(byAdding: .day, value: -1, to: month.end)!)
+        calendar.timeZone = formatter.timeZone
+        let eventDay = try XCTUnwrap(formatter.date(from: "2026-10-23"))
+        let selected = try XCTUnwrap(calendar.date(byAdding: .day, value: 1 - calendar.component(.weekday, from: eventDay), to: eventDay))
+        let distance = try XCTUnwrap(calendar.dateComponents([.day], from: initial, to: selected).day)
+        XCTAssertEqual(distance % 7, 0)
+        guard distance % 7 == 0 && abs(distance / 7) <= 52 else { throw CaptureFailure.unavailable }
+        let direction = distance < 0 ? -1 : 1
+        var current = initial
+        for _ in 0..<abs(distance / 7) {
+            current = try XCTUnwrap(calendar.date(byAdding: .day, value: direction * 7, to: current))
+            let expected = formatter.string(from: current)
+            try tap(app.buttons[periodLabel(direction)])
+            try waitUntil {
+                let last = self.fixture.requests.last { $0.path == "/api/catalog/young-events" && $0.query["dateFrom"] != nil }
+                return String((last?.query["dateFrom"] ?? "").prefix(10)) == expected
+                    && !self.app.activityIndicators.firstMatch.exists
+            }
+        }
+        XCTAssertEqual(calendar.component(.weekday, from: selected), 1)
+        let weekHeader = DateFormatter()
+        weekHeader.calendar = calendar
+        weekHeader.timeZone = formatter.timeZone
+        weekHeader.locale = Locale(identifier: "zh_CN")
+        weekHeader.dateFormat = "M月d日 EEEE"
+        XCTAssertTrue(app.staticTexts[weekHeader.string(from: selected)].waitForExistence(timeout: 10))
+        try capture("public-fixed-week-start")
+        try retainFixedPublicResponse("week")
+        try revealAndAssertFixedPublicCard()
+        try capture("public-fixed-week-record")
+
+        let previousReads = fixture.requests.filter { $0.path == "/api/catalog/young-events" }.count
+        let month = try XCTUnwrap(calendar.dateInterval(of: .month, for: eventDay))
+        let from = formatter.string(from: month.start)
+        let to = formatter.string(from: calendar.date(byAdding: .day, value: -1, to: month.end)!)
         try tap(app.segmentedControls.firstMatch.buttons[chinese ? "月" : "Month"])
         try waitUntil {
             let reads = self.fixture.requests.filter { $0.path == "/api/catalog/young-events" }
             return reads.count > previousReads && reads.last?.query["dateFrom"] == from
                 && reads.last?.query["dateTo"] == to && !self.app.activityIndicators.firstMatch.exists
         }
-        try capture("public-young-month")
+        var grid: (labels: [String], firstWeekday: Int)?
+        try waitUntil { grid = self.calendarGrid(); return grid != nil }
+        XCTAssertEqual(try XCTUnwrap(grid).firstWeekday, 1)
+        try tap(app.buttons["23"].firstMatch)
+        try retainFixedPublicResponse("month")
+        try revealAndAssertFixedPublicCard()
+        try capture("public-fixed-month-record")
+    }
+
+    @MainActor
+    private func revealAndAssertFixedPublicCard() throws {
+        let marker = app.staticTexts["young.status.fixture-young-m4"]
+        reveal(marker)
+        try waitUntil { marker.exists && marker.isHittable }
+        let card = app.buttons.containing(.staticText, identifier: "young.status.fixture-young-m4").firstMatch
+        XCTAssertTrue(card.exists)
+        let timestamp = "10月23日 09:00 – 10月23日 11:00"
+        XCTAssertTrue(card.label.contains("Science Communication Workshop") || card.staticTexts["Science Communication Workshop"].exists)
+        XCTAssertTrue(card.label.contains(timestamp) || card.staticTexts[timestamp].exists)
+    }
+
+    private func retainFixedPublicResponse(_ phase: String) throws {
+        let request = try XCTUnwrap(fixture.requests.last { $0.path == "/api/catalog/young-events" && $0.query["dateFrom"] != nil })
+        let result = try XCTUnwrap(PublicDiscoveryHTTPState().response(to: request))
+        XCTAssertEqual(result.status, 200)
+        let body = try XCTUnwrap(result.body as? [String: Any])
+        let records = try XCTUnwrap(body["data"] as? [[String: Any]])
+        let record = try XCTUnwrap(records.first { $0["youngId"] as? String == "fixture-young-m4" })
+        XCTAssertEqual(record["startAt"] as? String, "2026-10-23T09:00:00+08:00")
+        XCTAssertEqual(record["endAt"] as? String, "2026-10-23T11:00:00+08:00")
+        config["fixedPublicRecord"] = record
+        let attachment = XCTAttachment(data: try JSONSerialization.data(withJSONObject: body, options: [.prettyPrinted, .sortedKeys]), uniformTypeIdentifier: "public.json")
+        attachment.name = "reconstructed-public-handler-response-\(phase)"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    private func periodLabel(_ direction: Int) -> String {
+        if chinese { return direction < 0 ? "上一时间段" : "下一时间段" }
+        return direction < 0 ? "Previous period" : "Next period"
     }
 
     @MainActor

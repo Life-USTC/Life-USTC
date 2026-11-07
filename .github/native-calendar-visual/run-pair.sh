@@ -37,7 +37,8 @@ for arm in before after; do
     Widget/CurriculumWeekWidget.swift Server/ServerYoungModels.swift \
     Tests/Life-USTC-UITests/ServerJourneyHTTPFixture.swift \
     Tests/Life-USTC-UITests/WorkspaceLearningHTTPState.swift \
-    Tests/Life-USTC-UITests/YoungCampusHTTPState.swift > "$results_dir/production-source-blobs.txt"
+    Tests/Life-USTC-UITests/YoungCampusHTTPState.swift \
+    Tests/Life-USTC-UITests/PublicDiscoveryHTTPState.swift > "$results_dir/production-source-blobs.txt"
   printf '%s\n' "$GITHUB_SHA" > "$results_dir/carrier-workflow-sha.txt"
   xcodebuild -version > "$results_dir/xcode-version.txt"
   xcrun simctl list devices available > "$results_dir/simulators.txt"
@@ -46,7 +47,7 @@ for arm in before after; do
   cp "$carrier_dir/CalendarSundayNativeRenderTests.swift" Tests/Life-USTC-Tests/
   cp "$carrier_dir/CalendarSundayVisualCaptureTests.swift" Tests/Life-USTC-UITests/
   python3 - "$arm" "$source_sha" "$VISUAL_LOCALE" "$expected_weekday" "$anchor_day" "$results_dir" <<'PY'
-import json
+import hashlib, json
 from pathlib import Path
 import sys
 arm, source, locale, weekday, anchor, output = sys.argv[1:]
@@ -56,11 +57,40 @@ raw = json.dumps(config, indent=2) + '\n'
 for folder in ['Tests/Life-USTC-Tests', 'Tests/Life-USTC-UITests']:
     Path(folder, 'CalendarVisualConfig.json').write_text(raw)
 Path(output, 'fixture-config.json').write_text(raw)
+# Compile an independent QA copy with fixed explicit public records. The
+# original baseline fixture stays byte-identical on disk and is only excluded
+# from this temporary UI target. Record both original and compiled QA bytes.
+original_path = Path('Tests/Life-USTC-UITests/PublicDiscoveryHTTPState.swift')
+original = original_path.read_text()
+compiled = original
+for old, new in {
+    '2035-09-16T09:00:00+08:00': '2026-10-23T09:00:00+08:00',
+    '2035-09-16T11:00:00+08:00': '2026-10-23T11:00:00+08:00',
+    '2035-09-10T09:00:00+08:00': '2026-10-20T09:00:00+08:00',
+    '2035-09-15T18:00:00+08:00': '2026-10-22T18:00:00+08:00',
+}.items():
+    assert compiled.count(old) == 1
+    compiled = compiled.replace(old, new)
+marker = 'final class PublicDiscoveryHTTPState {\n'
+assert compiled.count(marker) == 1
+compiled = compiled.replace(marker, marker + '    static let calendarVisualFixtureID = "fixed-public-records-2026-10-23"\n', 1)
+Path('Tests/Life-USTC-UITests/CalendarVisualPublicDiscoveryHTTPState.swift').write_text(compiled)
+Path(output, 'original-public-fixture-source.swift').write_text(original)
+Path(output, 'compiled-qa-public-fixture-source.swift').write_text(compiled)
+Path(output, 'public-fixture-source-hashes.json').write_text(json.dumps({
+    'originalSHA256': hashlib.sha256(original.encode()).hexdigest(),
+    'compiledQASHA256': hashlib.sha256(compiled.encode()).hexdigest(),
+    'configuration': 'fixed-public-records-2026-10-23',
+    'scope': 'QA target membership only; original file bytes unchanged',
+}, indent=2) + '\n')
 # Include the unchanged production Widget view in the QA app module so its
 # exact body/query can be rendered natively with a fixed in-memory container.
 # This is not a claim to run the WidgetKit extension process or timeline.
 p = Path('project.yml')
 text = p.read_text()
+marker = '      - path: "Tests/Life-USTC-UITests"\n'
+assert text.count(marker) == 1
+text = text.replace(marker, marker + '        excludes: ["PublicDiscoveryHTTPState.swift"]\n', 1)
 marker = '      - path: "Views/"\n'
 assert text.count(marker) == 1
 text = text.replace(marker, marker + '      - path: "Widget/CurriculumWeekWidget.swift"\n', 1)
@@ -74,7 +104,7 @@ p.write_text(text)
 PY
   git diff -- project.yml > "$results_dir/qa-target-membership.diff"
   # Original production/fixture/test bytes stay untouched. Only the documented
-  # temporary source membership above and two extra QA files/resources differ.
+  # temporary source membership, independent QA fixture copy and QA files/resources differ.
   git diff --exit-code -- . ':!project.yml'
   xcodegen --spec project.yml
   xcrun simctl uninstall "$TEST_DEVICE_ID" dev.tiankaima.Life-USTC >/dev/null 2>&1 || true
@@ -115,6 +145,7 @@ PY
   git restore --source=HEAD --worktree -- project.yml
   rm -f Tests/Life-USTC-Tests/CalendarSundayNativeRenderTests.swift \
     Tests/Life-USTC-UITests/CalendarSundayVisualCaptureTests.swift \
+    Tests/Life-USTC-UITests/CalendarVisualPublicDiscoveryHTTPState.swift \
     Tests/Life-USTC-Tests/CalendarVisualConfig.json Tests/Life-USTC-UITests/CalendarVisualConfig.json
 done
 exit "$overall_status"
