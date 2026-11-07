@@ -1,88 +1,12 @@
 name: Screenshots
-
+# NEVER MERGE: disable the canonical publishing workflow on this carrier.
 on:
-  pull_request:
   workflow_dispatch:
-
 permissions:
-  contents: write
-  pull-requests: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
+  contents: read
 jobs:
-  snapshot:
-    name: Generate iOS UI Screenshots
+  disabled:
+    if: ${{ false }}
     runs-on: macos-26
-    timeout-minutes: 60
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install XcodeGen
-        run: |
-          brew install xcodegen
-
-      - name: Cache Swift packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
-          restore-keys: |
-            spm-${{ runner.os }}-
-
-      - name: Generate Xcode project
-        run: xcodegen --spec project.yml
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
-        with:
-          ruby-version: "3.4"
-          bundler-cache: true
-
-      - name: Setup Simulators
-        run: |
-          xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
-
-      - name: Run Fastlane Snapshot
-        env:
-          TZ: Asia/Shanghai
-        run: |
-          bundle exec fastlane snapshot
-
-      - name: Upload screenshots artifact
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ios-screenshots-${{ github.run_id }}
-          path: |
-            screenshots/**
-          if-no-files-found: warn
-
-      - name: Publish screenshots to gh-pages (append-only)
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./screenshots
-          destination_dir: run-${{ github.run_id }}/screenshots
-          keep_files: true
-
-      - name: Build markdown summary and comment body (script)
-        id: build_md
-        env:
-          PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-        run: |
-          bash scripts/simulate_screenshot_comment.sh
-
-      - name: Publish summary
-        run: |
-          cat screenshots_comment.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Comment on Pull Request (sticky)
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
-        with:
-          path: screenshots_comment.md
+      - run: echo "Canonical screenshots disabled on never-merge diagnostic carrier"

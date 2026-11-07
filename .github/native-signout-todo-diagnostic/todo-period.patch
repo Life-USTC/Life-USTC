@@ -1,0 +1,40 @@
+--- a/Tests/Life-USTC-UITests/WorkspaceJourneyTests.swift
++++ b/Tests/Life-USTC-UITests/WorkspaceJourneyTests.swift
+@@ -70,7 +70,9 @@
+         waitForRequest("GET", "/api/workspace/calendar/events")
+         let formatter = ISO8601DateFormatter()
+         formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+-        let tomorrow = String(formatter.string(from: Date().addingTimeInterval(86400)).prefix(10))
++        let calendarReference = Date()
++        let today = String(formatter.string(from: calendarReference).prefix(10))
++        let tomorrow = String(formatter.string(from: calendarReference.addingTimeInterval(86400)).prefix(10))
+         let day = app.segmentedControls["workspace_calendar_mode"].buttons["Day"]
+         XCTAssertTrue(day.waitForExistence(timeout: 10))
+         day.tap()
+@@ -99,7 +101,26 @@
+         XCTAssertTrue(app.staticTexts["todo.detail.title"].waitForExistence(timeout: 10))
+         XCTAssertEqual(app.staticTexts["todo.detail.title"].label, "Prepare native journey notes")
+         capture("TodoDetail")
++        let requestsBeforeCalendarReturn = fixture.requests.count
+         selectTab("Calendar", index: 1)
++        let returnedDay = app.segmentedControls["workspace_calendar_mode"].buttons["Day"]
++        XCTAssertTrue(returnedDay.waitForExistence(timeout: 10))
++        if !returnedDay.isSelected { returnedDay.tap() }
++        let range = app.staticTexts["calendar_range"]
++        let todayRange = "\(today) – \(today)"
++        let tomorrowRange = "\(tomorrow) – \(tomorrow)"
++        let returnedPeriod = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
++            returnedDay.isSelected && range.exists && [todayRange, tomorrowRange].contains(range.label)
++        }, object: nil)
++        XCTAssertEqual(XCTWaiter.wait(for: [returnedPeriod], timeout: 10), .completed)
++        if range.label == todayRange { open("Next period") }
++        waitUntil {
++            self.fixture.requests.dropFirst(requestsBeforeCalendarReturn).contains { request in
++                request.method == "GET" && request.path == "/api/workspace/calendar/events"
++                    && request.query["dateFrom"] == tomorrow && request.query["dateTo"] == tomorrow
++            }
++        }
++        XCTAssertEqual(range.label, tomorrowRange)
+         open("workspace_event_todo_due:\(id)")
+         XCTAssertGreaterThan(requestCount("GET", "/api/workspace/calendar/events"), originalCalendarReads)
+         open("todo.detail.delete")

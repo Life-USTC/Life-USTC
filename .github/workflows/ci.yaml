@@ -1,267 +1,56 @@
 name: CI
 
+# NEVER MERGE: manual-only exact-source SignOut/Todo diagnostic carrier.
 on:
-  push:
-    branches:
-      - main
-      - "ci-*"
-  pull_request:
   workflow_dispatch:
-    inputs:
-      beta:
-        description: "Deploy to TestFlight beta"
-        required: false
-        type: boolean
-        default: true
-
+permissions:
+  contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
+  group: ios140-signout-todo-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  determine_action:
-    name: Determine Build Action
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      should_deploy: ${{ steps.should_deploy.outputs.deploy }}
-      should_add_to_group: ${{ steps.should_deploy.outputs.deploy }}
-    steps:
-      - name: Calculate if shipping to TestFlight
-        id: should_deploy
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "deploy=${{ inputs.beta }}" >> $GITHUB_OUTPUT
-            elif [[ "${{ github.ref }}" == refs/heads/main || "${{ github.ref }}" == refs/heads/ci-* ]]; then
-            echo "deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "deploy=false" >> $GITHUB_OUTPUT
-          fi
-
-  test:
-    name: Run Tests
-    runs-on: macos-26
-    timeout-minutes: 120
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Test server screenshot exporter
-        run: python3 -B -m unittest discover -s scripts/tests -p 'test_*.py'
-
-      - name: Cache Swift packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
-          restore-keys: |
-            spm-${{ runner.os }}-
-
-      - name: Setup .xcodeproj
-        run: |
-          brew install xcodegen
-          xcodegen --spec project.yml
-
-      - name: Create native test simulator
-        run: |
-          xcodebuild -version
-          xcrun simctl list runtimes
-          TEST_DEVICE_ID=$(xcrun simctl create "Life-USTC CI iPhone 17" "iPhone 17")
-          echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
-          xcrun simctl list devices available
-
-      - name: Run Unit Tests
-        run: |
-          xcodebuild test \
-            -project Life-USTC.xcodeproj \
-            -scheme Life-USTC-Tests \
-            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
-            -clonedSourcePackagesDirPath SourcePackages \
-            -resultBundlePath TestResults/unit.xcresult \
-            -quiet
-
-      - name: Run UI Tests
-        id: ui_tests
-        run: |
-          xcodebuild test \
-            -project Life-USTC.xcodeproj \
-            -scheme Life-USTC-UITests \
-            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
-            -only-testing:Life-USTC-UITests/E2ETests \
-            -only-testing:Life-USTC-UITests/ServerJourneyTests \
-            -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
-            -only-testing:Life-USTC-UITests/CommunityJourneyTests \
-            -only-testing:Life-USTC-UITests/CampusJourneyTests \
-            -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
-            -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
-            -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
-            -only-testing:Life-USTC-UITests/AccountJourneyTests \
-            -clonedSourcePackagesDirPath SourcePackages \
-            -resultBundlePath TestResults/ui.xcresult \
-            -quiet
-
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: test-results
-          path: TestResults/
-
-      - name: Export server feature screenshots
-        if: always()
-        env:
-          UI_OUTCOME: ${{ steps.ui_tests.outcome }}
-        run: |
-          python3 scripts/export_server_screenshots.py \
-            --xcresult TestResults/ui.xcresult \
-            --output ServerScreenshots \
-            --ui-outcome "$UI_OUTCOME" \
-            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
-            --revision "$(git rev-parse HEAD)"
-
-      - name: Upload server feature screenshots
-        id: upload_server_screenshots
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ios-server-screenshots-${{ github.run_id }}
-          path: ServerScreenshots/
-          if-no-files-found: error
-
-      - name: Summarize server feature screenshots
-        if: always()
-        env:
-          ARTIFACT_URL: ${{ steps.upload_server_screenshots.outputs.artifact-url }}
-        run: |
-          if [[ -f ServerScreenshots/summary.md ]]; then
-            cat ServerScreenshots/summary.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo '## Server feature screenshots' >> "$GITHUB_STEP_SUMMARY"
-            echo 'Incomplete: the exporter did not produce a report.' >> "$GITHUB_STEP_SUMMARY"
-          fi
-          if [[ -n "$ARTIFACT_URL" ]]; then
-            printf '\n[Download the gallery and original PNGs](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf '\nArtifact upload failed; no download link is available.\n' >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-      - name: Dispose native test simulator
-        if: always() && env.TEST_DEVICE_ID != ''
-        run: |
-          # The test runner may already have shut it down; deletion must succeed.
-          xcrun simctl shutdown "$TEST_DEVICE_ID" || true
-          xcrun simctl delete "$TEST_DEVICE_ID"
-
-  build:
-    name: Build IPA
+  diagnostic:
+    name: SignOut/Todo diagnosis (${{ matrix.device }})
     runs-on: macos-26
     timeout-minutes: 60
-    needs: [determine_action, test]
-    outputs:
-      build_number: ${{ steps.get_build_number.outputs.build_number }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        device: [iPhone, iPad]
+    env:
+      DIAGNOSTIC_DEVICE: ${{ matrix.device }}
+      DIAGNOSTIC_VARIANT: combined
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Cache Swift packages
+      - name: Checkout the never-merge diagnostic carrier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Checkout exact failed source7f2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 7f2a63c21b64a6b1958ad4883dd891a268c987b3
+          path: source
+          persist-credentials: false
+      - name: Cache original Swift packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
-          restore-keys: |
-            spm-${{ runner.os }}-
-
-      - name: Setup .xcodeproj
+          path: source/SourcePackages
+          key: ios140-signout-todo-spm-${{ runner.os }}-${{ hashFiles('source/project.yml') }}
+      - name: Prepare native tools and exactly owned simulator
         run: |
           brew install xcodegen
-          xcodegen --spec project.yml
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
-        with:
-          ruby-version: "3.4"
-          bundler-cache: true
-
-      - name: Build IPA
-        run: bundle exec fastlane ios build_ipa
-        env:
-          TZ: Asia/Shanghai
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-
-      - name: Upload app-store ipa and dsyms to artifacts
+          xcodebuild -version
+          python3 .github/native-signout-todo-diagnostic/simulator.py create
+      - name: Build once and run three independent cases without retry
+        run: bash .github/native-signout-todo-diagnostic/run.sh
+      - name: Delete only this job's owned simulator
+        if: always()
+        run: python3 .github/native-signout-todo-diagnostic/simulator.py cleanup
+      - name: Retain original native result and provenance
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: app-store-ipa-dsyms
-          path: |
-            ${{ github.workspace }}/*.ipa
-            ${{ github.workspace }}/*.app.dSYM.zip
-
-      - name: Get build number
-        id: get_build_number
-        run: |
-          BUILD_NUMBER=$(agvtool what-version -terse)
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          echo "Build number: $BUILD_NUMBER"
-
-  upload_to_testflight:
-    name: Upload to TestFlight
-    # Must stay on macOS: fastlane pilot uploads the IPA via altool/Transporter,
-    # neither of which exists on Linux (fastlane_core itunes_transporter.rb).
-    runs-on: macos-26
-    timeout-minutes: 30
-    needs: [determine_action, build]
-    if: needs.determine_action.outputs.should_deploy == 'true'
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
-        with:
-          ruby-version: "3.4"
-          bundler-cache: true
-
-      - name: Download IPA and dSYMs
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: app-store-ipa-dsyms
-
-      - name: Upload to TestFlight
-        run: bundle exec fastlane ios testflight_upload
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.ASC_KEY }}
-
-  add_to_testflight_group:
-    name: Add to TestFlight Group
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [determine_action, build, upload_to_testflight]
-    if: >-
-      needs.determine_action.outputs.should_add_to_group == 'true' &&
-      needs.build.result == 'success' &&
-      needs.upload_to_testflight.result == 'success' &&
-      needs.build.outputs.build_number != '' && !cancelled()
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
-        with:
-          ruby-version: "3.4"
-          bundler-cache: true
-
-      - name: Wait for TestFlight build processing
-        run: bundle exec fastlane ios testflight_wait_for_processing build_number:${{ needs.build.outputs.build_number }}
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.ASC_KEY }}
-
-      - name: Add to TestFlight group
-        run: bundle exec fastlane ios testflight_add_to_group
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.ASC_KEY }}
+          name: ios140-signout-todo-${{ matrix.device }}-${{ github.run_id }}
+          path: SignOutTodoDiagnosticResults/
+          if-no-files-found: error
