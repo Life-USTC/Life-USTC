@@ -2,14 +2,14 @@ import XCTest
 @testable import Life_USTC
 
 final class YoungPublicCalendarTests: XCTestCase {
-    func testPublicWeekUsesSundayWhilePersonalWeekKeepsMonday() {
+    func testPublicAndPersonalWeeksBothStartSunday() {
         let sunday = YoungCalendarDate.dateFormatter.date(from: "2026-10-25")!
         let publicWeek = YoungPublicCalendarDate.range(for: .week, date: sunday)
         XCTAssertEqual(YoungCalendarDate.dateString(publicWeek.start), "2026-10-25")
         XCTAssertEqual(YoungCalendarDate.dateString(publicWeek.end), "2026-10-31")
         XCTAssertEqual(publicWeek.days.count, 7)
-        XCTAssertEqual(YoungCalendarDate.range(for: .week, date: sunday).from, "2026-10-19")
-        XCTAssertEqual(YoungCalendarDate.range(for: .week, date: sunday).to, "2026-10-25")
+        XCTAssertEqual(YoungCalendarDate.range(for: .week, date: sunday).from, "2026-10-25")
+        XCTAssertEqual(YoungCalendarDate.range(for: .week, date: sunday).to, "2026-10-31")
     }
 
     func testMonthGridAlignsSundayAndCoversLeapFebruary() {

@@ -367,8 +367,9 @@ enum DemoData {
         startMinute: Int,
         durationMinutes: Int
     ) -> (Date, Date) {
-        let start = Date().startOfWeek().add(day: dayOffset) + DateComponents(hour: startHour, minute: startMinute)
-        let end = start + DateComponents(minute: durationMinutes)
+        let day = ProductCalendar.addingDays(dayOffset, to: Date().startOfWeek())
+        let start = ProductCalendar.calendar.date(bySettingHour: startHour, minute: startMinute, second: 0, of: day)!
+        let end = ProductCalendar.calendar.date(byAdding: .minute, value: durationMinutes, to: start)!
         return (start, end)
     }
 

@@ -25,37 +25,36 @@ struct CurriculumDetailView: View {
     @State var showCurriculumDetails = false
 
     @State var referenceDate: Date = Date()
-    var todayStart: Date { referenceDate.stripTime() }
+    var todayStart: Date { ProductCalendar.dayStart(referenceDate) }
     var weekStart: Date { todayStart.startOfWeek() }
-    var weekEnd: Date { weekStart.add(day: 7) }
+    var weekEnd: Date { ProductCalendar.weekRange(containing: referenceDate).upperBound }
 
     var isCurrentWeek: Bool {
-        (weekStart ... weekEnd).contains(Date().stripTime())
+        ProductCalendar.weekRange(containing: referenceDate).contains(Date())
     }
 
     var currentSemester: Semester? {
-        semesters.filter { ($0.startDate ... $0.endDate).contains(referenceDate) }.first
+        let day = ProductCalendar.dayStart(referenceDate)
+        return semesters.first { ($0.startDate ... $0.endDate).contains(day) }
+            ?? semesters.first {
+                ProductCalendar.teachingWeekNumber(
+                    containing: referenceDate, semesterStart: $0.startDate, semesterEnd: $0.endDate
+                ) != nil
+            }
     }
 
     var weekNumber: Int? {
-        guard let currentSemester else {
-            return nil
-        }
-        return
-            (Calendar(identifier: .gregorian)
-            .dateComponents(
-                [.weekOfYear],
-                from: currentSemester.startDate,
-                to: weekStart
-            )
-            .weekOfYear ?? 0) + 1
+        guard let currentSemester else { return nil }
+        return ProductCalendar.teachingWeekNumber(
+            containing: referenceDate,
+            semesterStart: currentSemester.startDate, semesterEnd: currentSemester.endDate
+        )
     }
 
     var lectures: [Lecture] {
         lecturesQuery
             .filter {
-                (weekStart ... weekEnd)
-                    .contains($0.startDate.stripTime())
+                ProductCalendar.weekRange(containing: referenceDate).contains($0.startDate)
             }
     }
 
@@ -80,7 +79,7 @@ struct CurriculumDetailView: View {
 
             Spacer()
 
-            Text(weekStart ... weekStart.add(day: 6))
+            Text(weekStart ... ProductCalendar.addingDays(-1, to: weekEnd))
         }
         .font(.system(.caption2, design: .monospaced, weight: .light))
         .padding(.horizontal, 20)
@@ -156,9 +155,9 @@ struct CurriculumDetailView: View {
                     }
 
                     if value.translation.width < 0 {
-                        referenceDate = referenceDate.add(day: 7)
+                        referenceDate = ProductCalendar.addingDays(7, to: referenceDate)
                     } else {
-                        referenceDate = referenceDate.add(day: -7)
+                        referenceDate = ProductCalendar.addingDays(-7, to: referenceDate)
                     }
                 }
         )
@@ -183,5 +182,7 @@ struct CurriculumDetailView: View {
                 )
             }
         }
+        .environment(\.calendar, ProductCalendar.calendar)
+        .environment(\.timeZone, ProductCalendar.timeZone)
     }
 }

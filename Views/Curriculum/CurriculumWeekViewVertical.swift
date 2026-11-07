@@ -14,14 +14,15 @@ struct CurriculumWeekViewVerticalNew: View {
     var referenceDate: Date
     var hideWeekend: Bool
 
-    var todayStart: Date { referenceDate.stripTime() }
+    var todayStart: Date { ProductCalendar.dayStart(referenceDate) }
     var weekStart: Date { todayStart.startOfWeek() }
 
     @ViewBuilder
     func makeVStack(index: Int, heightPerClass: Double) -> some View {
-        let isToday = weekStart.add(day: index) == Date().stripTime()
+        let day = ProductCalendar.addingDays(index, to: weekStart)
+        let isToday = day == ProductCalendar.dayStart(Date())
         let lecutresFiltered = lectures.filter {
-            (weekStart.add(day: index) ... weekStart.add(day: index + 1)).contains($0.startDate)
+            ProductCalendar.dayRange(containing: day).contains($0.startDate)
         }
 
         VStack {

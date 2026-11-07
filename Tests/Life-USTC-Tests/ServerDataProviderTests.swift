@@ -17,7 +17,11 @@ final class ServerDataProviderTests: XCTestCase {
     func testExplicitMeetingDateWinsOverWeekPosition() async throws {
         let context = try makeContext()
         let client = makeClient()
-        stubSections([42: section(42, date: "2026-10-23T00:00:00+08:00", weekIndex: 1)])
+        var detail = section(42, date: "2026-10-23T00:00:00+08:00", weekIndex: 1)
+        var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
+        semester["endDate"] = "2026-10-22T00:00:00+08:00"
+        detail["semester"] = semester
+        stubSections([42: detail])
 
         try await ServerDataProvider.updateCurriculum(client: client, context: context)
 
@@ -40,7 +44,7 @@ final class ServerDataProviderTests: XCTestCase {
     }
 
     @MainActor
-    func testUndatedMeetingsUseMondayWeeksAndInclusiveSemesterBounds() async throws {
+    func testUndatedMeetingsUseSundayWeeksAndInclusiveSemesterBounds() async throws {
         let context = try makeContext()
         var detail = section(42, date: "2026-09-01", weekIndex: 1)
         var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
@@ -48,7 +52,7 @@ final class ServerDataProviderTests: XCTestCase {
         semester["endDate"] = "2026-09-07T00:00:00+08:00"
         detail["semester"] = semester
         let template = try XCTUnwrap((detail["schedules"] as? [[String: Any]])?.first)
-        detail["schedules"] = [(1, 1), (1, 2), (1, 7), (2, 1), (2, 2), (0, 3)].enumerated().map { index, position in
+        detail["schedules"] = [(1, 1), (1, 2), (1, 7), (2, 1), (2, 2), (2, 7), (3, 7), (0, 3), (1, 0), (1, 8)].enumerated().map { index, position in
             var meeting = template
             meeting["id"] = 300 + index
             meeting["date"] = NSNull()
@@ -85,6 +89,66 @@ final class ServerDataProviderTests: XCTestCase {
         let lectures = try context.fetch(FetchDescriptor<Lecture>())
         XCTAssertEqual(lectures.count, 1)
         XCTAssertEqual(lectures.first?.startDate, date("2026-09-23T00:15:00Z"))
+    }
+
+    @MainActor
+    func testOfficialSundayWeekMapsEveryStoredAPIWeekday() async throws {
+        let context = try makeContext()
+        var detail = section(42, date: "2026-08-30", weekIndex: 1)
+        var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
+        semester["startDate"] = "2026-08-30T00:00:00+08:00"
+        semester["endDate"] = "2026-09-05T00:00:00+08:00"
+        detail["semester"] = semester
+        let template = try XCTUnwrap((detail["schedules"] as? [[String: Any]])?.first)
+        detail["schedules"] = (1...7).map { weekday in
+            var meeting = template
+            meeting["id"] = 300 + weekday
+            meeting["date"] = NSNull()
+            meeting["weekday"] = weekday
+            meeting["customPlace"] = "weekday-\(weekday)"
+            return meeting
+        }
+        stubSections([42: detail])
+
+        try await ServerDataProvider.updateCurriculum(client: makeClient(), context: context)
+
+        let lectures = try context.fetch(FetchDescriptor<Lecture>())
+        let starts = Dictionary(uniqueKeysWithValues: lectures.map { ($0.location, $0.startDate) })
+        XCTAssertEqual(starts, [
+            "weekday-1": date("2026-08-31T00:15:00Z"),
+            "weekday-2": date("2026-09-01T00:15:00Z"),
+            "weekday-3": date("2026-09-02T00:15:00Z"),
+            "weekday-4": date("2026-09-03T00:15:00Z"),
+            "weekday-5": date("2026-09-04T00:15:00Z"),
+            "weekday-6": date("2026-09-05T00:15:00Z"),
+            "weekday-7": date("2026-08-30T00:15:00Z"),
+        ])
+    }
+
+    @MainActor
+    func testLastTeachingRowDoesNotCreateMeetingsAfterStoredFridayEnd() async throws {
+        let context = try makeContext()
+        var detail = section(42, date: "2026-08-30", weekIndex: 1)
+        var semester = try XCTUnwrap(detail["semester"] as? [String: Any])
+        semester["startDate"] = "2026-08-30T00:00:00+08:00"
+        semester["endDate"] = "2027-01-15T00:00:00+08:00"
+        detail["semester"] = semester
+        let template = try XCTUnwrap((detail["schedules"] as? [[String: Any]])?.first)
+        detail["schedules"] = [(1, 7), (20, 7), (20, 5), (20, 6), (21, 7)].enumerated().map { index, position in
+            var meeting = template
+            meeting["id"] = 300 + index
+            meeting["date"] = NSNull()
+            meeting["weekIndex"] = position.0
+            meeting["weekday"] = position.1
+            return meeting
+        }
+        stubSections([42: detail])
+
+        try await ServerDataProvider.updateCurriculum(client: makeClient(), context: context)
+
+        XCTAssertEqual(try context.fetch(FetchDescriptor<Lecture>()).map(\.startDate).sorted(), [
+            date("2026-08-30T00:15:00Z"), date("2027-01-10T00:15:00Z"), date("2027-01-15T00:15:00Z"),
+        ])
     }
 
     @MainActor

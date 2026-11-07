@@ -53,17 +53,16 @@ struct CurriculumWeekWidgetEntryView: View {
     var entry: CurriculumWeekProvider.Entry
 
     @State var referenceDate: Date = Date()
-    var todayStart: Date { referenceDate.stripTime() }
+    var todayStart: Date { ProductCalendar.dayStart(referenceDate) }
     var weekStart: Date { todayStart.startOfWeek() }
-    var weekEnd: Date { weekStart.add(day: 7) }
+    var weekEnd: Date { ProductCalendar.weekRange(containing: referenceDate).upperBound }
 
     @Query(sort: \Lecture.startDate, order: .forward) var lecturesQuery: [Lecture]
 
     var lectures: [Lecture] {
         lecturesQuery
             .filter {
-                (weekStart ... weekEnd)
-                    .contains($0.startDate.stripTime())
+                ProductCalendar.weekRange(containing: referenceDate).contains($0.startDate)
             }
     }
 

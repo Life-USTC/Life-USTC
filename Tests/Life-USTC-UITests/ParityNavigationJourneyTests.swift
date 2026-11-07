@@ -41,7 +41,7 @@ final class ParityNavigationJourneyTests: XCTestCase {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = formatter.timeZone
         let start = try XCTUnwrap(formatter.date(from: String(try XCTUnwrap(first.query["dateFrom"]).prefix(10))))
-        XCTAssertEqual(calendar.component(.weekday, from: start), 2)
+        XCTAssertEqual(calendar.component(.weekday, from: start), 1)
         for offset in 0..<7 {
             let day = calendar.date(byAdding: .day, value: offset, to: start)!
             let header = app.staticTexts["calendar_day_\(formatter.string(from: day))"]
