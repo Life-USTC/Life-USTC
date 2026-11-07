@@ -20,6 +20,31 @@ final class WorkspaceCalendarModelTests: XCTestCase {
     }
 
     @MainActor
+    func testSundayWeekRequestsAndDisplaysSundayThroughSaturday() async throws {
+        let model = ServerWorkspaceCalendarModel(client: client)
+        model.referenceDate = YoungCalendarDate.dateFormatter.date(from: "2026-10-25")!
+        MockURLProtocol.stubJSON(calendarPage)
+
+        await model.load()
+
+        XCTAssertEqual(model.agendaDays.map { YoungCalendarDate.dateString($0.date) }, [
+            "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31",
+        ])
+        let request = try XCTUnwrap(MockURLProtocol.capturedRequests.first)
+        let url = try XCTUnwrap(request.url)
+        XCTAssertEqual(url.path, "/api/workspace/calendar/events")
+        let items = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems)
+        let query = Dictionary(uniqueKeysWithValues: items.map { ($0.name, $0.value ?? "") })
+        XCTAssertEqual(query["dateFrom"], "2026-10-25")
+        XCTAssertEqual(query["dateTo"], "2026-10-31")
+
+        model.navigate(-1)
+        XCTAssertEqual(model.range.map { YoungCalendarDate.dateString($0.start) }, "2026-10-18")
+        model.navigate(1)
+        XCTAssertEqual(model.range.map { YoungCalendarDate.dateString($0.start) }, "2026-10-25")
+    }
+
+    @MainActor
     func testRetryKeepsSamePeriodButNeverShowsPreviousPeriodAfterNavigation() async {
         let model = ServerWorkspaceCalendarModel(client: client)
         MockURLProtocol.stubJSON(calendarPage)

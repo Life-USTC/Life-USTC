@@ -84,7 +84,7 @@ The calendar subscription screen copies or shares the private URL supplied by
 the server. Missing access and failed reads have explicit recovery states; the
 app does not construct a feed token or place that URL in logs.
 
-Personal calendars provide day, Monday-first week, month and subscribed-semester
+Personal calendars provide day, Sunday-first week, month and subscribed-semester
 agendas, period navigation and Today. Weeks retain all seven day headings.
 Section details share or copy the public iCal URL using the section JW identity;
 combined exports select up to 50 subscriptions and use sorted, unique internal
@@ -220,3 +220,16 @@ and its missing-capture report. The UI test outcome is reported separately.
 This is fixture evidence from the existing iPhone suite; it does not establish
 all-screen, all-locale, iPad or production-account coverage. Fastlane snapshots
 continue in their existing workflow.
+
+### Native calendar week policy
+
+All native calendar week and date-picker boundaries use Sunday-first Gregorian
+dates in Asia/Shanghai, including personal calendars, the timetable and Widget.
+Public Young Sunday grids retain their existing start-day grouping. The first
+teaching-calendar row is the Sunday-containing week of the stored semester
+start; the final row may extend past the term for display. Week/day membership
+uses an exclusive next-day/week boundary. Actual meeting dates and deadlines
+are not changed to fill a row. Explicit meeting dates win over stored week
+positions; undated meetings retain the API's stored weekIndex and Mon1…Sun7
+weekday encoding, clipped to the stored semester dates. A selected calendar
+week label does not rewrite a rescheduled meeting's teaching week.

@@ -573,15 +573,15 @@ final class ServerClientTests: XCTestCase {
         XCTAssertTrue(todo.completed)
     }
 
-    func testYoungCalendarDateUsesShanghaiMondayWeek() {
+    func testYoungCalendarDateUsesShanghaiSundayWeek() {
         var calendar = YoungCalendarDate.calendar
         calendar.timeZone = YoungCalendarDate.shanghai
         let sunday = calendar.date(from: DateComponents(year: 2026, month: 9, day: 20))!
-        let monday = YoungCalendarDate.weekStart(sunday)
-        XCTAssertEqual(YoungCalendarDate.dateString(monday), "2026-09-14")
+        let weekStart = YoungCalendarDate.weekStart(sunday)
+        XCTAssertEqual(YoungCalendarDate.dateString(weekStart), "2026-09-20")
 
         let range = YoungCalendarDate.range(for: .week, date: sunday)
-        XCTAssertEqual(range.from, "2026-09-14")
-        XCTAssertEqual(range.to, "2026-09-20")
+        XCTAssertEqual(range.from, "2026-09-20")
+        XCTAssertEqual(range.to, "2026-09-26")
     }
 }

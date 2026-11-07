@@ -78,15 +78,9 @@ extension Date {
         self + DateComponents(year: year, month: month, day: day)
     }
 
-    /// Returns the start of the week (Monday) for this date
-    /// - Returns: Date representing the beginning of the week
+    /// Returns Sunday midnight in the product's Asia/Shanghai calendar.
     func startOfWeek() -> Date {
-        Calendar(identifier: .gregorian)
-            .dateComponents(
-                [.calendar, .yearForWeekOfYear, .weekOfYear],
-                from: self
-            )
-            .date!
+        ProductCalendar.weekRange(containing: self).lowerBound
     }
 }
 

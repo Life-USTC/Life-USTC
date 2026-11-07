@@ -15,16 +15,16 @@ struct CurriculumChartView: View {
     var referenceDate: Date
     var behavior: CurriculumBehavior
 
-    var todayStart: Date { referenceDate.stripTime() }
+    var todayStart: Date { ProductCalendar.dayStart(referenceDate) }
     var weekStart: Date { todayStart.startOfWeek() }
-    var weekEnd: Date { weekStart.add(day: 7) }
+    var weekEnd: Date { ProductCalendar.weekRange(containing: referenceDate).upperBound }
 
     var mergedTimes: [Int] {
         (behavior.shownTimes + behavior.highLightTimes).sorted()
     }
 
     var isCurrentWeek: Bool {
-        (weekStart ... weekEnd).contains(Date().stripTime())
+        ProductCalendar.weekRange(containing: referenceDate).contains(Date())
     }
 
     var body: some View {
@@ -40,7 +40,7 @@ struct CurriculumChartView: View {
                         "End Time",
                         mergedTimes.last!
                     ),
-                    y: .value("Date", Date().stripTime(), unit: .day)
+                    y: .value("Date", ProductCalendar.dayStart(Date()), unit: .day)
                 )
                 .foregroundStyle(Color.accentColor.opacity(0.2))
             }
@@ -56,7 +56,7 @@ struct CurriculumChartView: View {
                         "End Time",
                         behavior.convertTo(lecture.endDate.minutesSinceMidnight)
                     ),
-                    y: .value("Date", lecture.startDate.stripTime(), unit: .day)
+                    y: .value("Date", ProductCalendar.dayStart(lecture.startDate), unit: .day)
                 )
                 .foregroundStyle((lecture.course?.color ?? .mint).opacity(0.4))
                 .annotation(position: .overlay) {
@@ -121,6 +121,8 @@ struct CurriculumChartView: View {
             }
         }
         .chartYScale(domain: weekStart ... weekEnd)
+        .environment(\.calendar, ProductCalendar.calendar)
+        .environment(\.timeZone, ProductCalendar.timeZone)
         .if(lectures.isEmpty) {
             $0
                 .redacted(reason: .placeholder)

@@ -70,9 +70,7 @@ extension Lecture: Comparable {
 
 extension Lecture {
     var isInthisWeek: Bool {
-        let startOfWeek = Date().startOfWeek()
-        let endOfWeek = startOfWeek.add(day: 6)
-        return startOfWeek ... endOfWeek ~= startDate.stripTime()
+        ProductCalendar.weekRange(containing: Date()).contains(startDate)
     }
 
     var isFinished: Bool {
