@@ -68,7 +68,7 @@ final class CalendarSundayNativeRenderTests: XCTestCase {
             // the QA app target. This proves native entry-view rendering,
             // not WidgetKit extension-process/timeline delivery.
             try render(CurriculumWeekWidgetEntryView(entry: CurriculumWeekEntry(), referenceDate: anchor)
-                .modelContainer(container).environment(\.widgetFamily, .systemExtraLarge),
+                .modelContainer(container),
                        name: "widget-entry-view-native-render-\(key)", width: width, height: 320, locale: locale)
         }
         var metadata = config

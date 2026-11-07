@@ -47,21 +47,81 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
 
     @MainActor
     func testPersonalWeekNativeCapture() throws {
+        // The Young fixture synthesizes events from dateFrom. Use the separate
+        // existing workspace handler, whose schedule:901 has a fixed timestamp.
+        fixture.stop()
+        fixture = ServerJourneyHTTPFixture(workspace: true)
+        app.launchEnvironment["UI_TEST_SERVER_URL"] = try fixture.start().absoluteString
+        config["personalFixture"] = "workspace-only-fixed-record"
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         try tap(app.buttons["home_calendar"])
         try waitUntil { self.fixture.requests.contains { $0.path == "/api/workspace/calendar/events" } }
         let request = try XCTUnwrap(fixture.requests.last { $0.path == "/api/workspace/calendar/events" })
-        let key = try XCTUnwrap(request.query["dateFrom"])
         let formatter = civilFormatter()
-        let start = try XCTUnwrap(formatter.date(from: String(key.prefix(10))))
+        let start = try XCTUnwrap(formatter.date(from: String(try XCTUnwrap(request.query["dateFrom"]).prefix(10))))
+        let firstWeekday = try XCTUnwrap(config["expectedFirstWeekday"] as? Int)
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = formatter.timeZone
-        XCTAssertEqual(calendar.component(.weekday, from: start), config["expectedFirstWeekday"] as? Int)
-        XCTAssertTrue(app.staticTexts["calendar_range"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["calendar_day_\(formatter.string(from: start))"].waitForExistence(timeout: 10))
+        let eventDay = try XCTUnwrap(formatter.date(from: "2026-10-23"))
+        let leading = (calendar.component(.weekday, from: eventDay) - firstWeekday + 7) % 7
+        let selectedStart = try XCTUnwrap(calendar.date(byAdding: .day, value: -leading, to: eventDay))
+        let distance = try XCTUnwrap(calendar.dateComponents([.day], from: start, to: selectedStart).day)
+        XCTAssertEqual(distance % 7, 0)
+        guard distance % 7 == 0 && abs(distance / 7) <= 52 else { throw CaptureFailure.unavailable }
+        let direction = distance < 0 ? -1 : 1
+        var current = start
+        for _ in 0..<abs(distance / 7) {
+            current = try XCTUnwrap(calendar.date(byAdding: .day, value: direction * 7, to: current))
+            let expected = formatter.string(from: current)
+            // Each action navigates one actual period, and must produce its
+            // own exact query. An unapplied action fails; it is never repeated.
+            try tap(app.buttons[direction < 0 ? "Previous period" : "Next period"])
+            try waitUntil {
+                let last = self.fixture.requests.last { $0.path == "/api/workspace/calendar/events" }
+                return String((last?.query["dateFrom"] ?? "").prefix(10)) == expected
+                    && self.app.staticTexts["calendar_range"].label.hasPrefix(expected)
+                    && !self.app.activityIndicators.firstMatch.exists
+            }
+        }
+        let selected = try XCTUnwrap(fixture.requests.last { $0.path == "/api/workspace/calendar/events" })
+        let selectedKey = formatter.string(from: selectedStart)
+        XCTAssertEqual(String(try XCTUnwrap(selected.query["dateFrom"]).prefix(10)), selectedKey)
+        XCTAssertEqual(calendar.component(.weekday, from: selectedStart), firstWeekday)
+        let firstHeader = app.staticTexts["calendar_day_\(selectedKey)"]
+        XCTAssertTrue(firstHeader.waitForExistence(timeout: 10))
+        let headerFormatter = DateFormatter()
+        headerFormatter.calendar = calendar
+        headerFormatter.timeZone = formatter.timeZone
+        headerFormatter.locale = Locale(identifier: chinese ? "zh_CN" : "en_US")
+        headerFormatter.setLocalizedDateFormatFromTemplate("EEE MMM d")
+        XCTAssertEqual(firstHeader.label, headerFormatter.string(from: selectedStart))
         try waitUntil { !self.app.activityIndicators.firstMatch.exists }
-        try capture("personal-week")
+        try capture("personal-fixed-week-start")
+
+        let fixedState = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState())
+        let wireRequest = ServerJourneyHTTPFixture.Request(method: "GET", path: "/api/workspace/calendar/events",
+            query: selected.query, headers: [:], body: Data())
+        let response = try XCTUnwrap(fixedState.response(to: wireRequest))
+        XCTAssertEqual(response.status, 200)
+        let body = try XCTUnwrap(response.body as? [String: Any])
+        let records = try XCTUnwrap(body["data"] as? [[String: Any]])
+        let record = try XCTUnwrap(records.first { $0["id"] as? String == "schedule:901" })
+        XCTAssertEqual(record["at"] as? String, "2026-10-23T08:15:00+08:00")
+        XCTAssertEqual(record["endsAt"] as? String, "2026-10-23T09:45:00+08:00")
+        config["fixedRecord"] = record
+        let wire = XCTAttachment(data: try JSONSerialization.data(withJSONObject: body, options: [.prettyPrinted, .sortedKeys]), uniformTypeIdentifier: "public.json")
+        wire.name = "fixed-workspace-handler-response"
+        wire.lifetime = .keepAlways
+        add(wire)
+        let card = app.buttons["workspace_event_schedule:901"]
+        reveal(card)
+        try waitUntil { card.exists && card.isHittable }
+        let timestamp = "2026-10-23 08:15 – 2026-10-23 09:45"
+        XCTAssertTrue(card.label.contains("Server-dated seminar") || card.staticTexts["Server-dated seminar"].exists)
+        XCTAssertTrue(card.label.contains(timestamp) || card.staticTexts[timestamp].exists)
+        retainHierarchy("personal-fixed-record-visible")
+        try capture("personal-fixed-record")
     }
 
     @MainActor
@@ -106,10 +166,29 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         try waitUntil { outer.value as? String == "1" }
         let picker = app.datePickers["young.filters.dateFrom"]
         XCTAssertTrue(picker.waitForExistence(timeout: 10))
-        try tap(picker.buttons.firstMatch)
-        // The retained native image must be independently inspected to accept
-        // the actual popup state; one tap is not itself proof the popup opened.
-        try capture("young-picker-after-single-open-action")
+        retainHierarchy("picker-before-open-action")
+        let trigger = picker.buttons.firstMatch
+        let target = XCTAttachment(string: "identifier=\(trigger.identifier)\nlabel=\(trigger.label)\nvalue=\(String(describing: trigger.value))\nframe=\(trigger.frame)")
+        target.name = "native-picker-opening-target"
+        target.lifetime = .keepAlways
+        add(target)
+        try tap(trigger)
+        retainHierarchy("picker-after-single-open-action")
+        var grid: (labels: [String], firstWeekday: Int)?
+        try waitUntil {
+            grid = self.calendarGrid()
+            return grid != nil
+        }
+        let opened = try XCTUnwrap(grid)
+        if config["arm"] as? String == "after" {
+            XCTAssertEqual(opened.firstWeekday, 1, "The actual native calendar grid must start Sunday")
+            guard opened.firstWeekday == 1 else { throw CaptureFailure.invalidCalendarGrid }
+        }
+        let headers = XCTAttachment(string: "firstWeekday=\(opened.firstWeekday)\n" + opened.labels.joined(separator: " | "))
+        headers.name = "native-picker-visible-weekday-headers"
+        headers.lifetime = .keepAlways
+        add(headers)
+        try capture("young-picker-open-calendar-grid")
     }
 
     @MainActor
@@ -178,5 +257,48 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         return formatter
     }
 
-    private enum CaptureFailure: Error { case unavailable, anchorChanged }
+    @MainActor
+    private func retainHierarchy(_ name: String) {
+        let attachment = XCTAttachment(string: app.debugDescription)
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    /// Require a real date-cell grid and one complete visible weekday-header
+    /// row. Derive labels from the explicit test locale instead of assuming
+    /// whether this iOS release uses narrow, short or full weekday symbols.
+    @MainActor
+    private func calendarGrid() -> (labels: [String], firstWeekday: Int)? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: chinese ? "zh_CN" : "en_US")
+        let symbolSets: [[String]] = [formatter.veryShortStandaloneWeekdaySymbols,
+                                     formatter.shortStandaloneWeekdaySymbols,
+                                     formatter.standaloneWeekdaySymbols]
+        let allowed = Set(symbolSets.flatMap { $0 })
+        let candidates = app.staticTexts.matching(NSPredicate(format: "label IN %@", Array(allowed)))
+            .allElementsBoundByIndex.compactMap { element -> (label: String, frame: CGRect)? in
+                guard element.exists else { return nil }
+                let frame = element.frame
+                guard !frame.isEmpty && frame.intersects(app.frame) else { return nil }
+                return (element.label, frame)
+            }
+        // The original filter sheet has two date-value buttons; a real month
+        // grid supplies at least 28 date buttons. A focused value is insufficient.
+        guard app.buttons.matching(NSPredicate(format: "label MATCHES %@", ".*[0-9].*")).count >= 28 else { return nil }
+        for candidate in candidates {
+            let row = candidates.filter { abs($0.frame.midY - candidate.frame.midY) < 6 }
+                .sorted { $0.frame.midX < $1.frame.midX }.map { $0.label }
+            guard row.count == 7 else { continue }
+            for symbols in symbolSets where symbols.count == 7 {
+                for offset in 0..<7 {
+                    let expected = Array(symbols[offset..<7]) + Array(symbols[0..<offset])
+                    if row == expected { return (row, offset + 1) }
+                }
+            }
+        }
+        return nil
+    }
+
+    private enum CaptureFailure: Error { case unavailable, anchorChanged, invalidCalendarGrid }
 }

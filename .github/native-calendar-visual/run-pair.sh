@@ -34,7 +34,10 @@ for arm in before after; do
   git rev-parse HEAD > "$results_dir/source-sha.txt"
   git ls-tree HEAD -- General/Extensions/DateExtension.swift General/Helpers/ProductCalendar.swift \
     Views/Curriculum/CurriculumDetailView.swift Views/Curriculum/CurriculumWeekViewVertical.swift \
-    Widget/CurriculumWeekWidget.swift Server/ServerYoungModels.swift > "$results_dir/production-source-blobs.txt"
+    Widget/CurriculumWeekWidget.swift Server/ServerYoungModels.swift \
+    Tests/Life-USTC-UITests/ServerJourneyHTTPFixture.swift \
+    Tests/Life-USTC-UITests/WorkspaceLearningHTTPState.swift \
+    Tests/Life-USTC-UITests/YoungCampusHTTPState.swift > "$results_dir/production-source-blobs.txt"
   printf '%s\n' "$GITHUB_SHA" > "$results_dir/carrier-workflow-sha.txt"
   xcodebuild -version > "$results_dir/xcode-version.txt"
   xcrun simctl list devices available > "$results_dir/simulators.txt"
