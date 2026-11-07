@@ -38,7 +38,7 @@ platform :ios do
   desc "Wait for specific TestFlight build to finish processing"
   lane :testflight_wait_for_processing do |options|
     build_number = options[:build_number]
-    UI.user_error!("No build_number provided in options!") unless build_number
+    UI.user_error!("No build_number provided in options!") unless build_number && !build_number.to_s.strip.empty?
 
     setup_ci if is_ci
     app_store_connect_api_key(
