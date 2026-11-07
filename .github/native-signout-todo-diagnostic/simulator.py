@@ -9,17 +9,17 @@ from pathlib import Path
 mode = sys.argv[1]
 device = os.environ['DIAGNOSTIC_DEVICE']
 variant = os.environ['DIAGNOSTIC_VARIANT']
-assert device in ['iPhone', 'iPad']
-assert variant in ['input-ab']
-name = f"Life-USTC input API diagnostic {os.environ['GITHUB_RUN_ID']} {os.environ['GITHUB_RUN_ATTEMPT']} {device} {variant}"
-record_path = Path(os.environ['RUNNER_TEMP'], 'ios140-input-ab-owned-simulator.json')
+assert device == 'iPhone'
+assert variant == 'lifecycle-prefix'
+name = f"Life-USTC lifecycle prefix {os.environ['GITHUB_RUN_ID']} {os.environ['GITHUB_RUN_ATTEMPT']} {device} {variant}"
+record_path = Path(os.environ['RUNNER_TEMP'], 'ios140-lifecycle-owned-simulator.json')
 results = Path(os.environ['GITHUB_WORKSPACE'], 'InputAPIDiagnosticResults')
 results.mkdir(exist_ok=True)
 if mode == 'create':
     record = {'name': name, 'device': device, 'variant': variant, 'udid': None}
     record_path.write_text(json.dumps(record, indent=2) + '\n')  # Before create, including its cancellation window.
     kind = 'iPad Pro 13-inch (M5)' if device == 'iPad' else 'iPhone 17'
-    identifier = subprocess.check_output(['xcrun', 'simctl', 'create', name, kind], text=True).strip()
+    identifier = subprocess.check_output(['xcrun', 'simctl', 'create', name, kind, 'com.apple.CoreSimulator.SimRuntime.iOS-26-5'], text=True).strip()
     record['udid'] = identifier
     record_path.write_text(json.dumps(record, indent=2) + '\n')
     (results / 'owned-simulator.json').write_text(record_path.read_text())

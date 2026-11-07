@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Preserve native objects and reject missing selectors/skips, even with exit 0."""
+"""Original unit414 identities / single original UI case, fail closed on skips."""
 import argparse
+import hashlib
 import json
 import subprocess
 from pathlib import Path
+
+UNIT_IDS_SHA = '4016f2c5fe134a58327ef250abbb798a4db02c39b290a17615cd8822c608e5b4'
+ACCOUNT = 'AccountJourneyTests/testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn'
 
 
 def value(node):
@@ -20,12 +24,23 @@ def walk(node):
             yield from walk(child)
 
 
+def validate(phase, tests):
+    ids = [test['identifier'].removesuffix('()') for test in tests]
+    identity_sha = hashlib.sha256(json.dumps(sorted(ids), separators=(',', ':')).encode()).hexdigest()
+    matches = (len(ids) == 414 and identity_sha == UNIT_IDS_SHA) if phase == 'unit' else ids == [ACCOUNT]
+    return {'phase': phase, 'tests': tests, 'identitySHA256': identity_sha,
+            'selectorSetMatches': matches and len(set(ids)) == len(ids),
+            'zeroSkipped': all(test['status'] in ['Success', 'Failure'] for test in tests),
+            'allSucceeded': bool(tests) and all(test['status'] == 'Success' for test in tests)}
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('phase', choices=['iPhone', 'iPad'])
+    parser.add_argument('phase', choices=['unit', 'keep', 'fresh'])
     parser.add_argument('directory', type=Path)
     args = parser.parse_args()
-    bundle = args.directory / 'ui.xcresult'
+    name = 'unit' if args.phase == 'unit' else 'ui'
+    bundle = args.directory / (name + '.xcresult')
     assert bundle.is_dir(), f'Missing original result bundle: {bundle}'
 
     def read(identifier=None):
@@ -44,29 +59,22 @@ def main():
         plan = read(value(reference))
         (args.directory / f'native-plan-{index}.json').write_text(json.dumps(plan, indent=2) + '\n')
         for node in walk(plan):
-            kind = node.get('_type', {}).get('_name', node.get('_type', {}).get('_n'))
-            if kind != 'ActionTestMetadata':
+            if node.get('_type', {}).get('_name', node.get('_type', {}).get('_n')) != 'ActionTestMetadata':
                 continue
-            identifier = value(node['identifier'])
-            status = value(node['testStatus'])
+            identifier, status = value(node['identifier']), value(node['testStatus'])
             tests.append({'identifier': identifier, 'status': status})
-            result = read(value(node['summaryRef']['id']))
-            path = args.directory / 'native-tests' / identifier.replace('/', '--')
-            path.mkdir(parents=True, exist_ok=True)
-            (path / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
-    expected = {
-        'iPhone': {'AccountJourneyTests/testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn'},
-        'iPad': {'YoungCampusJourneyTests/testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext'},
-    }[args.phase]
-    normalized = {test['identifier'].removesuffix('()') for test in tests}
-    record = {'phase': args.phase, 'tests': tests, 'expected': sorted(expected),
-              'selectorSetMatches': normalized == expected and len(tests) == len(expected),
-              'zeroSkipped': all(test['status'] in ['Success', 'Failure'] for test in tests),
-              'allSucceeded': all(test['status'] == 'Success' for test in tests)}
+            # Raw bundles already retain every original unit summary. Avoid414
+            # redundant subprocess exports; keep UI and failed-unit summaries.
+            if args.phase != 'unit' or status != 'Success':
+                summary = read(value(node['summaryRef']['id']))
+                target = args.directory / 'native-tests' / identifier.replace('/', '--')
+                target.mkdir(parents=True, exist_ok=True)
+                (target / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+    record = validate(args.phase, tests)
     (args.directory / 'native-counts.json').write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps(record, indent=2))
-    assert record['selectorSetMatches'] and record['zeroSkipped'], 'Missing, extra or skipped diagnostic cases'
-    assert record['allSucceeded'], 'Native metadata contains a failed diagnostic case'
+    assert record['selectorSetMatches'] and record['zeroSkipped'] and record['allSucceeded'], \
+        'Missing, extra, duplicate, skipped or failed original cases'
 
 
 if __name__ == '__main__':
