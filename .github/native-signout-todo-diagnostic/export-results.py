@@ -22,7 +22,7 @@ def walk(node):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('phase', choices=['signout', 'fresh-guest', 'todo-target'])
+    parser.add_argument('phase', choices=['iPhone', 'iPad'])
     parser.add_argument('directory', type=Path)
     args = parser.parse_args()
     bundle = args.directory / 'ui.xcresult'
@@ -55,9 +55,8 @@ def main():
             path.mkdir(parents=True, exist_ok=True)
             (path / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
     expected = {
-        'signout': {'ServerJourneyTests/testSignOutRemovesPreviouslyVisibleSubscriptions'},
-        'fresh-guest': {'ServerJourneyTests/testDiagnosticFreshGuestSubscriptionsEntry'},
-        'todo-target': {'WorkspaceJourneyTests/testTodoCreateDeleteRefreshesHomeAndCalendar'},
+        'iPhone': {'AccountJourneyTests/testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn'},
+        'iPad': {'YoungCampusJourneyTests/testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext'},
     }[args.phase]
     normalized = {test['identifier'].removesuffix('()') for test in tests}
     record = {'phase': args.phase, 'tests': tests, 'expected': sorted(expected),

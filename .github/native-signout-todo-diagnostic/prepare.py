@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NEVER MERGE: independent QA copies, exact original source/fixture unchanged."""
+"""NEVER MERGE: four original-case A/B inputs, fixed production source."""
 import argparse
 import difflib
 import hashlib
@@ -9,213 +9,152 @@ import re
 import subprocess
 from pathlib import Path
 
-SOURCE = '7f2a63c21b64a6b1958ad4883dd891a268c987b3'
-TEST_ROOT = Path('Tests/Life-USTC-UITests')
-SIGNOUT = 'testSignOutRemovesPreviouslyVisibleSubscriptions'
-TODO = 'testTodoCreateDeleteRefreshesHomeAndCalendar'
-QA_FILES = {TEST_ROOT / ('Diagnostic' + name) for name in
-            ['ServerJourneyTests.swift', 'WorkspaceJourneyTests.swift']}
-CODE_SUFFIXES = {'.swift', '.m', '.mm', '.c', '.cc', '.cpp', '.h', '.hpp', '.metal'}
+SOURCE = '7897d183f061eba8ac0084f8e4bac74a18460c04'
+ROOT = Path('Tests/Life-USTC-UITests')
+CASES = {
+    'iPhone': ('AccountJourneyTests.swift', 'testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn'),
+    'iPad': ('YoungCampusJourneyTests.swift', 'testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext'),
+}
+CODE = {'.swift', '.m', '.mm', '.c', '.cc', '.cpp', '.h', '.hpp', '.metal'}
 
 
-def guard_source(source, generated_paths, prepared):
-    # A clean working tree can still hide staged edits. Both the index and the
-    # actual build inputs must be checked against the pinned checkout.
-    subprocess.run(['git', 'diff', '--cached', '--exit-code', 'HEAD', '--', '.'],
-                   cwd=source, check=True)
-    protected = ['git', 'diff', '--exit-code', 'HEAD', '--', '.']
-    if prepared:
-        protected += [':!project.yml'] + [':!' + path for path in generated_paths]
-    subprocess.run(protected, cwd=source, check=True)
-    allowed = ({str(path) for path in QA_FILES} | set(generated_paths)) if prepared else set()
-    untracked = subprocess.check_output(
-        ['git', 'ls-files', '--others', '--exclude-standard', '-z'], cwd=source
-    ).decode().split('\0')
-    unexpected = [path for path in untracked if path and path not in allowed
-                  and not path.startswith('SourcePackages/')]
-    assert not unexpected, f'Unexpected untracked source inputs: {unexpected}'
-    tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=source).decode().split('\0'))
-    # Also catch ignored compiler inputs. The single declared external SPM
-    # cache is not an application-source directory and is attested separately.
-    for directory, children, names in os.walk(source, followlinks=False):
-        parent = Path(directory)
-        children[:] = [name for name in children if name != '.git'
-                       and not (parent == source and name == 'SourcePackages')
-                       and not name.endswith('.xcodeproj')]
-        for name in names:
-            path = parent / name
-            relative = str(path.relative_to(source))
-            if path.suffix in CODE_SUFFIXES:
-                assert relative in tracked or (prepared and relative in allowed), \
-                    f'Unexpected compiler input: {relative}'
+def git(source, *args):
+    return subprocess.check_output(['git', *args], cwd=source)
 
 
-def digest(raw):
+def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def method(source, name):
-    start = source.index('    @MainActor\n    func ' + name + '(')
-    end = source.index('\n    @MainActor\n', start + 1)
-    return source[start:end]
+def method(text, name):
+    start = text.index('    @MainActor\n    func ' + name + '(')
+    end = text.index('\n    @MainActor\n', start + 1)
+    return text[start:end]
 
 
-OBSERVE = r'''
-    // QA-only synchronous observations may change timing; never a product fix.
-    @MainActor
-    private func diagnosticObserve(_ phase: String) {
-        XCTContext.runActivity(named: "diagnostic-observation-\(phase)") { _ in
-            let started = ISO8601DateFormatter().string(from: Date())
-            let screenshot = XCTAttachment(screenshot: app.screenshot())
-            screenshot.name = "diagnostic-\(phase)"
-            screenshot.lifetime = .keepAlways
-            add(screenshot)
-            let hierarchy = XCTAttachment(string: app.debugDescription)
-            hierarchy.name = "diagnostic-\(phase)-AX"
-            hierarchy.lifetime = .keepAlways
-            add(hierarchy)
-            diagnosticRequests("\(phase)-requests")
-            let timing = XCTAttachment(string: "started=\(started)\nfinished=\(ISO8601DateFormatter().string(from: Date()))")
-            timing.name = "diagnostic-\(phase)-observation-time"
-            timing.lifetime = .keepAlways
-            add(timing)
+def guard(source, generated, qa, prepared):
+    subprocess.run(['git', 'diff', '--cached', '--exit-code', 'HEAD', '--', '.'], cwd=source, check=True)
+    command = ['git', 'diff', '--exit-code', 'HEAD', '--', '.']
+    if prepared:
+        command += [':!project.yml'] + [':!' + path for path in generated]
+    subprocess.run(command, cwd=source, check=True)
+    allowed = {str(qa), *generated} if prepared else set()
+    untracked = git(source, 'ls-files', '--others', '--exclude-standard', '-z').decode().split('\0')
+    assert not [p for p in untracked if p and p not in allowed and not p.startswith('SourcePackages/')], 'Unexpected untracked input'
+    tracked = set(git(source, 'ls-files', '-z').decode().split('\0'))
+    for directory, children, names in os.walk(source, followlinks=False):
+        parent = Path(directory)
+        children[:] = [p for p in children if p != '.git' and not
+                       (parent == source and (p == 'SourcePackages' or p == 'Life-USTC.xcodeproj'))]
+        for name in children + names:
+            path = parent / name
+            if path.is_symlink() or path.suffix.lower() in CODE:
+                relative = str(path.relative_to(source))
+                assert relative in tracked or (prepared and relative in allowed), f'Unexpected compiler/symlink input: {relative}'
+
+
+def compile_source(original, device, variant):
+    text = original
+    if device == 'iPad':
+        # Original run metadata: device/interface orientation raw3, scale2;
+        # actual native root frame1376x1032. Same early setup gate in A and B.
+        marker = '        app.launchEnvironment["UI_TEST_SERVER_ACCESS_TOKEN"] = ServerJourneyHTTPFixture.token\n'
+        assert text.count(marker) == 1
+        text = text.replace(marker, marker + '        XCUIDevice.shared.orientation = .landscapeLeft\n        XCTAssertEqual(XCUIDevice.shared.orientation.rawValue, 3)\n', 1)
+        marker = '    private func openYoung() {\n'
+        assert text.count(marker) == 1
+        text = text.replace(marker, marker + '''        let diagnosticFrame = app.frame
+        XCTAssertEqual(diagnosticFrame.width, 1376, accuracy: 0.5)
+        XCTAssertEqual(diagnosticFrame.height, 1032, accuracy: 0.5)
+        let frameEvidence = XCTAttachment(string: "orientation=3;frame=\\(diagnosticFrame)")
+        frameEvidence.name = "diagnostic-original-landscape-frame"
+        frameEvidence.lifetime = .keepAlways
+        add(frameEvidence)
+''', 1)
+    if variant == 'B' and device == 'iPhone':
+        old = '        done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()\n'
+        assert text.count(old) == 1
+        text = text.replace(old, '        done.tap()\n', 1)
+    elif variant == 'B':
+        marker = '    private var app: XCUIApplication!\n'
+        assert text.count(marker) == 1
+        text = text.replace(marker, marker + '    private var diagnosticActiveTrueOption = false\n', 1)
+        marker = '        open("young.filters.\\(field)")\n        open(value)\n'
+        assert text.count(marker) == 1
+        text = text.replace(marker, '''        open("young.filters.\\(field)")
+        diagnosticActiveTrueOption = field == "active" && value == "In source signup list"
+        defer { diagnosticActiveTrueOption = false }
+        open(value)
+''', 1)
+        start = text.index('    private func open(_ id: String,')
+        end = text.index('\n    @MainActor\n', start + 1)
+        original_open = text[start:end]
+        marker = '        button.tap()\n    }\n'
+        assert original_open.count(marker) == 1
+        changed_open = original_open.replace(marker, '''        if diagnosticActiveTrueOption && id == "In source signup list" {
+            button.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        } else {
+            button.tap()
         }
     }
-
-    private func diagnosticRequests(_ phase: String) {
-        let records: [[String: Any]] = fixture.requests.map { request in
-            ["method": request.method, "path": request.path, "query": request.query,
-             "headers": request.headers, "jsonBody": request.jsonBody]
-        }
-        do {
-            let data = try JSONSerialization.data(withJSONObject: records, options: [.prettyPrinted, .sortedKeys])
-            let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.json")
-            attachment.name = "diagnostic-\(phase)"
-            attachment.lifetime = .keepAlways
-            add(attachment)
-        } catch {
-            XCTFail("Cannot serialize real diagnostic fixture requests: \(error)")
-        }
-    }
-'''
-
-FRESH = r'''
-    @MainActor
-    func testDiagnosticFreshGuestSubscriptionsEntry() throws {
-        app.launch()
-        open("home_subscriptions")
-        XCTAssertTrue(app.buttons["subscriptions_sign_in"].waitForExistence(timeout: 10))
-        XCTAssertFalse(app.buttons["subscription_43"].exists)
-        XCTAssertFalse(fixture.requests.contains { $0.path.hasPrefix("/api/workspace/") })
-        XCTAssertFalse(fixture.requests.contains { $0.headers["authorization"] != nil })
-        XCTAssertTrue(fixture.requests.allSatisfy { $0.method == "GET" })
-    }
-'''
-
-
-def compile_source(original, variant):
-    if variant == 'todo-target':
-        # Apply only the reviewed candidate to a temporary copy, never tracked source.
-        patch = Path(__file__).with_name('todo-period.patch').read_bytes()
-        # Exact hunk application in memory: reject drift/context mismatch.
-        lines = original.splitlines(keepends=True)
-        output, position = [], 0
-        for line in patch.decode().splitlines(keepends=True):
-            if line.startswith(('---', '+++')):
-                continue
-            if line.startswith('@@'):
-                start = int(re.match(r'@@ -(\d+)', line).group(1)) - 1
-                assert start >= position
-                output.extend(lines[position:start]); position = start
-            elif line.startswith(' '):
-                assert lines[position] == line[1:]
-                output.append(line[1:]); position += 1
-            elif line.startswith('-'):
-                assert lines[position] == line[1:]
-                position += 1
-            elif line.startswith('+'):
-                output.append(line[1:])
-            else:
-                raise AssertionError(line)
-        return ''.join(output + lines[position:])
-    assert variant == 'signout'
-    compiled = original
-    if variant == 'signout':
-        compiled = compiled.replace('    private var app: XCUIApplication!\n',
-                                    '    private var app: XCUIApplication!\n    private var diagnosticSubscriptionTap = 0\n', 1)
-        before = '        button.tap()\n    }\n'
-        after = '''        if identifier == "home_subscriptions" {
-            diagnosticSubscriptionTap += 1
-            diagnosticObserve("subscriptions-\\(diagnosticSubscriptionTap)-before-tap")
-        }
-        button.tap()
-    }
-'''
-        assert compiled.count(before) == 1
-        compiled = compiled.replace(before, after, 1)
-    # Retain teardown for success as well; this is after all original assertions.
-    before = '        if (testRun?.failureCount ?? 0) > 0 {\n'
-    assert compiled.count(before) == 1
-    compiled = compiled.replace(before, '        if true { // QA: preserve post-case evidence for success and failure.\n', 1)
-    before = '        app?.terminate()\n'
-    assert compiled.count(before) == 1
-    compiled = compiled.replace(before, '        diagnosticRequests("teardown-requests")\n' + before, 1)
-    assert compiled.endswith('}\n')
-    compiled = compiled[:-2] + OBSERVE + FRESH + '}\n'
-    assert method(compiled, SIGNOUT) == method(original, SIGNOUT)
-    return compiled
+''', 1)
+        text = text[:start] + changed_open + text[end:]
+    assert method(text, CASES[device][1]) == method(original, CASES[device][1])
+    return text
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--source', type=Path, required=True)
-    parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--verify-only', action='store_true')
-    args = parser.parse_args()
-    args.output.mkdir(parents=True, exist_ok=True)
-    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=args.source, text=True).strip() == SOURCE
-    original_project = subprocess.check_output(['git', 'show', 'HEAD:project.yml'], cwd=args.source, text=True)
-    generated_paths = [path.strip().strip('"') for path in re.findall(
-        r'^    (?:info|entitlements):\n      path: ([^\n]+)$', original_project, re.M)]
-    guard_source(args.source, generated_paths, args.verify_only)
+    p = argparse.ArgumentParser()
+    p.add_argument('mode', choices=['prepare', 'verify', 'cleanup'])
+    p.add_argument('--source', type=Path, required=True)
+    p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--device', choices=CASES, required=True)
+    p.add_argument('--variant', choices=['A', 'B'], required=True)
+    args = p.parse_args()
+    source = args.source.resolve()
+    assert git(source, 'rev-parse', 'HEAD').decode().strip() == SOURCE
+    filename, case = CASES[args.device]
+    original_path = ROOT / filename
+    qa = ROOT / ('Diagnostic' + filename)
+    original = git(source, 'show', 'HEAD:' + str(original_path))
+    compiled = compile_source(original.decode(), args.device, args.variant).encode()
+    project = git(source, 'show', 'HEAD:project.yml').decode()
+    generated = [s.strip().strip('"') for s in re.findall(r'^    (?:info|entitlements):\n      path: ([^\n]+)$', project, re.M)]
+    guard(source, generated, qa, args.mode != 'prepare')
     marker = '      - path: "Tests/Life-USTC-UITests"\n'
-    assert original_project.count(marker) == 1
-    project = original_project.replace(marker, marker + '        excludes: ["ServerJourneyTests.swift", "WorkspaceJourneyTests.swift"]\n', 1)
-    if args.verify_only:
-        (args.output / 'post-build-tracked.diff').write_text(subprocess.check_output(['git', 'diff'], cwd=args.source, text=True))
-        assert (args.source / 'project.yml').read_text() == project
-        for filename, variant in [('ServerJourneyTests.swift', 'signout'), ('WorkspaceJourneyTests.swift', 'todo-target')]:
-            test = TEST_ROOT / filename
-            original = subprocess.check_output(['git', 'show', 'HEAD:' + str(test)], cwd=args.source)
-            assert (args.source / test).read_bytes() == original
-            assert (args.source / test.with_name('Diagnostic' + test.name)).read_text() == compile_source(original.decode(), variant)
-        return
-    (args.source / 'project.yml').write_text(project)
-    records = []
-    for filename, variant, name in [('ServerJourneyTests.swift', 'signout', SIGNOUT), ('WorkspaceJourneyTests.swift', 'todo-target', TODO)]:
-        test = TEST_ROOT / filename
-        qa_test = test.with_name('Diagnostic' + test.name)
-        original = subprocess.check_output(['git', 'show', 'HEAD:' + str(test)], cwd=args.source)
-        assert (args.source / test).read_bytes() == original
-        compiled = compile_source(original.decode(), variant)
-        (args.source / qa_test).write_text(compiled)
-        record = {'sourceSHA': SOURCE, 'variant': variant, 'originalTestGitBlob': subprocess.check_output(
-            ['git', 'rev-parse', 'HEAD:' + str(test)], cwd=args.source, text=True).strip(),
-            'originalTestSHA256': digest(original), 'compiledQATestSHA256': digest(compiled.encode()),
-            'originalCaseSHA256': digest(method(original.decode(), name).encode()),
-            'compiledCaseSHA256': digest(method(compiled, name).encode()),
-            'originalCaseByteIdentical': method(original.decode(), name) == method(compiled, name),
-            'xcodegenDeclaredOutputs': generated_paths,
-            'timingLimitation': 'Pre-tap native PNG+AX reads can alter timing; after-case evidence follows all original assertions. Isolated passes do not establish full-suite cause/fix.',
-            'scope': 'Original tracked tests, production/fixtures/owner identity unchanged; QA-copy target membership only.'}
-        records.append(record)
-        (args.output / ('original-' + test.name)).write_bytes(original)
-        (args.output / ('compiled-QA-' + test.name)).write_text(compiled)
-        (args.output / ('qa-' + test.name + '.diff')).write_text(''.join(difflib.unified_diff(original.decode().splitlines(True), compiled.splitlines(True), fromfile=str(test), tofile=str(qa_test))))
-    (args.output / 'provenance.json').write_text(json.dumps(records, indent=2) + '\n')
-    (args.output / 'qa-target-membership.diff').write_text(''.join(difflib.unified_diff(original_project.splitlines(True), project.splitlines(True), fromfile='project.yml', tofile='project.yml')))
-    guard_source(args.source, generated_paths, True)
-    print(json.dumps(records, indent=2))
+    assert project.count(marker) == 1
+    expected = project.replace(marker, marker + f'        excludes: ["{filename}"]\n', 1)
+    args.output.mkdir(parents=True, exist_ok=True)
+    if args.mode == 'prepare':
+        assert not (source / qa).exists()
+        (source / qa).write_bytes(compiled)
+        (source / 'project.yml').write_text(expected)
+        record = {'sourceSHA': SOURCE, 'device': args.device, 'variant': args.variant,
+                  'selector': filename.removesuffix('.swift') + '/' + case,
+                  'originalTestGitBlob': git(source, 'rev-parse', 'HEAD:' + str(original_path)).decode().strip(),
+                  'originalTestSHA256': sha(original), 'compiledQATestSHA256': sha(compiled),
+                  'originalCaseSHA256': sha(method(original.decode(), case).encode()),
+                  'compiledCaseSHA256': sha(method(compiled.decode(), case).encode()),
+                  'originalCaseByteIdentical': True, 'xcodegenDeclaredOutputs': generated,
+                  'interpretation': 'One isolated original case per variant. A/B API sensitivity is not a production fix, historical cause or full-suite acceptance.'}
+        (args.output / 'provenance.json').write_text(json.dumps(record, indent=2) + '\n')
+        (args.output / ('original-' + filename)).write_bytes(original)
+        (args.output / ('compiled-QA-' + filename)).write_bytes(compiled)
+        (args.output / 'qa-source.diff').write_text(''.join(difflib.unified_diff(original.decode().splitlines(True), compiled.decode().splitlines(True), fromfile=str(original_path), tofile=str(qa))))
+        (args.output / 'qa-target-membership.diff').write_text(''.join(difflib.unified_diff(project.splitlines(True), expected.splitlines(True), fromfile='project.yml', tofile='project.yml')))
+    assert (source / original_path).read_bytes() == original
+    assert (source / qa).read_bytes() == compiled
+    assert (source / 'project.yml').read_text() == expected
+    guard(source, generated, qa, True)
+    if args.mode != 'prepare':
+        (args.output / 'post-build-tracked.diff').write_bytes(git(source, 'diff', 'HEAD'))
+    if args.mode == 'cleanup':
+        tracked = set(git(source, 'ls-files', '-z').decode().split('\0'))
+        subprocess.run(['git', 'restore', '--source=HEAD', '--worktree', '--', 'project.yml',
+                        *[path for path in generated if path in tracked]], cwd=source, check=True)
+        for path in [str(qa)] + [path for path in generated if path not in tracked]:
+            (source / path).unlink(missing_ok=True)
+        guard(source, generated, qa, False)
 
 
 if __name__ == '__main__':

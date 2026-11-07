@@ -1,44 +1,57 @@
 #!/usr/bin/env bash
-# NEVER MERGE: one build, independent test processes, no retry/publish.
+# NEVER MERGE: original full cases, A/B once each; no release or runtime retry.
 set -euo pipefail
 source_dir="$GITHUB_WORKSPACE/source"
 carrier_dir="$GITHUB_WORKSPACE/.github/native-signout-todo-diagnostic"
-results="$GITHUB_WORKSPACE/SignOutTodoDiagnosticResults"
-mkdir -p "$results"
-test "$(git -C "$source_dir" rev-parse HEAD)" = 7f2a63c21b64a6b1958ad4883dd891a268c987b3
-git -C "$GITHUB_WORKSPACE" rev-parse HEAD > "$results/carrier-sha.txt"
-test "$(cat "$results/carrier-sha.txt")" = "$GITHUB_SHA"
-printf '%s\n' 7f2a63c21b64a6b1958ad4883dd891a268c987b3 > "$results/source-sha.txt"
-shasum -a 256 "$carrier_dir"/* "$GITHUB_WORKSPACE/.github/workflows/ci.yaml" \
-  "$GITHUB_WORKSPACE/.github/workflows/screenshot.yaml" > "$results/carrier-sha256.txt"
+results="$GITHUB_WORKSPACE/InputAPIDiagnosticResults"
 mkdir -p "$results/carrier"
-cp "$carrier_dir"/* "$results/carrier/"
-cp "$GITHUB_WORKSPACE/.github/workflows/ci.yaml" "$results/carrier/ci.yaml"
-cp "$GITHUB_WORKSPACE/.github/workflows/screenshot.yaml" "$results/carrier/screenshot.yaml"
+test "$(git -C "$source_dir" rev-parse HEAD)" = 7897d183f061eba8ac0084f8e4bac74a18460c04
+test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+printf '%s\n' "$GITHUB_SHA" > "$results/carrier-sha.txt"
+printf '%s\n' 7897d183f061eba8ac0084f8e4bac74a18460c04 > "$results/source-sha.txt"
+# Inherited todo-period.patch is inactive: this source already has the canonical
+# Todo precondition. Only these four scripts and two workflows run this carrier.
+for file in prepare.py run.sh simulator.py export-results.py; do cp "$carrier_dir/$file" "$results/carrier/"; done
+cp .github/workflows/ci.yaml .github/workflows/screenshot.yaml "$results/carrier/"
+shasum -a 256 "$results/carrier"/* > "$results/carrier-sha256.txt"
 xcodebuild -version > "$results/xcode-version.txt"
 xcrun xcresulttool version > "$results/xcresulttool-version.txt"
-git -C "$source_dir" ls-tree -r HEAD -- App General Server Views Tests > "$results/original-source-blobs.txt"
-printf '{"build":"not_started","signout":"not_started","fresh-guest":"not_started","todo-target":"not_started"}\n' > "$results/outcomes.json"
-python3 "$carrier_dir/prepare.py" --source "$source_dir" --output "$results/prepared"
+git -C "$source_dir" ls-tree -r HEAD > "$results/original-source-blobs.txt"
+python3 - "$results" <<'PY_RUNTIME'
+import json,os,subprocess
+from pathlib import Path
+out=Path(__import__('sys').argv[1]);owner=json.loads((out/'owned-simulator.json').read_text())
+groups=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','--json']))['devices']
+matched=[(key,item)for key,items in groups.items()for item in items if item['udid']==owner['udid']]
+assert len(matched)==1 and matched[0][1]['name']==owner['name']
+runtimes=json.loads(subprocess.check_output(['xcrun','simctl','list','runtimes','--json']))['runtimes']
+runtime=[item for item in runtimes if item['identifier']==matched[0][0]];assert len(runtime)==1
+(out/'runtime.json').write_text(json.dumps({'ownedDevice':owner,'runtime':runtime[0],'locale':'en_US','sourceSHA':'7897d183f061eba8ac0084f8e4bac74a18460c04','scope':'iPhone original portrait; iPad QA setUp raw orientation3 and original-case early frame1376x1032 gate in both arms'},indent=2)+'\n')
+PY_RUNTIME
+case "$DIAGNOSTIC_DEVICE" in
+  iPhone) selector='-only-testing:Life-USTC-UITests/AccountJourneyTests/testAccountManagementOpensSupportedWebsitePagesAndRefreshesProfileOnReturn' ;;
+  iPad) selector='-only-testing:Life-USTC-UITests/YoungCampusJourneyTests/testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext' ;;
+  *) exit 2 ;;
+esac
+overall_status=0
 cd "$source_dir"
-xcodegen --spec project.yml
-selectors=(
-  '-only-testing:Life-USTC-UITests/ServerJourneyTests/testSignOutRemovesPreviouslyVisibleSubscriptions'
-  '-only-testing:Life-USTC-UITests/ServerJourneyTests/testDiagnosticFreshGuestSubscriptionsEntry'
-  '-only-testing:Life-USTC-UITests/WorkspaceJourneyTests/testTodoCreateDeleteRefreshesHomeAndCalendar'
-)
-if xcodebuild build-for-testing -project Life-USTC.xcodeproj -scheme Life-USTC-UITests \
-  -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" -parallel-testing-enabled NO \
-  "${selectors[@]}" -clonedSourcePackagesDirPath SourcePackages \
-  -derivedDataPath "$RUNNER_TEMP/ios140-signout-todo-derived" \
-  -resultBundlePath "$results/build.xcresult" -quiet > "$results/build.log" 2>&1; then
-  build_status=0
-else
-  build_status=$?
-fi
-# Record the resolution actually used by this build. A project.yml cache key
-# alone does not establish dependency equivalence with the failed original run.
-python3 - "$source_dir" "$results" "$build_status" <<'PY'
+for variant in A B; do
+  output="$results/$variant"
+  mkdir -p "$output"
+  args=(--source "$source_dir" --output "$output" --device "$DIAGNOSTIC_DEVICE" --variant "$variant")
+  python3 "$carrier_dir/prepare.py" prepare "${args[@]}"
+  xcodegen --spec project.yml
+  python3 "$carrier_dir/prepare.py" verify "${args[@]}"
+  if xcodebuild build-for-testing -project Life-USTC.xcodeproj -scheme Life-USTC-UITests \
+    -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" -parallel-testing-enabled NO "$selector" \
+    -clonedSourcePackagesDirPath SourcePackages -derivedDataPath "$RUNNER_TEMP/ios140-input-ab-derived" \
+    -resultBundlePath "$output/build.xcresult" -quiet > "$output/build.log" 2>&1; then
+    build_status=0
+  else
+    build_status=$?
+    overall_status=1
+  fi
+  if python3 - "$source_dir" "$output" "$build_status" <<'PY_RESOLUTION'
 import hashlib,json,shutil,sys
 from pathlib import Path
 source,results=map(Path,sys.argv[1:3]); records=[]
@@ -67,44 +80,56 @@ for index,path in enumerate(paths):
 (target/'actual-resolution-summary.json').write_text(json.dumps(records,indent=2)+'\n')
 if int(sys.argv[3])==0:
     assert any(row.get('pins') for row in records),'Successful build lacks actual Package.resolved pins'
-PY
-python3 - "$results/outcomes.json" "$build_status" <<'PY'
+PY_RESOLUTION
+  then resolution_status=0; else resolution_status=$?; overall_status=1; fi
+  native_status=not_started
+  counts_status=not_started
+  if [[ "$build_status" == 0 ]]; then
+    # Only the owned simulator's app is removed. Verify actual absence before
+    # Xcode reinstalls the freshly built app for this independent test runner.
+    xcrun simctl uninstall "$TEST_DEVICE_ID" dev.tiankaima.Life-USTC >/dev/null 2>&1 || true
+    python3 - "$TEST_DEVICE_ID" <<'PY_APP'
+import plistlib,subprocess,sys
+raw=subprocess.check_output(['xcrun','simctl','listapps',sys.argv[1]])
+xml=subprocess.check_output(['plutil','-convert','xml1','-o','-','-'],input=raw)
+apps=plistlib.loads(xml)
+assert 'dev.tiankaima.Life-USTC' not in apps,'QA app still installed before original case'
+PY_APP
+    if xcodebuild test-without-building -project Life-USTC.xcodeproj -scheme Life-USTC-UITests \
+      -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" -parallel-testing-enabled NO "$selector" \
+      -clonedSourcePackagesDirPath SourcePackages -derivedDataPath "$RUNNER_TEMP/ios140-input-ab-derived" \
+      -resultBundlePath "$output/ui.xcresult" -quiet > "$output/xcodebuild.log" 2>&1; then
+      native_status=0
+    else
+      native_status=$?
+      overall_status=1
+    fi
+    if python3 "$carrier_dir/export-results.py" "$DIAGNOSTIC_DEVICE" "$output" > "$output/export.log" 2>&1; then
+      counts_status=0
+    else
+      counts_status=$?
+      overall_status=1
+    fi
+  fi
+  # Persist observed results before a source guard can fail closed.
+  python3 - "$output" "$build_status" "$native_status" "$counts_status" "$resolution_status" <<'PY_OUTCOME'
 import json,sys
 from pathlib import Path
-p=Path(sys.argv[1]);d=json.loads(p.read_text());d['build']={'exitCode':int(sys.argv[2])};p.write_text(json.dumps(d,indent=2)+'\n')
-PY
-if [[ "$build_status" != 0 ]]; then exit "$build_status"; fi
-overall_status=0
-for phase in signout fresh-guest todo-target; do
-  output="$results/$phase"
-  mkdir -p "$output"
-  case "$phase" in
-    signout) selector="${selectors[0]}" ;;
-    fresh-guest) selector="${selectors[1]}" ;;
-    todo-target) selector="${selectors[2]}" ;;
-  esac
-  # Each selector gets its own runner/app lifecycle and xcresult; failures do not
-  # prevent other cases. The fixed already-built source/test bundle is shared.
-  if xcodebuild test-without-building -project Life-USTC.xcodeproj -scheme Life-USTC-UITests \
-    -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" -parallel-testing-enabled NO \
-    "$selector" -clonedSourcePackagesDirPath SourcePackages -derivedDataPath "$RUNNER_TEMP/ios140-signout-todo-derived" \
-    -resultBundlePath "$output/ui.xcresult" -quiet > "$output/xcodebuild.log" 2>&1; then
-    native_status=0
-  else
-    native_status=$?
-    overall_status=1
-  fi
-  if python3 "$carrier_dir/export-results.py" "$phase" "$output" > "$output/export.log" 2>&1; then
-    counts_status=0
-  else
-    counts_status=$?
-    overall_status=1
-  fi
-  python3 - "$results/outcomes.json" "$phase" "$native_status" "$counts_status" <<'PY'
-import json,sys
-from pathlib import Path
-p=Path(sys.argv[1]);d=json.loads(p.read_text());d[sys.argv[2]]={'xcodebuildExitCode':int(sys.argv[3]),'countsExportExitCode':int(sys.argv[4])};p.write_text(json.dumps(d,indent=2)+'\n')
-PY
-  python3 "$carrier_dir/prepare.py" --source "$source_dir" --output "$results/prepared" --verify-only
+p=Path(sys.argv[1]);values=[int(x)if x!='not_started'else x for x in sys.argv[2:]]
+(p/'outcomes.json').write_text(json.dumps(dict(zip(['buildExitCode','xcodebuildExitCode','countsExportExitCode','resolutionExitCode'],values)),indent=2)+'\n')
+PY_OUTCOME
+  python3 "$carrier_dir/prepare.py" verify "${args[@]}"
+  python3 "$carrier_dir/prepare.py" cleanup "${args[@]}"
 done
+if ! python3 - "$results" <<'PY_PAIR'
+import json,sys
+from pathlib import Path
+p=Path(sys.argv[1]);lists=[]
+for variant in ['A','B']:
+ rows=json.loads((p/variant/'dependency-resolution/actual-resolution-summary.json').read_text())
+ pins=[row['pins']for row in rows if row.get('pins')];assert pins and all(x==pins[0]for x in pins)
+ lists.append(pins[0])
+assert lists[0]==lists[1],'A/B actual dependency pins differ; no matched input-API comparison'
+PY_PAIR
+then overall_status=1; fi
 exit "$overall_status"

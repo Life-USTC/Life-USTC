@@ -1,16 +1,16 @@
 name: CI
 
-# NEVER MERGE: manual-only exact-source SignOut/Todo diagnostic carrier.
+# NEVER MERGE: manual-only exact-source Account/Young input API diagnostic carrier.
 on:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: ios140-signout-todo-diagnostic-${{ github.ref }}
+  group: ios140-input-api-diagnostic-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   diagnostic:
-    name: SignOut/Todo diagnosis (${{ matrix.device }})
+    name: Input API diagnosis (${{ matrix.device }})
     runs-on: macos-26
     timeout-minutes: 60
     strategy:
@@ -20,29 +20,29 @@ jobs:
         device: [iPhone, iPad]
     env:
       DIAGNOSTIC_DEVICE: ${{ matrix.device }}
-      DIAGNOSTIC_VARIANT: combined
+      DIAGNOSTIC_VARIANT: input-ab
     steps:
       - name: Checkout the never-merge diagnostic carrier
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Checkout exact failed source7f2
+      - name: Checkout exact failed source7897
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: 7f2a63c21b64a6b1958ad4883dd891a268c987b3
+          ref: 7897d183f061eba8ac0084f8e4bac74a18460c04
           path: source
           persist-credentials: false
       - name: Cache original Swift packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: source/SourcePackages
-          key: ios140-signout-todo-spm-${{ runner.os }}-${{ hashFiles('source/project.yml') }}
+          key: ios140-input-api-spm-${{ runner.os }}-${{ hashFiles('source/project.yml') }}
       - name: Prepare native tools and exactly owned simulator
         run: |
           brew install xcodegen
           xcodebuild -version
           python3 .github/native-signout-todo-diagnostic/simulator.py create
-      - name: Build once and run three independent cases without retry
+      - name: Build and execute each original A/B case once without retry
         run: bash .github/native-signout-todo-diagnostic/run.sh
       - name: Delete only this job's owned simulator
         if: always()
@@ -51,6 +51,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ios140-signout-todo-${{ matrix.device }}-${{ github.run_id }}
-          path: SignOutTodoDiagnosticResults/
+          name: ios140-input-api-${{ matrix.device }}-${{ github.run_id }}
+          path: InputAPIDiagnosticResults/
           if-no-files-found: error
