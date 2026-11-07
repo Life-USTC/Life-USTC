@@ -14,6 +14,7 @@ Compact rows and detail headers use this same semantic order. Detail headers inc
 - Course catalog and course detail share `ServerCourseIdentityView`.
 - Catalog, course history, teacher history and import preview share `ServerSectionRow`.
 - Section detail and subscriptions use the same `ServerSectionIdentityView` through their existing response types.
+- Public schedule results use it with only the teachers available for that schedule entry; the independent teacher/participation links and time/place facts remain outside the identity.
 - Detail facts, teacher links, history indicators, subscription role controls and authentication affordances retain their existing ownership.
 
 ## Visual and interaction review
