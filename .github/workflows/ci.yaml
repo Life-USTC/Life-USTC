@@ -31,7 +31,7 @@ jobs:
         id: should_deploy
 
   test:
-    name: Diagnose original PR 138 filter case
+    name: Diagnose original PR 138 filter class context
     if: github.event_name == 'workflow_dispatch' && inputs.beta == false
     runs-on: macos-26
     timeout-minutes: 120
@@ -94,7 +94,7 @@ jobs:
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-UITests \
             -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
-            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests/testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext \
+            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
@@ -103,7 +103,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ios138-filter-native-${{ github.run_id }}
+          name: ios138-filter-class-native-${{ github.run_id }}
           if-no-files-found: error
           path: TestResults/
 
