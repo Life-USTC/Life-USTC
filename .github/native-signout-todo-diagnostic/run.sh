@@ -68,13 +68,15 @@ PY_KEEP
   fi
   scheme=Life-USTC-UITests
   bundle=ui
-  selection=("$selector")
-  if [[ "$phase" == unit ]]; then scheme=Life-USTC-Tests; bundle=unit; selection=(); fi
+  if [[ "$phase" == unit ]]; then scheme=Life-USTC-Tests; bundle=unit; fi
   # Same canonical xcodebuild test form and default derived data as the full gate.
-  if xcodebuild test -project Life-USTC.xcodeproj -scheme "$scheme" \
-    -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" "${selection[@]}" \
-    -clonedSourcePackagesDirPath SourcePackages -resultBundlePath "$output/$bundle.xcresult" \
-    -quiet > "$output/xcodebuild.log" 2>&1; then native_status=0; else native_status=$?; overall_status=1; fi
+  # Keep the argument array nonempty: macOS Bash3.2 treats an empty array as
+  # unset under nounset. The unit command has no only-testing selector.
+  command=(xcodebuild test -project Life-USTC.xcodeproj -scheme "$scheme"
+    -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID"
+    -clonedSourcePackagesDirPath SourcePackages -resultBundlePath "$output/$bundle.xcresult" -quiet)
+  if [[ "$phase" != unit ]]; then command+=("$selector"); fi
+  if "${command[@]}" > "$output/xcodebuild.log" 2>&1; then native_status=0; else native_status=$?; overall_status=1; fi
   if python3 "$carrier_dir/export-results.py" "$phase" "$output" > "$output/export.log" 2>&1; then
     counts_status=0
   else counts_status=$?; overall_status=1; fi
