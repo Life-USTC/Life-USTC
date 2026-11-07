@@ -62,19 +62,6 @@ final class AccountJourneyTests: XCTestCase {
         launchAccount()
         try open("settings_account_management")
         try open("account_app_activity")
-        let activityPath = "/api/account/client-activity"
-        let entered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            self.requestCount("GET", activityPath) > 0
-        }, object: nil)
-        if XCTWaiter.wait(for: [entered], timeout: 10) != .completed {
-            // Navigation can leave the source page mounted after an unapplied tap.
-            // Repeat only before any activity read and while still on that page.
-            if requestCount("GET", activityPath) == 0
-                && app.navigationBars["Account Management"].exists
-                && app.buttons["account_app_activity"].isHittable {
-                try open("account_app_activity")
-            }
-        }
         waitForRequest("GET", "/api/account/client-activity", query: ["limit": "30"])
         XCTAssertTrue(app.navigationBars["This App's Activity"].waitForExistence(timeout: 10))
         assertText("Comment posted")
@@ -133,21 +120,13 @@ final class AccountJourneyTests: XCTestCase {
         XCTAssertTrue(done.waitForExistence(timeout: 10))
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
-        for _ in 0..<2 {
-            let ready = XCTNSPredicateExpectation(
-                predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
-            guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
-                XCTFail("The website close control should be actionable")
-                return
-            }
-            done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-            let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                !browser.exists || !browser.isHittable
-            }, object: nil)
-            if XCTWaiter.wait(for: [dismissed], timeout: 10) == .completed { break }
-            // Retry only while the browser and its close control remain actionable.
-            guard browser.exists && browser.isHittable && done.exists && done.isHittable else { break }
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
+        guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+            XCTFail("The website close control should be actionable")
+            return
         }
+        done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let management = app.navigationBars["Account Management"]
         let page = app.buttons[pageID]
         waitUntil {
@@ -155,7 +134,8 @@ final class AccountJourneyTests: XCTestCase {
                 && !page.frame.isEmpty && page.frame.intersects(self.app.frame)
                 && (!browser.exists || !browser.isHittable)
         }
-        XCTAssertTrue(management.waitForExistence(timeout: 10))
+        // The composite wait above already includes this exact presence check.
+        XCTAssertTrue(management.exists)
     }
 
     @MainActor

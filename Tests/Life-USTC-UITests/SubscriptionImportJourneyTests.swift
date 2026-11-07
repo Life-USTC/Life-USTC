@@ -188,13 +188,8 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     @MainActor
     private func openImport() async throws {
         let semester = app.buttons["subscription_import_semester"]
-        for _ in 0..<2 {
-            try await open("subscriptions_import_codes")
-            if semester.waitForExistence(timeout: 10) { return }
-            // Repeat navigation only while its source remains visible.
-            guard !app.textViews["subscription_import_input"].exists
-                && app.buttons["subscriptions_import_codes"].isHittable else { break }
-        }
+        try await open("subscriptions_import_codes")
+        if semester.waitForExistence(timeout: 10) { return }
         XCTFail("Course-code import should open before choosing a semester")
         throw InteractionFailure.unavailableControl
     }

@@ -78,22 +78,19 @@ final class E2ETests: XCTestCase {
         let done = app.buttons["onboarding_done_button"]
         let close = app.buttons["onboarding_close_button"]
         let completion = done.waitForExistence(timeout: 5) ? done : close
-        for _ in 0..<2 {
-            let ready = XCTNSPredicateExpectation(
-                predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"),
-                object: completion)
-            guard XCTWaiter.wait(for: [ready], timeout: 5) == .completed else {
-                XCTFail("Onboarding completion should be reachable")
-                return
-            }
-            completion.tap()
-            let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                !done.exists && !close.exists
-            }, object: nil)
-            if XCTWaiter.wait(for: [dismissed], timeout: 5) == .completed { return }
-            // Retry dismissal once only while the onboarding sheet remains mounted.
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"),
+            object: completion)
+        guard XCTWaiter.wait(for: [ready], timeout: 5) == .completed else {
+            XCTFail("Onboarding completion should be reachable")
+            return
         }
-        XCTFail("Onboarding should dismiss before tab navigation")
+        completion.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !done.exists && !close.exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed,
+                       "Onboarding should dismiss before tab navigation")
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.
