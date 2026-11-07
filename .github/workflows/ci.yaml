@@ -263,7 +263,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
-    if: needs.determine_action.outputs.should_add_to_group == 'true' && !cancelled()
+    if: >-
+      needs.determine_action.outputs.should_add_to_group == 'true' &&
+      needs.build.result == 'success' &&
+      needs.upload_to_testflight.result == 'success' &&
+      needs.build.outputs.build_number != '' && !cancelled()
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
