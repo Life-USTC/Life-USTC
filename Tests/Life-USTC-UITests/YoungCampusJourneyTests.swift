@@ -53,9 +53,9 @@ final class YoungCampusJourneyTests: XCTestCase {
         XCTAssertTrue(category.waitForExistence(timeout: 10))
         category.tap()
         category.typeText("Campus workshop\n")
-        chooseFilter("module", value: "智")
-        chooseFilter("activityLevel", value: "校级")
-        chooseFilter("timeBasis", value: "Registration window")
+        try chooseFilter("module", value: "智")
+        try chooseFilter("activityLevel", value: "校级")
+        try chooseFilter("timeBasis", value: "Registration window")
         let dateRange = switchControl("young.filters.dateRange")
         let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: dateRange)
         XCTAssertEqual(XCTWaiter.wait(for: [dateRangeReady], timeout: 10), .completed)
@@ -63,8 +63,8 @@ final class YoungCampusJourneyTests: XCTestCase {
         dateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         waitUntil { dateRange.value as? String == "1" }
         XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 10))
-        chooseFilter("active", value: "In source signup list")
-        chooseFilter("organizer", value: "Student Science Association")
+        try chooseFilter("active", value: "In source signup list")
+        try chooseFilter("organizer", value: "Student Science Association")
         capture("YoungFilters")
         open("young.filters.apply")
         let dateFormatter = DateFormatter()
@@ -95,12 +95,12 @@ final class YoungCampusJourneyTests: XCTestCase {
         open("young.filters")
         assertText("Date ranges do not apply to activities with unknown dates.")
         XCTAssertFalse(app.switches["young.filters.dateRange"].exists)
-        chooseFilter("active", value: "Not in source signup list")
+        try chooseFilter("active", value: "Not in source signup list")
         open("young.filters.cancel")
         assertText("Science Undated Workshop")
         XCTAssertFalse(fixture.requests.contains { $0.path == "/api/catalog/young-events" && $0.query["active"] == "false" })
         open("young.filters")
-        chooseFilter("active", value: "Not in source signup list")
+        try chooseFilter("active", value: "Not in source signup list")
         open("young.filters.apply")
         unknown["active"] = "false"
         waitForRequest("GET", "/api/catalog/young-events", query: unknown)
@@ -133,8 +133,8 @@ final class YoungCampusJourneyTests: XCTestCase {
         open("young.filters")
         assertText("Workspace fixture unavailable")
         open("young.filters.organizers.retry")
-        chooseFilter("organizer", value: "Student Arts Association")
-        chooseFilter("module", value: "智")
+        try chooseFilter("organizer", value: "Student Arts Association")
+        try chooseFilter("module", value: "智")
         open("young.filters.apply")
         waitForRequest("GET", "/api/catalog/young-events", query: ["organizerId": PublicDiscoveryHTTPState.artsOrganizer, "module": "智"])
         assertText("There are no activities matching this filter.")
@@ -347,9 +347,29 @@ final class YoungCampusJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func chooseFilter(_ field: String, value: String) {
-        open("young.filters.\(field)")
-        open(value)
+    private func chooseFilter(_ field: String, value: String,
+                              file: StaticString = #filePath, line: UInt = #line) throws {
+        let picker = app.buttons["young.filters.\(field)"]
+        open("young.filters.\(field)", file: file, line: line)
+        let option = app.buttons[value]
+        reveal(option)
+        _ = try XCTUnwrap(option.waitForExistence(timeout: 10) ? option : nil,
+                          "Missing filter option: \(value)", file: file, line: line)
+        // Readiness and the selected value share the original actionability budget.
+        let deadline = ProcessInfo.processInfo.systemUptime + 10
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: option)
+        _ = try XCTUnwrap(XCTWaiter.wait(for: [ready],
+                                       timeout: max(0, deadline - ProcessInfo.processInfo.systemUptime)) == .completed ? option : nil,
+                          "Unavailable filter option: \(value)", file: file, line: line)
+        option.tap()
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            picker.exists && (picker.label.contains(value)
+                || (picker.value as? String)?.contains(value) == true)
+        }, object: nil)
+        _ = try XCTUnwrap(XCTWaiter.wait(for: [selected],
+                                       timeout: max(0, deadline - ProcessInfo.processInfo.systemUptime)) == .completed ? picker : nil,
+                          "Filter \(field) did not select \(value)", file: file, line: line)
     }
 
     @MainActor
