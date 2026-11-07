@@ -1,14 +1,10 @@
 name: Screenshots
 
 on:
-  pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
-  pages: write
-  id-token: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +12,7 @@ concurrency:
 
 jobs:
   snapshot:
+    if: false # Disabled on the temporary diagnostic branch.
     name: Generate iOS UI Screenshots
     runs-on: macos-26
     timeout-minutes: 60

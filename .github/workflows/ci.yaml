@@ -1,18 +1,17 @@
 name: CI
 
+# Temporary workflow-only diagnostic branch. Never merge this file to main.
 on:
-  push:
-    branches:
-      - main
-      - "ci-*"
-  pull_request:
   workflow_dispatch:
     inputs:
       beta:
-        description: "Deploy to TestFlight beta"
+        description: "Must remain false: this diagnostic cannot distribute builds"
         required: false
         type: boolean
-        default: true
+        default: false
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,25 +26,33 @@ jobs:
       should_deploy: ${{ steps.should_deploy.outputs.deploy }}
       should_add_to_group: ${{ steps.should_deploy.outputs.deploy }}
     steps:
-      - name: Calculate if shipping to TestFlight
+      - name: Disable distribution for the diagnostic
+        run: echo "deploy=false" >> "$GITHUB_OUTPUT"
         id: should_deploy
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "deploy=${{ inputs.beta }}" >> $GITHUB_OUTPUT
-            elif [[ "${{ github.ref }}" == refs/heads/main || "${{ github.ref }}" == refs/heads/ci-* ]]; then
-            echo "deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "deploy=false" >> $GITHUB_OUTPUT
-          fi
 
   test:
-    name: Run Tests
+    name: Diagnose original PR 138 filter case
+    if: github.event_name == 'workflow_dispatch' && inputs.beta == false
     runs-on: macos-26
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: faea33051bc1edf44d13a30a122deb83280db3c9
+
+      - name: Record exact original source and workflow provenance
+        run: |
+          mkdir -p TestResults
+          expected_source_sha=faea33051bc1edf44d13a30a122deb83280db3c9
+          test "$(git rev-parse HEAD)" = "$expected_source_sha"
+          git rev-parse HEAD > TestResults/source-sha.txt
+          git rev-parse HEAD:Tests/Life-USTC-UITests/YoungCampusJourneyTests.swift > TestResults/test-blob.txt
+          printf '%s\n' "$GITHUB_SHA" > TestResults/workflow-sha.txt
+          printf '%s\n' "$GITHUB_WORKFLOW_REF" > TestResults/workflow-ref.txt
+          xcodebuild -version > TestResults/xcode-version.txt
 
       - name: Test server screenshot exporter
+        if: false
         run: python3 -B -m unittest discover -s scripts/tests -p 'test_*.py'
 
       - name: Cache Swift packages
@@ -70,6 +77,7 @@ jobs:
           xcrun simctl list devices available
 
       - name: Run Unit Tests
+        if: false
         run: |
           xcodebuild test \
             -project Life-USTC.xcodeproj \
@@ -86,17 +94,7 @@ jobs:
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-UITests \
             -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
-            -only-testing:Life-USTC-UITests/E2ETests \
-            -only-testing:Life-USTC-UITests/ServerJourneyTests \
-            -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
-            -only-testing:Life-USTC-UITests/CommunityJourneyTests \
-            -only-testing:Life-USTC-UITests/CampusJourneyTests \
-            -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
-            -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
-            -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
-            -only-testing:Life-USTC-UITests/AccountJourneyTests \
+            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests/testActivityFiltersApplyCancelClearAndPreserveUnknownDateContext \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
@@ -105,11 +103,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: test-results
+          name: ios138-filter-native-${{ github.run_id }}
+          if-no-files-found: error
           path: TestResults/
 
       - name: Export server feature screenshots
-        if: always()
+        if: false
         env:
           UI_OUTCOME: ${{ steps.ui_tests.outcome }}
         run: |
@@ -122,7 +121,7 @@ jobs:
 
       - name: Upload server feature screenshots
         id: upload_server_screenshots
-        if: always()
+        if: false
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-server-screenshots-${{ github.run_id }}
@@ -130,7 +129,7 @@ jobs:
           if-no-files-found: error
 
       - name: Summarize server feature screenshots
-        if: always()
+        if: false
         env:
           ARTIFACT_URL: ${{ steps.upload_server_screenshots.outputs.artifact-url }}
         run: |
@@ -154,6 +153,7 @@ jobs:
           xcrun simctl delete "$TEST_DEVICE_ID"
 
   build:
+    if: false
     name: Build IPA
     runs-on: macos-26
     timeout-minutes: 60
@@ -211,7 +211,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     needs: [determine_action, build]
-    if: needs.determine_action.outputs.should_deploy == 'true'
+    if: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -238,7 +238,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
-    if: needs.determine_action.outputs.should_add_to_group == 'true' && !cancelled()
+    if: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
