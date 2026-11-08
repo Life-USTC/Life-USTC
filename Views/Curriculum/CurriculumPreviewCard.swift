@@ -10,9 +10,9 @@ import SwiftUI
 
 struct CurriculumPreviewCard: View {
     static var referenceDate: Date { Date() }
-    static var todayStart: Date { referenceDate.stripTime() }
-    static var tomorrowStart: Date { todayStart.add(day: 1) }
-    static var dayAfterTomorrowStart: Date { todayStart.add(day: 2) }
+    static var todayStart: Date { ProductCalendar.dayStart(referenceDate) }
+    static var tomorrowStart: Date { ProductCalendar.addingDays(1, to: todayStart) }
+    static var dayAfterTomorrowStart: Date { ProductCalendar.addingDays(2, to: todayStart) }
 
     @Query(
         filter: #Predicate<Lecture> { lecture in

@@ -27,16 +27,16 @@ final class WorkspaceCalendarRangeTests: XCTestCase {
     }
 
     @MainActor
-    func testWeekRetainsSevenMondayToSundayGroupsAndTodayNavigation() {
+    func testWeekRetainsSevenSundayToSaturdayGroupsAndTodayNavigation() {
         let model = ServerWorkspaceCalendarModel()
         model.referenceDate = date("2026-10-23")
-        XCTAssertEqual(model.agendaDays.map(\.id), ["2026-10-19", "2026-10-20", "2026-10-21",
-            "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25"])
+        XCTAssertEqual(model.agendaDays.map(\.id), ["2026-10-18", "2026-10-19", "2026-10-20",
+            "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24"])
         XCTAssertTrue(model.agendaDays.allSatisfy { $0.events.isEmpty })
         model.navigate(1)
-        XCTAssertEqual(model.agendaDays.first?.id, "2026-10-26")
+        XCTAssertEqual(model.agendaDays.first?.id, "2026-10-25")
         model.selectToday(date("2026-10-23"))
-        XCTAssertEqual(model.agendaDays.first?.id, "2026-10-19")
+        XCTAssertEqual(model.agendaDays.first?.id, "2026-10-18")
         model.mode = .day
         XCTAssertEqual(model.agendaDays.map(\.id), ["2026-10-23"])
     }

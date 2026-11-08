@@ -41,17 +41,10 @@ enum YoungCalendarDisplayMode: String, CaseIterable, Identifiable {
     }
 }
 
-/// Calendar calculations for the product contract: Asia/Shanghai and Monday weeks.
+/// Calendar calculations for the product contract: Asia/Shanghai and Sunday weeks.
 enum YoungCalendarDate {
-    static let shanghai = TimeZone(identifier: "Asia/Shanghai")!
-
-    static var calendar: Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = shanghai
-        calendar.firstWeekday = 2
-        calendar.minimumDaysInFirstWeek = 1
-        return calendar
-    }
+    static let shanghai = ProductCalendar.timeZone
+    static var calendar: Calendar { ProductCalendar.calendar }
 
     static var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -80,7 +73,7 @@ enum YoungCalendarDate {
 
     static func range(
         for mode: YoungCalendarDisplayMode, date: Date,
-        firstWeekday: CalendarWeekday = .monday
+        firstWeekday: CalendarWeekday = .sunday
     ) -> (from: String, to: String) {
         let period: CalendarPeriod = switch mode {
         case .day: .day

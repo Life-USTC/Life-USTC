@@ -194,23 +194,21 @@ enum ServerDataProvider {
         for curriculum in try context.fetch(FetchDescriptor<Curriculum>()) { context.delete(curriculum) }
     }
 
-    private static var shanghaiCalendar: Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
-        return calendar
-    }
+    private static var shanghaiCalendar: Calendar { ProductCalendar.calendar }
 
     private static func meetingDate(_ schedule: ServerScheduleRef, semester: ServerSemester?) -> Date? {
         if let date = schedule.date { return parseDate(date) }
         guard let start = semester?.startDate,
-              let weekIndex = schedule.weekIndex, weekIndex >= 1 else { return nil }
+              let weekIndex = schedule.weekIndex, weekIndex >= 1,
+              (1...7).contains(schedule.weekday) else { return nil }
         let calendar = shanghaiCalendar
         let startDay = calendar.startOfDay(for: start)
+        // API weekdays remain Mon1...Sun7 inside a Sunday-first teaching week.
         guard let week = try? ClientCalendar.teachingWeekBounds(
-            semesterStart: ClientCalendar.shanghaiDate(at: start), weekIndex: weekIndex, firstWeekday: .monday
+            semesterStart: ClientCalendar.shanghaiDate(at: start), weekIndex: weekIndex, firstWeekday: .sunday
         ),
               let weekStart = parseDate(week.from),
-              let date = calendar.date(byAdding: .day, value: schedule.weekday - 1, to: weekStart),
+              let date = calendar.date(byAdding: .day, value: schedule.weekday % 7, to: weekStart),
               date >= startDay,
               semester?.endDate.map({ date <= calendar.startOfDay(for: $0) }) ?? true
         else { return nil }

@@ -161,6 +161,7 @@ struct YoungBrowseFiltersView: View {
                 }
             }
         }
+        .environment(\.calendar, ProductCalendar.calendar)
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .task { await organizers.load() }
     }
