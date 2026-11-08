@@ -154,7 +154,8 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertTrue(failed.jsonBody["content"] is NSNull)
         XCTAssertTrue(failed.jsonBody["dueAt"] is NSNull)
         open("todo.save.retry")
-        XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.textFields["todo.title"].waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].exists)
         let saved = try XCTUnwrap(fixture.workspaceTodos.first { $0["id"] as? String == todoID })
         XCTAssertEqual(saved["title"] as? String, "Review revised notes")
         XCTAssertTrue(saved["content"] is NSNull)
@@ -306,7 +307,7 @@ final class WorkspaceJourneyTests: XCTestCase {
 
     @MainActor
     private func replaceText(_ id: String, old: String, new: String) {
-        let field = app.descendants(matching: .any).matching(identifier: id).firstMatch
+        let field = app.textFields.matching(identifier: id).firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 10))
         field.tap()
         if !old.isEmpty {
