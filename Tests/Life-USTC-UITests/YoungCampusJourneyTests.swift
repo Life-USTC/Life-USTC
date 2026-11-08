@@ -60,7 +60,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: dateRange)
         XCTAssertEqual(XCTWaiter.wait(for: [dateRangeReady], timeout: 10), .completed)
         XCTAssertEqual(dateRange.value as? String, "0")
-        dateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        dateRange.tap()
         waitUntil { dateRange.value as? String == "1" }
         XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 10))
         try chooseFilter("active", value: "In source signup list")
@@ -429,7 +429,7 @@ final class YoungCampusJourneyTests: XCTestCase {
 
     @MainActor
     private func assertText(_ text: String) {
-        let element = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+        let element = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
         reveal(element)
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing text: \(text)")
     }

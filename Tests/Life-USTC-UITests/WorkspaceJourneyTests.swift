@@ -333,9 +333,7 @@ final class WorkspaceJourneyTests: XCTestCase {
             let savedNotes = notes.value as? String
             title.tap()
             title.typeText("\n")
-            let dismissed = XCTNSPredicateExpectation(
-                predicate: NSPredicate(format: "exists == false"), object: app.keyboards.firstMatch)
-            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
+            XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
             XCTAssertEqual(title.value as? String, savedTitle)
             XCTAssertEqual(notes.value as? String, savedNotes)
         }
