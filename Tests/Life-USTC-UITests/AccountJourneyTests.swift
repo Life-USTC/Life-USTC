@@ -119,11 +119,11 @@ final class AccountJourneyTests: XCTestCase {
     @MainActor
     private func closeWebsite(returningTo pageID: String, applicationFrame: CGRect) {
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
-        let done = browser.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
+        let done = browser.buttons.matching(NSPredicate(format: "label IN %@ AND enabled == true", ["Done", "Close", "完成", "关闭"])).firstMatch
         XCTAssertTrue(done.waitForExistence(timeout: 10))
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         let ready = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: done)
+            predicate: NSPredicate(format: "hittable == true"), object: done)
         guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
             XCTFail("The website close control should be actionable")
             return
