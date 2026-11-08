@@ -310,22 +310,37 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         let list = app.collectionViews.firstMatch
         let titleLabel = card.staticTexts[title]
         let timeLabel = card.staticTexts[timestamp]
+        let dayHeader = list.staticTexts["calendar_day_\(String(timestamp.prefix(10)))"]
         let deadline = Date().addingTimeInterval(10)
         // Cache each original attribute once per inspection; all original
         // title/time and unobscured viewport conditions remain required.
         func inspection() -> (readable: Bool, listFrame: CGRect, viewport: CGRect, content: CGRect) {
-            guard list.exists, titleLabel.exists, timeLabel.exists else { return (false, .zero, .zero, .zero) }
+            guard list.exists else { return (false, .zero, .zero, .zero) }
+            let titleExists = titleLabel.exists
+            let timeExists = timeLabel.exists
+            let titleFrame = titleExists ? titleLabel.frame : .zero
+            let timeFrame = timeExists ? timeLabel.frame : .zero
+            func measurable(_ frame: CGRect) -> Bool {
+                !frame.isEmpty && frame.minX.isFinite && frame.minY.isFinite
+                    && frame.maxX.isFinite && frame.maxY.isFinite
+            }
+            // An existing but invalid label must never supply a direction.
+            guard (!titleExists || measurable(titleFrame)),
+                  (!timeExists || measurable(timeFrame)) else { return (false, .zero, .zero, .zero) }
+            let completeRecord = titleExists && timeExists
+            let targetFrame: CGRect
+            if completeRecord {
+                targetFrame = titleFrame.union(timeFrame)
+            } else {
+                // The actual dated section is already in the native hierarchy
+                // even when List has not materialized its event row yet.
+                guard dayHeader.exists else { return (false, .zero, .zero, .zero) }
+                let headerFrame = dayHeader.frame
+                guard measurable(headerFrame) else { return (false, .zero, .zero, .zero) }
+                targetFrame = headerFrame
+            }
             let applicationFrame = app.frame
             let listFrame = list.frame
-            let titleFrame = titleLabel.frame
-            let timeFrame = timeLabel.frame
-            guard !titleFrame.isEmpty, !timeFrame.isEmpty,
-                  titleFrame.minX.isFinite, titleFrame.minY.isFinite,
-                  titleFrame.maxX.isFinite, titleFrame.maxY.isFinite,
-                  timeFrame.minX.isFinite, timeFrame.minY.isFinite,
-                  timeFrame.maxX.isFinite, timeFrame.maxY.isFinite else {
-                return (false, .zero, .zero, .zero)
-            }
             var bounds = listFrame.intersection(applicationFrame)
             let header = app.staticTexts["calendar_range"]
             if header.exists { bounds.origin.y = max(bounds.minY, header.frame.maxY) }
@@ -336,9 +351,9 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
             if tabBar.exists { bottom = min(bottom, tabBar.frame.minY) }
             bounds.size.height = max(0, bottom - bounds.minY)
             bounds = bounds.insetBy(dx: 4, dy: 8)
-            return (!bounds.isEmpty && !titleFrame.isEmpty && !timeFrame.isEmpty
+            return (completeRecord && !bounds.isEmpty && !titleFrame.isEmpty && !timeFrame.isEmpty
                 && bounds.contains(titleFrame) && bounds.contains(timeFrame),
-                listFrame, bounds, titleFrame.union(timeFrame))
+                listFrame, bounds, targetFrame)
         }
         for _ in 0..<8 {
             let state = inspection()
