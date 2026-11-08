@@ -311,32 +311,37 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         let titleLabel = card.staticTexts[title]
         let timeLabel = card.staticTexts[timestamp]
         let deadline = Date().addingTimeInterval(10)
-        func contentBounds() -> CGRect {
-            var bounds = list.frame.intersection(app.frame)
+        // Cache each original attribute once per inspection; all original
+        // title/time and unobscured viewport conditions remain required.
+        func inspection() -> (readable: Bool, titleAbove: Bool) {
+            guard list.exists, titleLabel.exists, timeLabel.exists else { return (false, false) }
+            let applicationFrame = app.frame
+            let listFrame = list.frame
+            let titleFrame = titleLabel.frame
+            let timeFrame = timeLabel.frame
+            var bounds = listFrame.intersection(applicationFrame)
             let header = app.staticTexts["calendar_range"]
             if header.exists { bounds.origin.y = max(bounds.minY, header.frame.maxY) }
             let navigation = app.navigationBars.firstMatch
             if navigation.exists { bounds.origin.y = max(bounds.minY, navigation.frame.maxY) }
             let tabBar = app.tabBars.firstMatch
-            var bottom = min(list.frame.maxY, app.frame.maxY)
+            var bottom = min(listFrame.maxY, applicationFrame.maxY)
             if tabBar.exists { bottom = min(bottom, tabBar.frame.minY) }
             bounds.size.height = max(0, bottom - bounds.minY)
-            return bounds.insetBy(dx: 4, dy: 8)
-        }
-        func readable() -> Bool {
-            guard list.exists, titleLabel.exists, timeLabel.exists else { return false }
-            let bounds = contentBounds()
-            return !bounds.isEmpty && !titleLabel.frame.isEmpty && !timeLabel.frame.isEmpty
-                && bounds.contains(titleLabel.frame) && bounds.contains(timeLabel.frame)
+            bounds = bounds.insetBy(dx: 4, dy: 8)
+            return (!bounds.isEmpty && !titleFrame.isEmpty && !timeFrame.isEmpty
+                && bounds.contains(titleFrame) && bounds.contains(timeFrame), titleFrame.minY < bounds.minY)
         }
         for _ in 0..<8 {
-            if readable() { break }
+            let state = inspection()
+            if state.readable { break }
             guard Date() < deadline, list.exists else { break }
-            if titleLabel.exists && titleLabel.frame.minY < contentBounds().minY { list.swipeDown() }
+            if state.titleAbove { list.swipeDown() }
             else { list.swipeUp() }
         }
-        XCTAssertTrue(readable(), "Fixed record title and exact timestamp must be fully visible outside the sticky header and tab bar")
-        guard readable() else {
+        let final = inspection().readable
+        XCTAssertTrue(final, "Fixed record title and exact timestamp must be fully visible outside the sticky header and tab bar")
+        guard final else {
             retainHierarchy("personal-fixed-record-not-readable")
             throw CaptureFailure.unavailable
         }
@@ -381,18 +386,35 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
     /// weekday strip is an unlabelled Other, not seven StaticText elements.
     @MainActor
     private func nativePickerGrid() -> (labels: [String], firstWeekday: Int)? {
-        let popup = app.datePickers.containing(.collectionView, identifier: nil).firstMatch
-        guard popup.exists, popup.buttons["DatePicker.Show"].exists,
-              popup.buttons["DatePicker.PreviousMonth"].exists,
-              popup.buttons["DatePicker.NextMonth"].exists else { return nil }
-        let collection = popup.collectionViews.firstMatch
+        // Public XCUIElementSnapshotProviding captures the same attributes
+        // together; enumerating date cells must not trigger a live Find each.
+        guard let snapshot = try? app.snapshot() else { return nil }
+        func descendants(_ root: any XCUIElementSnapshot) -> [any XCUIElementSnapshot] {
+            var result: [any XCUIElementSnapshot] = []
+            var pending = Array(root.children.reversed())
+            while let element = pending.popLast() {
+                result.append(element)
+                pending.append(contentsOf: element.children.reversed())
+            }
+            return result
+        }
+        guard let popup = descendants(snapshot).first(where: { element in
+            element.elementType == .datePicker
+                && descendants(element).contains { $0.elementType == .collectionView }
+        }) else { return nil }
+        let elements = descendants(popup)
+        guard elements.contains(where: { $0.elementType == .button && $0.identifier == "DatePicker.Show" }),
+              elements.contains(where: { $0.elementType == .button && $0.identifier == "DatePicker.PreviousMonth" }),
+              elements.contains(where: { $0.elementType == .button && $0.identifier == "DatePicker.NextMonth" }),
+              let collection = elements.first(where: { $0.elementType == .collectionView }) else { return nil }
+        let applicationFrame = snapshot.frame
         let bounds = collection.frame
-        guard !bounds.isEmpty && bounds.intersects(app.frame) else { return nil }
-        let headerBandExists = popup.otherElements.allElementsBoundByIndex.contains { element in
+        guard !bounds.isEmpty && bounds.intersects(applicationFrame) else { return nil }
+        let headerBandExists = elements.filter { $0.elementType == .other }.contains { element in
             let frame = element.frame
             return frame.width >= bounds.width * 0.9 && frame.height > 0 && frame.height < 40
                 && frame.minY >= bounds.minY - 40 && frame.maxY <= bounds.minY + 2
-                && frame.intersects(app.frame)
+                && frame.intersects(applicationFrame)
         }
         guard headerBandExists else { return nil }
 
@@ -405,12 +427,12 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         formatter.locale = Locale(identifier: chinese ? "zh_CN" : "en_US")
         let weekdays: [String] = formatter.weekdaySymbols
         let monthName = chinese ? "\(month)月" : formatter.monthSymbols[month - 1]
-        let shownMonth = popup.buttons["DatePicker.Show"].value as? String ?? ""
+        let shownMonth = elements.first { $0.elementType == .button && $0.identifier == "DatePicker.Show" }?.value as? String ?? ""
         guard shownMonth.contains(String(year)) && shownMonth.contains(monthName) else { return nil }
 
-        let cells = collection.buttons.allElementsBoundByIndex.compactMap { element -> (date: Date, frame: CGRect)? in
+        let cells = descendants(collection).filter { $0.elementType == .button }.compactMap { element -> (date: Date, frame: CGRect)? in
             let frame = element.frame
-            guard !frame.isEmpty && frame.intersects(bounds) && frame.intersects(app.frame) else { return nil }
+            guard !frame.isEmpty && frame.intersects(bounds) && frame.intersects(applicationFrame) else { return nil }
             let label = element.label
             let numbers = label.components(separatedBy: CharacterSet.decimalDigits.inverted).compactMap(Int.init)
             let day: Int
