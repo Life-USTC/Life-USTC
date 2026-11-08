@@ -68,7 +68,7 @@ final class CommunityJourneyTests: XCTestCase {
 
         app.buttons["View comment thread"].firstMatch.tap()
         waitForRequest("GET", "/api/community/comments/\(CommunityHTTPState.commentID)")
-        open("Reply")
+        open("comment_reply_\(CommunityHTTPState.commentID)")
         replaceText("comment_body", old: "", new: "I will prepare a second example.")
         open("comment_submit")
         assertText("I will prepare a second example.")
@@ -289,7 +289,7 @@ final class CommunityJourneyTests: XCTestCase {
 
     @MainActor
     private func assertText(_ text: String, file: StaticString = #filePath, line: UInt = #line) {
-        let element = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+        let element = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
         for _ in 0..<6 {
             if element.exists && element.isHittable { break }
             app.swipeUp()

@@ -328,6 +328,7 @@ private struct CommentNodeView: View {
                 }
                 .font(.caption)
                 .buttonStyle(.borderless)
+                .accessibilityIdentifier("comment_reply_\(comment.id)")
                 .disabled(isMutating(comment.id))
             }
             }
