@@ -414,7 +414,9 @@ final class YoungCampusJourneyTests: XCTestCase {
         let button = app.buttons[id]
         reveal(button)
         XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing control: \(id)", file: file, line: line)
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: button)
+        let enabledButton = app.buttons.matching(identifier: id)
+            .matching(NSPredicate(format: "enabled == true")).firstMatch
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: enabledButton)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed, "Unavailable control: \(id)", file: file, line: line)
         button.tap()
     }
