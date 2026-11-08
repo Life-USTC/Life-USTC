@@ -11,7 +11,7 @@ from pathlib import Path
 
 QA_HASHES = {
     'CalendarSundayNativeRenderTests.swift': 'a688f2a45d1d17b69a3aa05fb3d8eb2092cd2e4995c813ffb7dd579a93cdc3a8',
-    'CalendarSundayVisualCaptureTests.swift': '5760bcf2cde9b89b27fac1317d605d83cdc7b536599af29af9b73eb045493055',
+    'CalendarSundayVisualCaptureTests.swift': '9d7f9ca40c53df9d59ace8a5319862aad0bd6aeccdd8db1a07d75a534c6b94e1',
 }
 UNIT = 'Tests/Life-USTC-Tests'
 UI = 'Tests/Life-USTC-UITests'

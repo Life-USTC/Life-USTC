@@ -313,12 +313,19 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
         let deadline = Date().addingTimeInterval(10)
         // Cache each original attribute once per inspection; all original
         // title/time and unobscured viewport conditions remain required.
-        func inspection() -> (readable: Bool, titleAbove: Bool) {
-            guard list.exists, titleLabel.exists, timeLabel.exists else { return (false, false) }
+        func inspection() -> (readable: Bool, listFrame: CGRect, viewport: CGRect, content: CGRect) {
+            guard list.exists, titleLabel.exists, timeLabel.exists else { return (false, .zero, .zero, .zero) }
             let applicationFrame = app.frame
             let listFrame = list.frame
             let titleFrame = titleLabel.frame
             let timeFrame = timeLabel.frame
+            guard !titleFrame.isEmpty, !timeFrame.isEmpty,
+                  titleFrame.minX.isFinite, titleFrame.minY.isFinite,
+                  titleFrame.maxX.isFinite, titleFrame.maxY.isFinite,
+                  timeFrame.minX.isFinite, timeFrame.minY.isFinite,
+                  timeFrame.maxX.isFinite, timeFrame.maxY.isFinite else {
+                return (false, .zero, .zero, .zero)
+            }
             var bounds = listFrame.intersection(applicationFrame)
             let header = app.staticTexts["calendar_range"]
             if header.exists { bounds.origin.y = max(bounds.minY, header.frame.maxY) }
@@ -330,14 +337,32 @@ final class CalendarSundayVisualCaptureTests: XCTestCase {
             bounds.size.height = max(0, bottom - bounds.minY)
             bounds = bounds.insetBy(dx: 4, dy: 8)
             return (!bounds.isEmpty && !titleFrame.isEmpty && !timeFrame.isEmpty
-                && bounds.contains(titleFrame) && bounds.contains(timeFrame), titleFrame.minY < bounds.minY)
+                && bounds.contains(titleFrame) && bounds.contains(timeFrame),
+                listFrame, bounds, titleFrame.union(timeFrame))
         }
         for _ in 0..<8 {
             let state = inspection()
             if state.readable { break }
             guard Date() < deadline, list.exists else { break }
-            if state.titleAbove { list.swipeDown() }
-            else { list.swipeUp() }
+            // Recenter by the measured gap, using the same public bounded
+            // drag as the canonical incremental journey. One drag uses one
+            // of the original eight actions; both endpoints stay unobscured.
+            guard !state.listFrame.isEmpty, !state.viewport.isEmpty, !state.content.isEmpty,
+                  state.listFrame.minX.isFinite, state.listFrame.minY.isFinite,
+                  state.listFrame.width.isFinite, state.listFrame.height.isFinite,
+                  state.viewport.width.isFinite, state.viewport.height.isFinite,
+                  state.viewport.midX.isFinite, state.viewport.midY.isFinite,
+                  state.content.midY.isFinite else { break }
+            let limit = min(120, max(0, state.viewport.height / 2 - 8))
+            let distance = min(limit, max(-limit, state.viewport.midY - state.content.midY))
+            guard distance.isFinite, distance != 0 else { break }
+            let offset = CGVector(
+                dx: (state.viewport.midX - state.listFrame.minX) / state.listFrame.width,
+                dy: (state.viewport.midY - state.listFrame.minY) / state.listFrame.height)
+            let start = list.coordinate(withNormalizedOffset: offset)
+            let end = start.withOffset(CGVector(dx: 0, dy: distance))
+            guard Date() < deadline else { break }
+            start.press(forDuration: 0.05, thenDragTo: end)
         }
         let final = inspection().readable
         XCTAssertTrue(final, "Fixed record title and exact timestamp must be fully visible outside the sticky header and tab bar")
