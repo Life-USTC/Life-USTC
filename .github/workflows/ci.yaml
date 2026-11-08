@@ -24,6 +24,7 @@ jobs:
         locale: [en, zh-Hans]
     env:
       VISUAL_LOCALE: ${{ matrix.locale }}
+      VISUAL_DEVICE: ${{ matrix.device }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,9 +33,9 @@ jobs:
       - name: Preserve the identical temporary visual carrier
         run: |
           mkdir -p "$RUNNER_TEMP/ios150-native-visual-carrier"
-          cp .github/native-calendar-visual/CalendarSundayNativeRenderTests.swift \
-            .github/native-calendar-visual/CalendarSundayVisualCaptureTests.swift \
-            .github/native-calendar-visual/run-pair.sh "$RUNNER_TEMP/ios150-native-visual-carrier/"
+          cp .github/native-calendar-visual/* "$RUNNER_TEMP/ios150-native-visual-carrier/"
+          cp .github/workflows/ci.yaml .github/workflows/screenshot.yaml \
+            "$RUNNER_TEMP/ios150-native-visual-carrier/"
 
       - name: Cache Swift packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -48,25 +49,14 @@ jobs:
           xcodebuild -version
 
       - name: Create and normalize the owned native simulator
-        env:
-          VISUAL_DEVICE: ${{ matrix.device }}
-        run: |
-          if [[ "$VISUAL_DEVICE" == iPad ]]; then
-            device_type="iPad Pro 13-inch (M5)"
-          else
-            device_type="iPhone 17"
-          fi
-          owned_name="Life-USTC visual $GITHUB_RUN_ID $GITHUB_RUN_ATTEMPT $VISUAL_DEVICE $VISUAL_LOCALE"
-          printf '%s\n' "$owned_name" > "$RUNNER_TEMP/ios150-owned-simulator-name.txt"
-          TEST_DEVICE_ID=$(xcrun simctl create "$owned_name" "$device_type")
-          echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
-          xcrun simctl boot "$TEST_DEVICE_ID"
-          xcrun simctl bootstatus "$TEST_DEVICE_ID" -b
-          xcrun simctl ui "$TEST_DEVICE_ID" appearance light
-          xcrun simctl status_bar "$TEST_DEVICE_ID" override --time "9:41" --batteryState charged --batteryLevel 100
+        run: python3 "$RUNNER_TEMP/ios150-native-visual-carrier/simulator.py" create
 
       - name: Run original and candidate native visual fixtures sequentially
         run: bash "$RUNNER_TEMP/ios150-native-visual-carrier/run-pair.sh"
+
+      - name: Dispose only the exact owned simulator and retain its receipt
+        if: always()
+        run: python3 "$RUNNER_TEMP/ios150-native-visual-carrier/simulator.py" cleanup
 
       - name: Retain original results and provenance even on failure
         if: always()
@@ -75,35 +65,3 @@ jobs:
           name: ios150-native-visual-${{ matrix.device }}-${{ matrix.locale }}-${{ github.run_id }}
           path: NativeVisualResults/
           if-no-files-found: error
-
-      - name: Dispose the owned simulator
-        if: always()
-        env:
-          VISUAL_DEVICE: ${{ matrix.device }}
-        run: |
-          # The exact owned name is persisted before create, covering the
-          # cancellation window before UUID export. Never delete other devices.
-          python3 - <<'PY_CLEANUP'
-          import json, os, subprocess
-          from pathlib import Path
-          owned_id = os.environ.get('TEST_DEVICE_ID', '')
-          if not owned_id:
-              expected = f"Life-USTC visual {os.environ['GITHUB_RUN_ID']} {os.environ['GITHUB_RUN_ATTEMPT']} {os.environ['VISUAL_DEVICE']} {os.environ['VISUAL_LOCALE']}"
-              name_file = Path(os.environ['RUNNER_TEMP'], 'ios150-owned-simulator-name.txt')
-              if not name_file.exists():
-                  print('No owned simulator creation attempted', flush=True)
-                  raise SystemExit(0)
-              assert name_file.read_text().strip() == expected
-              devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', '--json']))
-              matches = [device['udid'] for group in devices['devices'].values()
-                         for device in group if device['name'] == expected]
-              if len(matches) > 1:
-                  raise RuntimeError('Ambiguous exact owned simulator name; refusing deletion')
-              owned_id = matches[0] if matches else ''
-          if owned_id:
-              print('Disposing owned simulator', owned_id, flush=True)
-              subprocess.run(['xcrun', 'simctl', 'shutdown', owned_id], check=False)
-              subprocess.run(['xcrun', 'simctl', 'delete', owned_id], check=True)
-          else:
-              print('No matching owned simulator exists', flush=True)
-          PY_CLEANUP
