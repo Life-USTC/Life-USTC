@@ -328,6 +328,7 @@ private struct CommentNodeView: View {
                 }
                 .font(.caption)
                 .buttonStyle(.borderless)
+                .accessibilityIdentifier("comment_reply_\(comment.id)")
                 .disabled(isMutating(comment.id))
             }
             }
@@ -387,6 +388,7 @@ private struct CommentNodeView: View {
         }
         .padding(.vertical, 8)
         .id(comment.id)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("comment_\(comment.id)")
         .confirmationDialog(
             "Delete this comment?",

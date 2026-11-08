@@ -94,11 +94,18 @@ final class CampusJourneyTests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 10))
         field.tap()
         field.typeText("jiaowu")
+        field.typeText("\n")
+        waitUntil { !self.app.keyboards.firstMatch.exists }
+        XCTAssertEqual(field.value as? String, "jiaowu")
         assertText("Academic Portal")
         XCTAssertFalse(app.staticTexts["University Library"].exists)
+        XCTAssertEqual(requestCount("GET", "/api/workspace/link-pins"), 1)
         XCTAssertEqual(requestCount("POST", "/api/workspace/link-pins/batch"), 0)
         open("Retry")
+        waitUntil { self.requestCount("GET", "/api/workspace/link-pins") == 2 }
         XCTAssertTrue(app.buttons.matching(identifier: "campus_pin_academic").firstMatch.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["Workspace fixture unavailable"].exists)
+        XCTAssertEqual(requestCount("POST", "/api/workspace/link-pins/batch"), 0)
     }
 
     @MainActor
@@ -115,9 +122,32 @@ final class CampusJourneyTests: XCTestCase {
             if toggle.exists && toggle.isHittable { break }
             app.swipeUp()
         }
-        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        guard toggle.waitForExistence(timeout: 10) else {
+            XCTFail("Missing departed-trips switch")
+            return
+        }
         let control = toggle.switches.firstMatch
-        (control.exists ? control : toggle).tap()
+        guard control.waitForExistence(timeout: 5) else {
+            XCTFail("Missing native departed-trips switch")
+            return
+        }
+        guard control.value as? String == "0" else {
+            XCTFail("Expected departed trips to start hidden")
+            return
+        }
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: control)
+        guard XCTWaiter.wait(for: [ready], timeout: 5) == .completed else {
+            XCTFail("Unavailable native departed-trips switch")
+            return
+        }
+        // Keep the input stationary: a horizontal drag can navigate back from this pushed page.
+        control.tap()
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '1'"), object: toggle)
+        guard XCTWaiter.wait(for: [changed], timeout: 5) == .completed else {
+            XCTFail("Departed-trips switch did not turn on")
+            return
+        }
         XCTAssertEqual(requestCount("POST", "/api/workspace/bus-preferences"), 0)
         fixture.failNextRequest(method: "POST", path: "/api/workspace/bus-preferences")
         open("bus_save_preferences")

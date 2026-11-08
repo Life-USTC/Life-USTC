@@ -75,11 +75,22 @@ final class E2ETests: XCTestCase {
         if app.buttons["additional_course_done"].waitForExistence(timeout: 5) {
             app.buttons["additional_course_done"].tap()
         }
-        if app.buttons["onboarding_done_button"].waitForExistence(timeout: 5) {
-            app.buttons["onboarding_done_button"].tap()
-        } else if app.buttons["onboarding_close_button"].waitForExistence(timeout: 2) {
-            app.buttons["onboarding_close_button"].tap()
+        let done = app.buttons["onboarding_done_button"]
+        let close = app.buttons["onboarding_close_button"]
+        let completion = done.waitForExistence(timeout: 5) ? done : close
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"),
+            object: completion)
+        guard XCTWaiter.wait(for: [ready], timeout: 5) == .completed else {
+            XCTFail("Onboarding completion should be reachable")
+            return
         }
+        completion.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !done.exists && !close.exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed,
+                       "Onboarding should dismiss before tab navigation")
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.
@@ -294,9 +305,8 @@ final class E2ETests: XCTestCase {
         selectTab("Settings")
 
         let about = app.buttons["settings_about"]
-        if about.waitForExistence(timeout: 10) {
-            about.tap()
-            sleep(1)
-        }
+        XCTAssertTrue(about.waitForExistence(timeout: 10))
+        about.tap()
+        XCTAssertTrue(app.images["about_app_logo"].waitForExistence(timeout: 10))
     }
 }

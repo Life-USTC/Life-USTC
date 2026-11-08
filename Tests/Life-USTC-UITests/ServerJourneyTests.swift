@@ -76,7 +76,7 @@ final class ServerJourneyTests: XCTestCase {
         open("catalog_teacher_3")
         waitForRequest(method: "GET", path: "/api/catalog/teachers/3")
         waitForRequest(method: "GET", path: "/api/catalog/teachers/3/sections", query: ["page": "1", "pageSize": "100"])
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Professor"))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Professor"))
             .firstMatch.waitForExistence(timeout: 10))
         capture("Teacher")
         open("catalog_section_43")
@@ -166,7 +166,7 @@ final class ServerJourneyTests: XCTestCase {
         XCTAssertNotNil(request.query["dateTo"])
         XCTAssertEqual(request.query["page"], "1")
         XCTAssertEqual(request.headers["authorization"], "Bearer \(ServerJourneyHTTPFixture.token)")
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "8:15")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "8:15")).firstMatch.exists)
     }
 
     @MainActor
@@ -255,7 +255,7 @@ final class ServerJourneyTests: XCTestCase {
 
     @MainActor
     private func assertVisibleText(_ label: String, file: StaticString = #filePath, line: UInt = #line) {
-        let text = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", label)).firstMatch
+        let text = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", label)).firstMatch
         for _ in 0..<6 {
             if text.exists && text.isHittable { break }
             app.swipeUp()

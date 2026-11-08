@@ -70,7 +70,9 @@ final class WorkspaceJourneyTests: XCTestCase {
         waitForRequest("GET", "/api/workspace/calendar/events")
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
-        let tomorrow = String(formatter.string(from: Date().addingTimeInterval(86400)).prefix(10))
+        let calendarReference = Date()
+        let today = String(formatter.string(from: calendarReference).prefix(10))
+        let tomorrow = String(formatter.string(from: calendarReference.addingTimeInterval(86400)).prefix(10))
         let day = app.segmentedControls["workspace_calendar_mode"].buttons["Day"]
         XCTAssertTrue(day.waitForExistence(timeout: 10))
         day.tap()
@@ -99,7 +101,26 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["todo.detail.title"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["todo.detail.title"].label, "Prepare native journey notes")
         capture("TodoDetail")
+        let requestsBeforeCalendarReturn = fixture.requests.count
         selectTab("Calendar", index: 1)
+        let returnedDay = app.segmentedControls["workspace_calendar_mode"].buttons["Day"]
+        XCTAssertTrue(returnedDay.waitForExistence(timeout: 10))
+        if !returnedDay.isSelected { returnedDay.tap() }
+        let range = app.staticTexts["calendar_range"]
+        let todayRange = "\(today) – \(today)"
+        let tomorrowRange = "\(tomorrow) – \(tomorrow)"
+        let returnedPeriod = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            returnedDay.isSelected && range.exists && [todayRange, tomorrowRange].contains(range.label)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [returnedPeriod], timeout: 10), .completed)
+        if range.label == todayRange { open("Next period") }
+        waitUntil {
+            self.fixture.requests.dropFirst(requestsBeforeCalendarReturn).contains { request in
+                request.method == "GET" && request.path == "/api/workspace/calendar/events"
+                    && request.query["dateFrom"] == tomorrow && request.query["dateTo"] == tomorrow
+            }
+        }
+        XCTAssertEqual(range.label, tomorrowRange)
         open("workspace_event_todo_due:\(id)")
         XCTAssertGreaterThan(requestCount("GET", "/api/workspace/calendar/events"), originalCalendarReads)
         open("todo.detail.delete")
@@ -133,7 +154,8 @@ final class WorkspaceJourneyTests: XCTestCase {
         XCTAssertTrue(failed.jsonBody["content"] is NSNull)
         XCTAssertTrue(failed.jsonBody["dueAt"] is NSNull)
         open("todo.save.retry")
-        XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.textFields["todo.title"].waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].exists)
         let saved = try XCTUnwrap(fixture.workspaceTodos.first { $0["id"] as? String == todoID })
         XCTAssertEqual(saved["title"] as? String, "Review revised notes")
         XCTAssertTrue(saved["content"] is NSNull)
@@ -285,7 +307,7 @@ final class WorkspaceJourneyTests: XCTestCase {
 
     @MainActor
     private func replaceText(_ id: String, old: String, new: String) {
-        let field = app.descendants(matching: .any).matching(identifier: id).firstMatch
+        let field = app.textFields.matching(identifier: id).firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 10))
         field.tap()
         if !old.isEmpty {
@@ -296,21 +318,39 @@ final class WorkspaceJourneyTests: XCTestCase {
             selectAll.tap()
         }
         field.typeText(new.isEmpty ? XCUIKeyboardKey.delete.rawValue : new)
-        if new.isEmpty {
-            XCTAssertTrue(["", "Notes"].contains(field.value as? String ?? "<missing>"))
-        } else {
-            XCTAssertEqual(field.value as? String, new)
-        }
+        let updated = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let value = field.value as? String else { return false }
+            return new.isEmpty ? ["", "Notes"].contains(value) : value == new
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 10), .completed)
     }
 
     @MainActor
     private func setDueDate(_ enabled: Bool) {
+        if app.keyboards.firstMatch.exists {
+            let title = app.textFields["todo.title"]
+            let notes = app.descendants(matching: .any).matching(identifier: "todo.notes").firstMatch
+            let savedTitle = title.value as? String
+            let savedNotes = notes.value as? String
+            title.tap()
+            title.typeText("\n")
+            XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+            XCTAssertEqual(title.value as? String, savedTitle)
+            XCTAssertEqual(notes.value as? String, savedNotes)
+        }
         let row = app.switches["todo.hasDueDate"]
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         let value = enabled ? "1" : "0"
         if row.value as? String != value {
-            let control = row.switches.firstMatch
-            (control.exists ? control : row).tap()
+            let target = row.switches.firstMatch
+            XCTAssertTrue(target.waitForExistence(timeout: 5), "Missing native Due Date switch")
+            let ready = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: target)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+            // Move the thumb once from its current position to the requested state.
+            let thumb = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.2 : 0.8, dy: 0.5))
+            let destination = target.coordinate(withNormalizedOffset: CGVector(dx: enabled ? 0.8 : 0.2, dy: 0.5))
+            thumb.press(forDuration: 0.05, thenDragTo: destination)
         }
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: row)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)

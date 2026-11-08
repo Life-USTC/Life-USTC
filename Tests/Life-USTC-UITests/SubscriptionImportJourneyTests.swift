@@ -47,7 +47,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     func testFailedAppendPreservesSelectionAndAllowsExplicitRetry() async throws {
         launch(language: "en", locale: "en_US")
         try await open("home_subscriptions")
-        try await open("subscriptions_import_codes")
+        try await openImport()
         try await chooseSemester("Spring 2026")
         try await setCodes("PHYS101")
         try await open("subscription_import_preview")
@@ -76,7 +76,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     func testQueryRetryAndChangedSemesterOrCodesRequireFreshPreview() async throws {
         launch(language: "en", locale: "en_US")
         try await open("home_subscriptions")
-        try await open("subscriptions_import_codes")
+        try await openImport()
         XCTAssertFalse(app.buttons["subscription_import_preview"].isEnabled)
         try await chooseSemester("Spring 2026")
         try await setCodes("PHYS101")
@@ -118,7 +118,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["subscription_42"].waitForExistence(timeout: 10))
         XCTAssertEqual(fixture.subscriptionKinds, [42: "regular", 43: "teaching_assistant", 44: "regular"])
         capture("Subscriptions", language: language)
-        try await open("subscriptions_import_codes")
+        try await openImport()
         try await chooseSemester(language == "en" ? "Spring 2026" : "2026年春季学期")
         let codes = "PHYS101 PHYS101.01 PHYS101.09"
         try await setCodes(codes)
@@ -186,6 +186,15 @@ final class SubscriptionImportJourneyTests: XCTestCase {
     }
 
     @MainActor
+    private func openImport() async throws {
+        let semester = app.buttons["subscription_import_semester"]
+        try await open("subscriptions_import_codes")
+        if semester.waitForExistence(timeout: 10) { return }
+        XCTFail("Course-code import should open before choosing a semester")
+        throw InteractionFailure.unavailableControl
+    }
+
+    @MainActor
     private func chooseSemester(_ title: String) async throws {
         try await open("subscription_import_semester")
         try await open(title)
@@ -242,9 +251,10 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         }
         reveal(control)
         try await waitFor(control, predicate: "enabled == true AND hittable == true", file: file, line: line)
-        // The labelled row activates its text, while the native switch's center
-        // can miss the selected thumb. Use the thumb inside the switch bounds.
-        control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)).tap()
+        // Move the selected thumb to the off position within the native switch.
+        let selectedThumb = control.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+        let offPosition = control.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
+        selectedThumb.press(forDuration: 0.05, thenDragTo: offPosition)
         try await waitFor(field, predicate: "value == '0'", file: file, line: line)
     }
 

@@ -38,10 +38,21 @@ jobs:
             echo "deploy=false" >> $GITHUB_OUTPUT
           fi
 
-  test:
-    name: Run Tests
+  native_tests:
+    name: Native Tests (${{ matrix.family }})
     runs-on: macos-26
     timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: iPhone
+            device: iPhone 17
+          - family: iPad
+            device: iPad Pro 13-inch (M5)
+    env:
+      TEST_DEVICE: ${{ matrix.device }}
+      DEVICE_FAMILY: ${{ matrix.family }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -65,7 +76,7 @@ jobs:
         run: |
           xcodebuild -version
           xcrun simctl list runtimes
-          TEST_DEVICE_ID=$(xcrun simctl create "Life-USTC CI iPhone 17" "iPhone 17")
+          TEST_DEVICE_ID=$(xcrun simctl create "Life-USTC CI $TEST_DEVICE" "$TEST_DEVICE")
           echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
           xcrun simctl list devices available
 
@@ -105,7 +116,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: test-results
+          name: test-results-${{ matrix.family }}
           path: TestResults/
 
       - name: Export server feature screenshots
@@ -116,6 +127,7 @@ jobs:
           python3 scripts/export_server_screenshots.py \
             --xcresult TestResults/ui.xcresult \
             --output ServerScreenshots \
+            --device-family "$DEVICE_FAMILY" \
             --ui-outcome "$UI_OUTCOME" \
             --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --revision "$(git rev-parse HEAD)"
@@ -125,7 +137,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ios-server-screenshots-${{ github.run_id }}
+          name: ios-server-screenshots-${{ matrix.family }}-${{ github.run_id }}
           path: ServerScreenshots/
           if-no-files-found: error
 
@@ -153,6 +165,19 @@ jobs:
           xcrun simctl shutdown "$TEST_DEVICE_ID" || true
           xcrun simctl delete "$TEST_DEVICE_ID"
 
+  # Preserve the required branch-protection check while gating both matrix jobs.
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: native_tests
+    if: always()
+    steps:
+      - name: Require both native test jobs
+        env:
+          NATIVE_RESULT: ${{ needs.native_tests.result }}
+        run: test "$NATIVE_RESULT" = success
+
   build:
     name: Build IPA
     runs-on: macos-26
@@ -177,7 +202,7 @@ jobs:
           xcodegen --spec project.yml
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -216,7 +241,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -238,12 +263,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
-    if: needs.determine_action.outputs.should_add_to_group == 'true' && !cancelled()
+    if: >-
+      needs.determine_action.outputs.should_add_to_group == 'true' &&
+      needs.build.result == 'success' &&
+      needs.upload_to_testflight.result == 'success' &&
+      needs.build.outputs.build_number != '' && !cancelled()
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.4"
           bundler-cache: true

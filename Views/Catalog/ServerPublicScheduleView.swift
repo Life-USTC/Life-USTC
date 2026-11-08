@@ -124,6 +124,8 @@ private struct ServerPublicScheduleFiltersView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @State var filters: ServerPublicScheduleFilters
+    @FocusState private var focusedField: Field?
+    private enum Field: Hashable { case section, teacher, room }
     let apply: (ServerPublicScheduleFilters) -> Void
 
     var body: some View {
@@ -134,17 +136,20 @@ private struct ServerPublicScheduleFiltersView: View {
                         TextField("Section code", text: $filters.sectionCode)
                             .multilineTextAlignment(.trailing)
                             .accessibilityIdentifier("public_schedule_section_code")
+                            .focused($focusedField, equals: .section)
                     }
                     LabeledContent("Teacher code") {
                         TextField("Teacher code", text: $filters.teacherCode)
                             .multilineTextAlignment(.trailing)
                             .accessibilityIdentifier("public_schedule_teacher_code")
+                            .focused($focusedField, equals: .teacher)
                     }
                     LabeledContent("University room ID") {
                         TextField("University room ID", text: $filters.roomJWID)
                             .keyboardType(.numberPad)
                             .multilineTextAlignment(.trailing)
                             .accessibilityIdentifier("public_schedule_room_code")
+                            .focused($focusedField, equals: .room)
                     }
                 } footer: {
                     Text("Use exact section and teacher codes, or the university's numeric room ID.")
@@ -159,7 +164,7 @@ private struct ServerPublicScheduleFiltersView: View {
                             Text(weekdayName(day)).tag(Optional(day))
                         }
                     }
-                    .pickerStyle(.menu)
+                    .pickerStyle(.inline)
                     .accessibilityIdentifier("public_schedule_weekday")
                     Toggle("Limit dates", isOn: $filters.limitsDates)
                         .accessibilityIdentifier("public_schedule_limit_dates")
@@ -183,6 +188,11 @@ private struct ServerPublicScheduleFiltersView: View {
             .navigationTitle("Schedule Filters")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { focusedField = nil }
+                        .accessibilityIdentifier("public_schedule_keyboard_done")
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                         .accessibilityIdentifier("public_schedule_cancel")
