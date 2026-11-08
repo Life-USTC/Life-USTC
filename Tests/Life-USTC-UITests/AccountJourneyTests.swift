@@ -130,11 +130,29 @@ final class AccountJourneyTests: XCTestCase {
         }
         done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let management = app.navigationBars["Account Management"]
-        let page = app.buttons[pageID]
+        let deadline = ProcessInfo.processInfo.systemUptime + 10
         waitUntil {
-            management.exists && page.exists && page.isEnabled
-                && !page.frame.isEmpty && page.frame.intersects(applicationFrame)
-                && (!browser.exists || !browser.isHittable)
+            guard let snapshot = try? self.app.snapshot(),
+                  ProcessInfo.processInfo.systemUptime <= deadline else { return false }
+            var pending = snapshot.children
+            var hasManagement = false
+            var hasPage = false
+            while let element = pending.popLast() {
+                // Inspect one captured hierarchy; absence is not a live query.
+                if element.elementType == .other && element.identifier.hasPrefix("BrowserView") {
+                    return false
+                }
+                if element.elementType == .navigationBar
+                    && (element.identifier == "Account Management" || element.label == "Account Management") {
+                    hasManagement = true
+                }
+                if element.elementType == .button && element.identifier == pageID {
+                    hasPage = element.isEnabled && !element.frame.isEmpty
+                        && element.frame.intersects(applicationFrame)
+                }
+                pending.append(contentsOf: element.children)
+            }
+            return hasManagement && hasPage && ProcessInfo.processInfo.systemUptime <= deadline
         }
         // The composite wait above already includes this exact presence check.
         XCTAssertTrue(management.exists)
