@@ -114,10 +114,10 @@ final class ParityNavigationJourneyTests: XCTestCase {
         try await open("catalog_section_42")
         try await open("Shared Homework")
         try await open("section.homeworks.create")
-        try await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: true)
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
         capture("HomeworkGuide")
-        try await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: false)
         let title = app.textFields["homework.editor.title"]
         reveal(title)
         title.tap()
@@ -134,9 +134,9 @@ final class ParityNavigationJourneyTests: XCTestCase {
         try await open(app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@",
                                              "section.homeworks.row.\(id)", "Homework actions")).firstMatch)
         try await open("Edit")
-        try await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: true)
         XCTAssertTrue(app.staticTexts["These are suggestions and do not prevent saving."].waitForExistence(timeout: 10))
-        try await open("homework.editor.guide")
+        try await setHomeworkGuide(expanded: false)
         XCTAssertTrue(app.buttons["homework.editor.save"].exists)
     }
 
@@ -205,10 +205,6 @@ final class ParityNavigationJourneyTests: XCTestCase {
         }
     }
 
-    private enum InteractionFailure: Error {
-        case unavailableControl
-    }
-
     @MainActor
     private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) async throws {
         try await open(app.buttons.matching(identifier: id).firstMatch, file: file, line: line)
@@ -222,15 +218,37 @@ final class ParityNavigationJourneyTests: XCTestCase {
             XCTFail("Missing control: \(element)", file: file, line: line)
             throw InteractionFailure.unavailableControl
         }
-        let condition = NSPredicate(format: "enabled == true AND hittable == true")
-        if !condition.evaluate(with: element) {
-            let ready = XCTNSPredicateExpectation(predicate: condition, object: element)
-            guard await XCTWaiter.fulfillment(of: [ready], timeout: 10) == .completed else {
-                XCTFail("Control did not satisfy enabled == true AND hittable == true: \(element)", file: file, line: line)
-                throw InteractionFailure.unavailableControl
-            }
-        }
+        try await waitFor(element, predicate: "enabled == true AND hittable == true", file: file, line: line)
         element.tap()
+    }
+
+    private enum InteractionFailure: Error {
+        case unavailableControl
+    }
+
+    @MainActor
+    private func waitFor(_ element: XCUIElement, predicate: String,
+                         file: StaticString = #filePath, line: UInt = #line) async throws {
+        let condition = NSPredicate(format: predicate)
+        // Accessibility snapshots can outlast the polling deadline even when ready.
+        if condition.evaluate(with: element) { return }
+        let expectation = XCTNSPredicateExpectation(predicate: condition, object: element)
+        guard await XCTWaiter.fulfillment(of: [expectation], timeout: 10) == .completed else {
+            XCTFail("Control did not satisfy \(predicate): \(element)", file: file, line: line)
+            throw InteractionFailure.unavailableControl
+        }
+    }
+
+    @MainActor
+    private func setHomeworkGuide(expanded: Bool, file: StaticString = #filePath, line: UInt = #line) async throws {
+        let guide = app.buttons["homework.editor.guide"]
+        reveal(guide)
+        try await waitFor(guide, predicate: "exists == true AND enabled == true AND hittable == true", file: file, line: line)
+        let label = guide.staticTexts["Homework writing guide"]
+        try await waitFor(label, predicate: "exists == true AND hittable == true", file: file, line: line)
+        label.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let explanation = app.staticTexts["These are suggestions and do not prevent saving."]
+        try await waitFor(explanation, predicate: expanded ? "exists == true" : "exists == false", file: file, line: line)
     }
 
     @MainActor

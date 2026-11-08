@@ -44,13 +44,15 @@ final class AccountJourneyTests: XCTestCase {
                      ("accounts", "/account/settings/accounts"), ("security", "/account/settings/security"),
                      ("authorizations", "/account/settings/authorizations"), ("administration", "/admin"),
                      ("danger", "/account/settings/danger")]
+        let applicationFrame = app.frame
+        XCTAssertFalse(applicationFrame.isEmpty)
         for (id, path) in pages {
             let previousReads = requestCount("GET", "/api/account/profile")
             try open("account_web_\(id)")
             waitForRequest("GET", path, timeout: 45)
             let request = try XCTUnwrap(fixture.requests.last { $0.path == path })
             XCTAssertNil(request.headers["authorization"], "Website must authenticate its own session")
-            closeWebsite()
+            closeWebsite(returningTo: "account_web_\(id)", applicationFrame: applicationFrame)
             waitUntil { self.requestCount("GET", "/api/account/profile") > previousReads }
         }
         back()
@@ -63,6 +65,7 @@ final class AccountJourneyTests: XCTestCase {
         try open("settings_account_management")
         try open("account_app_activity")
         waitForRequest("GET", "/api/account/client-activity", query: ["limit": "30"])
+        XCTAssertTrue(app.navigationBars["This App's Activity"].waitForExistence(timeout: 10))
         assertText("Comment posted")
         assertText("Succeeded")
         fixture.failNextRequest(method: "GET", path: "/api/account/client-activity")
@@ -114,14 +117,45 @@ final class AccountJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func closeWebsite() {
-        let done = app.buttons.matching(NSPredicate(format: "label IN %@", ["Done", "Close", "完成", "关闭"])).firstMatch
-        XCTAssertTrue(done.waitForExistence(timeout: 10))
+    private func closeWebsite(returningTo pageID: String, applicationFrame: CGRect) {
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
+        let done = browser.buttons.matching(NSPredicate(format: "label IN %@ AND enabled == true", ["Done", "Close", "完成", "关闭"])).firstMatch
+        XCTAssertTrue(done.waitForExistence(timeout: 10))
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "hittable == true"), object: done)
+        guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+            XCTFail("The website close control should be actionable")
+            return
+        }
         done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        waitUntil { !browser.exists }
-        XCTAssertTrue(app.navigationBars["Account Management"].waitForExistence(timeout: 10))
+        let management = app.navigationBars["Account Management"]
+        let deadline = ProcessInfo.processInfo.systemUptime + 10
+        waitUntil {
+            guard let snapshot = try? self.app.snapshot(),
+                  ProcessInfo.processInfo.systemUptime <= deadline else { return false }
+            var pending = snapshot.children
+            var hasManagement = false
+            var hasPage = false
+            while let element = pending.popLast() {
+                // Inspect one captured hierarchy; absence is not a live query.
+                if element.elementType == .other && element.identifier.hasPrefix("BrowserView") {
+                    return false
+                }
+                if element.elementType == .navigationBar
+                    && (element.identifier == "Account Management" || element.label == "Account Management") {
+                    hasManagement = true
+                }
+                if element.elementType == .button && element.identifier == pageID {
+                    hasPage = element.isEnabled && !element.frame.isEmpty
+                        && element.frame.intersects(applicationFrame)
+                }
+                pending.append(contentsOf: element.children)
+            }
+            return hasManagement && hasPage && ProcessInfo.processInfo.systemUptime <= deadline
+        }
+        // The composite wait above already includes this exact presence check.
+        XCTAssertTrue(management.exists)
     }
 
     @MainActor

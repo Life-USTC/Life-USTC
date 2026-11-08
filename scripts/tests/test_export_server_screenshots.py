@@ -100,6 +100,50 @@ class ScreenshotExporterTests(unittest.TestCase):
                          (self.attachments / "manifest.json").read_bytes())
         self.assertIn("image-orientation:from-image", (self.output / "index.html").read_text())
 
+    def test_ipad_coverage_maps_both_capture_conventions_without_changing_phone_list(self):
+        coverage = [{"id": "example", "title": "Example", "required": [
+            "after-workspace-Home-iPhone", "after-m6-SemesterCalendar",
+            "after-public-schedule-Results-zh-Hans-iPhone",
+        ]}]
+        ipad = exporter.coverage_for_device(coverage, "iPad")
+        self.assertEqual(ipad[0]["required"], [
+            "after-workspace-Home-iPad", "after-m6-SemesterCalendar-iPad",
+            "after-public-schedule-Results-zh-Hans-iPad",
+        ])
+        self.assertEqual(exporter.coverage_for_device(coverage, "iPhone"), coverage)
+        self.assertEqual(coverage[0]["required"][0], "after-workspace-Home-iPhone")
+
+    def test_phone_captures_cannot_complete_ipad_gallery(self):
+        name = self.coverage[0]["required"][0]
+        self.manifest([test_record(attachment(name))])
+        (self.attachments / "capture.png").write_bytes(png_with_exif())
+        self.coverage = exporter.coverage_for_device(self.coverage, "iPad")
+        report = self.render()
+        self.assertEqual(report["status"], "incomplete")
+        self.assertEqual(report["missing_required"], ["after-workspace-Home-iPad"])
+
+    def test_ipad_cli_requires_ipad_captures_and_reports_device(self):
+        coverage = self.root / "coverage.json"
+        coverage.write_text(json.dumps(self.coverage))
+        bundle = self.root / "ui.xcresult"
+        bundle.mkdir()
+        def process(command, **kwargs):
+            attachments = Path(command[-1])
+            (attachments / "manifest.json").write_text(json.dumps([test_record(
+                attachment("after-workspace-Home-iPad", deviceName="iPad Pro 13-inch (M5)"))]))
+            (attachments / "capture.png").write_bytes(png_with_exif())
+            return subprocess.CompletedProcess(command, 0, "", "")
+        with patch.object(exporter.subprocess, "run", side_effect=process), contextlib.redirect_stdout(io.StringIO()):
+            result = exporter.main(["--xcresult", str(bundle), "--output", str(self.output),
+                                    "--coverage", str(coverage), "--ui-outcome", "success",
+                                    "--device-family", "iPad"])
+        self.assertEqual(result, 0)
+        report = json.loads((self.output / "report.json").read_text())
+        self.assertEqual(report["device_family"], "iPad")
+        self.assertEqual(report["matched_required_count"], 1)
+        self.assertIn("Device family: iPad", (self.output / "index.html").read_text())
+        self.assertIn("Device family: `iPad`", (self.output / "summary.md").read_text())
+
     def test_generated_suffix_is_removed_without_truncating_capture_name(self):
         name = "after-public-schedule-Results_2026-zh-Hans-iPhone"
         self.manifest([test_record(attachment(name))])

@@ -93,7 +93,16 @@ final class YoungIncrementalJourneyTests: XCTestCase {
         let finalBatch = app.staticTexts[YoungIncrementalHTTPState.finalTitle]
         for _ in 0..<40 {
             if finalBatch.exists && finalBatch.isHittable { break }
-            app.swipeUp()
+            let list = app.collectionViews.firstMatch
+            if finalBatch.exists {
+                let viewport = list.frame.intersection(app.frame)
+                let start = list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+                let distance = min(120, max(-120, viewport.midY - finalBatch.frame.midY))
+                let end = start.withOffset(CGVector(dx: 0, dy: distance))
+                start.press(forDuration: 0.05, thenDragTo: end)
+            } else {
+                list.swipeUp(velocity: .slow)
+            }
         }
         XCTAssertTrue(finalBatch.waitForExistence(timeout: 10), "The second page must become visible")
         XCTAssertTrue(finalBatch.isHittable)

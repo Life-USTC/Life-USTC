@@ -197,7 +197,9 @@ server-side permission enforcement. Existing university/demo tests remain.
 
 `WorkspaceJourneyTests` exercises home destinations, todo mutations, homework
 completion, unknown-date exams and private calendar-feed actions using HTTP
-fixtures. CI runs all unit tests, the native journey suites and the signed IPA build.
+fixtures. CI runs all unit tests and native journey suites on iPhone 17 and
+iPad Pro 13-inch (M5). Both device jobs must pass the required Run Tests gate
+before the signed IPA build runs.
 Manual branch validation uses `ci.yaml` with `beta=false`; the workflow's normal
 main-branch delivery handles TestFlight. Visual changes include matched evidence
 in their PR. macOS runner configuration belongs in personal environment setup,
@@ -208,15 +210,19 @@ preferences, reminder recovery, publication filters and source navigation.
 `CatalogParityJourneyTests` and `ParityNavigationJourneyTests` cover historical
 catalog presentation, calendar modes and exports, sharing and guide handoff.
 
-The same CI UI run exports its named `after-*` PNG attachments into
-`ios-server-screenshots-<run-id>`. Download the artifact from the Run Tests job
+Each CI device job exports its named `after-*` PNG attachments into
+`ios-server-screenshots-<iPhone|iPad>-<run-id>`. Download the artifact from its job
 summary, extract it, and open `index.html` to browse by feature. Original PNG
 bytes, including EXIF metadata, remain unchanged; the report records each
 capture's test, device, attachment name and hash. The readable
 [`required capture list`](../scripts/server_screenshot_coverage.json) covers 93
-current iPhone states, including the existing English and Chinese journeys.
+states per device, including the existing English and Chinese journeys. The
+exporter maps the capture names to the selected device family; each device
+must independently provide all 93 states. Test bundles remain in separate
+`test-results-<iPhone|iPad>` artifacts, and one failed device job does not cancel
+the other.
 Missing captures or failed exports fail CI while preserving the partial gallery
 and its missing-capture report. The UI test outcome is reported separately.
-This is fixture evidence from the existing iPhone suite; it does not establish
-all-screen, all-locale, iPad or production-account coverage. Fastlane snapshots
+This is fixture evidence from the existing native suite; it does not establish
+all-screen, all-locale or production-account coverage. Fastlane snapshots
 continue in their existing workflow.
