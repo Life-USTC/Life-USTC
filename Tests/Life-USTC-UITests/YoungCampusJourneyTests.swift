@@ -64,7 +64,8 @@ final class YoungCampusJourneyTests: XCTestCase {
         waitUntil { dateRange.value as? String == "1" }
         XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 10))
         try chooseFilter("active", value: "In source signup list")
-        try chooseFilter("organizer", value: "Student Science Association")
+        try chooseFilter("organizer", value: "Student Science Association",
+                         optionID: "young.filters.organizer.option.\(PublicDiscoveryHTTPState.scienceOrganizer)")
         capture("YoungFilters")
         open("young.filters.apply")
         let dateFormatter = DateFormatter()
@@ -133,7 +134,8 @@ final class YoungCampusJourneyTests: XCTestCase {
         open("young.filters")
         assertText("Workspace fixture unavailable")
         open("young.filters.organizers.retry")
-        try chooseFilter("organizer", value: "Student Arts Association")
+        try chooseFilter("organizer", value: "Student Arts Association",
+                         optionID: "young.filters.organizer.option.\(PublicDiscoveryHTTPState.artsOrganizer)")
         try chooseFilter("module", value: "智")
         open("young.filters.apply")
         waitForRequest("GET", "/api/catalog/young-events", query: ["organizerId": PublicDiscoveryHTTPState.artsOrganizer, "module": "智"])
@@ -348,10 +350,16 @@ final class YoungCampusJourneyTests: XCTestCase {
 
     @MainActor
     private func chooseFilter(_ field: String, value: String,
+                              optionID: String? = nil,
                               file: StaticString = #filePath, line: UInt = #line) throws {
         let picker = app.buttons["young.filters.\(field)"]
         open("young.filters.\(field)", file: file, line: line)
-        let option = app.buttons[value]
+        let option: XCUIElement
+        if let optionID {
+            option = app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@", optionID, value)).element
+        } else {
+            option = app.buttons[value]
+        }
         reveal(option)
         _ = try XCTUnwrap(option.waitForExistence(timeout: 10) ? option : nil,
                           "Missing filter option: \(value)", file: file, line: line)
