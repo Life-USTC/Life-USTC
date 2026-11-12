@@ -112,6 +112,13 @@ jobs:
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
 
+      - name: Record actual native package resolution
+        if: always()
+        run: |
+          mkdir -p TestResults
+          cp Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved TestResults/Package.resolved
+          shasum -a 256 TestResults/Package.resolved > TestResults/package-resolved.sha256
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
