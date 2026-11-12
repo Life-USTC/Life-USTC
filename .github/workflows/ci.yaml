@@ -165,18 +165,136 @@ jobs:
           xcrun simctl shutdown "$TEST_DEVICE_ID" || true
           xcrun simctl delete "$TEST_DEVICE_ID"
 
+  catalog_identity:
+    name: Catalog Identity (${{ matrix.family }})
+    runs-on: macos-26
+    timeout-minutes: 45
+    needs: native_tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: iPhone
+            device: iPhone 17
+          - family: iPad
+            device: iPad Pro 13-inch (M5)
+    env:
+      TEST_DEVICE: ${{ matrix.device }}
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      IDENTITY_SIM_NAME: Life-USTC Identity-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.family }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Cache Swift packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+
+      - name: Setup .xcodeproj
+        run: |
+          brew install xcodegen
+          xcodegen --spec project.yml
+
+      - name: Verify canonical toolchain and create owned simulator
+        run: |
+          mkdir -p TestResults
+          xcodebuild -version | tee TestResults/xcode-version.txt
+          test "$(xcodebuild -version)" = $'Xcode 26.6\nBuild version 17F113'
+          xcrun --sdk iphonesimulator --show-sdk-version | tee TestResults/sdk-version.txt
+          test "$(cat TestResults/sdk-version.txt)" = 26.5
+          xcrun simctl list runtimes --json > TestResults/runtimes.json
+          python3 - <<'PY_RUNTIME'
+          import json
+          runtimes = json.load(open('TestResults/runtimes.json'))['runtimes']
+          runtime = [r for r in runtimes if r['identifier'] == 'com.apple.CoreSimulator.SimRuntime.iOS-26-5']
+          assert len(runtime) == 1 and runtime[0]['isAvailable'], runtime
+          assert runtime[0]['version'] == '26.5' and runtime[0]['buildversion'] == '23F77', runtime
+          PY_RUNTIME
+          TEST_DEVICE_ID=$(xcrun simctl create "$IDENTITY_SIM_NAME" "$TEST_DEVICE" com.apple.CoreSimulator.SimRuntime.iOS-26-5)
+          echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
+          printf 'name=%s\nuuid=%s\nrevision=%s\n' "$IDENTITY_SIM_NAME" "$TEST_DEVICE_ID" "$(git rev-parse HEAD)" > TestResults/owned-simulator.txt
+          xcrun simctl boot "$TEST_DEVICE_ID"
+          xcrun simctl bootstatus "$TEST_DEVICE_ID" -b
+
+      - name: Resolve and record catalog identity packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -clonedSourcePackagesDirPath SourcePackages
+          cp Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved TestResults/Package.before.resolved
+          python3 - <<'PY_PINS'
+          import json
+          pins = json.load(open('TestResults/Package.before.resolved'))['pins']
+          assert len(pins) == 12 and len({p['identity'] for p in pins}) == 12, pins
+          PY_PINS
+          shasum -a 256 TestResults/Package.before.resolved > TestResults/package-before.sha256
+
+      - name: Build catalog identity acceptance
+        run: |
+          xcodebuild build-for-testing \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
+            -clonedSourcePackagesDirPath SourcePackages \
+            -resultBundlePath TestResults/catalog-identity-build.xcresult \
+            -quiet
+
+      - name: Run catalog identity acceptance
+        timeout-minutes: 25
+        run: bash scripts/run_catalog_identity_acceptance.sh
+
+      - name: Verify catalog identity packages unchanged
+        if: always()
+        run: |
+          cp Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved TestResults/Package.after.resolved
+          shasum -a 256 TestResults/Package.after.resolved > TestResults/package-after.sha256
+          cmp TestResults/Package.before.resolved TestResults/Package.after.resolved
+
+      - name: Dispose catalog identity simulator
+        if: always() && env.TEST_DEVICE_ID != ''
+        run: |
+          xcrun simctl list devices --json > TestResults/devices-before-cleanup.json
+          python3 - <<'PY_OWNED'
+          import json, os
+          devices = [d for group in json.load(open('TestResults/devices-before-cleanup.json'))['devices'].values() for d in group]
+          owned = [d for d in devices if d['udid'] == os.environ['TEST_DEVICE_ID']]
+          assert len(owned) == 1 and owned[0]['name'] == os.environ['IDENTITY_SIM_NAME'], owned
+          PY_OWNED
+          xcrun simctl shutdown "$TEST_DEVICE_ID" || true
+          xcrun simctl delete "$TEST_DEVICE_ID"
+          xcrun simctl list devices --json > TestResults/devices-after-cleanup.json
+          python3 - <<'PY_ABSENT'
+          import json, os
+          devices = [d for group in json.load(open('TestResults/devices-after-cleanup.json'))['devices'].values() for d in group]
+          assert all(d['udid'] != os.environ['TEST_DEVICE_ID'] for d in devices)
+          PY_ABSENT
+          echo 'cleanup=verified-absent' >> TestResults/owned-simulator.txt
+
+      - name: Upload catalog identity results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-identity-${{ matrix.family }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: TestResults/
+          if-no-files-found: error
+
   # Preserve the required branch-protection check while gating both matrix jobs.
   test:
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: native_tests
+    needs: [native_tests, catalog_identity]
     if: always()
     steps:
       - name: Require both native test jobs
         env:
           NATIVE_RESULT: ${{ needs.native_tests.result }}
-        run: test "$NATIVE_RESULT" = success
+          IDENTITY_RESULT: ${{ needs.catalog_identity.result }}
+        run: test "$NATIVE_RESULT" = success && test "$IDENTITY_RESULT" = success
 
   build:
     name: Build IPA
