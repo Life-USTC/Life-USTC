@@ -119,7 +119,7 @@ final class AccountJourneyTests: XCTestCase {
     @MainActor
     private func closeWebsite(returningTo pageID: String, applicationFrame: CGRect) {
         let browser = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "BrowserView")).firstMatch
-        let done = browser.buttons.matching(NSPredicate(format: "label IN %@ AND enabled == true", ["Done", "Close", "完成", "关闭"])).firstMatch
+        let done = browser.buttons.matching(NSPredicate(format: "identifier == %@ AND label IN %@ AND enabled == true", "Close", ["Done", "Close", "完成", "关闭"])).firstMatch
         XCTAssertTrue(done.waitForExistence(timeout: 10))
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         let ready = XCTNSPredicateExpectation(

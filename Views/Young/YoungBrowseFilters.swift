@@ -133,6 +133,7 @@ struct YoungBrowseFiltersView: View {
                         }
                         ForEach(organizers.organizers) { organizer in
                             Text(organizer.name).tag(Optional(organizer.id))
+                                .accessibilityIdentifier("young.filters.organizer.option.\(organizer.id)")
                         }
                     }
                     .accessibilityIdentifier("young.filters.organizer")
