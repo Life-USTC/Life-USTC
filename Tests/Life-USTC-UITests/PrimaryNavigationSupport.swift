@@ -26,10 +26,10 @@ enum PrimaryNavigation {
         guard dismissAccountIfNeeded(in: app, until: deadline) else { return }
         let menu = app.buttons.matching(identifier: "account_menu").element
         guard showRailIfNeeded(for: menu, in: app, until: deadline) else { return }
-        guard ready(menu, until: deadline) else { return }
+        guard readyAccountControl("account_menu", in: app, until: deadline) else { return }
         menu.tap()
         let entry = app.buttons.matching(identifier: "account_menu_\(destination)").element
-        guard ready(entry, until: deadline) else { return }
+        guard readyAccountControl("account_menu_\(destination)", in: app, until: deadline) else { return }
         entry.tap()
     }
 
@@ -51,9 +51,31 @@ enum PrimaryNavigation {
         return true
     }
 
-    private static func ready(_ element: XCUIElement, until deadline: TimeInterval) -> Bool {
+    private static func readyAccountControl(_ id: String, in app: XCUIApplication, until deadline: TimeInterval) -> Bool {
+        let control = app.buttons.matching(identifier: id)
+            .matching(NSPredicate(format: "enabled == true")).element
+        let predicate = NSPredicate(format: "hittable == true")
+        guard ProcessInfo.processInfo.systemUptime < deadline else {
+            XCTFail("The account entry budget expired before observing \(id)")
+            return false
+        }
+        let available = predicate.evaluate(with: control)
+        guard ProcessInfo.processInfo.systemUptime <= deadline else {
+            XCTFail("The account entry budget expired while observing \(id)")
+            return false
+        }
+        if available { return true }
+        let completed = ready(control, until: deadline, predicate: predicate)
+        if completed && ProcessInfo.processInfo.systemUptime > deadline {
+            XCTFail("The account entry budget expired while waiting for \(id)")
+            return false
+        }
+        return completed
+    }
+
+    private static func ready(_ element: XCUIElement, until deadline: TimeInterval, predicate: NSPredicate? = nil) -> Bool {
         let expectation = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"), object: element)
+            predicate: predicate ?? NSPredicate(format: "exists == true AND enabled == true AND hittable == true"), object: element)
         let result = XCTWaiter.wait(for: [expectation], timeout: max(0, deadline - ProcessInfo.processInfo.systemUptime))
         XCTAssertEqual(result, .completed, "The unique shell control should be available: \(element)")
         return result == .completed

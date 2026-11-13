@@ -59,7 +59,7 @@ final class YoungIncrementalJourneyTests: XCTestCase {
         app.launch()
         selectActivities()
         XCTAssertTrue(app.buttons["activities_list"].waitForExistence(timeout: 10))
-        open(screen)
+        open(screen == "Activities" ? "activities_list" : screen)
         waitUntil { self.fixture.heldYoungPages.count == 1 }
         XCTAssertEqual(fixture.heldYoungPages.first?.query["page"], "2")
         XCTAssertEqual(fixture.heldYoungPages.first?.query["pageSize"], "100")

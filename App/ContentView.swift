@@ -58,8 +58,8 @@ struct ContentView: View {
                     ForEach(ContentViewTab.allCases, id: \.self) { tab in
                         NavigationStack {
                             tab.view
-                                .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                         }
+                        .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                         .tabItem {
                             tab.label
                         }
