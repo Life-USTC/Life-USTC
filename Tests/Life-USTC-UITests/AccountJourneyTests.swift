@@ -117,7 +117,7 @@ final class AccountJourneyTests: XCTestCase {
             XCTFail("The website close control should be actionable")
             return
         }
-        done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        done.tap()
         let management = app.navigationBars["Account Management"]
         let deadline = ProcessInfo.processInfo.systemUptime + 10
         waitUntil {

@@ -56,14 +56,18 @@ final class YoungCampusJourneyTests: XCTestCase {
         try chooseFilter("module", value: "智")
         try chooseFilter("activityLevel", value: "校级")
         try chooseFilter("timeBasis", value: "Registration window")
-        // Use the identified Toggle, rather than its anonymous nested Switch.
         let dateRange = app.switches["young.filters.dateRange"]
         reveal(dateRange)
         XCTAssertTrue(dateRange.waitForExistence(timeout: 10), "Missing switch: young.filters.dateRange")
-        let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: dateRange)
+        let nativeDateRange = dateRange.switches.element
+        XCTAssertTrue(nativeDateRange.exists, "Missing native date-range switch")
+        let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: nativeDateRange)
         XCTAssertEqual(XCTWaiter.wait(for: [dateRangeReady], timeout: 10), .completed)
         XCTAssertEqual(dateRange.value as? String, "0")
-        dateRange.tap()
+        // Drag the native thumb once, keeping the identified Toggle as the state oracle.
+        let offPosition = nativeDateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
+        let onPosition = nativeDateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+        offPosition.press(forDuration: 0.05, thenDragTo: onPosition)
         waitUntil { dateRange.value as? String == "1" }
         XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 10))
         try chooseFilter("active", value: "In source signup list")
