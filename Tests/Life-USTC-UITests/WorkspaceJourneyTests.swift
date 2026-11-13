@@ -2,6 +2,51 @@ import XCTest
 
 /// Native UI integration with a stateful wire peer, independent of production OAuth.
 final class WorkspaceJourneyTests: XCTestCase {
+    // Diagnostic only: bounded to the first two selected readiness waits per test.
+    // All mutable storage is protected by lock; handler never reads the UI element.
+    private final class ReadinessProbe: @unchecked Sendable {
+        enum Phase: String { case start, firstObservedCombinedTrue, end }
+        private struct Entry {
+            let id: String
+            var times: [Phase: TimeInterval] = [:]
+            var outcome: Int?
+        }
+        private let lock = NSLock()
+        private var entries: [Entry] = []
+
+        func reserve(_ id: String) -> Int? {
+            lock.lock()
+            defer { lock.unlock() }
+            guard entries.count < 2 else { return nil }
+            entries.append(Entry(id: id))
+            return entries.count - 1
+        }
+
+        // start is sampled immediately before wait registration; callback time is
+        // first observed combined-true, not the predicate evaluation start or duration.
+        func note(_ index: Int, _ phase: Phase, outcome: Int? = nil) {
+            let now = ProcessInfo.processInfo.systemUptime
+            lock.lock()
+            defer { lock.unlock() }
+            guard entries.indices.contains(index), entries[index].times[phase] == nil else { return }
+            entries[index].times[phase] = now
+            if phase == .end { entries[index].outcome = outcome }
+        }
+
+        func text() -> String? {
+            lock.lock()
+            defer { lock.unlock() }
+            guard !entries.isEmpty else { return nil }
+            return entries.map { entry in
+                let times = [Phase.start, .firstObservedCombinedTrue, .end].map { phase in
+                    "\(phase.rawValue)=\(entry.times[phase].map { String($0) } ?? "unobserved")"
+                }.joined(separator: " ")
+                return "id=\(entry.id) \(times) outcomeRawValue=\(entry.outcome.map { String($0) } ?? "unobserved")"
+            }.joined(separator: "\n")
+        }
+    }
+    private let readinessProbe = ReadinessProbe()
+
     private var fixture: ServerJourneyHTTPFixture!
     private var app: XCUIApplication!
     private let todoID = WorkspaceTodoHTTPState.initialTodoID
@@ -34,6 +79,12 @@ final class WorkspaceJourneyTests: XCTestCase {
         }
         app.terminate()
         fixture.stop()
+        if let text = readinessProbe.text() {
+            let timing = XCTAttachment(string: text)
+            timing.name = "workspace-readiness-combined-timing"
+            timing.lifetime = .keepAlways
+            add(timing)
+        }
     }
 
     @MainActor
@@ -292,7 +343,18 @@ final class WorkspaceJourneyTests: XCTestCase {
         }
         XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing control: \(id)", file: file, line: line)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: button)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed, "Unavailable control: \(id)", file: file, line: line)
+        let probe = readinessProbe
+        let token = (id == "home_homeworks" || id == "workspace.exam.702") ? probe.reserve(id) : nil
+        if let token {
+            ready.handler = {
+                probe.note(token, .firstObservedCombinedTrue)
+                return true
+            }
+            probe.note(token, .start)
+        }
+        let result = XCTWaiter.wait(for: [ready], timeout: 10)
+        if let token { probe.note(token, .end, outcome: result.rawValue) }
+        XCTAssertEqual(result, .completed, "Unavailable control: \(id)", file: file, line: line)
         button.tap()
     }
 

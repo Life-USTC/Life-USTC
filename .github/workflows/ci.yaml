@@ -80,6 +80,19 @@ jobs:
           echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
           xcrun simctl list devices available
 
+      - name: Resolve and freeze actual native packages
+        id: native_resolution
+        run: |
+          mkdir -p TestResults
+          xcodebuild -resolvePackageDependencies \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -clonedSourcePackagesDirPath SourcePackages
+          python3 scripts/package_resolution.py capture \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --output TestResults --family "$DEVICE_FAMILY" \
+            --checkout "$(git rev-parse HEAD)" --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
       - name: Run Unit Tests
         run: |
           xcodebuild test \
@@ -87,6 +100,8 @@ jobs:
             -scheme Life-USTC-Tests \
             -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
             -clonedSourcePackagesDirPath SourcePackages \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
             -resultBundlePath TestResults/unit.xcresult \
             -quiet
 
@@ -109,8 +124,32 @@ jobs:
             -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
             -only-testing:Life-USTC-UITests/AccountJourneyTests \
             -clonedSourcePackagesDirPath SourcePackages \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
+
+      - name: Record and verify actual native package resolution
+        id: native_resolution_after
+        if: always() && steps.native_resolution.outcome == 'success'
+        run: |
+          python3 scripts/package_resolution.py finish \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --output TestResults --family "$DEVICE_FAMILY" \
+            --checkout "$(git rev-parse HEAD)" --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Upload tested native package resolution
+        if: always() && steps.native_resolution.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-packages-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.family }}
+          path: |
+            TestResults/Package.before.resolved
+            TestResults/Package.resolved
+            TestResults/package-before.sha256
+            TestResults/package-resolved.sha256
+            TestResults/package-source.json
+          if-no-files-found: error
 
       - name: Upload Test Results
         if: always()
@@ -165,18 +204,152 @@ jobs:
           xcrun simctl shutdown "$TEST_DEVICE_ID" || true
           xcrun simctl delete "$TEST_DEVICE_ID"
 
+  catalog_identity:
+    name: Catalog Identity (${{ matrix.family }})
+    runs-on: macos-26
+    timeout-minutes: 45
+    needs: native_tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: iPhone
+            device: iPhone 17
+          - family: iPad
+            device: iPad Pro 13-inch (M5)
+    env:
+      TEST_DEVICE: ${{ matrix.device }}
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      IDENTITY_SIM_NAME: Life-USTC Identity-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.family }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Cache Swift packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+
+      - name: Setup .xcodeproj
+        run: |
+          brew install xcodegen
+          xcodegen --spec project.yml
+
+      - name: Verify canonical toolchain and create owned simulator
+        run: |
+          mkdir -p TestResults
+          xcodebuild -version | tee TestResults/xcode-version.txt
+          test "$(xcodebuild -version)" = $'Xcode 26.6\nBuild version 17F113'
+          xcrun --sdk iphonesimulator --show-sdk-version | tee TestResults/sdk-version.txt
+          test "$(cat TestResults/sdk-version.txt)" = 26.5
+          xcrun simctl list runtimes --json > TestResults/runtimes.json
+          python3 - <<'PY_RUNTIME'
+          import json
+          runtimes = json.load(open('TestResults/runtimes.json'))['runtimes']
+          runtime = [r for r in runtimes if r['identifier'] == 'com.apple.CoreSimulator.SimRuntime.iOS-26-5']
+          assert len(runtime) == 1 and runtime[0]['isAvailable'], runtime
+          assert runtime[0]['version'] == '26.5' and runtime[0]['buildversion'] == '23F77', runtime
+          PY_RUNTIME
+          TEST_DEVICE_ID=$(xcrun simctl create "$IDENTITY_SIM_NAME" "$TEST_DEVICE" com.apple.CoreSimulator.SimRuntime.iOS-26-5)
+          echo "TEST_DEVICE_ID=$TEST_DEVICE_ID" >> "$GITHUB_ENV"
+          printf 'name=%s\nuuid=%s\nrevision=%s\n' "$IDENTITY_SIM_NAME" "$TEST_DEVICE_ID" "$(git rev-parse HEAD)" > TestResults/owned-simulator.txt
+          xcrun simctl boot "$TEST_DEVICE_ID"
+          xcrun simctl bootstatus "$TEST_DEVICE_ID" -b
+
+      - name: Download both tested native package resolutions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: native-packages-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: TestResults/native-packages
+          merge-multiple: false
+
+      - name: Install tested native graph for catalog identity
+        id: identity_resolution
+        run: |
+          python3 scripts/package_resolution.py consume \
+            --inputs TestResults/native-packages --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved \
+            --baseline TestResults/Package.native.resolved \
+            --checkout "$(git rev-parse HEAD)" --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Resolve and record catalog identity packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -clonedSourcePackagesDirPath SourcePackages \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile
+          python3 scripts/package_resolution.py compare \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --baseline TestResults/Package.native.resolved \
+            --output TestResults/Package.before.resolved
+
+      - name: Build catalog identity acceptance
+        run: |
+          xcodebuild build-for-testing \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC-UITests \
+            -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
+            -clonedSourcePackagesDirPath SourcePackages \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -resultBundlePath TestResults/catalog-identity-build.xcresult \
+            -quiet
+
+      - name: Run catalog identity acceptance
+        timeout-minutes: 25
+        run: bash scripts/run_catalog_identity_acceptance.sh
+
+      - name: Verify catalog identity packages unchanged
+        if: always()
+        run: |
+          python3 scripts/package_resolution.py compare \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --baseline TestResults/Package.native.resolved \
+            --output TestResults/Package.after.resolved
+
+      - name: Dispose catalog identity simulator
+        if: always() && env.TEST_DEVICE_ID != ''
+        run: |
+          xcrun simctl list devices --json > TestResults/devices-before-cleanup.json
+          python3 - <<'PY_OWNED'
+          import json, os
+          devices = [d for group in json.load(open('TestResults/devices-before-cleanup.json'))['devices'].values() for d in group]
+          owned = [d for d in devices if d['udid'] == os.environ['TEST_DEVICE_ID']]
+          assert len(owned) == 1 and owned[0]['name'] == os.environ['IDENTITY_SIM_NAME'], owned
+          PY_OWNED
+          xcrun simctl shutdown "$TEST_DEVICE_ID" || true
+          xcrun simctl delete "$TEST_DEVICE_ID"
+          xcrun simctl list devices --json > TestResults/devices-after-cleanup.json
+          python3 - <<'PY_ABSENT'
+          import json, os
+          devices = [d for group in json.load(open('TestResults/devices-after-cleanup.json'))['devices'].values() for d in group]
+          assert all(d['udid'] != os.environ['TEST_DEVICE_ID'] for d in devices)
+          PY_ABSENT
+          echo 'cleanup=verified-absent' >> TestResults/owned-simulator.txt
+
+      - name: Upload catalog identity results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-identity-${{ matrix.family }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: TestResults/
+          if-no-files-found: error
+
   # Preserve the required branch-protection check while gating both matrix jobs.
   test:
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: native_tests
+    needs: [native_tests, catalog_identity]
     if: always()
     steps:
       - name: Require both native test jobs
         env:
           NATIVE_RESULT: ${{ needs.native_tests.result }}
-        run: test "$NATIVE_RESULT" = success
+          IDENTITY_RESULT: ${{ needs.catalog_identity.result }}
+        run: test "$NATIVE_RESULT" = success && test "$IDENTITY_RESULT" = success
 
   build:
     name: Build IPA
@@ -201,8 +374,36 @@ jobs:
           brew install xcodegen
           xcodegen --spec project.yml
 
+      - name: Download both tested native package resolutions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: native-packages-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: TestResults/native-packages
+          merge-multiple: false
+
+      - name: Install tested native graph for archive
+        id: archive_resolution
+        run: |
+          python3 scripts/package_resolution.py consume \
+            --inputs TestResults/native-packages --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved \
+            --baseline TestResults/Package.native.resolved \
+            --checkout "$(git rev-parse HEAD)" --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Hydrate only the tested archive packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Life-USTC.xcodeproj \
+            -scheme Life-USTC \
+            -clonedSourcePackagesDirPath SourcePackages \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile
+          python3 scripts/package_resolution.py compare \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --baseline TestResults/Package.native.resolved \
+            --output TestResults/Package.before.resolved
+
       - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -213,6 +414,21 @@ jobs:
           TZ: Asia/Shanghai
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+
+      - name: Verify actual archived package resolution
+        if: always() && steps.archive_resolution.outcome == 'success'
+        run: |
+          python3 scripts/package_resolution.py compare \
+            --lock Life-USTC.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved --baseline TestResults/Package.native.resolved \
+            --output TestResults/Package.after.resolved
+
+      - name: Upload archive package resolution evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: archive-packages-${{ github.run_id }}-${{ github.run_attempt }}
+          path: TestResults/
+          if-no-files-found: error
 
       - name: Upload app-store ipa and dsyms to artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -241,7 +457,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -272,7 +488,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.4"
           bundler-cache: true

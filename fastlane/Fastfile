@@ -11,6 +11,8 @@ platform :ios do
       scheme: "Life-USTC",
       export_method: "app-store",
       cloned_source_packages_path: "SourcePackages",
+      skip_package_dependencies_resolution: is_ci,
+      disable_package_automatic_updates: is_ci,
       export_options: {
         provisioningProfiles: {
           "dev.tiankaima.Life-USTC": "match AppStore dev.tiankaima.Life-USTC",
