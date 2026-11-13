@@ -1,6 +1,51 @@
 import XCTest
 
 final class AccountJourneyTests: XCTestCase {
+    // Diagnostic only: bounded to the seven website closes in the original account journey.
+    // All mutable storage is protected by lock; handler never reads the UI element.
+    private final class CloseReadinessProbe: @unchecked Sendable {
+        enum Phase: String { case start, firstObservedPredicateTrue, end }
+        private struct Entry {
+            let id: String
+            var times: [Phase: TimeInterval] = [:]
+            var outcome: Int?
+        }
+        private let lock = NSLock()
+        private var entries: [Entry] = []
+
+        func reserve(_ id: String) -> Int? {
+            lock.lock()
+            defer { lock.unlock() }
+            guard entries.count < 7 else { return nil }
+            entries.append(Entry(id: id))
+            return entries.count - 1
+        }
+
+        // start is sampled immediately before wait registration; callback time is
+        // first observed predicate-true, not the predicate evaluation start or duration.
+        func note(_ index: Int, _ phase: Phase, outcome: Int? = nil) {
+            let now = ProcessInfo.processInfo.systemUptime
+            lock.lock()
+            defer { lock.unlock() }
+            guard entries.indices.contains(index), entries[index].times[phase] == nil else { return }
+            entries[index].times[phase] = now
+            if phase == .end { entries[index].outcome = outcome }
+        }
+
+        func text() -> String? {
+            lock.lock()
+            defer { lock.unlock() }
+            guard !entries.isEmpty else { return nil }
+            return entries.map { entry in
+                let times = [Phase.start, .firstObservedPredicateTrue, .end].map { phase in
+                    "\(phase.rawValue)=\(entry.times[phase].map { String($0) } ?? "unobserved")"
+                }.joined(separator: " ")
+                return "id=\(entry.id) \(times) outcomeRawValue=\(entry.outcome.map { String($0) } ?? "unobserved")"
+            }.joined(separator: "\n")
+        }
+    }
+    private let closeReadinessProbe = CloseReadinessProbe()
+
     private var fixture: ServerJourneyHTTPFixture!
     private var app: XCUIApplication!
     private let sidebarLabels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]
@@ -29,6 +74,12 @@ final class AccountJourneyTests: XCTestCase {
         }
         app.terminate()
         fixture.stop()
+        if let text = closeReadinessProbe.text() {
+            let timing = XCTAttachment(string: text)
+            timing.name = "account-close-readiness-predicate-timing"
+            timing.lifetime = .keepAlways
+            add(timing)
+        }
     }
 
     @MainActor
@@ -124,7 +175,18 @@ final class AccountJourneyTests: XCTestCase {
         XCTAssertTrue(browser.waitForExistence(timeout: 10))
         let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "hittable == true"), object: done)
-        guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+        let probe = closeReadinessProbe
+        let token = probe.reserve(pageID)
+        if let token {
+            ready.handler = {
+                probe.note(token, .firstObservedPredicateTrue)
+                return true
+            }
+            probe.note(token, .start)
+        }
+        let result = XCTWaiter.wait(for: [ready], timeout: 10)
+        if let token { probe.note(token, .end, outcome: result.rawValue) }
+        guard result == .completed else {
             XCTFail("The website close control should be actionable")
             return
         }

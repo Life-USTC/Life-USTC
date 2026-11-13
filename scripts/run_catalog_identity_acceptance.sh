@@ -45,6 +45,8 @@ for condition in normal axxxl; do
     -only-testing:Life-USTC-UITests/CatalogIdentityAcceptanceTests/testEnglishIdentityAcrossNativeAdoptionPoints \
     -only-testing:Life-USTC-UITests/CatalogIdentityAcceptanceTests/testChineseIdentityAcrossNativeAdoptionPoints \
     -clonedSourcePackagesDirPath SourcePackages \
+    -disableAutomaticPackageResolution \
+    -onlyUsePackageVersionsFromResolvedFile \
     -resultBundlePath "$bundle" \
     -quiet
   result=$?
