@@ -74,7 +74,8 @@ final class ParityNavigationJourneyTests: XCTestCase {
     @MainActor
     func testSectionCalendarCopyAndShareRetainPublicJWIdentity() async throws {
         app.launch()
-        try await open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        try await open("discover_catalog")
         try await open("catalog_section_42")
         try await open("section_calendar_export")
         XCTAssertTrue(app.navigationBars["Teaching Section Calendar"].waitForExistence(timeout: 10))
@@ -99,7 +100,8 @@ final class ParityNavigationJourneyTests: XCTestCase {
         capture("CombinedCalendar")
         back()
         back()
-        try await open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        try await open("discover_catalog")
         app.segmentedControls["catalog_kind"].buttons["Courses"].tap()
         try await open("catalog_course_1001")
         try await open("share_content")
@@ -110,7 +112,8 @@ final class ParityNavigationJourneyTests: XCTestCase {
     @MainActor
     func testSectionHomeworkGuideCollapsesAndDoesNotRestrictTheTitle() async throws {
         app.launch()
-        try await open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        try await open("discover_catalog")
         try await open("catalog_section_42")
         try await open("Shared Homework")
         try await open("section.homeworks.create")
@@ -181,16 +184,7 @@ final class ParityNavigationJourneyTests: XCTestCase {
 
     @MainActor
     private func selectAccount() {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: 3).tap()
-        } else {
-            let tab = app.buttons["Tab.Account"]
-            if !tab.isHittable {
-                app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch.tap()
-            }
-            XCTAssertTrue(tab.waitForExistence(timeout: 10))
-            tab.tap()
-        }
+        PrimaryNavigation.openAccount("settings", in: app)
     }
 
     @MainActor
@@ -253,7 +247,7 @@ final class ParityNavigationJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }

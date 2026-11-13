@@ -8,7 +8,6 @@ struct DiscoverView: View {
                     .accessibilityIdentifier("discover_search")
                 NavigationLink { ServerCatalogView() } label: { Label("Course catalog", systemImage: "books.vertical") }
                     .accessibilityIdentifier("discover_catalog")
-                NavigationLink { YoungCommunityView() } label: { Label("Second Classroom", systemImage: "figure.run") }
                 NavigationLink { ServerPublicationsView() } label: { Label("News and Notices", systemImage: "newspaper") }
                     .accessibilityIdentifier("discover_publications")
             }
@@ -29,6 +28,7 @@ struct DiscoverView: View {
                     .accessibilityIdentifier("discover_university")
             }
         }
-        .navigationTitle("Discover")
+        .navigationTitle("Primary Campus")
+        .accountToolbar()
     }
 }

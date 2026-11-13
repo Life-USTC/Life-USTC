@@ -38,7 +38,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         fixture.enablePublicDiscoveryFixture()
         app.launch()
         openYoung()
-        open("Activities")
+        open("activities_list")
         assertText("Campus workshop · 智 · 校级")
         assertText("Campus workshop · 未来模块 · 国际级")
         let search = app.searchFields.firstMatch
@@ -56,11 +56,18 @@ final class YoungCampusJourneyTests: XCTestCase {
         try chooseFilter("module", value: "智")
         try chooseFilter("activityLevel", value: "校级")
         try chooseFilter("timeBasis", value: "Registration window")
-        let dateRange = switchControl("young.filters.dateRange")
-        let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: dateRange)
+        let dateRange = app.switches["young.filters.dateRange"]
+        reveal(dateRange)
+        XCTAssertTrue(dateRange.waitForExistence(timeout: 10), "Missing switch: young.filters.dateRange")
+        let nativeDateRange = dateRange.switches.element
+        XCTAssertTrue(nativeDateRange.exists, "Missing native date-range switch")
+        let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: nativeDateRange)
         XCTAssertEqual(XCTWaiter.wait(for: [dateRangeReady], timeout: 10), .completed)
         XCTAssertEqual(dateRange.value as? String, "0")
-        dateRange.tap()
+        // Drag the native thumb once, keeping the identified Toggle as the state oracle.
+        let offPosition = nativeDateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5))
+        let onPosition = nativeDateRange.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+        offPosition.press(forDuration: 0.05, thenDragTo: onPosition)
         waitUntil { dateRange.value as? String == "1" }
         XCTAssertTrue(app.datePickers.firstMatch.waitForExistence(timeout: 10))
         try chooseFilter("active", value: "In source signup list")
@@ -129,7 +136,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         fixture.enablePublicDiscoveryFixture()
         app.launch()
         openYoung()
-        open("Activities")
+        open("activities_list")
         fixture.failNextRequest(method: "GET", path: "/api/catalog/young-organizers")
         open("young.filters")
         assertText("Workspace fixture unavailable")
@@ -154,7 +161,7 @@ final class YoungCampusJourneyTests: XCTestCase {
     func testActivityFactsPrioritizeOfficialSignupAndLabelSourceListAccurately() throws {
         app.launch()
         openYoung()
-        open("Activities")
+        open("activities_list")
         openText("Science Communication Workshop")
         assertText("Activity time")
         assertText("Registration starts soon")
@@ -171,6 +178,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         captureM6("YoungDetailParticipation")
         back()
         back()
+        PrimaryNavigation.select("Workspace", index: 0, in: app)
         open("Followed Organizers")
         openText("Student Science Association")
         assertText("1 in source signup list")
@@ -220,7 +228,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         app.launch()
         openYoung()
         capture("Young")
-        open("Activities")
+        open("activities_list")
         waitForRequest("GET", "/api/catalog/young-events")
         assertText("Registration starts soon")
         capture("YoungActivities")
@@ -244,6 +252,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         capture("YoungReminder")
         back()
         back()
+        PrimaryNavigation.select("Workspace", index: 0, in: app)
         open("My Activities")
         assertText("Science Communication Workshop")
         assertText("Deadline")
@@ -254,6 +263,7 @@ final class YoungCampusJourneyTests: XCTestCase {
     func testUnreadReminderRefreshAndOrganizerUnfollow() throws {
         app.launch()
         openYoung()
+        PrimaryNavigation.select("Workspace", index: 0, in: app)
         open("Notifications")
         open("Unread only")
         let notifications = "/api/workspace/young-notifications"
@@ -269,6 +279,7 @@ final class YoungCampusJourneyTests: XCTestCase {
         waitForRequest("POST", "\(notifications)/\(YoungCampusHTTPState.notificationID)/read")
         assertText("No unread reminders")
         back()
+        PrimaryNavigation.select("Workspace", index: 0, in: app)
         open("Followed Organizers")
         openText("Student Science Association")
         let followPath = "/api/workspace/young-organizer-subscriptions/\(YoungCampusHTTPState.organizerID)"
@@ -344,8 +355,8 @@ final class YoungCampusJourneyTests: XCTestCase {
 
     @MainActor
     private func openYoung() {
-        selectDiscover()
-        open("Second Classroom")
+        PrimaryNavigation.select("Activities", index: 3, in: app)
+        XCTAssertTrue(app.buttons["activities_list"].waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -382,18 +393,7 @@ final class YoungCampusJourneyTests: XCTestCase {
 
     @MainActor
     private func selectDiscover() {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: 2).tap()
-        } else {
-            let tab = app.buttons["Tab.Discover"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.waitForExistence(timeout: 10))
-            tab.tap()
-        }
+        PrimaryNavigation.select("Campus", index: 2, in: app)
     }
 
     @MainActor
@@ -462,7 +462,7 @@ final class YoungCampusJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }

@@ -80,6 +80,7 @@ struct HomeworkDetailView: View {
             }
         }
         .navigationTitle("Homework (BB)")
+        .accountToolbar()
         .task {
             Task {
                 try await Homework.update()

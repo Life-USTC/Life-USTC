@@ -95,6 +95,7 @@ struct ServerAccountActivityView: View {
             }
         }
         .navigationTitle("This App's Activity")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .task(id: account.sessionRevision) { await model.load() }

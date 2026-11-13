@@ -215,6 +215,7 @@ struct ServerSubscriptionsView: View {
             }
         }
         .navigationTitle("Section Subscriptions")
+        .accountToolbar()
         .task(id: accountKey) { await model.load() }
         .refreshable { await model.load() }
         .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in

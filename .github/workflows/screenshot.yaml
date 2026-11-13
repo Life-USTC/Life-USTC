@@ -16,9 +16,25 @@ concurrency:
 
 jobs:
   snapshot:
-    name: Generate iOS UI Screenshots
+    name: Generate iOS UI Screenshots (${{ matrix.locale }}, ${{ matrix.device.slug }})
     runs-on: macos-26
     timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SNAPSHOT_LOCALE: ${{ matrix.locale }}
+      SNAPSHOT_DEVICE: ${{ matrix.device.name }}
+      SNAPSHOT_EXPECTED_DEVICES: '["${{ matrix.device.name }}"]'
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [en-US, zh-Hans]
+        device:
+          - name: iPhone 14 Pro Max
+            slug: iphone
+          - name: iPad Pro 13-inch (M5)
+            slug: ipad
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -52,15 +68,188 @@ jobs:
         env:
           TZ: Asia/Shanghai
         run: |
-          bundle exec fastlane snapshot
+          bundle exec fastlane snapshot \
+            --languages "$SNAPSHOT_LOCALE" \
+            --devices "$SNAPSHOT_DEVICE" \
+            --derived_data_path "$RUNNER_TEMP/snapshot-derived-data" \
+            --stop_after_first_error true
+
+      - name: Verify final official screenshot test results
+        if: always()
+        run: |
+          python3 <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import resource
+          import subprocess
+          import tempfile
+
+          output = Path(os.environ['RUNNER_TEMP']) / 'snapshot-results'
+          output.mkdir(exist_ok=True)
+          expected = set(json.loads(os.environ['SNAPSHOT_EXPECTED_DEVICES']))
+          bundles = list((Path(os.environ['RUNNER_TEMP']) / 'snapshot-derived-data/Logs/Test').glob('*.xcresult'))
+          if not bundles:
+              raise SystemExit('No official screenshot result bundle was retained')
+          bundle = max(bundles, key=lambda path: path.stat().st_mtime_ns)
+          used = 0
+          tool_env = {key: os.environ[key] for key in ('PATH', 'HOME', 'TMPDIR', 'DEVELOPER_DIR', 'LANG', 'LC_ALL') if key in os.environ}
+
+          def official(arguments, name):
+              global used
+              target = output / name
+              cap = min(4 * 1024 * 1024, 12 * 1024 * 1024 - used)
+              if cap <= 0:
+                  raise SystemExit('Official JSON output budget exhausted')
+              def limit_output():
+                  resource.setrlimit(resource.RLIMIT_FSIZE, (cap, cap))
+              with target.open('wb') as stdout, tempfile.TemporaryFile() as stderr:
+                  result = subprocess.run(['xcrun', 'xcresulttool', *arguments], stdout=stdout,
+                                          stderr=stderr, timeout=60, preexec_fn=limit_output, env=tool_env)
+              used += target.stat().st_size
+              if result.returncode != 0:
+                  raise SystemExit('Official xcresulttool extraction failed: ' + name)
+              return json.loads(target.read_text())
+
+          def metadata(value):
+              if isinstance(value, dict):
+                  if value.get('_type', {}).get('_name') == 'ActionTestMetadata':
+                      yield value
+                  for child in value.values():
+                      yield from metadata(child)
+              elif isinstance(value, list):
+                  for child in value:
+                      yield from metadata(child)
+
+          root = official(['get', 'object', '--legacy', '--format', 'json', '--path', str(bundle)], 'root.json')
+          # Also preserve Apple's current summary format for direct inspection.
+          official(['get', 'test-results', 'summary', '--path', str(bundle)], 'summary.json')
+          records = []
+          failed_actions = []
+          for action in root.get('actions', {}).get('_values', []):
+              result = action.get('actionResult', {})
+              if result.get('status', {}).get('_value') in ('failed', 'aborted', 'cancelled', 'canceled'):
+                  failed_actions.append(result['status']['_value'])
+              reference = result.get('testsRef', {}).get('id', {}).get('_value')
+              if not reference:
+                  continue
+              if not re.fullmatch(r'0~[A-Za-z0-9_-]+={0,2}', reference):
+                  raise SystemExit('Unsafe official tests reference')
+              tests = official(['get', 'object', '--legacy', '--format', 'json', '--path', str(bundle),
+                                '--id', reference], f'tests-{len(records)}.json')
+              nodes = list(metadata(tests))
+              destination = action.get('runDestination', {}).get('displayName', {}).get('_value')
+              records.append({'device': destination, 'actionStatus': result.get('status', {}).get('_value'),
+                              'tests': [{'id': item['identifier']['_value'], 'status': item['testStatus']['_value']}
+                                        for item in nodes]})
+          failures = root.get('issues', {}).get('testFailureSummaries', {}).get('_values', [])
+          errors = root.get('issues', {}).get('errorSummaries', {}).get('_values', [])
+          passed = (len(records) == len(expected) and {item['device'] for item in records} == expected
+                    and not failures and not errors and not failed_actions and all(item['actionStatus'] == 'succeeded'
+                        and item['tests'] == [{'id': 'Life_USTC_ScreenshotTests/testScreenshots()', 'status': 'Success'}]
+                        for item in records))
+          receipt = {'workflowRevision': os.environ['GITHUB_SHA'], 'sourceRevision': os.environ['SOURCE_SHA'],
+                     'locale': os.environ['SNAPSHOT_LOCALE'], 'bundle': bundle.name,
+                     'expectedDevices': sorted(expected), 'records': records, 'passed': passed,
+                     'failedActions': failed_actions, 'rootErrorCount': len(errors),
+                     'outputs': [{'name': path.name, 'bytes': path.stat().st_size,
+                                  'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+                                 for path in sorted(output.glob('*.json'))]}
+          data = (json.dumps(receipt, indent=2) + '\n').encode()
+          if used + len(data) > 12 * 1024 * 1024:
+              raise SystemExit('Official JSON and receipt budget exceeded')
+          (output / 'verification.json').write_bytes(data)
+          if not passed:
+              raise SystemExit('Official screenshot tests did not pass on every expected device')
+          print('Official screenshot test execution verified for every expected device')
+          PY
 
       - name: Upload screenshots artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ios-screenshots-${{ github.run_id }}-${{ matrix.locale }}-${{ matrix.device.slug }}
+          path: screenshots/${{ matrix.locale }}/*.png
+          if-no-files-found: warn
+
+      - name: Upload snapshot logs artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ios-snapshot-logs-${{ github.run_id }}-${{ matrix.locale }}-${{ matrix.device.slug }}
+          path: |
+            ~/Library/Logs/snapshot/**
+            ${{ runner.temp }}/snapshot-results/*.json
+          if-no-files-found: warn
+
+  publish:
+    name: Validate and publish complete screenshot matrix
+    needs: snapshot
+    if: needs.snapshot.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download English Phone screenshots
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ios-screenshots-${{ github.run_id }}-en-US-iphone
+          path: screenshots/en-US
+
+      - name: Download English Pad screenshots
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ios-screenshots-${{ github.run_id }}-en-US-ipad
+          path: screenshots/en-US
+
+      - name: Download Chinese Phone screenshots
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ios-screenshots-${{ github.run_id }}-zh-Hans-iphone
+          path: screenshots/zh-Hans
+
+      - name: Download Chinese Pad screenshots
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ios-screenshots-${{ github.run_id }}-zh-Hans-ipad
+          path: screenshots/zh-Hans
+
+      - name: Validate all 44 named screenshots
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          captures = re.findall(r'snapshot\("([^"]+)"\)', Path("Tests/Life-USTC-UITests/Screenshot.swift").read_text())
+          if len(captures) != 11 or len(set(captures)) != 11:
+              raise SystemExit("Expected the original 11 unique screenshot calls")
+          devices = ("iPhone 14 Pro Max", "iPad Pro 13-inch (M5)")
+          expected = {
+              Path("screenshots") / locale / f"{device}-{capture}.png"
+              for locale in ("en-US", "zh-Hans")
+              for device in devices
+              for capture in captures
+          }
+          actual = set(Path("screenshots").rglob("*.png"))
+          if actual != expected:
+              raise SystemExit(f"Screenshot matrix mismatch: missing={sorted(map(str, expected - actual))}; unexpected={sorted(map(str, actual - expected))}")
+          for path in sorted(expected):
+              with path.open("rb") as image:
+                  if image.read(8) != b"\x89PNG\r\n\x1a\n":
+                      raise SystemExit(f"Invalid PNG: {path}")
+          print("Validated 44 original named captures across both devices and languages")
+          PY
+
+      - name: Upload complete screenshots artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-screenshots-${{ github.run_id }}
-          path: |
-            screenshots/**
-          if-no-files-found: warn
+          path: screenshots
+          if-no-files-found: error
 
       - name: Publish screenshots to gh-pages (append-only)
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

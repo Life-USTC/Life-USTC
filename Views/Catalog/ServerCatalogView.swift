@@ -249,6 +249,7 @@ struct ServerCatalogView: View {
             }
         }
         .navigationTitle("Catalog")
+        .accountToolbar()
         .searchable(
             text: $model.search,
             placement: .navigationBarDrawer(displayMode: .always),

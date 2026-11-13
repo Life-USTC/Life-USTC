@@ -94,6 +94,7 @@ struct ServerHomeworkDetailView: View {
                                     ))
                                 }
                                 .navigationTitle("Comments")
+                                .accountToolbar()
                             }
                             .accessibilityIdentifier("homework.detail.comments")
                             if let creator = homework.createdBy { ServerCommunityActorLink(actor: creator) }
@@ -114,6 +115,7 @@ struct ServerHomeworkDetailView: View {
             }
         }
         .navigationTitle("Homework")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("homework.detail")
         .environment(\.timeZone, YoungCalendarDate.shanghai)

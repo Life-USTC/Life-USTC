@@ -64,6 +64,7 @@ private struct WorkspaceEventDestination: View {
             }
         }
         .navigationTitle(event.title)
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -173,6 +174,7 @@ struct WorkspaceDeadlineListView: View {
             }
         }
         .navigationTitle(LocalizedStringKey(group.title))
+        .accountToolbar()
         .task(id: account.sessionRevision) { await model.load() }
         .refreshable { await model.load() }
         .onReceive(NotificationCenter.default.publisher(for: .serverWorkspaceDidChange)) { _ in

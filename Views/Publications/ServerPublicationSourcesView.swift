@@ -45,6 +45,7 @@ struct ServerPublicationSourcesView: View {
             if model.isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle("Publication Sources")
+        .accountToolbar()
         .accessibilityIdentifier("publications.sourceDirectory")
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .task { await model.load() }

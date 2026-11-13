@@ -8,7 +8,7 @@ devices([
   # "iPhone 14",
 
   # iPad sizes
-  # "iPad Pro (12.9-inch) (3rd generation)",
+  "iPad Pro 13-inch (M5)",
   # "iPad Air (3rd generation)",
   # "iPad mini (5th generation)",
 ])
@@ -24,6 +24,9 @@ only_testing(["Life-USTC-UITests/Life_USTC_ScreenshotTests"])
 output_directory("./screenshots")
 
 cloned_source_packages_path("SourcePackages")
+
+# Keep completed-language logs if a later language is interrupted.
+namespace_log_files(true)
 
 clear_previous_screenshots(true)
 

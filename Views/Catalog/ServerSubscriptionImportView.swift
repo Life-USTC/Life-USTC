@@ -37,6 +37,7 @@ struct ServerSubscriptionImportView: View {
             }
         }
         .navigationTitle("Import course codes")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .task(id: accountKey) { await model.load() }
     }

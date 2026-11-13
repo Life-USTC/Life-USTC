@@ -87,6 +87,7 @@ struct ServerRoomMapView: View {
             }
         }
         .navigationTitle("Room Maps")
+        .accountToolbar()
     }
 }
 

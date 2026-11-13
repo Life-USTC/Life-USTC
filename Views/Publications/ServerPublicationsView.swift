@@ -68,6 +68,7 @@ struct ServerPublicationsView: View {
             if model.isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle("News and Notices")
+        .accountToolbar()
         .accessibilityIdentifier("publications.list")
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .searchable(text: $model.filters.query, prompt: "Search publications")

@@ -105,6 +105,7 @@ struct ServerHomeworkHistoryView: View {
             }
         }
         .navigationTitle("Homework History")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("homework.history")
         .environment(\.timeZone, YoungCalendarDate.shanghai)

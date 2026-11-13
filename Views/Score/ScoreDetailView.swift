@@ -197,6 +197,7 @@ struct ScoreDetailView: View {
             }
         }
         .navigationTitle("Score")
+        .accountToolbar()
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {

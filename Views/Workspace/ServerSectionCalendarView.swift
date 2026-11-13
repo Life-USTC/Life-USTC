@@ -23,6 +23,7 @@ struct ServerSectionCalendarView: View {
             ServerCalendarLinkSection(url: ServerCalendarLinks.section(sectionJWID, baseURL: ServerClient.shared.baseURL))
         }
         .navigationTitle("Teaching Section Calendar")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -75,6 +76,7 @@ struct ServerMultiSectionCalendarView: View {
             }
         }
         .navigationTitle("Combined Section Calendar")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
     }
 }

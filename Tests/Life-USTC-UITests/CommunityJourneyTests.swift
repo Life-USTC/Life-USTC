@@ -177,14 +177,14 @@ final class CommunityJourneyTests: XCTestCase {
     func testOwnedFilesRenameFailureRetryAndDeleteRefreshQuota() throws {
         fixture.failNextRequest(method: "PATCH", path: "/api/workspace/uploads/\(CommunityHTTPState.uploadID)")
         app.launch()
-        selectTab("Account", index: 3)
+        PrimaryNavigation.openAccount("settings", in: app)
         capture("Account")
         captureNamed("before-m5-Settings")
         open("settings_server_account")
         XCTAssertTrue(app.buttons["Sign Out"].waitForExistence(timeout: 10))
         captureNamed("before-m5-ServerAccount")
         back()
-        open("settings_my_files")
+        PrimaryNavigation.openAccount("uploads", in: app)
         waitForRequest("GET", "/api/workspace/uploads")
         capture("Files")
         open("owned_file_rename_\(CommunityHTTPState.uploadID)")
@@ -210,7 +210,8 @@ final class CommunityJourneyTests: XCTestCase {
     func testAnonymousCommentAttachmentExplainsSignInWithoutDownloading() throws {
         app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         open("catalog_section_42")
         open("Comments")
         assertText("Bring your questions to the seminar.")
@@ -228,7 +229,8 @@ final class CommunityJourneyTests: XCTestCase {
         fixture.hideCommunityComments()
         app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         open("catalog_section_42")
         open("Comments")
         XCTAssertTrue(app.staticTexts["No Visible Comments"].waitForExistence(timeout: 10))
@@ -252,7 +254,8 @@ final class CommunityJourneyTests: XCTestCase {
 
     @MainActor
     private func openSection() {
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         open("catalog_section_42")
         XCTAssertTrue(app.buttons["section_subscribe"].waitForExistence(timeout: 10))
     }
@@ -312,25 +315,14 @@ final class CommunityJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }
 
     @MainActor
     private func selectTab(_ name: String, index: Int) {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: index).tap()
-        } else {
-            let tab = app.buttons["Tab.\(name)"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.isHittable)
-            tab.tap()
-        }
+        PrimaryNavigation.select(name, index: index, in: app)
     }
 
     private func requestCount(_ method: String, _ path: String) -> Int {

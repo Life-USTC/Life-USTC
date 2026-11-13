@@ -79,6 +79,7 @@ struct ServerCampusWeatherView: View {
             }
         }
         .navigationTitle("Campus Weather")
+        .accountToolbar()
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .task(id: location) { await load() }
         .refreshable { await load() }

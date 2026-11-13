@@ -255,18 +255,7 @@ final class CampusJourneyTests: XCTestCase {
     private func launchDiscover() {
         XCUIDevice.shared.orientation = .portrait
         app.launch()
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: 2).tap()
-        } else {
-            let tab = app.buttons["Tab.Discover"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.isHittable)
-            tab.tap()
-        }
+        PrimaryNavigation.select("Campus", index: 2, in: app)
         XCTAssertTrue(app.buttons["discover_catalog"].waitForExistence(timeout: 10))
     }
 
@@ -319,7 +308,7 @@ final class CampusJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }

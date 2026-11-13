@@ -94,27 +94,17 @@ final class E2ETests: XCTestCase {
     }
 
     /// Navigate to a tab, handling both iPhone tab bar and iPad sidebar.
+    @MainActor
     private func selectTab(_ tabName: String) {
-        let destination = ["Features": "Discover", "Feed": "Discover", "Settings": "Account"][tabName] ?? tabName
-        let tabBar = app.tabBars.firstMatch
-        if tabBar.exists {
-            // iPhone: use the tab bar
-            let tabs = ["Home": 0, "Calendar": 1, "Discover": 2, "Account": 3]
-            if let index = tabs[destination] {
-                let tab = tabBar.buttons.element(boundBy: index)
-                let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: tab)
-                XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, "Tab \(destination) should be reachable")
-                tab.tap()
-            }
-        } else {
-            // iPad: use sidebar buttons
-            sidebarTab(destination).tap()
+        if tabName == "Settings" {
+            PrimaryNavigation.openAccount("settings", in: app, timeout: 5)
+            return
         }
+        let destination = ["Features": "Campus", "Feed": "Campus", "Home": "Workspace"][tabName] ?? tabName
+        let index = ["Workspace": 0, "Calendar": 1, "Campus": 2, "Activities": 3][destination]!
+        PrimaryNavigation.select(destination, index: index, in: app, timeout: 5)
         if tabName == "Features" || tabName == "Feed" {
-            // Pop an existing discovery destination before opening another one.
-            if !app.buttons["discover_university"].exists {
-                navigateBack()
-            }
+            if !app.buttons["discover_university"].exists { navigateBack() }
             let entry = app.buttons[tabName == "Features" ? "discover_university" : "discover_feed"]
             XCTAssertTrue(entry.waitForExistence(timeout: 5))
             entry.tap()
@@ -137,7 +127,7 @@ final class E2ETests: XCTestCase {
     }
 
     private func navigateBack() {
-        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(back.waitForExistence(timeout: 5), "Back control should be available")
         back.tap()
     }
@@ -189,11 +179,12 @@ final class E2ETests: XCTestCase {
         if !hasTabBar {
             // iPad — sidebar tab buttons should exist
             XCTAssertTrue(
-                sidebarTab("Home").exists,
+                sidebarTab("Workspace").exists,
                 "Home tab should be accessible after onboarding"
             )
         } else {
-            XCTAssertGreaterThanOrEqual(tabBar.buttons.count, 4, "Tab bar should have at least 4 tabs")
+            XCTAssertEqual(tabBar.buttons.count, 4, "Primary navigation has exactly four destinations")
+            XCTAssertEqual(tabBar.buttons.allElementsBoundByIndex.map(\.label), ["Workspace", "Calendar", "Campus", "Activities"])
         }
     }
 
@@ -215,7 +206,15 @@ final class E2ETests: XCTestCase {
         // Feed tab should load without crash — just verify we navigated
         sleep(1)
 
-        // Navigate to Settings tab
+        selectTab("Activities")
+        XCTAssertTrue(app.buttons["activities_list"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["activities_calendar"].exists)
+        XCTAssertTrue(app.buttons["activities_organizers"].exists)
+        XCTAssertFalse(app.buttons["My Activities"].exists)
+        XCTAssertFalse(app.buttons["Followed Organizers"].exists)
+        XCTAssertFalse(app.buttons["Notifications"].exists)
+
+        // Personal settings are reached through the actual avatar menu.
         selectTab("Settings")
         // Settings should contain identifiable elements
         let aboutExists = app.buttons["settings_about"].waitForExistence(timeout: 5)
@@ -277,6 +276,11 @@ final class E2ETests: XCTestCase {
     func testSettingsServerAccountAccess() {
         launchAndLogin()
 
+        PrimaryNavigation.openAccount("account", in: app, timeout: 5)
+        XCTAssertTrue(app.staticTexts["Server Info"].waitForExistence(timeout: 5))
+        let close = app.buttons.matching(identifier: "account_destination_done").element
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        close.tap()
         selectTab("Settings")
 
         let serverAccount = app.buttons["settings_server_account"]

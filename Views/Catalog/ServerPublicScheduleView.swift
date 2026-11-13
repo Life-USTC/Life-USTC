@@ -74,6 +74,7 @@ struct ServerPublicScheduleView: View {
             }
         }
         .navigationTitle("Public schedule")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button { showingFilters = true } label: {

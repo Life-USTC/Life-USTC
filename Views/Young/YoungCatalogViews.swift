@@ -121,6 +121,7 @@ struct YoungEventsListView: View {
                     : "Activities".localized
             )
         )
+        .accountToolbar()
         .searchable(text: $model.filters.search, prompt: "Search activities")
         .sheet(isPresented: $showingFilters) {
             YoungBrowseFiltersView(filters: model.filters, dateUnknown: model.dateUnknown) { model.filters = $0 }
@@ -207,6 +208,7 @@ struct YoungOrganizersListView: View {
             }
         }
         .navigationTitle("Organizers")
+        .accountToolbar()
         .searchable(text: $model.search, prompt: "Search organizers")
         .task(id: model.search) {
             try? await Task.sleep(for: .milliseconds(350))

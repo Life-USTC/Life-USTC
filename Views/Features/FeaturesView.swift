@@ -145,6 +145,7 @@ struct FeaturesView: View {
             }
         }
         .navigationTitle("Features")
+        .accountToolbar()
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {

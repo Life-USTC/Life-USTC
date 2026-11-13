@@ -120,6 +120,7 @@ struct ServerAccountView: View {
             }
         }
         .navigationTitle("Server Account")
+        .accountToolbar()
         .task { await store.loadUser() }
     }
 }

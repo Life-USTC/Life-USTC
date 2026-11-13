@@ -208,6 +208,7 @@ struct ServerSectionDetailView: View {
                                     ))
                                 }
                                 .navigationTitle("Teaching feedback")
+                                .accountToolbar()
                             } label: {
                                 Label(String(format: "Feedback for %@".localized,
                                              ServerCatalogDisplay.name(teacher.nameCn, teacher.nameEn)),
@@ -290,12 +291,14 @@ struct ServerSectionDetailView: View {
                             CommentListView(viewModel: CommentListViewModel(targetType: "section", targetId: String(section.id)))
                         }
                         .navigationTitle("Comments")
+                        .accountToolbar()
                     }
                 }
             }
             if model.isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle(model.section?.code ?? String(localized: "Teaching Section"))
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ServerContentShareButton(route: .section(model.jwId)) }
         .task(id: accountKey) { await model.load() }
@@ -404,12 +407,14 @@ struct ServerCourseDetailView: View {
                             CommentListView(viewModel: CommentListViewModel(targetType: "course", courseJwId: course.jwId))
                         }
                         .navigationTitle("Comments")
+                        .accountToolbar()
                     }
                 }
             }
             if isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle("Course details")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ServerContentShareButton(route: .course(jwId)) }
         .task { await load() }
@@ -495,12 +500,14 @@ struct ServerTeacherDetailView: View {
                             CommentListView(viewModel: CommentListViewModel(targetType: "teacher", teacherId: teacher.id))
                         }
                         .navigationTitle("Comments")
+                        .accountToolbar()
                     }
                 }
             }
             if isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle("Teacher details")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ServerContentShareButton(route: .teacher(id)) }
         .task { await load() }

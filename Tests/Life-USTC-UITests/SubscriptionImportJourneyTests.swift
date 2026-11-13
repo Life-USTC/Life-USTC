@@ -151,7 +151,7 @@ final class SubscriptionImportJourneyTests: XCTestCase {
         XCTAssertEqual(Set(batchRequests.first?.jsonBody.keys.map { $0 } ?? []), ["action", "sectionIds"])
         XCTAssertEqual(batchRequests.first?.query["locale"], language == "en" ? "en-us" : "zh-cn")
         capture("Result", language: language)
-        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.navigationBars.buttons.matching(NSPredicate(format: "NOT (identifier IN %@)", ["account_menu", "account_destination_done"])).element(boundBy: 0).tap()
         let added = app.buttons["subscription_45"]
         reveal(added)
         XCTAssertTrue(added.waitForExistence(timeout: 10), "The subscription list must refresh after import")

@@ -48,6 +48,7 @@ struct ServerCampusLinksView: View {
             }
         }
         .navigationTitle("Campus Links")
+        .accountToolbar()
         .searchable(text: $query, prompt: "Search names, pinyin, or websites")
         .task(id: "\(account.sessionRevision):\(locale.identifier)") { await model.load(locale: campusAPILocale(locale)) }
         .refreshable { await model.load(locale: campusAPILocale(locale)) }

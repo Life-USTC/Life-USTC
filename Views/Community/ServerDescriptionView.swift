@@ -68,6 +68,7 @@ struct ServerDescriptionView: View {
             }
         }
         .navigationTitle("Description")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("description.detail")
         .environment(\.timeZone, YoungCalendarDate.shanghai)

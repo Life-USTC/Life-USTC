@@ -16,45 +16,27 @@ struct YoungCommunityView: View {
                 } label: {
                     Label("Activities", systemImage: "figure.run")
                 }
+                .accessibilityIdentifier("activities_list")
                 NavigationLink {
                     YoungActivityCalendarView()
                 } label: {
                     Label("Activity Calendar", systemImage: "calendar")
                 }
+                .accessibilityIdentifier("activities_calendar")
                 NavigationLink {
                     YoungOrganizersListView()
                 } label: {
                     Label("Organizers", systemImage: "person.3")
                 }
+                .accessibilityIdentifier("activities_organizers")
             } header: {
                 Text("Second Classroom")
             } footer: {
                 Text("Browse activities from young.ustc.edu.cn. Registration is completed on the official site.")
             }
 
-            Section("Workspace") {
-                NavigationLink {
-                    WorkspaceCalendarView()
-                } label: {
-                    Label("My Calendar", systemImage: "calendar.badge.clock")
-                }
-                NavigationLink {
-                    YoungEventSubscriptionsView()
-                } label: {
-                    Label("My Activities", systemImage: "figure.run.circle")
-                }
-                NavigationLink {
-                    YoungOrganizerSubscriptionsView()
-                } label: {
-                    Label("Followed Organizers", systemImage: "person.2.circle")
-                }
-                NavigationLink {
-                    YoungNotificationsView()
-                } label: {
-                    Label("Notifications", systemImage: "bell")
-                }
-            }
         }
-        .navigationTitle("Second Classroom")
+        .navigationTitle("Activities")
+        .accountToolbar()
     }
 }
