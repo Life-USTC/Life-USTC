@@ -56,7 +56,10 @@ final class YoungCampusJourneyTests: XCTestCase {
         try chooseFilter("module", value: "智")
         try chooseFilter("activityLevel", value: "校级")
         try chooseFilter("timeBasis", value: "Registration window")
-        let dateRange = switchControl("young.filters.dateRange")
+        // Use the identified Toggle, rather than its anonymous nested Switch.
+        let dateRange = app.switches["young.filters.dateRange"]
+        reveal(dateRange)
+        XCTAssertTrue(dateRange.waitForExistence(timeout: 10), "Missing switch: young.filters.dateRange")
         let dateRangeReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true AND hittable == true"), object: dateRange)
         XCTAssertEqual(XCTWaiter.wait(for: [dateRangeReady], timeout: 10), .completed)
         XCTAssertEqual(dateRange.value as? String, "0")
