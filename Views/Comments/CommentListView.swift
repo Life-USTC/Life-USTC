@@ -434,6 +434,7 @@ struct ServerCommentThreadView: View {
                 }
         }
         .navigationTitle("Comment thread")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
     }
 }

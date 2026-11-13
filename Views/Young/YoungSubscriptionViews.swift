@@ -363,6 +363,7 @@ struct YoungEventSubscriptionsView: View {
             }
         }
         .navigationTitle("My Activities")
+        .accountToolbar()
         .task(id: account.sessionRevision) { await model.load() }
         .refreshable { await model.load() }
     }
@@ -496,6 +497,7 @@ struct YoungOrganizerSubscriptionsView: View {
             }
         }
         .navigationTitle("Followed Organizers")
+        .accountToolbar()
         .task(id: account.sessionRevision) { await model.load() }
         .refreshable { await model.load() }
     }

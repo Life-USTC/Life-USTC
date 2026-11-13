@@ -68,6 +68,7 @@ struct ServerPublicUserProfileView: View {
             }
         }
         .navigationTitle("Community Profile")
+        .accountToolbar()
         .task(id: "\(identifier):\(account.sessionRevision)") {
             selectedDay = nil
             await model.load(identifier: identifier)

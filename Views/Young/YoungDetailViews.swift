@@ -116,6 +116,7 @@ struct YoungEventDetailView: View {
             }
         }
         .navigationTitle("Activity")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ServerContentShareButton(route: .youngEvent(youngId)) }
         .task(id: youngId) { await load() }
@@ -288,6 +289,7 @@ struct YoungOrganizerDetailView: View {
             }
         }
         .navigationTitle(Text(model.organizer?.name ?? "Organizer".localized))
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ServerContentShareButton(route: .organizer(organizerId)) }
         .task(id: organizerId) { await model.load(id: organizerId) }

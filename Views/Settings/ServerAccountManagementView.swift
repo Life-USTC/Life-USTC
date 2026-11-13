@@ -73,6 +73,7 @@ struct ServerAccountManagementView: View {
             }
         }
         .navigationTitle("Account Management")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedPage, onDismiss: {
             Task {

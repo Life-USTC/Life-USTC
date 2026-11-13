@@ -110,6 +110,7 @@ struct HomeView: View {
             }
         }
         .navigationTitle("Primary Workspace")
+        .accountToolbar()
         .task(id: account.sessionRevision) { await model.load() }
         .refreshable {
             await model.load()

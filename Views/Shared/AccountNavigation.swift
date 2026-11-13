@@ -17,7 +17,7 @@ enum AccountDestination: String, Identifiable {
 
 struct AccountMenu: View {
     @Bindable private var account = ServerAccountStore.shared
-    let open: (AccountDestination) -> Void
+    let open: @MainActor (AccountDestination) -> Void
 
     var body: some View {
         Menu {
@@ -53,5 +53,42 @@ struct AccountMenu: View {
         }
         .accessibilityLabel("Account menu")
         .accessibilityIdentifier("account_menu")
+    }
+}
+
+typealias AccountNavigationAction = @MainActor @Sendable (AccountDestination) -> Void
+
+private struct PhoneAccountNavigationKey: EnvironmentKey {
+    static let defaultValue: AccountNavigationAction? = nil
+}
+
+extension EnvironmentValues {
+    var phoneAccountNavigation: AccountNavigationAction? {
+        get { self[PhoneAccountNavigationKey.self] }
+        set { self[PhoneAccountNavigationKey.self] = newValue }
+    }
+}
+
+private struct AccountToolbarModifier: ViewModifier {
+    @Environment(\.phoneAccountNavigation) private var open
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if let open {
+            content.toolbar {
+                ToolbarItem(id: "account-menu", placement: .topBarTrailing) {
+                    AccountMenu(open: open)
+                }
+            }
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    /// Attach to a visible phone screen inside its navigation stack.
+    func accountToolbar() -> some View {
+        modifier(AccountToolbarModifier())
     }
 }

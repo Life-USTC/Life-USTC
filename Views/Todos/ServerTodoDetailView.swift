@@ -93,6 +93,7 @@ struct ServerTodoDetailView: View {
             }
         }
         .navigationTitle("Todo")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .sheet(item: $editingTodo) { TodoEditView(todo: $0) }

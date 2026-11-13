@@ -37,5 +37,6 @@ struct YoungCommunityView: View {
 
         }
         .navigationTitle("Activities")
+        .accountToolbar()
     }
 }

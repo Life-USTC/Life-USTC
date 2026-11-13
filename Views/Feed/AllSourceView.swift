@@ -141,6 +141,7 @@ struct AllSourceView: View {
         }
         .searchable(text: $searchText)
         .navigationTitle("Feed")
+        .accountToolbar()
         .task {
             Task {
                 try await Feed.update()

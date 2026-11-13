@@ -95,6 +95,7 @@ struct ServerHomeworkListView: View {
             }
         }
         .navigationTitle("Shared Homework")
+        .accountToolbar()
         .accessibilityIdentifier("homework.list")
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .environment(\.calendar, YoungCalendarDate.calendar)

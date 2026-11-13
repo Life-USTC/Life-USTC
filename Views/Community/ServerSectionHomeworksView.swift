@@ -79,6 +79,7 @@ struct ServerSectionHomeworksView: View {
             }
         }
         .navigationTitle("Shared Homework")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("section.homeworks")
         .environment(\.timeZone, YoungCalendarDate.shanghai)

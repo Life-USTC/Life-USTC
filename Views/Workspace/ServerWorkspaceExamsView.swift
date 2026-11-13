@@ -38,6 +38,7 @@ struct ServerWorkspaceExamsView: View {
             }
         }
         .navigationTitle("Exams")
+        .accountToolbar()
         .accessibilityIdentifier("workspace.exams.list")
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .environment(\.calendar, YoungCalendarDate.calendar)
@@ -123,6 +124,7 @@ struct ServerWorkspaceExamDetailView: View {
             }
         }
         .navigationTitle("Exam Details")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("workspace.exam.detail")
         .environment(\.timeZone, YoungCalendarDate.shanghai)

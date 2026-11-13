@@ -104,6 +104,7 @@ struct CurriculumDetailView: View {
             }
         }
         .navigationTitle("Curriculum")
+        .accountToolbar()
         .task {
             Task {
                 try await Curriculum.update()

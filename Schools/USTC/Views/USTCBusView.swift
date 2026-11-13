@@ -378,6 +378,7 @@ struct USTCBusView: View {
             }
         }
         .navigationTitle("Bus Timetable")
+        .accountToolbar()
         .task {
             Task {
                 data = try await USTCBusData.fetch()

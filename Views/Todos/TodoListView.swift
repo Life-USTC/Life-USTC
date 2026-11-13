@@ -85,6 +85,7 @@ struct TodoListView: View {
         }
         .accessibilityIdentifier("todo.list")
         .navigationTitle("Todos")
+        .accountToolbar()
         .environment(\.timeZone, YoungCalendarDate.shanghai)
         .toolbar {
             if account.isAuthenticated {

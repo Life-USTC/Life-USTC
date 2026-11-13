@@ -59,7 +59,6 @@ struct ContentView: View {
                         NavigationStack {
                             tab.view
                         }
-                        .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                         .tabItem {
                             tab.label
                         }
@@ -75,10 +74,10 @@ struct ContentView: View {
                             Spacer()
                         }
                     }
-                    .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                 }
             }
         }
+        .environment(\.phoneAccountNavigation, { presentation = .account($0) })
     }
 
     var sideBarView: some View {

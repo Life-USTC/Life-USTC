@@ -109,6 +109,7 @@ struct ServerBusPlannerView: View {
             }
         }
         .navigationTitle("Bus Timetable")
+        .accountToolbar()
         .task(id: "\(account.sessionRevision):\(model.versionKey ?? "current")") { await model.load() }
         .task(id: "\(model.queryKey):\(locale.identifier)") {
             while !Task.isCancelled {
@@ -208,6 +209,7 @@ struct ServerBusMapView: View {
                 .background(.regularMaterial)
             }
             .navigationTitle("Shuttle Map")
+            .accountToolbar()
             .navigationBarTitleDisplayMode(.inline)
         }
     }

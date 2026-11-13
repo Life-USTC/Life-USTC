@@ -25,6 +25,9 @@ output_directory("./screenshots")
 
 cloned_source_packages_path("SourcePackages")
 
+# Keep completed-language logs if a later language is interrupted.
+namespace_log_files(true)
+
 clear_previous_screenshots(true)
 
 override_status_bar(true)

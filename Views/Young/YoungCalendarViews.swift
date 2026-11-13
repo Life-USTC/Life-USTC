@@ -178,6 +178,7 @@ struct YoungActivityCalendarView: View {
             }
         }
         .navigationTitle("Activity Calendar")
+        .accountToolbar()
         .task(id: model.requestID) { await model.load() }
         .task(id: "\(model.requestID)-\(account.sessionRevision)") { await loadPersonalCalendar() }
         .refreshable {

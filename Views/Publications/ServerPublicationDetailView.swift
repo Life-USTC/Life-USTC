@@ -80,6 +80,7 @@ struct ServerPublicationDetailView: View {
             if model.isLoading { ProgressView().frame(maxWidth: .infinity) }
         }
         .navigationTitle("Publication")
+        .accountToolbar()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if let publication = model.publication {

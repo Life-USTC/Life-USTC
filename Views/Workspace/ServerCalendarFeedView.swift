@@ -57,6 +57,7 @@ struct ServerCalendarFeedView: View {
             }
         }
         .navigationTitle("Calendar subscription")
+        .accountToolbar()
         .task(id: account.sessionRevision) { await load() }
         .refreshable { await load() }
     }

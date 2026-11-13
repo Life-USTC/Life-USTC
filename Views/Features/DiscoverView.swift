@@ -29,5 +29,6 @@ struct DiscoverView: View {
             }
         }
         .navigationTitle("Primary Campus")
+        .accountToolbar()
     }
 }

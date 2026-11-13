@@ -88,6 +88,7 @@ struct WorkspaceCalendarView: View {
             }
         }
         .navigationTitle("My Calendar")
+        .accountToolbar()
         .task(id: account.sessionRevision) { await model.loadSemesters() }
         .task(id: "\(model.requestID)-\(account.sessionRevision)") { await model.load() }
         .refreshable { await model.loadSemesters(); await model.load() }

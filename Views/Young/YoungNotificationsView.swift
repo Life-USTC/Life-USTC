@@ -130,6 +130,7 @@ struct YoungNotificationsView: View {
             }
         }
         .navigationTitle("Notifications")
+        .accountToolbar()
         .task(id: "\(account.sessionRevision)-\(model.unreadOnly)") { await model.load() }
         .refreshable { await model.load() }
         .onReceive(NotificationCenter.default.publisher(for: .serverSubscriptionsDidChange)) { _ in

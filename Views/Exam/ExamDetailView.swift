@@ -37,6 +37,7 @@ struct ExamDetailView: View {
             }
         }
         .navigationTitle("Exam")
+        .accountToolbar()
         .task {
             Task {
                 try await Exam.update()

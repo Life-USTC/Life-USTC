@@ -92,6 +92,7 @@ struct ServerCampusSearchView: View {
             }
         }
         .navigationTitle("Search Campus")
+        .accountToolbar()
         .searchable(text: $query, prompt: "Courses, teachers, and campus links")
         .task(id: "\(query):\(locale.identifier)") {
             do { try await Task.sleep(for: .milliseconds(250)) } catch { return }
