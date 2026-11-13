@@ -13,6 +13,15 @@ enum ContentViewTab: Int, CaseIterable {
     case position_3 = 3
     case position_4 = 4
 
+    init(primaryDestination: ServerContentRoute.PrimaryDestination) {
+        switch primaryDestination {
+        case .workspace: self = .position_1
+        case .calendar: self = .position_2
+        case .campus: self = .position_3
+        case .activities: self = .position_4
+        }
+    }
+
     @ViewBuilder
     var view: some View {
         Group {
@@ -20,7 +29,7 @@ enum ContentViewTab: Int, CaseIterable {
             case .position_1: HomeView()
             case .position_2: WorkspaceCalendarView()
             case .position_3: DiscoverView()
-            case .position_4: SettingsView()
+            case .position_4: YoungCommunityView()
             }
         }
     }
@@ -37,26 +46,26 @@ enum ContentViewTab: Int, CaseIterable {
     var name: String {
         switch self {
         case .position_1:
-            "Home"
+            "Workspace"
         case .position_2:
             "Calendar"
         case .position_3:
-            "Discover"
+            "Campus"
         case .position_4:
-            "Account"
+            "Activities"
         }
     }
 
     var label: some View {
         switch self {
         case .position_1:
-            Label("Home", systemImage: "square.stack.3d.up")
+            Label("Primary Workspace", systemImage: "square.stack.3d.up")
         case .position_2:
             Label("Calendar", systemImage: "calendar")
         case .position_3:
-            Label("Discover", systemImage: "square.grid.2x2")
+            Label("Primary Campus", systemImage: "square.grid.2x2")
         case .position_4:
-            Label("Account", systemImage: "person.crop.circle")
+            Label("Activities", systemImage: "figure.run")
         }
     }
 }
@@ -134,6 +143,8 @@ struct ContentViewTabBarView: View {
                     }
                 }
         }
+        .accessibilityIdentifier("Tab." + tab.name)
+        .accessibilityAddTraits(selection == tab ? .isSelected : [])
     }
 
     var body: some View {

@@ -99,18 +99,7 @@ final class AccountJourneyTests: XCTestCase {
     private func launchAccount() {
         XCUIDevice.shared.orientation = .portrait
         app.launch()
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: 3).tap()
-        } else {
-            let tab = app.buttons["Tab.Account"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.waitForExistence(timeout: 10))
-            tab.tap()
-        }
+        PrimaryNavigation.openAccount("settings", in: app)
         XCTAssertTrue(app.buttons["settings_account_management"].waitForExistence(timeout: 3)
                       || app.otherElements["settings_server_account"].exists
                       || app.staticTexts["Not signed in"].exists)
@@ -209,7 +198,7 @@ final class AccountJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }

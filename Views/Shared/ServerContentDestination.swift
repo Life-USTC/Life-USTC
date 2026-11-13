@@ -19,6 +19,16 @@ struct ServerContentDestination: View {
         case .homeworks: ServerHomeworkListView()
         case .exams: ServerWorkspaceExamsView()
         case .calendar: WorkspaceCalendarView()
+        case .workspace: HomeView()
+        case .campus: DiscoverView()
+        case .catalog: ServerCatalogView()
+        case .activities: YoungCommunityView()
+        case .activityCalendar: YoungActivityCalendarView()
+        case .organizers: YoungOrganizersListView()
+        case .subscriptions: ServerSubscriptionsView()
+        case .activitySubscriptions: YoungEventSubscriptionsView()
+        case .organizerFollows: YoungOrganizerSubscriptionsView()
+        case .notifications: YoungNotificationsView()
         }
     }
 }

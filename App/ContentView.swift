@@ -31,7 +31,25 @@ struct ContentView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State var tabSelection: ContentViewTab = .position_1
     @State private var learningRefresh = UUID()
-    @State private var contentRoute: ServerContentRoute?
+    private enum Presentation: Identifiable {
+        case content(ServerContentRoute), account(AccountDestination)
+        var id: String {
+            switch self {
+            case .content(let route): "content:\(route.id)"
+            case .account(let destination): "account:\(destination.id)"
+            }
+        }
+    }
+    @State private var presentation: Presentation?
+
+    private var accountMenu: some View {
+        AccountMenu { presentation = .account($0) }
+    }
+
+    private func openContent(_ route: ServerContentRoute) {
+        tabSelection = ContentViewTab(primaryDestination: route.primaryDestination)
+        presentation = route.opensPrimaryRoot ? nil : .content(route)
+    }
 
     var iPhoneView: some View {
         Group {
@@ -40,6 +58,7 @@ struct ContentView: View {
                     ForEach(ContentViewTab.allCases, id: \.self) { tab in
                         NavigationStack {
                             tab.view
+                                .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                         }
                         .tabItem {
                             tab.label
@@ -56,6 +75,7 @@ struct ContentView: View {
                             Spacer()
                         }
                     }
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { accountMenu } }
                 }
             }
         }
@@ -65,15 +85,7 @@ struct ContentView: View {
         VStack(spacing: 40) {
             Spacer()
 
-            Image("Icon")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
-                .clipShape(Circle())
-                .overlay {
-                    Circle()
-                        .stroke(Color.accentColor, style: .init(lineWidth: 2))
-                }
+            accountMenu
 
             ForEach(ContentViewTab.allCases, id: \.self) { tab in
                 Button {
@@ -84,6 +96,7 @@ struct ContentView: View {
                     )
                 }
                 .accessibilityIdentifier("Tab." + tab.name)
+                .accessibilityAddTraits(tab == tabSelection ? .isSelected : [])
                 .keyboardShortcut(
                     KeyEquivalent(Character(String(tab.rawValue))),
                     modifiers: .command
@@ -136,27 +149,42 @@ struct ContentView: View {
         }
         .environment(\.openURL, OpenURLAction { url in
             guard let route = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL) else { return .systemAction }
-            contentRoute = route
+            openContent(route)
             return .handled
         })
         .onOpenURL { url in
-            contentRoute = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL)
+            if let route = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL) {
+                openContent(route)
+            } else {
+                presentation = nil
+            }
         }
         .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
             if let url = activity.webpageURL {
-                contentRoute = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL)
+                if let route = ServerContentRoute(url: url, baseURL: ServerClient.shared.baseURL) {
+                    openContent(route)
+                } else {
+                    presentation = nil
+                }
             }
         }
-        .sheet(item: $contentRoute) { route in
+        .onChange(of: account.sessionRevision) { _, _ in presentation = nil }
+        .sheet(item: $presentation) { destination in
             NavigationStack {
-                ServerContentDestination(route: route)
+                Group {
+                    switch destination {
+                    case .content(let route): ServerContentDestination(route: route)
+                    case .account(let account): account.view
+                    }
+                }
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") { contentRoute = nil }
+                            Button("Done") { presentation = nil }
+                                .accessibilityIdentifier("account_destination_done")
                         }
                     }
             }
-            .id(route)
+            .id(destination.id)
         }
         .modifier(USTCBaseModifier())
     }

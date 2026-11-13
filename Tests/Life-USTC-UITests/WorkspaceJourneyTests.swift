@@ -80,7 +80,7 @@ final class WorkspaceJourneyTests: XCTestCase {
         waitForRequest("GET", "/api/workspace/calendar/events",
                        query: ["dateFrom": tomorrow, "dateTo": tomorrow])
         let originalCalendarReads = requestCount("GET", "/api/workspace/calendar/events")
-        selectTab("Home", index: 0)
+        selectTab("Workspace", index: 0)
         open("home_todos")
         XCTAssertTrue(app.buttons["todo.edit.\(todoID)"].waitForExistence(timeout: 10))
         capture("Todos")
@@ -254,12 +254,13 @@ final class WorkspaceJourneyTests: XCTestCase {
         let request = try XCTUnwrap(fixture.requests.first { $0.path == "/api/workspace/calendar/events" })
         XCTAssertTrue(request.headers["accept-language"]?.lowercased().hasPrefix("en") == true,
                       "The real URLSession calendar request should carry the app locale")
-        selectTab("Account", index: 3)
+        PrimaryNavigation.openAccount("settings", in: app)
         open("settings_server_account")
         open("Sign Out")
+        PrimaryNavigation.openAccount("settings", in: app)
         XCTAssertTrue(app.buttons["Sign In"].waitForExistence(timeout: 10))
         let privateReads = fixture.requests.filter { $0.path.hasPrefix("/api/workspace/") }.count
-        selectTab("Home", index: 0)
+        selectTab("Workspace", index: 0)
         open("home_todos")
         XCTAssertTrue(app.staticTexts["Sign In Required"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["todo.edit.\(todoID)"].exists)
@@ -358,25 +359,14 @@ final class WorkspaceJourneyTests: XCTestCase {
 
     @MainActor
     private func back() {
-        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let button = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
     }
 
     @MainActor
     private func selectTab(_ name: String, index: Int) {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: index).tap()
-        } else {
-            let tab = app.buttons["Tab.\(name)"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.isHittable)
-            tab.tap()
-        }
+        PrimaryNavigation.select(name, index: index, in: app)
     }
 
     private func requestCount(_ method: String, _ path: String) -> Int {

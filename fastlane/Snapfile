@@ -8,7 +8,7 @@ devices([
   # "iPhone 14",
 
   # iPad sizes
-  # "iPad Pro (12.9-inch) (3rd generation)",
+  "iPad Pro 13-inch (M5)",
   # "iPad Air (3rd generation)",
   # "iPad mini (5th generation)",
 ])

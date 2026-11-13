@@ -57,8 +57,8 @@ final class YoungIncrementalJourneyTests: XCTestCase {
     @MainActor
     private func verifyIncrementalLoading(screen: String, evidence: String, interrupted: Bool = false) {
         app.launch()
-        selectDiscover()
-        open("Second Classroom")
+        selectActivities()
+        XCTAssertTrue(app.buttons["activities_list"].waitForExistence(timeout: 10))
         open(screen)
         waitUntil { self.fixture.heldYoungPages.count == 1 }
         XCTAssertEqual(fixture.heldYoungPages.first?.query["page"], "2")
@@ -109,20 +109,8 @@ final class YoungIncrementalJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func selectDiscover() {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: 2).tap()
-        } else {
-            let tab = app.buttons["Tab.Discover"]
-            if !tab.isHittable {
-                let labels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 10))
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.waitForExistence(timeout: 10))
-            tab.tap()
-        }
+    private func selectActivities() {
+        PrimaryNavigation.select("Activities", index: 3, in: app)
     }
 
     @MainActor

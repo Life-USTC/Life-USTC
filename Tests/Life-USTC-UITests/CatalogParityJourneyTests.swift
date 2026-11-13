@@ -36,7 +36,8 @@ final class CatalogParityJourneyTests: XCTestCase {
     @MainActor
     func testEducationLevelFilterUsesCatalogMetadataAndCanonicalID() throws {
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         app.segmentedControls["catalog_kind"].buttons["Courses"].tap()
         waitForRequest("/api/catalog/metadata")
         open("catalog_education_level")
@@ -50,7 +51,8 @@ final class CatalogParityJourneyTests: XCTestCase {
     @MainActor
     func testHistoricalCourseSectionKeepsDetailsAndExportWithoutNewSubscription() throws {
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         app.segmentedControls["catalog_kind"].buttons["Courses"].tap()
         open("catalog_course_1001")
         waitForRequest("/api/catalog/courses/1001/sections")
@@ -70,7 +72,8 @@ final class CatalogParityJourneyTests: XCTestCase {
     @MainActor
     func testScheduleShowsWeekBuildingCampusAndLinksActualTeacher() throws {
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         open("catalog_section_42")
         assertText("Week 1")
         assertText("Teaching Building 2")
@@ -138,7 +141,8 @@ final class CatalogParityJourneyTests: XCTestCase {
         XCUIDevice.shared.orientation = UIDevice.current.userInterfaceIdiom == .pad ? .landscapeLeft : .portrait
         app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         openPublicSchedule()
         XCTAssertTrue(app.buttons["public_schedule_1001_section"].waitForExistence(timeout: 10))
         open("public_schedule_filters")
@@ -250,7 +254,8 @@ final class CatalogParityJourneyTests: XCTestCase {
         app.launchEnvironment.removeValue(forKey: "UI_TEST_SERVER_ACCESS_TOKEN")
         app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "UI_TEST_SKIP_ONBOARDING"]
         app.launch()
-        open("home_catalog")
+        PrimaryNavigation.select("Campus", index: 2, in: app)
+        open("discover_catalog")
         XCTAssertTrue(app.buttons["catalog_section_42"].waitForExistence(timeout: 10))
         publicScheduleCapture("Catalog", language: language)
         openPublicSchedule()

@@ -3,24 +3,13 @@ import XCTest
 final class Life_USTC_ScreenshotTests: XCTestCase {
     private let sidebarLabels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]
 
+    @MainActor
     private func selectTab(_ name: String, index: Int, in app: XCUIApplication) {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: index).tap()
-        } else {
-            let tab = app.buttons["Tab.\(name)"]
-            if !tab.isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Sidebar should be available")
-                toggle.tap()
-            }
-            XCTAssertTrue(tab.waitForExistence(timeout: 5), "Tab \(name) should exist")
-            XCTAssertTrue(tab.isHittable, "Tab \(name) should be reachable")
-            tab.tap()
-        }
+        PrimaryNavigation.select(name, index: index, in: app, timeout: 5)
     }
 
     private func navigateBack(in app: XCUIApplication) {
-        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+        let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
         XCTAssertTrue(back.waitForExistence(timeout: 5), "Back control should be available")
         back.tap()
     }
@@ -76,11 +65,11 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
             app.buttons["onboarding_close_button"].tap()
         }
 
-        selectTab("Home", index: 0, in: app)
+        selectTab("Workspace", index: 0, in: app)
         snapshot("04_Home")
 
         // 05 Features through Discover on both tab bar and sidebar layouts.
-        selectTab("Discover", index: 2, in: app)
+        selectTab("Campus", index: 2, in: app)
         app.buttons["discover_university"].tap()
         snapshot("05_Features")
 
@@ -103,11 +92,36 @@ final class Life_USTC_ScreenshotTests: XCTestCase {
         navigateBack(in: app)
 
         // 09 Feed (tab index 2)
-        selectTab("Discover", index: 2, in: app)
+        selectTab("Campus", index: 2, in: app)
         if !app.buttons["discover_feed"].exists {
             navigateBack(in: app)
         }
         app.buttons["discover_feed"].tap()
         snapshot("09_Feed")
+
+        navigateBack(in: app)
+        XCTAssertTrue(app.buttons["discover_catalog"].waitForExistence(timeout: 5))
+        snapshot("10_Campus")
+        selectTab("Activities", index: 3, in: app)
+        XCTAssertTrue(app.buttons["activities_list"].waitForExistence(timeout: 5))
+        snapshot("11_Activities")
+        let avatar = app.buttons.matching(identifier: "account_menu").element
+        if !avatar.isHittable {
+            let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).element
+            XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+            toggle.tap()
+        }
+        XCTAssertTrue(avatar.waitForExistence(timeout: 5))
+        avatar.tap()
+        let settings = app.buttons.matching(identifier: "account_menu_settings").element
+        XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        snapshot("12_AccountMenu")
+        settings.tap()
+        XCTAssertTrue(app.buttons["settings_about"].waitForExistence(timeout: 5))
+        snapshot("13_Settings")
+        app.buttons.matching(identifier: "account_destination_done").element.tap()
+        PrimaryNavigation.openAccount("account", in: app, timeout: 5)
+        XCTAssertTrue(app.staticTexts["Server Info"].waitForExistence(timeout: 5))
+        snapshot("14_Account")
     }
 }

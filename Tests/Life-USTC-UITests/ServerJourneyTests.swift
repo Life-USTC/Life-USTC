@@ -33,7 +33,8 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     func testAnonymousCatalogSearchAndDetailWithoutCAS() throws {
         app.launch()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         XCTAssertFalse(app.textFields["login_username_field"].exists)
 
         let search = app.searchFields.firstMatch
@@ -56,7 +57,8 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     func testAnonymousCourseAndTeacherDetailsReachTeachingSections() throws {
         app.launch()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         let catalog = app.segmentedControls["catalog_kind"]
         XCTAssertTrue(catalog.waitForExistence(timeout: 10))
         catalog.buttons["Courses"].tap()
@@ -69,8 +71,8 @@ final class ServerJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["section_sign_in"].waitForExistence(timeout: 10))
         waitForRequest(method: "GET", path: "/api/catalog/sections/42")
 
-        returnHome()
-        open("home_catalog")
+        returnCampus()
+        open("discover_catalog")
         XCTAssertTrue(catalog.waitForExistence(timeout: 10))
         catalog.buttons["Teachers"].tap()
         open("catalog_teacher_3")
@@ -92,7 +94,8 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     func testSectionDetailsShowScheduleAndKeepUndatedExam() throws {
         app.launch()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         open("catalog_section_42")
         XCTAssertTrue(app.buttons["section_sign_in"].waitForExistence(timeout: 10))
         waitForRequest(method: "GET", path: "/api/catalog/sections/42/schedules", query: ["page": "1", "pageSize": "100"])
@@ -111,7 +114,8 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     func testSectionCommentsUseInternalTargetID() throws {
         app.launch()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         open("catalog_section_42")
         assertVisibleText("Comments")
         open("Comments")
@@ -124,7 +128,8 @@ final class ServerJourneyTests: XCTestCase {
     @MainActor
     func testSubscriptionKindAndRemovalPreserveAnotherMembership() throws {
         launchSignedIn()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         open("catalog_section_42")
         open("section_subscribe")
         XCTAssertTrue(app.buttons["section_unsubscribe"].waitForExistence(timeout: 10))
@@ -135,7 +140,8 @@ final class ServerJourneyTests: XCTestCase {
         XCTAssertEqual(added.jsonBody["sectionIds"] as? [Int], [7])
         XCTAssertEqual(fixture.subscriptionKinds, [42: "regular", 43: "teaching_assistant"])
 
-        returnHome()
+        returnCampus()
+        selectTab("Workspace", index: 0)
         open("home_subscriptions")
         XCTAssertTrue(app.buttons["subscription_42"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["subscription_43"].exists)
@@ -173,7 +179,8 @@ final class ServerJourneyTests: XCTestCase {
     func testFailedCatalogReadCanBeRetried() throws {
         fixture.failNextCatalogRead()
         app.launch()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         XCTAssertTrue(app.staticTexts["Catalog fixture unavailable"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["catalog_section_42"].exists)
         open("catalog_retry")
@@ -185,7 +192,8 @@ final class ServerJourneyTests: XCTestCase {
     func testFailedSubscriptionDoesNotReportSuccess() throws {
         fixture.failNextSubscriptionWrite()
         launchSignedIn()
-        open("home_catalog")
+        selectTab("Campus", index: 2)
+        open("discover_catalog")
         open("catalog_section_42")
         open("section_subscribe")
         XCTAssertTrue(app.staticTexts["Subscription fixture unavailable"].waitForExistence(timeout: 10))
@@ -204,13 +212,14 @@ final class ServerJourneyTests: XCTestCase {
         open("home_subscriptions")
         XCTAssertTrue(app.buttons["subscription_43"].waitForExistence(timeout: 10))
 
-        selectTab("Account", index: 3)
+        PrimaryNavigation.openAccount("settings", in: app, timeout: 5)
         open("settings_server_account")
         open("Sign Out")
+        PrimaryNavigation.openAccount("settings", in: app, timeout: 5)
         XCTAssertTrue(app.buttons["Sign In"].waitForExistence(timeout: 10))
         let readsAfterSignOut = fixture.requests.filter { $0.path == "/api/workspace/subscriptions/current" }.count
 
-        selectTab("Home", index: 0)
+        selectTab("Workspace", index: 0)
         if app.buttons["home_subscriptions"].exists { open("home_subscriptions") }
         XCTAssertTrue(app.buttons["subscriptions_sign_in"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["subscription_43"].exists)
@@ -265,28 +274,19 @@ final class ServerJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func returnHome() {
+    private func returnCampus() {
         for _ in 0..<3 {
-            if app.navigationBars["Life@USTC"].exists { return }
-            let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@)", sidebarLabels)).firstMatch
+            if app.navigationBars["Campus"].exists { return }
+            let back = app.navigationBars.buttons.matching(NSPredicate(format: "NOT (label IN %@) AND NOT (identifier IN %@)", sidebarLabels, ["account_menu", "account_destination_done"])).firstMatch
             XCTAssertTrue(back.waitForExistence(timeout: 5))
             back.tap()
         }
-        XCTAssertTrue(app.navigationBars["Life@USTC"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Campus"].waitForExistence(timeout: 5))
     }
 
     @MainActor
     private func selectTab(_ name: String, index: Int) {
-        if app.tabBars.firstMatch.exists {
-            app.tabBars.firstMatch.buttons.element(boundBy: index).tap()
-        } else {
-            if !app.buttons["Tab.\(name)"].isHittable {
-                let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).firstMatch
-                XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Sidebar should be available")
-                toggle.tap()
-            }
-            open("Tab.\(name)")
-        }
+        PrimaryNavigation.select(name, index: index, in: app, timeout: 5)
     }
 
     private let sidebarLabels = ["Show Sidebar", "Hide Sidebar", "Sidebar", "显示边栏", "隐藏边栏", "边栏"]

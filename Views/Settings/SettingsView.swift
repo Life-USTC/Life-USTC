@@ -152,7 +152,7 @@ struct SettingsView: View {
                     .textCase(.none)
             }
         }
-        .navigationTitle("Account")
+        .navigationTitle("Settings")
         .task { await account.loadUser() }
     }
 }

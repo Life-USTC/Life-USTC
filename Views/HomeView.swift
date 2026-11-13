@@ -94,21 +94,22 @@ struct HomeView: View {
                 }
                 .accessibilityIdentifier("home_exams")
             }
-            Section("Explore") {
-                NavigationLink {
-                    ServerCatalogView()
-                } label: {
-                    Label("Course catalog", systemImage: "magnifyingglass")
+            Section("Activity workspace") {
+                NavigationLink { YoungEventSubscriptionsView() } label: {
+                    Label("My Activities", systemImage: "figure.run.circle")
                 }
-                .accessibilityIdentifier("home_catalog")
-                NavigationLink {
-                    YoungCommunityView()
-                } label: {
-                    Label("Second Classroom", systemImage: "figure.run")
+                .accessibilityIdentifier("home_young_subscriptions")
+                NavigationLink { YoungOrganizerSubscriptionsView() } label: {
+                    Label("Followed Organizers", systemImage: "person.2.circle")
                 }
+                .accessibilityIdentifier("home_young_follows")
+                NavigationLink { YoungNotificationsView() } label: {
+                    Label("Notifications", systemImage: "bell")
+                }
+                .accessibilityIdentifier("home_young_notifications")
             }
         }
-        .navigationTitle("Life@USTC")
+        .navigationTitle("Primary Workspace")
         .task(id: account.sessionRevision) { await model.load() }
         .refreshable {
             await model.load()
