@@ -7,8 +7,7 @@ struct ServerPublicationSourcesView: View {
         List {
             if let error = model.error {
                 Section {
-                    Text(error).foregroundStyle(.red)
-                    Button("Retry") { Task { await model.load() } }.disabled(model.isLoading)
+                    ListLoadErrorRow(message: error, isLoading: model.isLoading) { await model.load() }
                 }
             }
             if let directory = model.directory {

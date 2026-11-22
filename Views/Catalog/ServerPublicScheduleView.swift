@@ -78,7 +78,7 @@ struct ServerPublicScheduleView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button { showingFilters = true } label: {
-                Label("Filter schedules", systemImage: "line.3.horizontal.decrease.circle")
+                Label("Filter schedules", systemImage: model.filters.hasSheetFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
             }
             .accessibilityIdentifier("public_schedule_filters")
         }

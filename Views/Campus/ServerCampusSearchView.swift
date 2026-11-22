@@ -62,7 +62,7 @@ struct ServerCampusSearchView: View {
                 Text("Use a search query of at most 200 characters.").foregroundStyle(.secondary)
             } else {
                 if model.isLoading { ProgressView("Searching campus…") }
-                if let error = model.error { CampusErrorRow(message: error) { await model.search(query, locale: campusAPILocale(locale)) } }
+                if let error = model.error { ListLoadErrorRow(message: error) { await model.search(query, locale: campusAPILocale(locale)) } }
                 if let result = model.result, result.query == trimmedQuery {
                     ForEach(result.groups.filter { !$0.items.isEmpty }) { group in
                         Section {

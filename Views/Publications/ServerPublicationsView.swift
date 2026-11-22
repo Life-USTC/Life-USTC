@@ -24,10 +24,7 @@ struct ServerPublicationsView: View {
             }
             if let error = model.error {
                 Section {
-                    Text(error).foregroundStyle(.red)
-                    Button("Retry") { Task { await model.retry() } }
-                    .disabled(model.isLoading)
-                    .accessibilityIdentifier("publications.retry")
+                    ListLoadErrorRow(message: error, isLoading: model.isLoading, retryIdentifier: "publications.retry") { await model.retry() }
                 }
             }
             if model.publications.isEmpty && !model.isLoading && model.error == nil {
@@ -74,7 +71,7 @@ struct ServerPublicationsView: View {
         .searchable(text: $model.filters.query, prompt: "Search publications")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button { showingFilters = true } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
+                Button { showingFilters = true } label: { Image(systemName: model.filters.hasSheetFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") }
                     .accessibilityLabel("Publication filters")
                     .accessibilityIdentifier("publications.filters")
             }
@@ -121,8 +118,7 @@ private struct ServerPublicationFiltersView: View {
                 Section {
                     LabeledContent("Selected sources", value: "\(draft.sources.count)/20")
                     if let error = sources.error {
-                        Text(error).foregroundStyle(.red)
-                        Button("Retry") { Task { await sources.load() } }.disabled(sources.isLoading)
+                        ListLoadErrorRow(message: error, isLoading: sources.isLoading) { await sources.load() }
                     }
                     ForEach(sources.directory?.groups ?? []) { group in
                         ForEach(group.sources) { source in
