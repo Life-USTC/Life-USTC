@@ -62,7 +62,7 @@ struct ServerRoomMapView: View {
                 }
             }
             if model.isLoading { ProgressView("Loading room map…") }
-            if let error = model.error { Section { CampusErrorRow(message: error) { await model.lookup(code) } } }
+            if let error = model.error { Section { ListLoadErrorRow(message: error) { await model.lookup(code) } } }
             if let result = model.result {
                 Section(result.code) {
                     if let building = result.building { LabeledContent("Building", value: building) }

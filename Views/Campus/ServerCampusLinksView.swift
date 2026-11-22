@@ -11,11 +11,11 @@ struct ServerCampusLinksView: View {
     var body: some View {
         List {
             if let error = model.error {
-                Section { CampusErrorRow(message: error) { await model.load(locale: campusAPILocale(locale)) } }
+                Section { ListLoadErrorRow(message: error) { await model.load(locale: campusAPILocale(locale)) } }
             }
             if let error = model.pinError {
                 Section {
-                    CampusErrorRow(message: error) {
+                    ListLoadErrorRow(message: error) {
                         if model.canRetryPin { await model.retryPin() }
                         else { await model.loadPins() }
                     }
@@ -87,17 +87,6 @@ struct ServerCampusLinksView: View {
         case "community": "Community".localized
         case "services": "Services".localized
         default: "Campus".localized
-        }
-    }
-}
-
-struct CampusErrorRow: View {
-    let message: String
-    let retry: () async -> Void
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(message).font(.caption).foregroundStyle(.red)
-            Button("Retry") { Task { await retry() } }
         }
     }
 }

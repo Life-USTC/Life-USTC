@@ -35,6 +35,8 @@ struct ServerPublicationFilters: Equatable {
     var query = ""
     var fold = false
 
+    var hasSheetFilters: Bool { fold || !sources.isEmpty || !organizationLevels.isEmpty }
+
     var queryItems: [URLQueryItem] {
         var items: [URLQueryItem] = []
         if let type { items.append(.init(name: "type", value: type.rawValue)) }

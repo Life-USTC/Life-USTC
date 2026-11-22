@@ -17,7 +17,7 @@ struct ServerCampusWeatherView: View {
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("weather_location")
             }
-            if let error { Section { CampusErrorRow(message: error) { await load() } } }
+            if let error { Section { ListLoadErrorRow(message: error) { await load() } } }
             if isLoading { ProgressView("Loading weather…") }
             if let snapshot, snapshot.location.key == location {
                 current(snapshot)

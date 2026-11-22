@@ -8,7 +8,7 @@ struct ServerBusPlannerView: View {
 
     var body: some View {
         List {
-            if let error = model.error { Section { CampusErrorRow(message: error) { await model.load() } } }
+            if let error = model.error { Section { ListLoadErrorRow(message: error) { await model.load() } } }
             if model.isLoading && model.timetable == nil { ProgressView("Loading bus timetable…") }
             if let timetable = model.timetable {
                 Section("Next Departure") {
@@ -30,7 +30,7 @@ struct ServerBusPlannerView: View {
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     if let error = model.departureError {
-                        CampusErrorRow(message: error) { await model.refreshDepartures(locale: campusAPILocale(locale)) }
+                        ListLoadErrorRow(message: error) { await model.refreshDepartures(locale: campusAPILocale(locale)) }
                     }
                     if model.origin == model.destination { Text("Choose different departure and arrival campuses.").foregroundStyle(.secondary) }
                 }
@@ -57,7 +57,7 @@ struct ServerBusPlannerView: View {
                             .accessibilityIdentifier("bus_save_preferences")
                         if model.isSavingPreference { ProgressView() }
                         if let error = model.preferenceError {
-                            CampusErrorRow(message: error) {
+                            ListLoadErrorRow(message: error) {
                                 if model.canSavePreference { await model.savePreference() }
                                 else { await model.loadPreference() }
                             }

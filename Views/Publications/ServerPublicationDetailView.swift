@@ -9,9 +9,7 @@ struct ServerPublicationDetailView: View {
         List {
             if let error = model.error {
                 Section {
-                    Text(error).foregroundStyle(.red)
-                    Button("Retry") { Task { await model.load() } }.disabled(model.isLoading)
-                        .accessibilityIdentifier("publication.detail.retry")
+                    ListLoadErrorRow(message: error, isLoading: model.isLoading, retryIdentifier: "publication.detail.retry") { await model.load() }
                 }
             }
             if let publication = model.publication {

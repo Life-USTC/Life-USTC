@@ -9,6 +9,10 @@ struct ServerPublicScheduleFilters: Equatable {
     var dateFrom = YoungCalendarDate.dayStart(.now)
     var dateTo = YoungCalendarDate.dayStart(.now)
 
+    var hasSheetFilters: Bool {
+        !sectionCode.isEmpty || !teacherCode.isEmpty || !roomJWID.isEmpty || weekday != nil || limitsDates
+    }
+
     var validationError: String? {
         let room = roomJWID.trimmingCharacters(in: .whitespacesAndNewlines)
         if !room.isEmpty && (Int(room) ?? 0) <= 0 {
