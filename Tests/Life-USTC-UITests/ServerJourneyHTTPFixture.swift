@@ -38,10 +38,12 @@ final class ServerJourneyHTTPFixture {
     private var publicDiscovery: PublicDiscoveryHTTPState?
     private var accountJourney: AccountJourneyHTTPState?
     private let catalogHistory: Bool
+    private let catalogIdentityAcceptance: Bool
     private var failedRequest: (method: String, path: String)?
 
-    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false, accountJourney: Bool = false, catalogHistory: Bool = false) {
+    init(workspace: Bool = false, community: Bool = false, campus: Bool = false, youngCampus: Bool = false, accountJourney: Bool = false, catalogHistory: Bool = false, catalogIdentityAcceptance: Bool = false) {
         self.catalogHistory = catalogHistory
+        self.catalogIdentityAcceptance = catalogIdentityAcceptance
         if catalogHistory { membership = [42: "regular", 43: "teaching_assistant"] }
         if workspace { self.workspace = WorkspaceLearningHTTPState(todoState: WorkspaceTodoHTTPState()) }
         if community { self.community = CommunityHTTPState() }
@@ -149,7 +151,9 @@ final class ServerJourneyHTTPFixture {
                     return
                 }
                 let response = self.response(to: request)
-                self.send(response.body, status: response.status, to: connection)
+                let body = self.catalogIdentityAcceptance && response.status == 200
+                    ? CatalogIdentityAcceptanceFacts.response(response.body) : response.body
+                self.send(body, status: response.status, to: connection)
             } else if !finished && error == nil {
                 self.receive(connection, buffered: buffer)
             } else {
@@ -318,6 +322,11 @@ final class ServerJourneyHTTPFixture {
             }
             func matches(_ section: [String: Any], code: String) -> Bool {
                 let course = section["course"] as? [String: Any]
+                if catalogIdentityAcceptance {
+                    return CatalogIdentityAcceptanceFacts.matches(
+                        sectionCode: section["code"] as? String,
+                        courseCode: course?["code"] as? String, query: code)
+                }
                 return (section["code"] as? String)?.uppercased() == code.uppercased()
                     || (course?["code"] as? String)?.uppercased() == code.uppercased()
             }
