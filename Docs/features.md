@@ -198,7 +198,7 @@ server-side permission enforcement. Existing university/demo tests remain.
 `WorkspaceJourneyTests` exercises home destinations, todo mutations, homework
 completion, unknown-date exams and private calendar-feed actions using HTTP
 fixtures. CI runs all unit tests and native journey suites on iPhone 17 and
-iPad Pro 13-inch (M5). Both device jobs must pass the required Run Tests gate
+iPad Pro 13-inch (M5). Both device jobs must pass the required Test gate
 before the signed IPA build runs.
 Manual branch validation uses `ci.yaml` with `beta=false`; the workflow's normal
 main-branch delivery handles TestFlight. Visual changes include matched evidence

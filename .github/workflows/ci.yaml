@@ -20,8 +20,8 @@ concurrency:
 
 jobs:
   determine_action:
-    name: Determine Build Action
-    runs-on: ubuntu-latest
+    name: Release gate
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 5
     outputs:
       should_deploy: ${{ steps.should_deploy.outputs.deploy }}
@@ -39,8 +39,8 @@ jobs:
           fi
 
   native_tests:
-    name: Native Tests (${{ matrix.family }})
-    runs-on: macos-26
+    name: Native (${{ matrix.family }})
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -157,8 +157,8 @@ jobs:
 
   # Preserve the required branch-protection check while gating both matrix jobs.
   test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+    name: Test
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 5
     needs: native_tests
     if: always()
@@ -170,7 +170,7 @@ jobs:
 
   build:
     name: Build IPA
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 60
     needs: [determine_action, test]
     outputs:
@@ -220,10 +220,10 @@ jobs:
           echo "Build number: $BUILD_NUMBER"
 
   upload_to_testflight:
-    name: Upload to TestFlight
+    name: TestFlight
     # Must stay on macOS: fastlane pilot uploads the IPA via altool/Transporter,
     # neither of which exists on Linux (fastlane_core itunes_transporter.rb).
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 30
     needs: [determine_action, build]
     if: needs.determine_action.outputs.should_deploy == 'true'
@@ -249,8 +249,8 @@ jobs:
           ASC_KEY: ${{ secrets.ASC_KEY }}
 
   add_to_testflight_group:
-    name: Add to TestFlight Group
-    runs-on: ubuntu-latest
+    name: TestFlight group
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
     if: >-
