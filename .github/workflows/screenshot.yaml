@@ -17,7 +17,7 @@ concurrency:
 jobs:
   snapshot:
     name: Screenshots (${{ matrix.locale }}, ${{ matrix.device.slug }})
-    runs-on: blacksmith-6vcpu-macos-26
+    runs-on: macos-26
     timeout-minutes: 60
     permissions:
       contents: read
@@ -188,7 +188,7 @@ jobs:
     name: Publish screenshots
     needs: snapshot
     if: needs.snapshot.result == 'success'
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
