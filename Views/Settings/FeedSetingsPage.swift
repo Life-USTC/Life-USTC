@@ -11,10 +11,15 @@ import SwiftUI
 struct FeedSetingsPage: View {
     @Query(sort: \FeedSource.name, order: .forward) var sourceEntities: [FeedSource]
     @AppStorage("feedSourceNameListToRemove") var removedNameList: [String] = []
+    @State private var refreshID = 0
+    @State private var refreshError: String?
     var dismissAction: (() -> Void)? = nil
 
     var body: some View {
         List {
+            if let refreshError {
+                ListLoadErrorRow(message: refreshError) { refreshID += 1 }
+            }
             Section {
                 ForEach(sourceEntities.map(\.name), id: \.self) { name in
                     Button {
@@ -46,9 +51,7 @@ struct FeedSetingsPage: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    Task {
-                        try await Feed.update()
-                    }
+                    refreshID += 1
                 } label: {
                     Label("Refresh List", systemImage: "arrow.clockwise")
                 }
@@ -66,9 +69,13 @@ struct FeedSetingsPage: View {
             }
         }
         .navigationTitle("Feed Source Settings")
-        .task {
-            Task {
-                try await Feed.update()
+        .task(id: refreshID) {
+            refreshError = nil
+            do {
+                try await FeedSource.update()
+            } catch {
+                guard !Task.isCancelled else { return }
+                refreshError = error.localizedDescription
             }
         }
     }
