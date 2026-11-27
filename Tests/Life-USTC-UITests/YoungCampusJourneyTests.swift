@@ -363,8 +363,10 @@ final class YoungCampusJourneyTests: XCTestCase {
     private func chooseFilter(_ field: String, value: String,
                               optionID: String? = nil,
                               file: StaticString = #filePath, line: UInt = #line) throws {
-        let picker = app.buttons["young.filters.\(field)"]
-        open("young.filters.\(field)", file: file, line: line)
+        let pickerID = "young.filters.\(field)"
+        let picker = app.buttons[pickerID]
+        let form = app.collectionViews.containing(.button, identifier: pickerID).firstMatch
+        open(pickerID, scrollContainer: form, file: file, line: line)
         let option: XCUIElement
         if let optionID {
             option = app.buttons.matching(NSPredicate(format: "identifier == %@ AND label == %@", optionID, value)).element
@@ -405,23 +407,37 @@ final class YoungCampusJourneyTests: XCTestCase {
     }
 
     @MainActor
-    private func reveal(_ element: XCUIElement) {
+    private func reveal(_ element: XCUIElement, within scrollContainer: XCUIElement? = nil) {
         _ = element.waitForExistence(timeout: 2)
-        for _ in 0..<8 {
-            if element.exists && element.isHittable { return }
-            app.swipeUp()
+        let scrollTarget = scrollContainer ?? app
+        func isRevealed() -> Bool {
+            guard element.exists && element.isHittable else { return false }
+            // A partially clipped menu picker can report hittable while its edge
+            // tap fails to open the menu. Reveal the whole row inside its form.
+            return scrollContainer.map { $0.frame.contains(element.frame) } ?? true
         }
         for _ in 0..<8 {
-            if element.exists && element.isHittable { return }
-            app.swipeDown()
+            if isRevealed() { return }
+            scrollTarget.swipeUp()
+        }
+        for _ in 0..<8 {
+            if isRevealed() { return }
+            scrollTarget.swipeDown()
         }
     }
 
     @MainActor
-    private func open(_ id: String, file: StaticString = #filePath, line: UInt = #line) {
+    private func open(_ id: String, scrollContainer: XCUIElement? = nil,
+                      file: StaticString = #filePath, line: UInt = #line) {
         let button = app.buttons[id]
-        reveal(button)
+        if let scrollContainer {
+            XCTAssertTrue(scrollContainer.exists, "Missing scroll container: \(id)", file: file, line: line)
+        }
+        reveal(button, within: scrollContainer)
         XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing control: \(id)", file: file, line: line)
+        if let scrollContainer {
+            XCTAssertTrue(scrollContainer.frame.contains(button.frame), "Clipped control: \(id)", file: file, line: line)
+        }
         let enabledButton = app.buttons.matching(identifier: id)
             .matching(NSPredicate(format: "enabled == true")).firstMatch
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: enabledButton)
