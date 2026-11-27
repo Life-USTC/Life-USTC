@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   snapshot:
-    name: Generate iOS UI Screenshots (${{ matrix.locale }}, ${{ matrix.device.slug }})
+    name: Screenshots (${{ matrix.locale }}, ${{ matrix.device.slug }})
     runs-on: macos-26
     timeout-minutes: 60
     permissions:
@@ -185,10 +185,10 @@ jobs:
           if-no-files-found: warn
 
   publish:
-    name: Validate and publish complete screenshot matrix
+    name: Publish screenshots
     needs: snapshot
     if: needs.snapshot.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout

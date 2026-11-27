@@ -47,8 +47,13 @@ enum PrimaryNavigation {
     private static func showRailIfNeeded(for element: XCUIElement, in app: XCUIApplication, timeout: TimeInterval, hasTabBar: Bool? = nil) -> Bool {
         if !element.isHittable && !(hasTabBar ?? app.tabBars.element.exists) {
             let toggle = app.buttons.matching(NSPredicate(format: "label IN %@", sidebarLabels)).element
-            guard ready(toggle, timeout: timeout) else { return false }
-            toggle.tap()
+            // Signing out can briefly disable the visible rail during dismissal.
+            // Wait for either real control instead of assuming the rail is hidden.
+            let available = NSPredicate { _, _ in
+                element.isHittable || (toggle.exists && toggle.isEnabled && toggle.isHittable)
+            }
+            guard ready(element, timeout: timeout, predicate: available) else { return false }
+            if !element.isHittable { toggle.tap() }
         }
         return true
     }

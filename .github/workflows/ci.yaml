@@ -20,8 +20,8 @@ concurrency:
 
 jobs:
   determine_action:
-    name: Determine Build Action
-    runs-on: ubuntu-latest
+    name: Release gate
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       should_deploy: ${{ steps.should_deploy.outputs.deploy }}
@@ -39,7 +39,7 @@ jobs:
           fi
 
   native_tests:
-    name: Native Tests (${{ matrix.family }})
+    name: Native (${{ matrix.family }})
     runs-on: macos-26
     timeout-minutes: 120
     strategy:
@@ -97,17 +97,7 @@ jobs:
             -project Life-USTC.xcodeproj \
             -scheme Life-USTC-UITests \
             -destination "platform=iOS Simulator,id=$TEST_DEVICE_ID" \
-            -only-testing:Life-USTC-UITests/E2ETests \
-            -only-testing:Life-USTC-UITests/ServerJourneyTests \
-            -only-testing:Life-USTC-UITests/WorkspaceJourneyTests \
-            -only-testing:Life-USTC-UITests/CommunityJourneyTests \
-            -only-testing:Life-USTC-UITests/CampusJourneyTests \
-            -only-testing:Life-USTC-UITests/CatalogParityJourneyTests \
-            -only-testing:Life-USTC-UITests/SubscriptionImportJourneyTests \
-            -only-testing:Life-USTC-UITests/ParityNavigationJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungCampusJourneyTests \
-            -only-testing:Life-USTC-UITests/YoungIncrementalJourneyTests \
-            -only-testing:Life-USTC-UITests/AccountJourneyTests \
+            -skip-testing:Life-USTC-UITests/Life_USTC_ScreenshotTests \
             -clonedSourcePackagesDirPath SourcePackages \
             -resultBundlePath TestResults/ui.xcresult \
             -quiet
@@ -167,8 +157,8 @@ jobs:
 
   # Preserve the required branch-protection check while gating both matrix jobs.
   test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+    name: Test
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: native_tests
     if: always()
@@ -230,7 +220,7 @@ jobs:
           echo "Build number: $BUILD_NUMBER"
 
   upload_to_testflight:
-    name: Upload to TestFlight
+    name: TestFlight
     # Must stay on macOS: fastlane pilot uploads the IPA via altool/Transporter,
     # neither of which exists on Linux (fastlane_core itunes_transporter.rb).
     runs-on: macos-26
@@ -259,8 +249,8 @@ jobs:
           ASC_KEY: ${{ secrets.ASC_KEY }}
 
   add_to_testflight_group:
-    name: Add to TestFlight Group
-    runs-on: ubuntu-latest
+    name: TestFlight group
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     needs: [determine_action, build, upload_to_testflight]
     if: >-
