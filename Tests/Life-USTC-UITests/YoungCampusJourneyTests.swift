@@ -409,7 +409,7 @@ final class YoungCampusJourneyTests: XCTestCase {
     @MainActor
     private func reveal(_ element: XCUIElement, within scrollContainer: XCUIElement? = nil) {
         _ = element.waitForExistence(timeout: 2)
-        let scrollTarget = scrollContainer ?? app
+        let scrollTarget = scrollContainer ?? app!
         func isRevealed() -> Bool {
             guard element.exists && element.isHittable else { return false }
             // A partially clipped menu picker can report hittable while its edge
